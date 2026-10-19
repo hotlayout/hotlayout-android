@@ -41,6 +41,8 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
     implementation(libs.compose.foundation)
+    // The system back key: one step back in the reader's own stack (`render/modal/SystemBack.kt`).
+    implementation(libs.activity.compose)
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)

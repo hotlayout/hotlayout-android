@@ -21,6 +21,7 @@ import com.hotlayout.render.NodeView
 import com.hotlayout.render.Placement
 import com.hotlayout.render.RenderContext
 import com.hotlayout.render.WidgetCall
+import com.hotlayout.render.layout.AlignWord
 import com.hotlayout.render.takesNaturalWidth
 import kotlin.math.floor
 import kotlin.math.roundToInt
@@ -50,10 +51,12 @@ internal fun RepeaterWidget(call: WidgetCall) {
         return context.copy(
             scope = instance.scope,
             instances = context.instances + ListInstance(item, instance.fields, source),
+            instancePath = context.instancePath + index,
             listNumber = if (numbered) instance.number?.let { ListNumber(it, plan.instances.size) } else null,
         )
     }
 
+    val carousel = CarouselRules.of(node)
     val isCarousel = node.props["carousel"] != null
     val isRow = node.props["direction"]?.string == "row" || isCarousel
     val header = node.children.getOrNull(RecordGroups.HEADER_CHILD)?.takeIf { RepeaterPlan.groupBy(node.props) != null }
@@ -65,6 +68,9 @@ internal fun RepeaterWidget(call: WidgetCall) {
     when {
         columns != null -> GridCells(columns, gap, if (call.placement.stretchWidth) Modifier.fillMaxWidth() else Modifier) {
             for (index in records) TightSlot(template, itemContext(index), depth, node.type)
+        }
+        carousel != null -> CarouselRow(node, context, carousel, records.size, gap, AlignWord.Center) { position, cardWidth, _ ->
+            NodeView(template, itemContext(records[position]).copy(cardWidth = cardWidth), Placement.Natural, depth, node.type)
         }
         isRow -> RepeaterRow(isCarousel, gap, call.placement) {
             for (index in records) NodeView(template, itemContext(index), Placement.Natural, depth, node.type)
@@ -85,9 +91,8 @@ internal fun RepeaterWidget(call: WidgetCall) {
 }
 
 /**
- * The instances of a list laid in a row. A plain row of natural widths; a list with `carousel` is
- * drawn in a horizontal scroll. This is the place the carousel family takes over: it replaces the
- * body with cards of the width its rules compute, stops and dots.
+ * The instances of a list laid in a row: natural widths. A list with a readable `carousel` goes to
+ * [CarouselRow]; one whose field cannot be read is a plain horizontal scroll, drawn here.
  */
 @Composable
 internal fun RepeaterRow(carousel: Boolean, gap: Double, placement: Placement, cards: @Composable () -> Unit) {

@@ -56,10 +56,9 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 ## Not built in the foundation (the waves below own them)
 
 - The screen root is one scroll; the zones (fixed app bar and bottom zone, safe insets) are wave 2.
-- Modal layers are a dimmed backdrop with the layer at the bottom or centre; sheets, windows, blur
-  and drag are wave 2. The system back key is not wired yet (it needs `activity-compose` or a host
-  hook; decide in wave 2).
-- `style.backdropBlur` is read but not drawn (modals).
+- `style.backdropBlur` (glass under a node) is read and validated (`motion/glassCases`) but not drawn: Compose
+  has no backdrop capture across sibling nodes, and a page's own nodes cannot blur what is drawn under them.
+  The blur under a modal layer is drawn (see Modal layers).
 - `showOn`, `styleOn`, `propsOn` are not read (wave 3 adaptive; `RenderContext.isShown` is the place).
 
 ## Controls (wave 1)
@@ -99,14 +98,30 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
   groups of `repeater-filter`, `icon-text/colorCases`); the widgets only call them.
 - Rows in a grid or a list with `columns` are laid out by one `GridCells` layout (cell width
   `(width − gaps) ÷ columns`, floored to whole pixels; the missing cells of the last row keep the width).
-- `RepeaterRow` is the hook of the carousel wave: a `carousel` list is a plain horizontal scroll until the
-  carousel family replaces its body (card width, stops, dots). `repeater-filter/carouselCases` is that wave's.
+- A `Repeater` with a readable `carousel` goes to `CarouselRow` (see Carousel below); `RepeaterRow` draws only a plain
+  row, and a list whose `carousel` field cannot be read as a plain horizontal scroll.
 - A numbered template gets `RenderContext.listNumber`; the text family reads it for `Text.marker: number`.
 - `ListTileChoice` / `LocalListTileChoice` is where a `ChoiceGroup` hands its selection to option rows
   (`trailing.kind: radio`); without a group the circle is drawn and nothing answers.
 - A row with an `action` is one control (click only; long press belongs to the gestures wave).
 - Tabs: the strip scrolls, each title is focusable (Role.Tab, selected); Left/Right move between titles,
   swapped in right-to-left text, Home/End jump. There is no wrap-around.
+## Carousel (`render/widgets/Carousel*.kt`)
+
+- `CarouselRules` is pure and run by `CarouselCasesTest` (every group of `carousel-cases.json` and `repeater-filter/carouselCases`).
+  `CarouselRow` draws a `Row` (with `scrollable`) or a `Repeater` (`direction: row`, no `columns`) that has a readable `carousel`.
+- The node's padding is taken off the node box (`NodeView`) and laid INSIDE the scroll; the card box width is handed to a card through
+  `RenderContext.cardWidth`, which `NodeView` reads once and clears (it overrides `width`, `minWidth`, `maxWidth`).
+- The viewport is the width the place gives: a bounded maximum width (the carousel fills it); unbounded is "not known" (cards keep
+  their natural widths, no dots). Only the real measure reports it (`PlaceModifier`): the intrinsic queries of a parent run the same
+  layout and made the value flip for ever. Stops use the MEASURED outer widths of the cards (box and margin).
+- Snapping is a `FlingBehavior` that ends every drag or throw on the nearest stop to the projected offset (0.12 s of velocity);
+  reduced motion (animator scale 0) jumps. Dots are decoration (`clearAndSetSemantics`, tagged `carousel:dot[:active]` for tests);
+  cards are `CollectionItemInfo` items of a `CollectionInfo` row, the scroll area is focusable.
+- The active stop is remembered per stack frame (`CarouselMemory`, key = frame index + screen + node + chain of list instance indexes,
+  `RenderContext.instancePath`); `HotlayoutScreen` prunes it when the stack shrinks. A stop is put back once the cards are measured at their final width.
+- Not here: the dot motion of contract 9.24 belongs to the navigation bar badge dot, not to the carousel; snapping is always on (this reader draws only ready screens).
+
 ## Stack
 
 - A stack is one `Layout`; the role of each child (sizing, `fill`, overlay with its resolved place) travels as
@@ -186,3 +201,31 @@ wiring test (semantics or pixels through `HotlayoutScreen`) for every capability
 - Rows of `amountPartCases` with plain `ar` digits differ like the money rows (`TextRichCasesTest.platformDiffers`).
 - The demo data carries the dates of the data dictionary (`user.memberSince`, `campaign.endsAt`,
   `offer.endsAt`): without them the showcase's date texts showed their fallback «—».
+
+## Modal layers (`render/modal/`)
+
+- `ModalStack` holds the page and the layers: the page is one box, each layer a sibling with its own `zIndex` (its own
+  stacking context). The page and every layer below the top are inert: `focusProperties { canFocus = false }`,
+  `clearAndSetSemantics` (hidden from accessibility and from tests' merged tree), and the dim above them takes every touch.
+- Box rules are pure (`ModalRules`, run by `ModalCasesTest`) in LOGICAL pixels; `ModalBox` converts. A sheet is full width at the
+  bottom, a window is centred, at most 400 wide with the theme's `xl` margin (24 without). The content is measured with the room
+  as its maximum height, so a taller body scrolls inside its own scroll (the app bar of a layer stays where the screen's zones
+  keep it). No built-in look: the root's `style` draws background, radius and shadow.
+- Blur: `Modifier.blur` (a `RenderEffect`) from API 31; below that the picture stays sharp and the 0.45 dim alone separates the
+  layer. The page is blurred by the combined blur (square root of the sum of squares) of all layers, a layer by those above it.
+  Robolectric's software `View.draw` does not apply render effects: tests read the radius from semantics
+  (`ModalPageBlurKey`, `ModalLayerBlurKey`) and the blur is looked at in `demo/frames/motion-blur-screens-sheet.png`
+  (Roborazzi draws it).
+- Sheet drag runs in the capture pass (`SheetDrag.kt`): nothing is taken before the slop; once `dragStarts` holds the move is
+  consumed and a button or scroll under the finger is cancelled. The scroll position of the body is NOT owned by the reader: it is
+  learned from the scrolling that passes through the layer (nested scroll, starting at the top) and read when the finger goes down.
+  The handle is not told from the rest of the sheet (`onHandle` false), as on iOS. Release: `dragOutcome`, return 250 ms / exit
+  200 ms with the contract's curves, then one step back after the sheet has left; reduced motion (animator scale 0) is instant.
+  Appear: a short slide (sheet) or scale and fade (window); leaving by tap, key or back is instant.
+- Keys and back: Escape on the focused top layer is one step (`escapeSteps`); a held key is taken and closes nothing; a layer with
+  `dismissible: false` leaves Escape to the host. The system back key is a `BackHandler` of `activity-compose` (a library
+  dependency): one step back while the stack has more than one screen and the top layer may be dismissed; otherwise, or with
+  `handleSystemBack = false`, the key goes to the host. A host `BackHandler` registered after the reader's wins. Predictive back
+  follows the host's manifest. Layers also expose the semantics `dismiss` action when dismissible.
+- Focus moves only when the person moved the stack (`movedSerial`, raised by a press that shows a screen): the layer takes it on
+  show, the page anchor after a step back; the first screen and a host `entry` change take none.
