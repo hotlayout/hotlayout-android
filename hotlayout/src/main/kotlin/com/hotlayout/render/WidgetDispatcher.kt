@@ -16,6 +16,8 @@ import com.hotlayout.render.widgets.ImageWidget
 import com.hotlayout.render.widgets.ListTileWidget
 import com.hotlayout.render.widgets.RepeaterWidget
 import com.hotlayout.render.widgets.SpacerWidget
+import com.hotlayout.render.widgets.CircularProgressWidget
+import com.hotlayout.render.widgets.ProgressBarWidget
 import com.hotlayout.render.widgets.TabsWidget
 import com.hotlayout.render.widgets.StackWidget
 import com.hotlayout.render.widgets.TextWidget
@@ -25,6 +27,7 @@ import com.hotlayout.render.widgets.TextWidget
  * for now (its children in a column, `unknownWidget: 'render-children'`) and reported.
  */
 internal val drawnWidgets: Set<String> = setOf(
+    "ProgressBar", "CircularProgress",
     "Screen", "Column", "Row", "Container", "Text", "Image", "Icon", "Button", "Spacer", "Divider", "Badge", "Stack",
     "Repeater", "Grid", "ListTile", "Accordion", "Tabs", "Tab",
 )
@@ -52,6 +55,8 @@ internal fun Widget(call: WidgetCall) {
         "Badge" -> BadgeWidget(call)
         "Spacer" -> SpacerWidget(call)
         "Divider" -> DividerWidget(call)
+        "ProgressBar" -> ProgressBarWidget(call)
+        "CircularProgress" -> CircularProgressWidget(call)
         "Repeater" -> RepeaterWidget(call)
         "Grid" -> GridWidget(call)
         "ListTile" -> ListTileWidget(call)
