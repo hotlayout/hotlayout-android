@@ -23,6 +23,8 @@ class TableCoverageTest {
             "repeater-filter/filterCases", "repeater-filter/limitCases", "repeater-filter/emptinessCases",
             "icon-text/orderCases", "icon-text/glyphCases", "icon-text/buttonSizeCases", "icon-text/iconButtonCases",
             "icon-text/nameCases", "icon-text/iconPathCases",
+            "progress/ratioCases", "progress/ringCases", "progress/arcCases", "progress/barCases", "progress/paintCases", "progress/segmentCases", "progress/segmentPlaceCases", "progress/segmentPaintCases", "progress/segmentGradientCases", "progress/ringLabelCases", "progress/ringLabelNoneCases", "progress/capCases", "progress/segmentFillCases", "progress/segmentFillInlineCases", "progress/transitionShareCases", "progress/glowStepCases", "progress/glowRuleCases",
+            "value-transition/curveCases", "value-transition/stepCases", "value-transition/digitsCases", "value-transition/decisionCases", "value-transition/targetCases", "value-transition/appearStepCases", "value-transition/appearDecisionCases", "value-transition/appearTargetCases", "value-transition/appearFlowCases",
         )
 
         /** The wave a whole table belongs to (groups of it that the foundation runs are in [run]). */

@@ -64,6 +64,21 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 - Dashed borders are drawn solid; `style.backdropBlur` is read but not drawn.
 - `showOn`, `styleOn`, `propsOn` are not read (wave 3 adaptive; `RenderContext.isShown` is the place).
 
+## Progress scales and value transitions
+
+- `ProgressBar` and `CircularProgress` are drawn on a canvas by `render/widgets/Progress*.kt`; the rules
+  (`ProgressRules`) are pure and run by `ProgressCasesTest` on every group of `progress-cases.json`.
+- The glow is a copy of the same shapes under the scale, drawn with a `BlurMaskFilter` (a software-safe
+  blur: `Modifier.blur` needs API 31 and a render effect). Skia takes a radius, so the sigma of the contract
+  is converted by `radius = (sigma − 0.5) / 0.57735`.
+- The ring turns the canvas a quarter, so that arcs and the sweep gradient start at the top.
+- The shared value-transition rule is `render/motion/ValueTransition.kt` (pure, run by
+  `ValueTransitionCasesTest`) with the clock in `ValueTransitionEngine.kt`; `ValueTransitioned` hosts a
+  node, redraws it per frame (`withFrameMillis`) and stops the frames while the node is outside the window.
+  Reduced motion is the device animator scale 0. Other families (Text) call the same engine.
+- A bar fills the width it is given; a bar in a row without a weight takes what the row leaves (weights are
+  the alignment zone's).
+
 ## Zones of the code for parallel waves
 
 Shared files — change minimally, keep signatures; merge `main` before reporting:
@@ -85,7 +100,7 @@ Family files (one zone per agent):
 | 1 | text | `render/widgets/TextWidget.kt`, `render/TextStyles.kt` (spans, markers, gradient) |
 | 1 | lists | new `render/widgets/Lists*.kt` (`Repeater`, `Grid`, `ListTile`, `Accordion`, `Tabs`) |
 | 1 | stack | new `render/widgets/Stack*.kt` (`Stack`, `layer`, `fill`) |
-| 1 | progress | new `render/widgets/Progress*.kt` |
+| 1 | progress | new `render/widgets/Progress*.kt` (done) |
 | 1 | controls | `render/widgets/RoleWidgets.kt` (Button, Badge, `IconButton`), write actions in `actions/` |
 | 2 | inputs & form | new `render/widgets/Input*.kt`, `data/` session |
 | 2 | screen anatomy | `ScreenRoot` in `HotlayoutScreen.kt` → new `render/screen/` |

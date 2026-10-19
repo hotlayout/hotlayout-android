@@ -35,5 +35,9 @@ class FixtureFramesTest {
 
     @Test fun rewardsShowcase() = frame("rewards-showcase-screens", null)
 
+    @Test fun progress() = frame("progress-screens", null)
+
+    @Test fun valueCountdown() = frame("value-countdown-screens", null)
+
     @Test fun minimalScreen() = frame("minimal-screen", null)
 }
