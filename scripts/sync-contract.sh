@@ -9,7 +9,8 @@
 # What it writes:
 #  - hotlayout/src/test/resources/contract/*.json and fixtures/ — the artifacts and tables the
 #    tests read (an exact copy);
-#  - demo/src/main/assets/fixtures/ — the screen fixtures and themes the demo app opens;
+#  - demo/src/main/assets/fixtures/ — the screen fixtures and themes the demo app opens, and
+#    demo/src/main/assets/data-contract.json — the data dictionary whose sample images the demo shows;
 #  - hotlayout/src/main/resources/com/hotlayout/icons.json — the icon set the reader ships with;
 #  - hotlayout/src/main/resources/com/hotlayout/built-in-theme.json — the `contract` block of
 #    theme.json, the theme the reader uses when the host passes none.
@@ -38,6 +39,8 @@ rm -rf "$demo"
 mkdir -p "$demo"
 cp "$contract"/fixtures/*.json "$demo/"
 cp -R "$contract/fixtures/themes" "$demo/themes"
+# The sample values of the data dictionary (the demo draws its pictures from them, offline).
+cp "$contract/data-contract.json" "$here/demo/src/main/assets/data-contract.json"
 
 cp "$contract/THIRD-PARTY-NOTICES.md" "$here/THIRD-PARTY-NOTICES.md"
 

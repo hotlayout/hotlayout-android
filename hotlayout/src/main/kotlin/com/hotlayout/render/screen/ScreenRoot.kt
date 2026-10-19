@@ -17,6 +17,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import com.hotlayout.render.paint.glassSource
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -163,7 +164,10 @@ internal fun AnatomyScreen(
     // The zones read what the root's own style left: no style, no padding, so the host space is the body area itself.
     val zoneRoot = root.copy(fields = JsonObject())
 
-    Box(modifier.then(container)) {
+    // A page that names a glass records itself (zones and background included) for the glass nodes to blur.
+    val glassSource = com.hotlayout.render.paint.rememberGlassSource(root)
+    com.hotlayout.render.paint.ProvideGlass(glassSource) {
+    Box(modifier.then(container).then(if (glassSource != null) Modifier.glassSource(glassSource) else Modifier)) {
         // The children of the root are siblings of each other wherever the zones put them (the place of an option in its group).
         ProvideSiblings(root) {
         ScreenZonesLayout(plan.settings(), report, Modifier.then(if (shrinks) Modifier.fillMaxWidth() else Modifier.fillMaxSize())) {
@@ -196,6 +200,7 @@ internal fun AnatomyScreen(
             }
         }
         }
+    }
     }
 }
 

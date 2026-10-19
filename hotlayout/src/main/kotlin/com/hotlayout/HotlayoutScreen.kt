@@ -261,7 +261,8 @@ public fun HotlayoutScreen(
             page = {
                 val page = frames.getOrNull(pageIndex)
                 val pageScreen = page?.let { document.screen(it.screenId) }
-                if (page != null && pageScreen != null) ScreenRoot(pageScreen, page, setup, asLayer = false)
+                // A page shown again is a new show for its nodes (`animateIn`): one identity per place in the stack and screen.
+                if (page != null && pageScreen != null) androidx.compose.runtime.key(pageIndex, pageScreen.screenId) { ScreenRoot(pageScreen, page, setup, asLayer = false) }
             },
             layers = layers,
             marginDp = margin,

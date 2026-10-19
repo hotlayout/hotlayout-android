@@ -54,14 +54,41 @@ object DemoFonts : HotlayoutFonts {
     override fun family(name: String): FontFamily? = if (name == "Inter") inter else null
 }
 
+/**
+ * The sample values of the data dictionary (`data-contract.json`, bundled by the sync script): the
+ * demo's pictures are the dictionary's own `data:image/…` samples, so frames never need the network.
+ */
+object ContractSamples {
+    private var cache: Map<String, JsonValue>? = null
+
+    private fun samples(context: Context): Map<String, JsonValue> = cache ?: run {
+        val root = JsonValue.parse(context.assets.open("data-contract.json").use { it.readBytes() })
+        val paths = root["contract"]?.get("paths")?.array.orEmpty()
+        paths.mapNotNull { entry -> entry["path"]?.string?.let { it to (entry["sampleValue"] ?: JsonValue.Null) } }.toMap().also { cache = it }
+    }
+
+    /** The sample picture of a path (`item.image`), as a `data:` address. */
+    fun image(context: Context, path: String): String? = samples(context)[path]?.string?.takeIf { it.startsWith("data:image/") }
+
+    /** The pictures of the demo's asset tokens (`logo`, `banner`, `placeholder`) and the policy that lets `data:` addresses through. */
+    fun policy(context: Context): com.hotlayout.render.ImagePolicy {
+        val picture = image(context, "item.image")
+        val assets = listOf("logo", "banner", "placeholder").mapNotNull { name -> picture?.let { name to it } }.toMap()
+        return com.hotlayout.render.ImagePolicy(assets) { address ->
+            if (address.startsWith("data:image/") && address.length <= 64 * 1024) address else com.hotlayout.render.ImagePolicy.httpsOnly(address)
+        }
+    }
+}
+
 /** Data for the fixtures that draw lists and bound texts: the lists are empty without it. */
 object SampleData {
-    fun scope(): DataScope {
+    fun scope(context: Context): DataScope {
+        val picture = ContractSamples.image(context, "item.image")
         val names = listOf("Backpack", "Bottle", "Headphones", "Notebook", "Mug")
         val items = names.mapIndexed { index, name ->
             mapOf(
                 "id" to name.lowercase(), "name" to name,
-                "image" to "https://images.hotlayout.example/${listOf("wide", "square", "tall")[index % 3]}.png",
+                "image" to (picture ?: "https://images.hotlayout.example/${listOf("wide", "square", "tall")[index % 3]}.png"),
                 "selectedId" to if (index < 3) "backpack" else "coffee", "category" to if (index < 3) "gear" else "home",
             )
         }

@@ -60,11 +60,14 @@ class TableCoverageTest {
             "media-chrome/appBar916RuleCases", "media-chrome/appBarCases", "media-chrome/appBarChildrenCases", "media-chrome/appBarDrawnCases", "media-chrome/appBarLeadingCases", "media-chrome/appBarLeadingShownCases", "media-chrome/bodyTopCases", "media-chrome/glyphCases", "media-chrome/safeTopValueCases", "media-chrome/screenAppBarCases", "media-chrome/screenRuleCases", "media-chrome/screenTopPressCases", "media-chrome/screenTopRuleCases", "media-chrome/screenTopZoneCases", "media-chrome/scrolledLayerCases", "media-chrome/scrolledThresholdCases", "media-chrome/shownCases", "media-chrome/statusBarCases", "media-chrome/topZoneCases", "media-chrome/zoneCases",
             "top-zone/childrenCases", "top-zone/geometryCases", "top-zone/pinCases", "top-zone/ruleCases",
             "progress/ratioCases", "progress/ringCases", "progress/arcCases", "progress/barCases", "progress/paintCases", "progress/segmentCases", "progress/segmentPlaceCases", "progress/segmentPaintCases", "progress/segmentGradientCases", "progress/ringLabelCases", "progress/ringLabelNoneCases", "progress/capCases", "progress/segmentFillCases", "progress/segmentFillInlineCases", "progress/transitionShareCases", "progress/glowStepCases", "progress/glowRuleCases",
+            "motion/poseCases",
             // Modal layers: box, blur, drag, Escape, the event of a show.
             "sheet-dismiss/startCases", "sheet-dismiss/releaseCases", "sheet-dismiss/entryCases", "sheet-dismiss/ruleCases",
             "sheet-dismiss/escapeCases", "sheet-dismiss/escapeRuleCases",
             "media-chrome/modalCases", "media-chrome/modalAreaCases", "media-chrome/placementCases", "media-chrome/modalRuleCases", "media-chrome/shownCases",
             "motion/blurCases", "motion/glassCases",
+            // Pictures: the proportion, the box, the file in the box, the radius, the circle.
+            "media-chrome/ratioCases", "media-chrome/imageBoxCases", "media-chrome/paintCases", "media-chrome/radiusCases", "media-chrome/circleCases",
             "carousel/hostCases", "carousel/readCases", "carousel/cardCases", "carousel/stopCases", "carousel/activeCases",
             "carousel/dotCases", "carousel/areaCases", "carousel/stateCases", "repeater-filter/carouselCases",
             // Adaptive: width classes, visibility and style by class, the wide places, `unset`.
@@ -98,9 +101,6 @@ class TableCoverageTest {
 
         /** Groups of a table that belong to another wave than the table. */
         val groupWave: Map<String, String> = mapOf(
-            "media-chrome/ratioCases" to "wave 3 · images", "media-chrome/imageBoxCases" to "wave 3 · images",
-            "media-chrome/paintCases" to "wave 3 · images", "media-chrome/radiusCases" to "wave 3 · images",
-            "media-chrome/circleCases" to "wave 3 · images",
             "media-chrome/modalCases" to "wave 2 · modals", "media-chrome/modalAreaCases" to "wave 2 · modals",
             "media-chrome/placementCases" to "wave 2 · modals",
             "inputs/choiceCases" to "wave 1 · controls", "inputs/choiceSessionCases" to "wave 1 · controls",

@@ -55,9 +55,6 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 
 ## Not built in the foundation (the waves below own them)
 
-- `style.backdropBlur` (glass under a node) is read and validated (`motion/glassCases`) but not drawn: Compose
-  has no backdrop capture across sibling nodes, and a page's own nodes cannot blur what is drawn under them.
-  The blur under a modal layer is drawn (see Modal layers).
 
 ## Controls (wave 1)
 
@@ -174,7 +171,7 @@ Family files (one zone per agent):
 | 2 | modals | `ModalLayer` → new `render/modal/` |
 | 2 | carousel | new `render/widgets/Carousel*.kt` |
 | 2 | gestures & motion | new `render/motion/`, `render/interaction/` |
-| 3 | images | `render/widgets/ImageWidget.kt` |
+| 3 | images | `render/widgets/ImageWidget.kt` (built) |
 | 3 | adaptive | `model/WidthClass.kt`, `render/adaptive/` (built) |
 
 Each wave moves its table groups from the deferred map of `TableCoverageTest` into `run` and adds a
@@ -274,6 +271,53 @@ wiring test (semantics or pixels through `HotlayoutScreen`) for every capability
   scrolls into view by Compose's own bring-into-view in the body scroll.
 - Navigation bar: its place is `WideChrome.screenChrome` / `navPlace` (`NavBarRules.place` delegates); `RenderContext.barInset/barScrolled/navInset/navLine` are what the zones hand the bar and the items.
 - The badge dot is tagged `nav-badge-dot` (read with the unmerged tree); the flash runs only on a change of the condition.
+- Not drawn: the bar of navigation of its own at the top and the items in the app bar (wave 3), `backdropBlur` of a floating bar.
+
+## Node motion, glass, live record (gestures & motion)
+
+- `motion` (`render/motion/NodeMotionRules.kt`, pure, run by `MotionCasesTest`): one sine formula, no curve field. A moving node is
+  `NodeMotionBox`: an outer box that stays at rest and an inner box with a `graphicsLayer` (shift, scale about the centre, alpha),
+  so layout never changes. Compose hit-tests a child outside its parent's bounds, so the rest box does not limit touches by itself:
+  a guard inside the layer takes the drawn position back to the rest box and consumes a touch that starts outside it
+  (the target is the overlap). The root never moves. A layer of a `Stack` is turned by the stack, so its shift is turned back
+  (`LocalLayerTurn`, read only by a node whose parent is a stack): the motion goes along the screen axes, as on the other readers.
+- Frames: the clock asks for a frame (`withFrameMillis`) only while the node is inside the window (`onGloballyPositioned`);
+  «reduce motion» (animator scale 0) draws the node plain, no layer, no clock. `NodeMotionFrames.requested` counts the frames
+  the clocks asked for; a test proves a node below the fold asks for none. An on-screen endless motion keeps a Compose test from
+  becoming idle (as any infinite animation does): tests that open a fixture with motion set the animator scale to 0 or hold
+  the clock with `LocalNodeMotionClockMs`.
+- Audit of the other clocks: the countdown ticks only while its node is inside the window; the swipe «busy» state is a single
+  timer (8 s) with no frames; the glow is static; value transitions are finite (700 ms) and end by themselves — they do not stop
+  when a node leaves the window mid-run, they just finish. Frames of nodes under another page are not asked for at all: a page
+  below a page is not composed (a page below a modal layer is, and is shown).
+- Glass (`style.backdropBlur`, `render/paint/Glass.kt`): a page that names a glass records itself WITHOUT its glass nodes into a
+  `GraphicsLayer` (one traversal), draws it, then draws every glass node over it: the recorded page blurred (`RenderEffect`, edge
+  clamp) under the node's box, clipped by its radius, then the node's own content layer (background and children). A glass node
+  is therefore drawn above the other nodes of its page. On a role widget (`Button`, `IconButton`, `Badge`) the glass lies on the
+  role surface. Below API 31 nothing blurs and the box is drawn as it is (no frosted imitation). The JVM tests draw in software, where the
+  render effect is not applied: they prove where the glass is drawn, with which radius, and that the page and the box stay whole.
+  A glass on the root of a modal screen is the layer's own blur (modal wave), not this one. `styleOn` is the adaptive wave's.
+- A page is keyed by its place in the stack and its screen (`HotlayoutScreen`), so a page shown again (back, or forward to a screen of
+  a similar shape) is a new show for `animateIn`; closing a modal layer is not.
+- Live record: wired in `HotlayoutScreen` (`LaunchedEffect(data)` → `Flow.refresh`); `LiveRecordWiringTest` proves a page opened
+  from a row follows the host data in place with no show event, and keeps the last record when it is nowhere in the data.
+- Fixture `motion-blur-screens`: the three drifting dots of the page do not appear in the frame (the nested stacks with a `fill`
+  anchor draw nothing); the same on `main` before this work. The glass card appears.
+
+## Pictures (`render/widgets/ImageWidget.kt`)
+
+- `ImageRules` is pure and run by `ImageCasesTest` on the picture groups of `media-chrome-cases.json` (`ratioCases`,
+  `imageBoxCases`, `paintCases`, `radiusCases`, `circleCases`); the box rows also run through the real node. The loader
+  (memory cache, `https:` only by default, no redirects) is unchanged; a refused address draws the placeholder.
+- A named height is clamped by `minHeight` / `maxHeight` in `nodeBox` itself (the minimum wins): `height()` first would fix the
+  constraints and the limits inside could not change them.
+- A `fill` layer of a stack is drawn stretched (as wide as the stack), and a column or row that is one gets `fills` from the
+  dispatcher (`AlignRules.fills`), so `justify: end` in a fill layer rests on the bottom of the stack. Before this a fill layer
+  that was a container was as wide as its widest child: a nested stack in it was zero wide and its overlays did not draw.
+- The demo reads the data dictionary's own sample pictures (`data-contract.json` bundled by the sync script) and lets `data:`
+  addresses through its `ImagePolicy`, so frames never touch the network. The dictionary holds one `item.image` sample, so every
+  catalog item shows it. The dates of `alt-icon-date-screens` still read «—»: the demo data has no `operation.*` paths.
+- Icon from data (`iconPath`) was already built with the icon-text rules (`icon-text/iconPathCases`).
 - Not drawn: `backdropBlur` of a floating bar.
 
 ## Adaptive width (wave 3, `model/WidthClass.kt`, `render/adaptive/`)
