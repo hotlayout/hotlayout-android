@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import com.hotlayout.data.DataScope
@@ -126,7 +126,7 @@ internal fun IconWidget(call: WidgetCall) {
 internal fun IconGlyph(name: String?, glyph: Double, width: Double, height: Double, color: Color, rightToLeft: Boolean, modifier: Modifier = Modifier) {
     val elements = name?.let(IconSet::elements).orEmpty()
     val mirrored = rightToLeft && name != null && name in IconSet.mirrored
-    Canvas(modifier.size(width.dp, height.dp).clearAndSetSemantics {}.testTag("icon:${name ?: ""}")) {
+    Canvas(modifier.size(width.dp, height.dp).clearAndSetSemantics { testTag = "icon:${name ?: ""}" }) {
         val side = glyph.toFloat() * density
         val scale = side / IconSet.GRID_SIZE.toFloat()
         translate((size.width - side) / 2, (size.height - side) / 2) {

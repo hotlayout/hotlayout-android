@@ -51,3 +51,8 @@ dependencies {
     testImplementation(libs.roborazzi.compose)
     debugImplementation(libs.compose.ui.test.manifest)
 }
+
+// The tests run once, on the debug variant (the compose test activity is a debug dependency).
+androidComponents {
+    beforeVariants(selector().withBuildType("release")) { it.hostTests.values.forEach { test -> test.enable = false } }
+}
