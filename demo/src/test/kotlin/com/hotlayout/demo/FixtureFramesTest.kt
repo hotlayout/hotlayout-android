@@ -94,4 +94,6 @@ class FixtureFramesTest {
     @Test fun money() = frame("money-screens", null)
 
     @Test fun valueCountdown() = frame("value-countdown-screens", null)
+
+    @Test fun carouselSteps() = frame("carousel-steps-screens", null)
 }

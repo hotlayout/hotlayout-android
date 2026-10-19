@@ -145,8 +145,8 @@ class ModalWiringTest {
         show(document(entry = ""","presentation":"modal","modalPlacement":"center"""", layer = box("m-box", 200)))
         open()
         val bounds = compose.onNodeWithTag("screen:m").fetchSemanticsNode().boundsInRoot
-        assertEquals(345f * 3, bounds.width, 2f)
-        assertEquals((393f * 3 - bounds.width) / 2, bounds.left, 2f)
+        assertEquals((360f - 48f) * 3, bounds.width, 2f)
+        assertEquals((360f * 3 - bounds.width) / 2, bounds.left, 2f)
     }
 
     @Test fun aLayerTallerThanTheAreaStopsAtTheTopAndItsBodyScrolls() {

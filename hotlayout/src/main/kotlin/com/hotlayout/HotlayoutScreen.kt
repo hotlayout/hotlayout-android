@@ -14,6 +14,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
@@ -59,6 +60,7 @@ import com.hotlayout.render.modal.SystemBackStep
 import com.hotlayout.text.LocaleResolution
 import com.hotlayout.text.Localization
 import com.hotlayout.text.TextDirectionRule
+import com.hotlayout.render.widgets.CarouselMemory
 import com.hotlayout.theme.HotlayoutThemeSet
 import com.hotlayout.theme.NodeStyle
 import com.hotlayout.theme.StyleResolver
@@ -203,7 +205,9 @@ public fun HotlayoutScreen(
     val frames = flow.stack
     val pageIndex = frames.indices.lastOrNull { index -> index == 0 || document.screen(frames[index].screenId)?.presentation != ScreenPresentation.Modal } ?: 0
     val resolver = StyleResolver(theme.theme(themeId))
-    val setup = ScreenSetup(document, resolver, resolution, rightToLeft, data, session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts, sink, ::perform, ::write, shownSerial)
+    val carousels = remember(document.documentId) { CarouselMemory() }
+    SideEffect { carousels.prune(frames.map { it.screenId }) }
+    val setup = ScreenSetup(document, resolver, resolution, rightToLeft, data, session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts, sink, ::perform, ::write, shownSerial, carousels, frames)
 
     val goBack = { perform(JsonObject.of("type" to "navigate.back"), DocumentNode("modal-dismiss", "Screen"), emptyList()); Unit }
     val topScreen = frames.lastOrNull()?.let { document.screen(it.screenId) }
@@ -260,6 +264,8 @@ private class ScreenSetup(
     val perform: (JsonObject, DocumentNode, List<ListInstance>) -> PressRun,
     val write: (String, JsonValue) -> Unit,
     val shownSerial: Int,
+    val carousels: CarouselMemory? = null,
+    val frames: List<FlowFrame> = emptyList(),
 ) {
     fun context(screen: ScreenEntry, frame: FlowFrame): RenderContext {
         val host = RecordScope.merge(DataLayers(session = session, data = data))
@@ -282,6 +288,8 @@ private class ScreenSetup(
             screenScope = RecordScope.overlay(host, frame.record) ?: host,
             shownSerial = shownSerial,
             pressRun = perform,
+            carousels = carousels,
+            frameIndex = frames.indexOfFirst { it === frame }.coerceAtLeast(0),
         )
     }
 }

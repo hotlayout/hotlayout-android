@@ -56,6 +56,8 @@ class TableCoverageTest {
             "sheet-dismiss/escapeCases", "sheet-dismiss/escapeRuleCases",
             "media-chrome/modalCases", "media-chrome/modalAreaCases", "media-chrome/placementCases", "media-chrome/modalRuleCases", "media-chrome/shownCases",
             "motion/blurCases", "motion/glassCases",
+            "carousel/hostCases", "carousel/readCases", "carousel/cardCases", "carousel/stopCases", "carousel/activeCases",
+            "carousel/dotCases", "carousel/areaCases", "carousel/stateCases", "repeater-filter/carouselCases",
         )
 
         /** The wave a whole table belongs to (groups of it that the foundation runs are in [run]). */
