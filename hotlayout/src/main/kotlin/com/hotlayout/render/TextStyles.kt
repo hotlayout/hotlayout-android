@@ -45,6 +45,8 @@ internal fun composeTextStyle(
     italic: Boolean = false,
     decoration: String? = null,
     align: TextAlign = TextAlign.Start,
+    /** The pitch of every line, when it is not the one of the style (a composed text takes its tallest part's). */
+    lineBlock: Double? = null,
 ): TextStyle {
     val density = LocalDensity.current
     val familyName = context.theme.fontFamilies[if (style.role == "heading") "heading" else "body"]
@@ -57,7 +59,7 @@ internal fun composeTextStyle(
             fontStyle = if (italic) FontStyle.Italic else FontStyle.Normal,
             fontFamily = family,
             letterSpacing = style.letterSpacing.toFloat().dp.toSp(),
-            lineHeight = style.lineBox.toFloat().dp.toSp(),
+            lineHeight = (lineBlock ?: style.lineBox).toFloat().dp.toSp(),
             lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None),
             platformStyle = PlatformTextStyle(includeFontPadding = false),
             textAlign = align,
@@ -91,4 +93,39 @@ internal fun StyledText(
         maxLines = maxLines,
         overflow = TextOverflow.Ellipsis,
     )
+}
+
+/**
+ * The style of one run of a composed text: its own typography (size, weight, spacing, family), the
+ * colour or the gradient brush, the slant and the line of the run. Every field is set, so the run
+ * never takes the slant or the line of the paragraph.
+ */
+@Composable
+internal fun composeSpanStyle(
+    style: TextStyleValue,
+    color: Rgba,
+    context: RenderContext,
+    fontStyle: String,
+    decoration: String,
+    brush: androidx.compose.ui.graphics.Brush? = null,
+): androidx.compose.ui.text.SpanStyle {
+    val density = LocalDensity.current
+    val familyName = context.theme.fontFamilies[if (style.role == "heading") "heading" else "body"]
+    val family = familyName?.let(context.fonts::family) ?: FontFamily.Default
+    return with(density) {
+        val size = style.fontSize.toFloat().dp.toSp()
+        val weight = FontWeight(style.fontWeight.coerceIn(1, 1000))
+        val slant = if (fontStyle == "italic") FontStyle.Italic else FontStyle.Normal
+        val spacing = style.letterSpacing.toFloat().dp.toSp()
+        val line = when (decoration) {
+            "underline" -> TextDecoration.Underline
+            "lineThrough" -> TextDecoration.LineThrough
+            else -> TextDecoration.None
+        }
+        if (brush != null) {
+            androidx.compose.ui.text.SpanStyle(brush = brush, fontSize = size, fontWeight = weight, fontStyle = slant, fontFamily = family, letterSpacing = spacing, textDecoration = line)
+        } else {
+            androidx.compose.ui.text.SpanStyle(color = color.color, fontSize = size, fontWeight = weight, fontStyle = slant, fontFamily = family, letterSpacing = spacing, textDecoration = line)
+        }
+    }
 }

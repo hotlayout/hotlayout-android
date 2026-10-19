@@ -82,7 +82,7 @@ Family files (one zone per agent):
 | Wave | Zone | Files |
 |---|---|---|
 | 1 | alignment | `render/layout/FlowLayouts.kt` (`ColumnWidget`, `RowWidget`: `justify`, free height, `pull`) |
-| 1 | text | `render/widgets/TextWidget.kt`, `render/TextStyles.kt` (spans, markers, gradient) |
+| 1 | text | `render/widgets/TextWidget.kt`, `TextRichWidget.kt`, `TextRichRules.kt`, `render/TextStyles.kt`, `render/motion/ValueTransition.kt`, `TextMotion.kt` (done) |
 | 1 | lists | new `render/widgets/Lists*.kt` (`Repeater`, `Grid`, `ListTile`, `Accordion`, `Tabs`) |
 | 1 | stack | new `render/widgets/Stack*.kt` (`Stack`, `layer`, `fill`) |
 | 1 | progress | new `render/widgets/Progress*.kt` |
@@ -97,3 +97,23 @@ Family files (one zone per agent):
 
 Each wave moves its table groups from the deferred map of `TableCoverageTest` into `run` and adds a
 wiring test (semantics or pixels through `HotlayoutScreen`) for every capability it draws.
+
+## Text (wave 1)
+
+- Rich text is ONE `BasicText` with an `AnnotatedString`: every run sets all its fields (slant, line,
+  weight, colour or brush), so a run never takes the line of the paragraph. The paragraph line
+  height is the strut (tallest declared part), centred, so parts share a baseline and every line
+  has the same pitch. The gradient is a `ShaderBrush` over the whole text box, per run that takes it.
+- Differs: a line under a run that takes the gradient is drawn by Compose with the same brush
+  (iOS draws lines in the plain colour); no table row depends on it.
+- List numbering needs the siblings of ONE parent: `ColumnWidget` and `RowWidget` set
+  `RenderContext.listPosition` per child (`ListSiblings`, `at`); `NodeView` hands it to the widget
+  through `WidgetCall.position` and clears it for descendants. Other parents (Stack, Grid, Tabs,
+  carousel) must do the same, and a list that draws a numbered template sets `listNumber`.
+- `ValueTransition` and `ValueTransitionEngine` (`render/motion/`) are shared: a scale of the
+  progress zone uses `shown.smooth` / `ends`. Tests hold the clock with
+  `LocalValueTransitionElapsedMs` and `LocalCountdownTickedSeconds`. The countdown clock runs only
+  while the node is inside the window; reduced motion is the system animator scale being 0.
+- Rows of `amountPartCases` with plain `ar` digits differ like the money rows (`TextRichCasesTest.platformDiffers`).
+- The demo data carries the dates of the data dictionary (`user.memberSince`, `campaign.endsAt`,
+  `offer.endsAt`): without them the showcase's date texts showed their fallback «—».

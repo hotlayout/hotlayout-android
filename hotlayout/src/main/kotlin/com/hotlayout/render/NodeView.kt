@@ -46,14 +46,15 @@ internal fun NodeView(
 ) {
     if (depth > DocumentReader.MAX_PARSE_DEPTH || !context.isShown(node)) return
     val style = NodeStyle.effective(node, context.scope)
-    val inner = context.copy(inherited = NodeStyle.inherited(context.inherited, style, context.resolver))
+    // The place among siblings and the number of a list item are the node's own: descendants do not inherit them.
+    val inner = context.copy(inherited = NodeStyle.inherited(context.inherited, style, context.resolver), listPosition = null, listNumber = null)
     val look = context.resolver.box(style, context.scope)
     val box = if (node.type in roleSurfaceWidgets) outerOfRole(look) else look
     val action = node.props["action"]?.obj?.takeIf { node.type in pressableContainers && acts(it) }
     var outer = modifier.then(look.margin.paddingModifier())
     if (action != null) outer = outer.then(pressable(node, inner, action))
     Box(outer.nodeBox(box.withoutMargin(), placement.stretchWidth, context.rightToLeft), propagateMinConstraints = false) {
-        Widget(WidgetCall(node, inner, style, placement, depth, parentType))
+        Widget(WidgetCall(node, inner, style, placement, depth, parentType, context.listPosition, context.listNumber))
     }
 }
 
@@ -66,6 +67,10 @@ internal data class WidgetCall(
     val placement: Placement,
     val depth: Int,
     val parentType: String?,
+    /** The place among the siblings of the parent (`Text.marker` numbering). */
+    val position: com.hotlayout.render.widgets.ListPosition? = null,
+    /** The number of a list-template instance. */
+    val number: com.hotlayout.render.widgets.ListNumber? = null,
 )
 
 /** A role widget draws its own surface: only the size, the margin and the opacity stay on the node box. */

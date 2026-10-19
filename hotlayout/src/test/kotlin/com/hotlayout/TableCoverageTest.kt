@@ -23,13 +23,18 @@ class TableCoverageTest {
             "repeater-filter/filterCases", "repeater-filter/limitCases", "repeater-filter/emptinessCases",
             "icon-text/orderCases", "icon-text/glyphCases", "icon-text/buttonSizeCases", "icon-text/iconButtonCases",
             "icon-text/nameCases", "icon-text/iconPathCases",
+            "rich-text/cases", "rich-text/struts", "rich-text/emphasis", "rich-text/emphasisStruts", "rich-text/amountPartCases",
+            "rich-text/amountPartStruts", "rich-text/textGradientCases", "rich-text/textGradientPartCases",
+            "list-marker/geometryCases", "list-marker/textCases", "list-marker/numberCases", "list-marker/instanceCases",
+            "list-marker/layoutCases", "list-marker/naturalCases",
+            "value-transition/curveCases", "value-transition/stepCases", "value-transition/digitsCases", "value-transition/decisionCases",
+            "value-transition/targetCases", "value-transition/appearStepCases", "value-transition/appearDecisionCases",
+            "value-transition/appearTargetCases", "value-transition/appearFlowCases",
         )
 
         /** The wave a whole table belongs to (groups of it that the foundation runs are in [run]). */
         val tableWave: Map<String, String> = mapOf(
             "align" to "wave 1 · alignment",
-            "rich-text" to "wave 1 · text",
-            "list-marker" to "wave 1 · text",
             "list-tile" to "wave 1 · lists",
             "repeater-filter" to "wave 1 · lists",
             "repeater-group" to "wave 1 · lists",
@@ -45,7 +50,6 @@ class TableCoverageTest {
             "swipe-confirm" to "wave 2 · gestures & motion",
             "long-press" to "wave 2 · gestures & motion",
             "motion" to "wave 2 · gestures & motion",
-            "value-transition" to "wave 2 · gestures & motion",
             "bottom-zone" to "wave 2 · screen anatomy",
             "top-zone" to "wave 2 · screen anatomy",
             "media-chrome" to "wave 2 · screen anatomy",

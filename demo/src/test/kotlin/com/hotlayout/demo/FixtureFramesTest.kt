@@ -25,9 +25,12 @@ import org.robolectric.annotation.GraphicsMode
 class FixtureFramesTest {
     @get:Rule val compose = createComposeRule()
 
+    /** The moment the data dictionary calls «now» (`x-sampleNow`): dates and countdowns in the frames do not depend on the day of the run. */
+    private val sampleNow = java.time.Instant.parse("2026-10-10T09:00:00.000Z").toEpochMilli()
+
     private fun frame(fixture: String, screen: String?) {
         compose.setContent {
-            Box(Modifier.size(393.dp, 852.dp)) { FixtureScreen(fixture, screen, "en") }
+            Box(Modifier.size(393.dp, 852.dp)) { FixtureScreen(fixture, screen, "en", sampleNow) }
         }
         compose.waitForIdle()
         compose.onRoot().captureRoboImage("frames/$fixture${screen?.let { "-$it" } ?: ""}.png")
@@ -36,4 +39,14 @@ class FixtureFramesTest {
     @Test fun rewardsShowcase() = frame("rewards-showcase-screens", null)
 
     @Test fun minimalScreen() = frame("minimal-screen", null)
+
+    @Test fun textEmphasis() = frame("text-emphasis-screens", null)
+
+    @Test fun textEmphasisSteps() = frame("text-emphasis-screens", "steps")
+
+    @Test fun richText() = frame("rich-text-screens", null)
+
+    @Test fun money() = frame("money-screens", null)
+
+    @Test fun valueCountdown() = frame("value-countdown-screens", null)
 }

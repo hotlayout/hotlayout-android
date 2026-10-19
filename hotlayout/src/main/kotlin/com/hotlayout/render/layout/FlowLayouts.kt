@@ -19,6 +19,8 @@ import com.hotlayout.render.NodeView
 import com.hotlayout.render.Placement
 import com.hotlayout.render.RenderContext
 import com.hotlayout.render.takesNaturalWidth
+import com.hotlayout.render.widgets.ListSiblings
+import com.hotlayout.render.widgets.at
 
 /**
  * A column: children stretch to its width, except those of natural width, which stand where
@@ -36,9 +38,10 @@ internal fun ColumnWidget(children: List<DocumentNode>, gap: Double, node: Docum
     // A column of natural width is as wide as its widest child, and the others stretch to that.
     val width = if (stretch) Modifier.fillMaxWidth() else Modifier.width(IntrinsicSize.Max)
     Column(width, verticalArrangement = Arrangement.spacedBy(gap.dp), horizontalAlignment = align) {
-        for (child in children) {
+        val siblings = ListSiblings(children, context)
+        for ((index, child) in children.withIndex()) {
             val natural = takesNaturalWidth(child)
-            NodeView(child, context, if (natural) Placement.Natural else Placement.Stretched, depth + 1, node?.type)
+            NodeView(child, context.at(siblings, index), if (natural) Placement.Natural else Placement.Stretched, depth + 1, node?.type)
         }
     }
 }
@@ -95,10 +98,11 @@ internal fun RowWidget(node: DocumentNode, context: RenderContext, depth: Int, s
     val base = if (stretch) Modifier.fillMaxWidth() else Modifier
     val modifier = if (scrollable) base.horizontalScroll(rememberScrollState()) else base
     Row(modifier, horizontalArrangement = arrangement, verticalAlignment = vertical) {
-        for (child in node.children) {
+        val siblings = ListSiblings(node.children, context)
+        for ((index, child) in node.children.withIndex()) {
             val weight = if (scrollable) null else rowWeight(child)
             val childModifier = if (weight != null) Modifier.weight(weight.toFloat(), fill = true) else Modifier
-            NodeView(child, context, if (weight == null) Placement.Natural else Placement.Stretched, depth + 1, node.type, childModifier)
+            NodeView(child, context.at(siblings, index), if (weight == null) Placement.Natural else Placement.Stretched, depth + 1, node.type, childModifier)
         }
     }
 }
