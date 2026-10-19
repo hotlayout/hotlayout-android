@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import com.hotlayout.actions.Flow
 import com.hotlayout.actions.WriteActions
@@ -54,7 +55,10 @@ import com.hotlayout.model.ScreenPresentation
 import com.hotlayout.render.HotlayoutFonts
 import com.hotlayout.render.ImagePolicy
 import com.hotlayout.render.NodeView
-import com.hotlayout.render.layout.LocalScreenBodyHeight
+import com.hotlayout.render.screen.AnatomyScreen
+import com.hotlayout.render.screen.LocalSafeAreaOverride
+import com.hotlayout.render.screen.SafeAreaOverride
+import com.hotlayout.render.screen.ScreenInsets
 import com.hotlayout.render.Placement
 import com.hotlayout.render.RenderContext
 import com.hotlayout.text.LocaleResolution
@@ -90,6 +94,8 @@ public data class ActionSource(val nodeId: String, val screenId: String, val rec
  * @param onWrite a value the person entered or chose, already put into the session of the screen.
  * @param onHaptic the haptic feedback a press asks for; the reader never vibrates by itself.
  * @param onActionTask the host's answer to an action as a task: a swipe-to-confirm button stays busy until it ends.
+ * @param safeAreaTop the top inset the host has already accounted for, instead of the window's (status bar, cutout); zero for a host that did.
+ * @param safeAreaBottom the same for the bottom (navigation bar); the reader adds it only under a bottom zone.
  * @param writablePaths the data paths the reader may write to; by default every path of the form of a data path.
  */
 @Composable
@@ -113,6 +119,8 @@ public fun HotlayoutScreen(
     onActionTask: ((HotlayoutAction, ActionSource) -> Job?)? = null,
     onScreenChange: ((ScreenShownEvent) -> Unit)? = null,
     onReport: ((List<HotlayoutReport>) -> Unit)? = null,
+    safeAreaTop: Dp? = null,
+    safeAreaBottom: Dp? = null,
 ) {
     val sink = remember(document.documentId) { ReportSink() }
     var flow by remember(document.documentId) { mutableStateOf(Flow(FlowDocument.of(document), entry)) }
@@ -199,7 +207,10 @@ public fun HotlayoutScreen(
     val resolver = StyleResolver(theme.theme(themeId))
     val setup = ScreenSetup(document, resolver, resolution, rightToLeft, data, session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts, sink, ::perform, ::write, shownSerial)
 
-    CompositionLocalProvider(LocalLayoutDirection provides if (rightToLeft) LayoutDirection.Rtl else LayoutDirection.Ltr) {
+    CompositionLocalProvider(
+        LocalLayoutDirection provides if (rightToLeft) LayoutDirection.Rtl else LayoutDirection.Ltr,
+        LocalSafeAreaOverride provides SafeAreaOverride(safeAreaTop, safeAreaBottom),
+    ) {
         Box(modifier.fillMaxSize()) {
             val page = frames.getOrNull(pageIndex)
             val pageScreen = page?.let { document.screen(it.screenId) }
@@ -267,29 +278,15 @@ private class ScreenSetup(
 }
 
 /**
- * A page: the root of the screen fills the area and its content scrolls.
- *
- * Wave «screen anatomy» replaces this with the zones of the contract (a fixed app bar and bottom
- * zone, only the body scrolls, safe insets).
+ * A page: the screen with the zones of the contract (`render/screen/`). A modal layer is as tall as
+ * its content and takes no platform insets of its own.
  */
 @Composable
 private fun ScreenRoot(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup, asLayer: Boolean) {
-    val context = setup.context(screen, frame)
-    if (asLayer) {
-        Column(Modifier.fillMaxWidth().testTag("screen:${screen.screenId}").verticalScroll(rememberScrollState())) {
-            NodeView(screen.root, context, Placement.Stretched)
-        }
-        return
-    }
-    BoxWithConstraints(Modifier.fillMaxSize().testTag("screen:${screen.screenId}")) {
-        val area = maxHeight
-        // The visible body is what `justify` of the screen distributes (a layer as tall as its content has none).
-        CompositionLocalProvider(LocalScreenBodyHeight provides area) {
-            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-                NodeView(screen.root, context, Placement.Stretched, modifier = Modifier.heightIn(min = area))
-            }
-        }
-    }
+    AnatomyScreen(
+        screen.root, setup.context(screen, frame), Modifier.testTag("screen:${screen.screenId}"),
+        shrinks = asLayer, insets = if (asLayer) ScreenInsets() else null,
+    )
 }
 
 /**

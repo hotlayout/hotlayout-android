@@ -64,6 +64,16 @@ internal data class RenderContext(
     val listPosition: com.hotlayout.render.widgets.ListPosition? = null,
     /** The place of this node in a numbered list from data (`Text.marker: number`); `null` outside one. */
     val listNumber: com.hotlayout.render.widgets.ListNumber? = null,
+    /** The top safe inset the app bar of the screen holds inside its box (set by the screen for the bar only). */
+    val barInset: Double = 0.0,
+    /** The app bar is scrolled: the body is past the threshold (`appBarScrolled`); only the bar itself reads it. */
+    val barScrolled: Boolean = false,
+    /** The bottom safe inset the navigation bar holds under its items; zero when it floats (the inset lies under its box). */
+    val navInset: Double = 0.0,
+    /** The line on top of the navigation bar, which the touch area of an item takes in. */
+    val navLine: Double = 0.0,
+    /** The accessible name of the back arrow of an app bar. */
+    val backLabel: String = "Back",
 ) {
     val theme: HotlayoutTheme get() = resolver.theme
 
