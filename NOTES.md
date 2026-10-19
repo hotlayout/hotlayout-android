@@ -64,6 +64,30 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 - Dashed borders are drawn solid; `style.backdropBlur` is read but not drawn.
 - `showOn`, `styleOn`, `propsOn` are not read (wave 3 adaptive; `RenderContext.isShown` is the place).
 
+## Lists, rows, accordion and tabs (`render/widgets/Lists*.kt`)
+
+- `ListsRules.kt` holds the pure rules run by the tables (`repeater-group`, `list-tile`, the grid and number
+  groups of `repeater-filter`, `icon-text/colorCases`); the widgets only call them.
+- Rows in a grid or a list with `columns` are laid out by one `GridCells` layout (cell width
+  `(width − gaps) ÷ columns`, floored to whole pixels; the missing cells of the last row keep the width).
+- `RepeaterRow` is the hook of the carousel wave: a `carousel` list is a plain horizontal scroll until the
+  carousel family replaces its body (card width, stops, dots). `repeater-filter/carouselCases` is that wave's.
+- A numbered template gets `RenderContext.listNumber`; the text family reads it for `Text.marker: number`.
+- `ListTileChoice` / `LocalListTileChoice` is where a `ChoiceGroup` hands its selection to option rows
+  (`trailing.kind: radio`); without a group the circle is drawn and nothing answers.
+- A row with an `action` is one control (click only; long press belongs to the gestures wave).
+- Tabs: the strip scrolls, each title is focusable (Role.Tab, selected); Left/Right move between titles,
+  swapped in right-to-left text, Home/End jump. There is no wrap-around.
+## Stack
+
+- A stack is one `Layout`; the role of each child (sizing, `fill`, overlay with its resolved place) travels as
+  parent data, so a child hidden by a condition (which draws nothing) never shifts the others.
+- An overlay is PLACED by the layout (logical start, mirrored by `placeRelative`) and turned with a layer
+  transform, so touches follow the drawing. Compose widens the touch area of a target smaller than 48 dp, so
+  a pixel on the very edge of a small turned overlay may still hit; the tests use targets above that size.
+- Not built here: `pull` (`offset/pullCases`, `pullReadCases`) lives in the flow layouts of the alignment zone.
+- A named icon box (`style.width` / `height`) now centres the glyph (it stood top-left).
+
 ## Zones of the code for parallel waves
 
 Shared files — change minimally, keep signatures; merge `main` before reporting:
@@ -84,7 +108,7 @@ Family files (one zone per agent):
 | 1 | alignment | `render/layout/FlowLayouts.kt` (`ColumnWidget`, `RowWidget`: `justify`, free height, `pull`) |
 | 1 | text | `render/widgets/TextWidget.kt`, `TextRichWidget.kt`, `TextRichRules.kt`, `render/TextStyles.kt`, `render/motion/ValueTransition.kt`, `TextMotion.kt` (done) |
 | 1 | lists | new `render/widgets/Lists*.kt` (`Repeater`, `Grid`, `ListTile`, `Accordion`, `Tabs`) |
-| 1 | stack | new `render/widgets/Stack*.kt` (`Stack`, `layer`, `fill`) |
+| 1 | stack | `render/widgets/Stack*.kt` (`Stack`, `layer`, `fill`) — built |
 | 1 | progress | new `render/widgets/Progress*.kt` |
 | 1 | controls | `render/widgets/RoleWidgets.kt` (Button, Badge, `IconButton`), write actions in `actions/` |
 | 2 | inputs & form | new `render/widgets/Input*.kt`, `data/` session |

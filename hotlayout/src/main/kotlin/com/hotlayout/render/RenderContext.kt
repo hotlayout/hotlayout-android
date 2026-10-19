@@ -49,7 +49,7 @@ internal data class RenderContext(
     val instances: List<ListInstance> = emptyList(),
     /** The place of the node among its siblings (a numbered list item needs its neighbours); read once by [NodeView]. */
     val listPosition: com.hotlayout.render.widgets.ListPosition? = null,
-    /** The number of a list item that is the template of a data list, set by the list for the template node. */
+    /** The place of this node in a numbered list from data (`Text.marker: number`); `null` outside one. */
     val listNumber: com.hotlayout.render.widgets.ListNumber? = null,
 ) {
     val theme: HotlayoutTheme get() = resolver.theme

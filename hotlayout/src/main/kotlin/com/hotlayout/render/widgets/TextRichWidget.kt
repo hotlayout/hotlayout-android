@@ -57,9 +57,6 @@ internal class ListPosition(private val siblings: ListSiblings, private val inde
     val groupSize: Int? get() = ListMarkerRules.groupSize(siblings.markers, index)
 }
 
-/** The number of a list item that is the template of a data list, and the size of its group (the drawn records). */
-internal data class ListNumber(val number: Int, val groupSize: Int)
-
 /** The context for the child at [index] among [siblings]. */
 internal fun RenderContext.at(siblings: ListSiblings, index: Int): RenderContext = copy(listPosition = ListPosition(siblings, index))
 

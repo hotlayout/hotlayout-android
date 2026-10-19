@@ -38,6 +38,17 @@ class FixtureFramesTest {
 
     @Test fun rewardsShowcase() = frame("rewards-showcase-screens", null)
 
+    @Test fun rewardCatalog() = frame("reward-catalog-screens", null)
+
+    @Test fun tasksWithTabs() = frame("tasks-flow-screens", null)
+
+    @Test fun fullCatalog() = frame("full-catalog-screen", null)
+
+    @Test fun rowParts() = frame("parts-screens", "card")
+    @Test fun offsetOverlap() = frame("offset-screens", "overlap")
+
+    @Test fun offsetDetails() = frame("offset-screens", "details")
+
     @Test fun minimalScreen() = frame("minimal-screen", null)
 
     @Test fun textEmphasis() = frame("text-emphasis-screens", null)

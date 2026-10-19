@@ -4,7 +4,9 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -114,7 +116,14 @@ internal fun IconWidget(call: WidgetCall) {
     val width = own ?: word.first
     val height = own ?: word.second
     val icon = IconBesideTextRules.resolve(node.props, "name", context.scope)
-    IconGlyph(icon.name, glyph, width, height, context.inherited.color.let { Color(it.argb()) }, context.rightToLeft)
+    // A box the node names (`style.width` / `height`) is larger than the drawing: it stands in the middle of it.
+    val named = context.resolver.box(call.style, context.scope)
+    var area: Modifier = Modifier
+    named.width?.let { area = area.width(it.dp) }
+    named.height?.let { area = area.height(it.dp) }
+    androidx.compose.foundation.layout.Box(area, contentAlignment = androidx.compose.ui.Alignment.Center) {
+        IconGlyph(icon.name, glyph, width, height, context.inherited.color.let { Color(it.argb()) }, context.rightToLeft)
+    }
 }
 
 /**

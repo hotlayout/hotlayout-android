@@ -22,7 +22,12 @@ class TableCoverageTest {
             "inputs/emptinessCases", "inputs/valuePathCases",
             "repeater-filter/filterCases", "repeater-filter/limitCases", "repeater-filter/emptinessCases",
             "icon-text/orderCases", "icon-text/glyphCases", "icon-text/buttonSizeCases", "icon-text/iconButtonCases",
-            "icon-text/nameCases", "icon-text/iconPathCases",
+            "icon-text/nameCases", "icon-text/iconPathCases", "icon-text/colorCases",
+            "list-tile/lineCases", "list-tile/tileCases", "list-tile/leadingBoxCases", "list-tile/trailingColumnCases",
+            "list-tile/rowCases", "list-tile/lookCases", "list-tile/leadingColorCases",
+            "repeater-filter/gridCases", "repeater-filter/numberCases",
+            "repeater-group/sameCases", "repeater-group/groupCases", "repeater-group/listCases", "repeater-group/ruleCases",
+            "offset/layerCases", "offset/layerReadCases", "offset/layerPlaceCases",
             "rich-text/cases", "rich-text/struts", "rich-text/emphasis", "rich-text/emphasisStruts", "rich-text/amountPartCases",
             "rich-text/amountPartStruts", "rich-text/textGradientCases", "rich-text/textGradientPartCases",
             "list-marker/geometryCases", "list-marker/textCases", "list-marker/numberCases", "list-marker/instanceCases",
@@ -67,6 +72,8 @@ class TableCoverageTest {
             "media-chrome/placementCases" to "wave 2 · modals",
             "inputs/choiceCases" to "wave 1 · controls", "inputs/choiceSessionCases" to "wave 1 · controls",
             "inputs/choicePlaceCases" to "wave 1 · controls", "inputs/choiceControlCases" to "wave 1 · controls",
+            "repeater-filter/carouselCases" to "wave 2 · carousel",
+            "offset/pullCases" to "wave 1 · alignment (pull)", "offset/pullReadCases" to "wave 1 · alignment (pull)",
             "motion/blurCases" to "wave 2 · modals", "motion/glassCases" to "wave 2 · modals",
         )
 
