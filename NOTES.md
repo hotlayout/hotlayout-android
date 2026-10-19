@@ -99,14 +99,30 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
   groups of `repeater-filter`, `icon-text/colorCases`); the widgets only call them.
 - Rows in a grid or a list with `columns` are laid out by one `GridCells` layout (cell width
   `(width − gaps) ÷ columns`, floored to whole pixels; the missing cells of the last row keep the width).
-- `RepeaterRow` is the hook of the carousel wave: a `carousel` list is a plain horizontal scroll until the
-  carousel family replaces its body (card width, stops, dots). `repeater-filter/carouselCases` is that wave's.
+- A `Repeater` with a readable `carousel` goes to `CarouselRow` (see Carousel below); `RepeaterRow` draws only a plain
+  row, and a list whose `carousel` field cannot be read as a plain horizontal scroll.
 - A numbered template gets `RenderContext.listNumber`; the text family reads it for `Text.marker: number`.
 - `ListTileChoice` / `LocalListTileChoice` is where a `ChoiceGroup` hands its selection to option rows
   (`trailing.kind: radio`); without a group the circle is drawn and nothing answers.
 - A row with an `action` is one control (click only; long press belongs to the gestures wave).
 - Tabs: the strip scrolls, each title is focusable (Role.Tab, selected); Left/Right move between titles,
   swapped in right-to-left text, Home/End jump. There is no wrap-around.
+## Carousel (`render/widgets/Carousel*.kt`)
+
+- `CarouselRules` is pure and run by `CarouselCasesTest` (every group of `carousel-cases.json` and `repeater-filter/carouselCases`).
+  `CarouselRow` draws a `Row` (with `scrollable`) or a `Repeater` (`direction: row`, no `columns`) that has a readable `carousel`.
+- The node's padding is taken off the node box (`NodeView`) and laid INSIDE the scroll; the card box width is handed to a card through
+  `RenderContext.cardWidth`, which `NodeView` reads once and clears (it overrides `width`, `minWidth`, `maxWidth`).
+- The viewport is the width the place gives: a bounded maximum width (the carousel fills it); unbounded is "not known" (cards keep
+  their natural widths, no dots). Only the real measure reports it (`PlaceModifier`): the intrinsic queries of a parent run the same
+  layout and made the value flip for ever. Stops use the MEASURED outer widths of the cards (box and margin).
+- Snapping is a `FlingBehavior` that ends every drag or throw on the nearest stop to the projected offset (0.12 s of velocity);
+  reduced motion (animator scale 0) jumps. Dots are decoration (`clearAndSetSemantics`, tagged `carousel:dot[:active]` for tests);
+  cards are `CollectionItemInfo` items of a `CollectionInfo` row, the scroll area is focusable.
+- The active stop is remembered per stack frame (`CarouselMemory`, key = frame index + screen + node + chain of list instance indexes,
+  `RenderContext.instancePath`); `HotlayoutScreen` prunes it when the stack shrinks. A stop is put back once the cards are measured at their final width.
+- Not here: the dot motion of contract 9.24 belongs to the navigation bar badge dot, not to the carousel; snapping is always on (this reader draws only ready screens).
+
 ## Stack
 
 - A stack is one `Layout`; the role of each child (sizing, `fill`, overlay with its resolved place) travels as

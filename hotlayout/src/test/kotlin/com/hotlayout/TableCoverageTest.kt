@@ -51,6 +51,8 @@ class TableCoverageTest {
             "align/readCases", "align/heightSourceCases", "align/shiftCases", "align/boxCases", "align/screenCases", "align/ruleCases",
             "offset/pullCases", "offset/pullReadCases",
             "progress/ratioCases", "progress/ringCases", "progress/arcCases", "progress/barCases", "progress/paintCases", "progress/segmentCases", "progress/segmentPlaceCases", "progress/segmentPaintCases", "progress/segmentGradientCases", "progress/ringLabelCases", "progress/ringLabelNoneCases", "progress/capCases", "progress/segmentFillCases", "progress/segmentFillInlineCases", "progress/transitionShareCases", "progress/glowStepCases", "progress/glowRuleCases",
+            "carousel/hostCases", "carousel/readCases", "carousel/cardCases", "carousel/stopCases", "carousel/activeCases",
+            "carousel/dotCases", "carousel/areaCases", "carousel/stateCases", "repeater-filter/carouselCases",
         )
 
         /** The wave a whole table belongs to (groups of it that the foundation runs are in [run]). */

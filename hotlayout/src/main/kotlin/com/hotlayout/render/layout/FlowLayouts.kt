@@ -22,6 +22,8 @@ import com.hotlayout.render.NodeView
 import com.hotlayout.render.Placement
 import com.hotlayout.render.RenderContext
 import com.hotlayout.render.takesNaturalWidth
+import com.hotlayout.render.widgets.CarouselRules
+import com.hotlayout.render.widgets.CarouselRow
 import com.hotlayout.render.widgets.ListSiblings
 import com.hotlayout.render.widgets.at
 import com.hotlayout.theme.NodeStyle
@@ -129,7 +131,21 @@ internal fun RowWidget(node: DocumentNode, context: RenderContext, depth: Int, s
     val base = if (stretch) Modifier.fillMaxWidth() else Modifier
     val space = hostSpace(node, context)
     val siblings = ListSiblings(node.children, context)
+    val carousel = CarouselRules.of(node)
     when {
+        carousel != null -> {
+            // A carousel: the shown children are its cards (`render/widgets/CarouselWidget.kt`).
+            val cards = node.children.indices.filter { context.isShown(node.children[it]) }
+            CarouselRow(node, context, carousel, cards.size, gap, align, kindOf = { rowKind(node.children[cards[it]]) }) { position, cardWidth, viewport ->
+                val index = cards[position]
+                val child = node.children[index]
+                var modifier: Modifier = Modifier
+                if (cardWidth == null && viewport != null && rowKind(child) != RowKind.Named) {
+                    modifier = if (stretchesInScroll(child)) Modifier.width(viewport) else Modifier.widthIn(max = viewport)
+                }
+                NodeView(child, context.at(siblings, index).copy(cardWidth = cardWidth), Placement.Natural, depth + 1, node.type, modifier)
+            }
+        }
         scrollable -> BoxWithConstraints(base) {
             val viewport = maxWidth.takeIf { it != Dp.Infinity }
             AlignedRow(gap, justify, align, space.block, fills, Modifier.horizontalScroll(rememberScrollState())) {

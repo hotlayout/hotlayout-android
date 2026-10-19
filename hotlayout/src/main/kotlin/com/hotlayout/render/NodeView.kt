@@ -16,11 +16,15 @@ import com.hotlayout.render.interaction.ProvideSiblings
 import com.hotlayout.render.interaction.pressableCard
 import com.hotlayout.model.DocumentNode
 import com.hotlayout.model.DocumentReader
+import com.hotlayout.render.widgets.CarouselRules
 import com.hotlayout.theme.BoxLook
 import com.hotlayout.theme.NodeStyle
 
 /** Widgets whose style lands on their own surface (a role of the theme), not on the node box. */
 internal val roleSurfaceWidgets = setOf("Button", "IconButton", "Badge")
+
+/** Types that can host a carousel (the props decide). */
+private val carouselHosts = setOf("Row", "Repeater")
 
 /** Containers that are pressable as a whole when they carry an action (9.19.0). */
 internal val pressableContainers = setOf("Column", "Row", "Container", "Stack")
@@ -50,8 +54,12 @@ internal fun NodeView(
     if (depth > DocumentReader.MAX_PARSE_DEPTH || !context.isShown(node)) return
     val style = NodeStyle.effective(node, context.scope)
     // The place among siblings and the number of a list item are the node's own: descendants do not inherit them.
-    val inner = context.copy(inherited = NodeStyle.inherited(context.inherited, style, context.resolver), listPosition = null, listNumber = null)
-    val look = context.resolver.box(style, context.scope)
+    val inner = context.copy(inherited = NodeStyle.inherited(context.inherited, style, context.resolver), listPosition = null, listNumber = null, cardWidth = null)
+    var look = context.resolver.box(style, context.scope)
+    // A card of a carousel with `perView` has the box width the carousel gives it, whatever it says about its own.
+    context.cardWidth?.let { look = look.copy(width = it, minWidth = null, maxWidth = null) }
+    // The padding of a carousel lies inside its scroll: the first card stands a padding from the edge.
+    if (node.type in carouselHosts && CarouselRules.of(node) != null) look = look.copy(padding = com.hotlayout.theme.Sides.Zero)
     val box = if (node.type in roleSurfaceWidgets) outerOfRole(look) else look
     val press = PressTarget.pressAction(node)
     val long = PressTarget.longPress(node)?.takeIf { node.type in pressableContainers }
