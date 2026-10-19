@@ -39,5 +39,11 @@ class FixtureFramesTest {
 
     @Test fun offsetDetails() = frame("offset-screens", "details")
 
+    @Test fun alignmentCentered() = frame("alignment-screens", "centered")
+
+    @Test fun alignmentAxes() = frame("alignment-screens", "axes")
+
+    @Test fun alignmentBottom() = frame("alignment-screens", "bottom")
+
     @Test fun minimalScreen() = frame("minimal-screen", null)
 }

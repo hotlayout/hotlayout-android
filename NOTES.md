@@ -71,8 +71,23 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 - An overlay is PLACED by the layout (logical start, mirrored by `placeRelative`) and turned with a layer
   transform, so touches follow the drawing. Compose widens the touch area of a target smaller than 48 dp, so
   a pixel on the very edge of a small turned overlay may still hit; the tests use targets above that size.
-- Not built here: `pull` (`offset/pullCases`, `pullReadCases`) lives in the flow layouts of the alignment zone.
+- `pull` (`offset/pullCases`, `pullReadCases`) is read and laid out by the flow layouts (`render/layout/FlowPull.kt`).
 - A named icon box (`style.width` / `height`) now centres the glyph (it stood top-left).
+
+## Alignment and flow layouts
+
+- Column and row are own `Layout`s (`AlignedColumn`, `AlignedRow` in `render/layout/AlignedLayouts.kt`); the rules are pure
+  (`AlignRules`) and the layouts only measure and call them. Children hand `pull`, weight and width kind through `FlowChild`
+  (parent data).
+- Free height exists only with a source: `style.height`, `style.minHeight`, a stack fill (`fills`, for the stack zone to pass),
+  or the visible body of the page screen (`LocalScreenBodyHeight`, provided by `ScreenRoot`). A layer as tall as its content has none.
+  Screen anatomy (wave 2) must keep providing `LocalScreenBodyHeight` (the body area) and pass `ignoresFirstPull` for the top zone.
+- Natural widths come from intrinsic measurements (`maxIntrinsicWidth`), so a widget that sits in a row must implement them.
+- A named `style.width` / `style.height` is the size of the content too (`NodeView` passes min constraints on): a stack or a
+  column inside fills it and aligns by its own words.
+- Rows: `scrollable` children are bound by the viewport (stretching ones take it); `wrap` is a `FlowRow` (gap on both axes);
+  a row not given its width tightly is as wide as its content and has no shares. `Row.wrap` + `scrollable`: scroll wins.
+- `Screen.justify` is not read when the content scrolls (free space is zero).
 
 ## Zones of the code for parallel waves
 
@@ -91,7 +106,7 @@ Family files (one zone per agent):
 
 | Wave | Zone | Files |
 |---|---|---|
-| 1 | alignment | `render/layout/FlowLayouts.kt` (`ColumnWidget`, `RowWidget`: `justify`, free height, `pull`) |
+| 1 | alignment | `render/layout/` (done) |
 | 1 | text | `render/widgets/TextWidget.kt`, `render/TextStyles.kt` (spans, markers, gradient) |
 | 1 | lists | new `render/widgets/Lists*.kt` (`Repeater`, `Grid`, `ListTile`, `Accordion`, `Tabs`) |
 | 1 | stack | `render/widgets/Stack*.kt` (`Stack`, `layer`, `fill`) — built |

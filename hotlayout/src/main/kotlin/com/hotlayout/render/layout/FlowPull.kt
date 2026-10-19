@@ -27,9 +27,16 @@ internal object FlowPull {
         val axis = axis(parentType, parentProps) ?: return null
         if (child.type == "AppBar" || child.type == "NavBar") return null
         if (parentType == "Screen" && child.fields["pin"] != null) return null
-        val by = child.fields["pull"] ?: return null
+        val by = child.fields["pull"]?.takeIf { isSpacingReference(it) } ?: return null
         if (axis == Axis.Row && validWeight(child) != null) return null
         return by to axis
+    }
+
+    /** A spacing token (`^[a-z][a-zA-Z0-9]{0,39}$`) or a whole number of logical pixels 0…128; anything else is no pull. */
+    fun isSpacingReference(value: JsonValue): Boolean = when (value) {
+        is JsonValue.Num -> value.number?.let { it >= 0 && it <= 128 && it == Math.rint(it) } == true
+        is JsonValue.Str -> Regex("[a-z][a-zA-Z0-9]{0,39}").matches(value.value)
+        else -> false
     }
 
     /**

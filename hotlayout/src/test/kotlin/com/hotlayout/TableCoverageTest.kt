@@ -24,7 +24,7 @@ class TableCoverageTest {
             "icon-text/orderCases", "icon-text/glyphCases", "icon-text/buttonSizeCases", "icon-text/iconButtonCases",
             "icon-text/nameCases", "icon-text/iconPathCases",
             "align/readCases", "align/heightSourceCases", "align/shiftCases", "align/boxCases", "align/screenCases", "align/ruleCases",
-            "offset/layerCases", "offset/layerReadCases", "offset/layerPlaceCases",
+            "offset/layerCases", "offset/layerReadCases", "offset/layerPlaceCases", "offset/pullCases", "offset/pullReadCases",
         )
 
         /** The wave a whole table belongs to (groups of it that the foundation runs are in [run]). */

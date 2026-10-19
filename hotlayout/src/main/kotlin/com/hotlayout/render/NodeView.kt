@@ -52,7 +52,10 @@ internal fun NodeView(
     val action = node.props["action"]?.obj?.takeIf { node.type in pressableContainers && acts(it) }
     var outer = modifier.then(look.margin.paddingModifier())
     if (action != null) outer = outer.then(pressable(node, inner, action))
-    Box(outer.nodeBox(box.withoutMargin(), placement.stretchWidth, context.rightToLeft), propagateMinConstraints = false) {
+    // A named size is the size of the content too: a stack, a column or a row inside it fills that box and aligns
+    // its children by its own words (without this the content sat at the top start of the named box).
+    val named = box.width != null || box.height != null
+    Box(outer.nodeBox(box.withoutMargin(), placement.stretchWidth, context.rightToLeft), propagateMinConstraints = named) {
         Widget(WidgetCall(node, inner, style, placement, depth, parentType))
     }
 }
