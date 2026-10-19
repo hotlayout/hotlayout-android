@@ -64,6 +64,21 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 - Dashed borders are drawn solid; `style.backdropBlur` is read but not drawn.
 - `showOn`, `styleOn`, `propsOn` are not read (wave 3 adaptive; `RenderContext.isShown` is the place).
 
+## Lists, rows, accordion and tabs (`render/widgets/Lists*.kt`)
+
+- `ListsRules.kt` holds the pure rules run by the tables (`repeater-group`, `list-tile`, the grid and number
+  groups of `repeater-filter`, `icon-text/colorCases`); the widgets only call them.
+- Rows in a grid or a list with `columns` are laid out by one `GridCells` layout (cell width
+  `(width − gaps) ÷ columns`, floored to whole pixels; the missing cells of the last row keep the width).
+- `RepeaterRow` is the hook of the carousel wave: a `carousel` list is a plain horizontal scroll until the
+  carousel family replaces its body (card width, stops, dots). `repeater-filter/carouselCases` is that wave's.
+- A numbered template gets `RenderContext.listNumber`; the text family reads it for `Text.marker: number`.
+- `ListTileChoice` / `LocalListTileChoice` is where a `ChoiceGroup` hands its selection to option rows
+  (`trailing.kind: radio`); without a group the circle is drawn and nothing answers.
+- A row with an `action` is one control (click only; long press belongs to the gestures wave).
+- Tabs: the strip scrolls, each title is focusable (Role.Tab, selected); Left/Right move between titles,
+  swapped in right-to-left text, Home/End jump. There is no wrap-around.
+
 ## Zones of the code for parallel waves
 
 Shared files — change minimally, keep signatures; merge `main` before reporting:

@@ -6,12 +6,17 @@ import com.hotlayout.json.JsonValue
 import com.hotlayout.model.HotlayoutReport
 import com.hotlayout.render.layout.ColumnWidget
 import com.hotlayout.render.layout.RowWidget
+import com.hotlayout.render.widgets.AccordionWidget
 import com.hotlayout.render.widgets.BadgeWidget
 import com.hotlayout.render.widgets.ButtonWidget
 import com.hotlayout.render.widgets.DividerWidget
+import com.hotlayout.render.widgets.GridWidget
 import com.hotlayout.render.widgets.IconWidget
 import com.hotlayout.render.widgets.ImageWidget
+import com.hotlayout.render.widgets.ListTileWidget
+import com.hotlayout.render.widgets.RepeaterWidget
 import com.hotlayout.render.widgets.SpacerWidget
+import com.hotlayout.render.widgets.TabsWidget
 import com.hotlayout.render.widgets.TextWidget
 
 /**
@@ -20,6 +25,7 @@ import com.hotlayout.render.widgets.TextWidget
  */
 internal val drawnWidgets: Set<String> = setOf(
     "Screen", "Column", "Row", "Container", "Text", "Image", "Icon", "Button", "Spacer", "Divider", "Badge",
+    "Repeater", "Grid", "ListTile", "Accordion", "Tabs", "Tab",
 )
 
 /**
@@ -45,6 +51,13 @@ internal fun Widget(call: WidgetCall) {
         "Badge" -> BadgeWidget(call)
         "Spacer" -> SpacerWidget(call)
         "Divider" -> DividerWidget(call)
+        "Repeater" -> RepeaterWidget(call)
+        "Grid" -> GridWidget(call)
+        "ListTile" -> ListTileWidget(call)
+        "Accordion" -> AccordionWidget(call)
+        "Tabs" -> TabsWidget(call)
+        // The panel is the node itself: its children in a column, `md` apart.
+        "Tab" -> ColumnWidget(node.children, context.resolver.spacing(JsonValue.Str("md")) ?: 12.0, null, context, call.depth, call.placement.stretchWidth)
         else -> {
             // Not drawn by this reader (yet): the children are drawn, as for an unknown widget.
             SideEffect {

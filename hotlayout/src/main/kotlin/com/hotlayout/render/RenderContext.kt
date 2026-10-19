@@ -47,6 +47,8 @@ internal data class RenderContext(
     val write: ((String, JsonValue) -> Unit)? = null,
     /** Repeater instances this node is drawn inside, outer first (empty outside a list). */
     val instances: List<ListInstance> = emptyList(),
+    /** The place of this node in a numbered list from data (`Text.marker: number`); `null` outside one. */
+    val listNumber: com.hotlayout.render.widgets.ListNumber? = null,
 ) {
     val theme: HotlayoutTheme get() = resolver.theme
 
