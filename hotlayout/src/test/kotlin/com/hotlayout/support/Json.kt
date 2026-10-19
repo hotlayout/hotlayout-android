@@ -75,4 +75,25 @@ object TableJson {
         val length = (spec["length"]?.number ?: 0.0).toInt()
         return prefix + char.repeat(maxOf(0, length - prefix.length))
     }
+
+    /** A JSON value as text, to hand a table row to the loader. */
+    fun text(value: JsonValue): String = when (value) {
+        is JsonValue.Null -> "null"
+        is JsonValue.Bool -> value.value.toString()
+        is JsonValue.Num -> if (value.value == Math.rint(value.value) && Math.abs(value.value) < 1e15) value.value.toLong().toString() else value.value.toString()
+        is JsonValue.Str -> quote(value.value)
+        is JsonValue.Arr -> value.items.joinToString(",", "[", "]") { text(it) }
+        is JsonValue.Obj -> value.fields.joinToString(",", "{", "}") { (key, item) -> quote(key) + ":" + text(item) }
+    }
+
+    private fun quote(text: String): String = buildString {
+        append('"')
+        for (char in text) when {
+            char == '"' -> append("\\\"")
+            char == '\\' -> append("\\\\")
+            char.code < 0x20 -> append("\\u%04x".format(char.code))
+            else -> append(char)
+        }
+        append('"')
+    }
 }

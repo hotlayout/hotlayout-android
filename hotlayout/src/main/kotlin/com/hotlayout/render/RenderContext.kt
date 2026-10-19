@@ -2,6 +2,10 @@ package com.hotlayout.render
 
 import androidx.compose.ui.text.font.FontFamily
 import com.hotlayout.actions.ListInstance
+import com.hotlayout.actions.WritePress
+import com.hotlayout.render.widgets.ChoiceScope
+import com.hotlayout.render.widgets.PressRun
+import com.hotlayout.render.widgets.SwipeConfirmRules
 import com.hotlayout.data.Conditions
 import com.hotlayout.data.DataScope
 import com.hotlayout.json.JsonObject
@@ -47,6 +51,15 @@ internal data class RenderContext(
     val write: ((String, JsonValue) -> Unit)? = null,
     /** Repeater instances this node is drawn inside, outer first (empty outside a list). */
     val instances: List<ListInstance> = emptyList(),
+    /** The root of the screen being drawn and its data layers (the form of the screen: `requiresFilled`). */
+    val screenRoot: DocumentNode? = null,
+    val screenScope: DataScope? = null,
+    /** Counts the shown screens: a busy control ends when it changes. */
+    val shownSerial: Int = 0,
+    /** The choice group the node is drawn inside (`ChoiceGroup`), or `null`. */
+    val choice: ChoiceScope? = null,
+    /** Runs a press and tells who runs the action and the host's task; `null` where [pressHandler] is all there is. */
+    val pressRun: ((JsonObject, DocumentNode, List<ListInstance>) -> PressRun)? = null,
 ) {
     val theme: HotlayoutTheme get() = resolver.theme
 
@@ -56,7 +69,19 @@ internal data class RenderContext(
      */
     fun isShown(node: DocumentNode, scope: DataScope = this.scope): Boolean = Conditions.isVisible(node.visibleIf, scope)
 
-    fun press(action: JsonObject, node: DocumentNode) = pressHandler(action, node, instances)
+    fun press(action: JsonObject, node: DocumentNode) {
+        run(action, node)
+    }
+
+    /** A press that also reports who runs the action and the host's task (a swipe button stays busy until it ends). */
+    fun run(action: JsonObject, node: DocumentNode): PressRun =
+        pressRun?.invoke(action, node, instances) ?: run {
+            pressHandler(action, node, instances)
+            PressRun(SwipeConfirmRules.runner(action, scope), null)
+        }
+
+    /** Whether a `Button` / `IconButton` is disabled: `disabledIf` holds, or `requiresFilled` on an unfilled form. */
+    fun isDisabled(node: DocumentNode): Boolean = WritePress.isDisabled(node, scope, screenRoot, screenScope ?: scope)
 
     val textEnvironment: TextEnvironment
         get() = TextEnvironment(

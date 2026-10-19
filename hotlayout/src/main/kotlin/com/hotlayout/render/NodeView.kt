@@ -10,7 +10,10 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import com.hotlayout.actions.PressTarget
 import com.hotlayout.json.JsonObject
+import com.hotlayout.render.interaction.ProvideSiblings
+import com.hotlayout.render.interaction.pressableCard
 import com.hotlayout.model.DocumentNode
 import com.hotlayout.model.DocumentReader
 import com.hotlayout.theme.BoxLook
@@ -49,11 +52,12 @@ internal fun NodeView(
     val inner = context.copy(inherited = NodeStyle.inherited(context.inherited, style, context.resolver))
     val look = context.resolver.box(style, context.scope)
     val box = if (node.type in roleSurfaceWidgets) outerOfRole(look) else look
-    val action = node.props["action"]?.obj?.takeIf { node.type in pressableContainers && acts(it) }
+    val press = PressTarget.pressAction(node)
+    val long = PressTarget.longPress(node)?.takeIf { node.type in pressableContainers }
     var outer = modifier.then(look.margin.paddingModifier())
-    if (action != null) outer = outer.then(pressable(node, inner, action))
+    if (press != null || long != null) outer = outer.then(Modifier.pressableCard(node, inner, press, long))
     Box(outer.nodeBox(box.withoutMargin(), placement.stretchWidth, context.rightToLeft), propagateMinConstraints = false) {
-        Widget(WidgetCall(node, inner, style, placement, depth, parentType))
+        ProvideSiblings(node) { Widget(WidgetCall(node, inner, style, placement, depth, parentType)) }
     }
 }
 
@@ -73,15 +77,3 @@ private fun outerOfRole(look: BoxLook) = BoxLook(
     margin = look.margin, width = look.width, height = look.height, minWidth = look.minWidth, maxWidth = look.maxWidth,
     minHeight = look.minHeight, maxHeight = look.maxHeight, opacity = look.opacity,
 )
-
-@Composable
-private fun pressable(node: DocumentNode, context: RenderContext, action: JsonObject): Modifier {
-    val label = if (node.props["label"] != null) context.text(node, "label") else null
-    val source = remember { MutableInteractionSource() }
-    return Modifier
-        .semantics(mergeDescendants = true) {
-            role = Role.Button
-            if (!label.isNullOrEmpty()) contentDescription = label
-        }
-        .clickable(interactionSource = source, indication = null) { context.press(action, node) }
-}

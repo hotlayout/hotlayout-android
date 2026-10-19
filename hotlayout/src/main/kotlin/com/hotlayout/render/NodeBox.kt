@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.unit.dp
+import com.hotlayout.render.paint.dashedBorder
 import com.hotlayout.theme.BackgroundValue
 import com.hotlayout.theme.BoxLook
 import com.hotlayout.theme.Corners
@@ -71,7 +72,9 @@ internal fun Modifier.nodeBox(look: BoxLook, stretch: Boolean, rightToLeft: Bool
     if (rounded || look.width != null || look.height != null) modifier = modifier.clip(shape)
     modifier = modifier.backgroundOf(look.background, shape, rightToLeft)
     val borderColor = look.borderColor
-    if (borderColor != null && border > 0) modifier = modifier.border(border.dp, borderColor.color, shape)
+    if (borderColor != null && border > 0) {
+        modifier = if (look.borderDashed) modifier.dashedBorder(border, borderColor.color, look.radius) else modifier.border(border.dp, borderColor.color, shape)
+    }
     return modifier.then(look.padding.paddingModifier(border))
 }
 

@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
@@ -26,6 +27,11 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.LayoutDirection
 import com.hotlayout.actions.Flow
+import com.hotlayout.actions.WriteActions
+import com.hotlayout.actions.WritePress
+import com.hotlayout.render.widgets.PressRun
+import com.hotlayout.render.widgets.SwipeConfirmRules
+import kotlinx.coroutines.Job
 import com.hotlayout.actions.FlowDocument
 import com.hotlayout.actions.FlowFrame
 import com.hotlayout.actions.HotlayoutAction
@@ -82,6 +88,7 @@ public data class ActionSource(val nodeId: String, val screenId: String, val rec
  * @param fonts the families the theme names, from the host's resources; the system font otherwise.
  * @param onWrite a value the person entered or chose, already put into the session of the screen.
  * @param onHaptic the haptic feedback a press asks for; the reader never vibrates by itself.
+ * @param onActionTask the host's answer to an action as a task: a swipe-to-confirm button stays busy until it ends.
  * @param writablePaths the data paths the reader may write to; by default every path of the form of a data path.
  */
 @Composable
@@ -102,13 +109,15 @@ public fun HotlayoutScreen(
     onTrack: ((TrackEvent, ActionSource) -> Unit)? = null,
     onWrite: ((String, JsonValue) -> Unit)? = null,
     onHaptic: ((String, ActionSource) -> Unit)? = null,
+    onActionTask: ((HotlayoutAction, ActionSource) -> Job?)? = null,
     onScreenChange: ((ScreenShownEvent) -> Unit)? = null,
     onReport: ((List<HotlayoutReport>) -> Unit)? = null,
 ) {
     val sink = remember(document.documentId) { ReportSink() }
     var flow by remember(document.documentId) { mutableStateOf(Flow(FlowDocument.of(document), entry)) }
     var session by remember(document.documentId) { mutableStateOf<DataScope>(emptyMap()) }
-    val callbacks = rememberUpdatedState(Callbacks(onAction, onTrack, onWrite, onHaptic, onScreenChange, onReport))
+    var shownSerial by remember(document.documentId) { mutableIntStateOf(0) }
+    val callbacks = rememberUpdatedState(Callbacks(onAction, onTrack, onWrite, onHaptic, onActionTask, onScreenChange, onReport))
 
     LaunchedEffect(document.documentId) {
         flow.shownEvent(ScreenShownCause.Entry)?.let { callbacks.value.onScreenChange?.invoke(it) }
@@ -126,7 +135,10 @@ public fun HotlayoutScreen(
         val updated = flow.copy()
         val shown = updated.restart(entry)
         flow = updated
-        shown?.let { callbacks.value.onScreenChange?.invoke(it) }
+        shown?.let {
+            shownSerial += 1
+            callbacks.value.onScreenChange?.invoke(it)
+        }
     }
     LaunchedEffect(data) {
         // New data: every frame looks for its record again (`x-liveRecord`); an update of a record is not a show.
@@ -144,24 +156,39 @@ public fun HotlayoutScreen(
         callbacks.value.onWrite?.invoke(path, value)
     }
 
-    fun perform(action: JsonObject, node: DocumentNode, instances: List<ListInstance>) {
-        val type = action["type"]?.string
-        if (type == "setValue" || type == "toggleValue") {
-            // Write actions are the reader's own (never the host's); they arrive with the controls.
-            sink.add(HotlayoutReport.Kind.IgnoredInput, "node “${node.id}”: action", "“$type” is not performed by this reader yet")
-            return
-        }
+    fun perform(action: JsonObject, node: DocumentNode, instances: List<ListInstance>): PressRun {
         val before = flow
-        val updated = before.copy()
         val host = RecordScope.merge(DataLayers(session = session, data = data))
+        val handlers = callbacks.value
+        val type = action["type"]?.string
+        if (WriteActions.isWriteType(type)) {
+            // The write actions are the reader's own, never the host's: the haptic request, the
+            // analytics event, then the write itself (into the session and to the host at once).
+            val record = before.nodeRecord(instances)
+            val scope = RecordScope.overlay(host, record) ?: host
+            val effects = WritePress.effects(action, { scope[it] }, sink, "node “${node.id}”: action")
+            val source = ActionSource(node.id, before.top?.screenId ?: "", record)
+            effects?.haptic?.let { handlers.onHaptic?.invoke(it, source) }
+            effects?.track?.let { handlers.onTrack?.invoke(it, source) }
+            (effects?.step as? WriteActions.Step.Write)?.let { write(it.path, it.value) }
+            return PressRun(SwipeConfirmRules.Runner.Reader, null)
+        }
+        val updated = before.copy()
         val outcome = updated.press(action, instances, host, sink)
         val source = ActionSource(node.id, before.top?.screenId ?: "", outcome.hostRecord)
-        val handlers = callbacks.value
         outcome.haptic?.let { handlers.onHaptic?.invoke(it, source) }
         outcome.track?.let { handlers.onTrack?.invoke(it, source) }
-        outcome.handed?.let { handlers.onAction?.invoke(it, source) }
+        var task: Job? = null
+        outcome.handed?.let {
+            handlers.onAction?.invoke(it, source)
+            task = handlers.onActionTask?.invoke(it, source)
+        }
         if (updated != before) flow = updated
-        outcome.shown?.let { handlers.onScreenChange?.invoke(it) }
+        outcome.shown?.let {
+            shownSerial += 1
+            handlers.onScreenChange?.invoke(it)
+        }
+        return PressRun(SwipeConfirmRules.runner(action, host), task)
     }
 
     val resolution = Localization.resolve(document.localization, locale)
@@ -169,7 +196,7 @@ public fun HotlayoutScreen(
     val frames = flow.stack
     val pageIndex = frames.indices.lastOrNull { index -> index == 0 || document.screen(frames[index].screenId)?.presentation != ScreenPresentation.Modal } ?: 0
     val resolver = StyleResolver(theme.theme(themeId))
-    val setup = ScreenSetup(document, resolver, resolution, rightToLeft, data, session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts, sink, ::perform, ::write)
+    val setup = ScreenSetup(document, resolver, resolution, rightToLeft, data, session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts, sink, ::perform, ::write, shownSerial)
 
     CompositionLocalProvider(LocalLayoutDirection provides if (rightToLeft) LayoutDirection.Rtl else LayoutDirection.Ltr) {
         Box(modifier.fillMaxSize()) {
@@ -191,6 +218,7 @@ private data class Callbacks(
     val onTrack: ((TrackEvent, ActionSource) -> Unit)?,
     val onWrite: ((String, JsonValue) -> Unit)?,
     val onHaptic: ((String, ActionSource) -> Unit)?,
+    val onActionTask: ((HotlayoutAction, ActionSource) -> Job?)?,
     val onScreenChange: ((ScreenShownEvent) -> Unit)?,
     val onReport: ((List<HotlayoutReport>) -> Unit)?,
 )
@@ -208,8 +236,9 @@ private class ScreenSetup(
     val images: ImagePolicy,
     val fonts: HotlayoutFonts,
     val sink: ReportSink,
-    val perform: (JsonObject, DocumentNode, List<ListInstance>) -> Unit,
+    val perform: (JsonObject, DocumentNode, List<ListInstance>) -> PressRun,
     val write: (String, JsonValue) -> Unit,
+    val shownSerial: Int,
 ) {
     fun context(screen: ScreenEntry, frame: FlowFrame): RenderContext {
         val host = RecordScope.merge(DataLayers(session = session, data = data))
@@ -226,8 +255,12 @@ private class ScreenSetup(
             sink = sink,
             images = images,
             fonts = fonts,
-            pressHandler = perform,
+            pressHandler = { action, node, instances -> perform(action, node, instances) },
             write = write,
+            screenRoot = screen.root,
+            screenScope = RecordScope.overlay(host, frame.record) ?: host,
+            shownSerial = shownSerial,
+            pressRun = perform,
         )
     }
 }

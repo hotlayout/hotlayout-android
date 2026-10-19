@@ -23,6 +23,19 @@ class TableCoverageTest {
             "repeater-filter/filterCases", "repeater-filter/limitCases", "repeater-filter/emptinessCases",
             "icon-text/orderCases", "icon-text/glyphCases", "icon-text/buttonSizeCases", "icon-text/iconButtonCases",
             "icon-text/nameCases", "icon-text/iconPathCases",
+            // Controls: press, long press, feedback, write actions, choice, swipe, paint.
+            "composition/pressableCases", "composition/pressCases", "composition/nameCases",
+            "press-feedback/kindCases", "press-feedback/poseCases", "press-feedback/ruleCases",
+            "shadow-color/middleStopCases", "shadow-color/tintCases", "shadow-color/ruleCases",
+            "border-dash/lineCases", "border-dash/pathCases", "border-dash/styleCases", "border-dash/ruleCases",
+            "actions/writeCases", "actions/writeControlCases", "actions/writePressCases",
+            "long-press/gestureCases", "long-press/keyCases", "long-press/nodeCases", "long-press/receiverCases",
+            "long-press/ruleCases", "long-press/keyRepeatCases", "long-press/clickAfterFireCases", "long-press/onceRuleCases",
+            "swipe-confirm/geometryCases", "swipe-confirm/naturalWidthCases", "swipe-confirm/progressCases",
+            "swipe-confirm/releaseCases", "swipe-confirm/thumbCases", "swipe-confirm/captureCases", "swipe-confirm/pressCases",
+            "swipe-confirm/ruleCases", "swipe-confirm/busyReleaseCases", "swipe-confirm/busyEndCases", "swipe-confirm/busyRuleCases",
+            "inputs/choiceCases", "inputs/choiceSessionCases", "inputs/choicePlaceCases", "inputs/choiceControlCases", "inputs/writeFormCases",
+            "inputs/filledCases", "inputs/formCases", "inputs/pressCases", "inputs/disabledLookCases",
         )
 
         /** The wave a whole table belongs to (groups of it that the foundation runs are in [run]). */
@@ -72,7 +85,11 @@ class TableCoverageTest {
          */
         fun isValidatorGroup(table: String, group: String): Boolean =
             group == "documentCases" || group == "schemaCases" || group.endsWith("DocumentCases") || group.endsWith("SchemaCases") ||
-                group == "validityCases" || "$table/$group" in setOf("inputs/ruleCases", "inputs/formRuleCases")
+                group == "validityCases" || "$table/$group" in setOf(
+                "inputs/ruleCases", "inputs/formRuleCases",
+                // Where a node may stand and how deep a document may go: what the builder may publish.
+                "composition/nestingCases", "composition/depthCases", "actions/writeTreeCases",
+            )
 
         fun tables(): Map<String, Set<String>> {
             val root = java.io.File(Contract::class.java.getResource("/contract/fixtures")!!.toURI())

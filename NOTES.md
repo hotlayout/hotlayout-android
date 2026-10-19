@@ -59,10 +59,26 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 - Modal layers are a dimmed backdrop with the layer at the bottom or centre; sheets, windows, blur
   and drag are wave 2. The system back key is not wired yet (it needs `activity-compose` or a host
   hook; decide in wave 2).
-- `setValue` / `toggleValue` are reported and not performed (wave 1 controls).
-- Badge and Button have no press feedback; no disabled state (`disabledIf`, `requiresFilled`).
-- Dashed borders are drawn solid; `style.backdropBlur` is read but not drawn.
+- `style.backdropBlur` is read but not drawn (modals).
 - `showOn`, `styleOn`, `propsOn` are not read (wave 3 adaptive; `RenderContext.isShown` is the place).
+
+## Controls (wave 1)
+
+- One input path for cards, buttons and icon buttons (`pressInput`): own pointer gesture (tap; hold 450 ms
+  inside a slop of 10 is the long press; the touch after it is swallowed), `focusable` + Enter/Space press at
+  once, Menu / Shift+F10 long press, key auto-repeat ignored. Compose's `clickable` is NOT used: it is not
+  focusable in touch mode and fires on key up. The innermost control consumes the down, so the card around gets nothing.
+- Disabled (`disabledIf`, `requiresFilled`): half opacity, `disabled()` semantics, still focusable, no action,
+  track or haptic. The form walk is `ScreenForm` in `actions/PressRules.kt` (the inputs wave may replace it).
+- Write actions are performed in `HotlayoutScreen.perform` (haptic, track, write to session and `onWrite`),
+  gated by `writablePaths`. Options are `Role.RadioButton` + `selected`, toggles `Role.Button` + `toggleableState`;
+  the place in the group is `CollectionItemInfo` and the key `ChoicePlaceKey` (size cannot be said otherwise).
+  Siblings come from `LocalSiblings` / `LocalPeers`, provided by `NodeView`.
+- Swipe to confirm: host answers with a task through `onActionTask` (returns a `Job`); busy ends on task end,
+  on a shown-screen change (`RenderContext.shownSerial`) or after 8 s without a task.
+- `ChoiceGroup` is drawn and hands a `ChoiceScope` to rows through `RenderContext.choice`; the radio rows
+  (`ListTile`) belong to the lists wave and must call `scope.select`.
+- Dashed borders are paths with the contract's pattern; `shadowColor: background` tints in `StyleResolve.box`.
 
 ## Zones of the code for parallel waves
 

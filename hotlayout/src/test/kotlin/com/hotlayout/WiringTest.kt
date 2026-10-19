@@ -150,7 +150,8 @@ class WiringTest {
             "action":{"type":"custom.reward","params":{"id":"r1"}}},"children":[${text("t", literal("Reward"))}]}"""
         var handed: HotlayoutAction? = null
         show(Screens.document("a" to card)) { HotlayoutScreen(it, onAction = { action, _ -> handed = action }) }
-        compose.onNodeWithContentDescription("Open the reward").performClick()
+        // The name is the label first, then the texts of the content (`composition.nameCases`).
+        compose.onNodeWithContentDescription("Open the reward, Reward").performClick()
         assertEquals(HotlayoutAction("custom.reward", mapOf("id" to "r1")), handed)
     }
 

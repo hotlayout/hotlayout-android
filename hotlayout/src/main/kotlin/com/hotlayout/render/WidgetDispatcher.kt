@@ -8,6 +8,8 @@ import com.hotlayout.render.layout.ColumnWidget
 import com.hotlayout.render.layout.RowWidget
 import com.hotlayout.render.widgets.BadgeWidget
 import com.hotlayout.render.widgets.ButtonWidget
+import com.hotlayout.render.widgets.ChoiceGroupWidget
+import com.hotlayout.render.widgets.IconButtonWidget
 import com.hotlayout.render.widgets.DividerWidget
 import com.hotlayout.render.widgets.IconWidget
 import com.hotlayout.render.widgets.ImageWidget
@@ -19,7 +21,7 @@ import com.hotlayout.render.widgets.TextWidget
  * for now (its children in a column, `unknownWidget: 'render-children'`) and reported.
  */
 internal val drawnWidgets: Set<String> = setOf(
-    "Screen", "Column", "Row", "Container", "Text", "Image", "Icon", "Button", "Spacer", "Divider", "Badge",
+    "Screen", "Column", "Row", "Container", "Text", "Image", "Icon", "Button", "Spacer", "Divider", "Badge", "IconButton", "ChoiceGroup",
 )
 
 /**
@@ -43,6 +45,8 @@ internal fun Widget(call: WidgetCall) {
         "Icon" -> IconWidget(call)
         "Button" -> ButtonWidget(call)
         "Badge" -> BadgeWidget(call)
+        "IconButton" -> IconButtonWidget(call)
+        "ChoiceGroup" -> ChoiceGroupWidget(call)
         "Spacer" -> SpacerWidget(call)
         "Divider" -> DividerWidget(call)
         else -> {

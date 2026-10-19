@@ -218,7 +218,7 @@ public class StyleResolver(public val theme: HotlayoutTheme) {
             borderColor = borderColor,
             borderDashed = dashed,
             background = background,
-            shadow = shadow(style["shadow"]) ?: emptyList(),
+            shadow = ShadowTint.apply(shadow(style["shadow"]) ?: emptyList(), style, this),
             opacity = style["opacity"]?.number?.coerceIn(0.0, 1.0),
             backdropBlur = style["backdropBlur"]?.number?.takeIf { it == Math.rint(it) && it in 1.0..40.0 }?.toInt(),
         )

@@ -35,5 +35,11 @@ class FixtureFramesTest {
 
     @Test fun rewardsShowcase() = frame("rewards-showcase-screens", null)
 
+    @Test fun buttonsAndChips() = frame("buttons-chips-screens", null)
+
+    @Test fun buttonsAndChipsDetails() = frame("buttons-chips-screens", "details")
+
+    @Test fun choiceControls() = frame("choice-controls-screens", null)
+
     @Test fun minimalScreen() = frame("minimal-screen", null)
 }
