@@ -24,6 +24,7 @@ class TableCoverageTest {
             "icon-text/orderCases", "icon-text/glyphCases", "icon-text/buttonSizeCases", "icon-text/iconButtonCases",
             "icon-text/nameCases", "icon-text/iconPathCases",
             "align/readCases", "align/heightSourceCases", "align/shiftCases", "align/boxCases", "align/screenCases", "align/ruleCases",
+            "offset/layerCases", "offset/layerReadCases", "offset/layerPlaceCases",
         )
 
         /** The wave a whole table belongs to (groups of it that the foundation runs are in [run]). */
@@ -64,6 +65,7 @@ class TableCoverageTest {
             "media-chrome/placementCases" to "wave 2 · modals",
             "inputs/choiceCases" to "wave 1 · controls", "inputs/choiceSessionCases" to "wave 1 · controls",
             "inputs/choicePlaceCases" to "wave 1 · controls", "inputs/choiceControlCases" to "wave 1 · controls",
+            "offset/pullCases" to "wave 1 · alignment (pull)", "offset/pullReadCases" to "wave 1 · alignment (pull)",
             "motion/blurCases" to "wave 2 · modals", "motion/glassCases" to "wave 2 · modals",
         )
 
