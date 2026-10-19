@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
@@ -35,6 +37,25 @@ class FixtureFramesTest {
         compose.waitForIdle()
         compose.onRoot().captureRoboImage("frames/$fixture${screen?.let { "-$it" } ?: ""}.png")
     }
+
+    /** A frame after a press: the fixture's page with the layer its button opens. */
+    private fun frameAfterPress(fixture: String, button: String, name: String) {
+        compose.setContent {
+            Box(Modifier.size(393.dp, 852.dp)) { FixtureScreen(fixture, null, "en", sampleNow) }
+        }
+        compose.waitForIdle()
+        compose.onNodeWithText(button).performClick()
+        compose.waitForIdle()
+        compose.onRoot().captureRoboImage("frames/$name.png")
+    }
+
+    @Test fun modalSheetWithBlur() = frameAfterPress("motion-blur-screens", "Open the sheet", "motion-blur-screens-sheet")
+
+    @Test fun modalSheetFromTheBottom() = frameAfterPress("longpress-groups-sheet-screens", "Quick redeem", "longpress-groups-sheet-screens-redeem")
+
+    @Test fun modalSheetThatWaitsForAnAction() = frameAfterPress("longpress-groups-sheet-screens", "Confirm", "longpress-groups-sheet-screens-confirm")
+
+    @Test fun modalWindowInTheMiddle() = frameAfterPress("media-chrome-screens", "Complete the mission", "media-chrome-screens-window")
 
     @Test fun rewardsShowcase() = frame("rewards-showcase-screens", null)
 
@@ -81,4 +102,5 @@ class FixtureFramesTest {
     @Test fun surveyGoal() = frame("survey-screens", "goal")
 
     @Test fun surveyDetails() = frame("survey-screens", "details")
+    @Test fun carouselSteps() = frame("carousel-steps-screens", null)
 }

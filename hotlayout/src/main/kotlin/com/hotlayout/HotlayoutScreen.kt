@@ -1,8 +1,5 @@
 package com.hotlayout
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -17,12 +14,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.LayoutDirection
@@ -60,9 +56,14 @@ import com.hotlayout.render.widgets.InputFocusRegistries
 import com.hotlayout.render.widgets.InputForm
 import com.hotlayout.render.Placement
 import com.hotlayout.render.RenderContext
+import com.hotlayout.render.modal.ModalLayerSpec
+import com.hotlayout.render.modal.ModalRules
+import com.hotlayout.render.modal.ModalStack
+import com.hotlayout.render.modal.SystemBackStep
 import com.hotlayout.text.LocaleResolution
 import com.hotlayout.text.Localization
 import com.hotlayout.text.TextDirectionRule
+import com.hotlayout.render.widgets.CarouselMemory
 import com.hotlayout.theme.HotlayoutThemeSet
 import com.hotlayout.theme.NodeStyle
 import com.hotlayout.theme.StyleResolver
@@ -95,6 +96,9 @@ public data class ActionSource(val nodeId: String, val screenId: String, val rec
  * @param onActionTask the host's answer to an action as a task: a swipe-to-confirm button stays busy until it ends.
  * @param writablePaths the data paths the reader may write to; by default every path of the form of a data path.
  * @param autofill whether the text fields hand the platform hints for autofill (email, phone, address); `false` hands none.
+ * @param handleSystemBack whether the reader takes the system back key (button, gesture, predictive back) as one
+ * step back of its own stack while the stack holds more than one screen and the top layer may be dismissed; with
+ * `false`, or at the first screen, the key goes to the host. A `BackHandler` the host registers after the reader's wins.
  */
 @Composable
 public fun HotlayoutScreen(
@@ -111,6 +115,7 @@ public fun HotlayoutScreen(
     fonts: HotlayoutFonts = HotlayoutFonts.System,
     writablePaths: WritablePaths? = null,
     autofill: Boolean = true,
+    handleSystemBack: Boolean = true,
     onAction: ((HotlayoutAction, ActionSource) -> Unit)? = null,
     onTrack: ((TrackEvent, ActionSource) -> Unit)? = null,
     onWrite: ((String, JsonValue) -> Unit)? = null,
@@ -124,6 +129,8 @@ public fun HotlayoutScreen(
     var session by remember(document.documentId) { mutableStateOf<DataScope>(emptyMap()) }
     var shownSerial by remember(document.documentId) { mutableIntStateOf(0) }
     val focusRegistries = remember(document.documentId) { InputFocusRegistries() }
+    // Counts the moves the person made in the stack: only they move the focus (never the first screen or the host's entry).
+    var movedSerial by remember(document.documentId) { mutableIntStateOf(0) }
     val callbacks = rememberUpdatedState(Callbacks(onAction, onTrack, onWrite, onHaptic, onActionTask, onScreenChange, onReport))
 
     LaunchedEffect(document.documentId) {
@@ -193,6 +200,7 @@ public fun HotlayoutScreen(
         if (updated != before) flow = updated
         outcome.shown?.let {
             shownSerial += 1
+            movedSerial += 1
             handlers.onScreenChange?.invoke(it)
         }
         return PressRun(SwipeConfirmRules.runner(action, host), task)
@@ -203,20 +211,36 @@ public fun HotlayoutScreen(
     val frames = flow.stack
     val pageIndex = frames.indices.lastOrNull { index -> index == 0 || document.screen(frames[index].screenId)?.presentation != ScreenPresentation.Modal } ?: 0
     val resolver = StyleResolver(theme.theme(themeId))
-    val setup = ScreenSetup(document, resolver, resolution, rightToLeft, data, session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts, sink, ::perform, ::write, shownSerial, focusRegistries, autofill)
+    val carousels = remember(document.documentId) { CarouselMemory() }
+    SideEffect { carousels.prune(frames.map { it.screenId }) }
+    val setup = ScreenSetup(document, resolver, resolution, rightToLeft, data, session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts, sink, ::perform, ::write, shownSerial, focusRegistries, autofill, carousels, frames)
 
-    CompositionLocalProvider(LocalLayoutDirection provides if (rightToLeft) LayoutDirection.Rtl else LayoutDirection.Ltr) {
-        Box(modifier.fillMaxSize()) {
-            val page = frames.getOrNull(pageIndex)
-            val pageScreen = page?.let { document.screen(it.screenId) }
-            if (page != null && pageScreen != null) ScreenRoot(pageScreen, page, setup, asLayer = false)
-            for (index in frames.indices) {
-                if (index <= pageIndex) continue
-                val frame = frames[index]
-                val screen = document.screen(frame.screenId) ?: continue
-                ModalLayer(screen, frame, setup) { perform(JsonObject.of("type" to "navigate.back"), DocumentNode("modal-dismiss", "Screen"), emptyList()) }
-            }
+    val goBack = { perform(JsonObject.of("type" to "navigate.back"), DocumentNode("modal-dismiss", "Screen"), emptyList()); Unit }
+    val topScreen = frames.lastOrNull()?.let { document.screen(it.screenId) }
+    val topIsLayer = frames.size > 1 && topScreen?.presentation == ScreenPresentation.Modal
+    SystemBackStep(enabled = handleSystemBack && frames.size > 1 && (!topIsLayer || topScreen?.dismissible != false), onBack = goBack)
+
+    val layers = frames.mapIndexedNotNull { index, frame ->
+        if (index <= pageIndex) return@mapIndexedNotNull null
+        val screen = document.screen(frame.screenId) ?: return@mapIndexedNotNull null
+        ModalLayerSpec(index, screen.screenId, screen.name, ModalRules.isWindow(screen.modalPlacement?.let(JsonValue::Str)), screen.backdropBlur, screen.dismissible) {
+            ScreenRoot(screen, frame, setup, asLayer = true)
         }
+    }
+    val margin = resolver.spacing(JsonValue.Str("xl")) ?: ModalRules.DEFAULT_MARGIN
+    CompositionLocalProvider(LocalLayoutDirection provides if (rightToLeft) LayoutDirection.Rtl else LayoutDirection.Ltr) {
+        ModalStack(
+            page = {
+                val page = frames.getOrNull(pageIndex)
+                val pageScreen = page?.let { document.screen(it.screenId) }
+                if (page != null && pageScreen != null) ScreenRoot(pageScreen, page, setup, asLayer = false)
+            },
+            layers = layers,
+            marginDp = margin,
+            focusSerial = movedSerial,
+            dismiss = goBack,
+            modifier = modifier,
+        )
     }
 }
 
@@ -248,6 +272,8 @@ private class ScreenSetup(
     val shownSerial: Int,
     val focusRegistries: InputFocusRegistries,
     val autofill: Boolean,
+    val carousels: CarouselMemory? = null,
+    val frames: List<FlowFrame> = emptyList(),
 ) {
     fun context(screen: ScreenEntry, frame: FlowFrame): RenderContext {
         val host = RecordScope.merge(DataLayers(session = session, data = data))
@@ -272,6 +298,8 @@ private class ScreenSetup(
             shownSerial = shownSerial,
             pressRun = perform,
             form = InputForm(InputOrder.fields(screen.root, scope), focusRegistries.of(screen.screenId), autofill),
+            carousels = carousels,
+            frameIndex = frames.indexOfFirst { it === frame }.coerceAtLeast(0),
         )
     }
 }
@@ -298,27 +326,6 @@ private fun ScreenRoot(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup
             Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
                 NodeView(screen.root, context, Placement.Stretched, modifier = Modifier.heightIn(min = area))
             }
-        }
-    }
-}
-
-/**
- * A modal layer: the screen below stays visible under a dimmed backdrop; the layer lies at the
- * bottom, as tall as its content. A tap on the backdrop closes a dismissible layer.
- *
- * Wave «modals» replaces this with sheets, windows, blur and the drag to dismiss.
- */
-@Composable
-private fun ModalLayer(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup, dismiss: () -> Unit) {
-    val source = remember { MutableInteractionSource() }
-    Box(Modifier.fillMaxSize()) {
-        Box(
-            Modifier.fillMaxSize().background(Color(0x66000000)).let {
-                if (screen.dismissible) it.clickable(interactionSource = source, indication = null, onClick = dismiss) else it
-            },
-        )
-        Box(Modifier.fillMaxWidth().align(if (screen.modalPlacement == "center") Alignment.Center else Alignment.BottomCenter)) {
-            ScreenRoot(screen, frame, setup, asLayer = true)
         }
     }
 }

@@ -66,6 +66,12 @@ internal data class RenderContext(
     val listNumber: com.hotlayout.render.widgets.ListNumber? = null,
     /** The text fields of the screen: the order for the «next» key and their focus (`null` outside a screen). */
     val form: com.hotlayout.render.widgets.InputForm? = null,
+    /** What the carousels of the stack remember, the frame of the stack this screen is, and the indexes of the list instances the node stands in. */
+    val carousels: com.hotlayout.render.widgets.CarouselMemory? = null,
+    val frameIndex: Int = 0,
+    val instancePath: List<Int> = emptyList(),
+    /** The width of the box of a card of a carousel with `perView`, in logical pixels; read once by [NodeView]. */
+    val cardWidth: Double? = null,
 ) {
     val theme: HotlayoutTheme get() = resolver.theme
 
