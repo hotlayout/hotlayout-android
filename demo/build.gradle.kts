@@ -15,6 +15,7 @@ android {
         targetSdk = 36
         versionCode = 1
         versionName = "0.1.0"
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
     compileOptions {
@@ -52,6 +53,16 @@ dependencies {
     testImplementation(libs.roborazzi)
     testImplementation(libs.roborazzi.compose)
     debugImplementation(libs.compose.ui.test.manifest)
+
+    // Behaviour on a real device or emulator: taps, swipes, the system back key, the keyboard.
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.uiautomator)
+    // An espresso that knows the input manager of API 36+ (the one compose-ui-test brings does not).
+    androidTestImplementation(libs.espresso.core)
 }
 
 // The tests run once, on the debug variant (the compose test activity is a debug dependency).
