@@ -432,16 +432,13 @@ class ControlsWiringTest {
             show(document) { HotlayoutScreen(it, data = hostData) }
             for ((id, expected) in row["expect"]?.obj ?: com.hotlayout.json.JsonObject()) {
                 // A plain node of no control (a text, a row) is not tagged: the table says its role is none.
-                // The radio rows of a choice group are the rows of the lists family (`ListTile`).
-                val listRow = sim.find(id)?.last()?.type == "ListTile"
-                val seen = if (expected.obj?.get("role")?.isNull == true || listRow) null else controlOf(id)
+                val seen = if (expected.obj?.get("role")?.isNull == true) null else controlOf(id)
                 if (seen != null) assertEquals("before $id: ${row.name()}", expected, seen)
             }
             if (row["presses"] == null) continue
             for (id in row["presses"]?.array.orEmpty().mapNotNull { it.string ?: it["node"]?.string }) press(sim, id, "tap")
             compose.waitForIdle()
             for ((id, expected) in row["after"]?.obj ?: com.hotlayout.json.JsonObject()) {
-                if (sim.find(id)?.last()?.type == "ListTile") continue
                 assertEquals("after $id: ${row.name()}", expected, controlOf(id))
             }
         }

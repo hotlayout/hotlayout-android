@@ -20,6 +20,11 @@ class TableCoverageTest {
             "actions/formCases", "actions/handedCases", "actions/flowCases", "actions/hapticCases",
             "scope/readCases", "scope/recordCases", "scope/flowCases", "scope/entitySourceCases", "scope/liveRecordCases", "scope/liveFlowCases",
             "inputs/emptinessCases", "inputs/valuePathCases",
+            // Inputs and the form: the fields, the number field, the keyboard, the parts of a text field.
+            "inputs/pathCases", "inputs/readCases", "inputs/textCases", "inputs/toggleCases", "inputs/clampCases", "inputs/linesCases",
+            "inputs/keyboardCases", "inputs/keyActionCases", "inputs/errorCases", "inputs/geometryCases", "inputs/directionCases",
+            "inputs/numberParseCases", "inputs/numberReadCases", "inputs/numberFieldCases", "inputs/numberInvalidCases", "inputs/numberKeyboardCases",
+            "inputs/fieldBoxCases", "inputs/affixRowCases", "inputs/counterCases", "inputs/noteRowCases",
             "repeater-filter/filterCases", "repeater-filter/limitCases", "repeater-filter/emptinessCases",
             "icon-text/orderCases", "icon-text/glyphCases", "icon-text/buttonSizeCases", "icon-text/iconButtonCases",
                         // Controls: press, long press, feedback, write actions, choice, swipe, paint.
@@ -51,6 +56,13 @@ class TableCoverageTest {
             "align/readCases", "align/heightSourceCases", "align/shiftCases", "align/boxCases", "align/screenCases", "align/ruleCases",
             "offset/pullCases", "offset/pullReadCases",
             "progress/ratioCases", "progress/ringCases", "progress/arcCases", "progress/barCases", "progress/paintCases", "progress/segmentCases", "progress/segmentPlaceCases", "progress/segmentPaintCases", "progress/segmentGradientCases", "progress/ringLabelCases", "progress/ringLabelNoneCases", "progress/capCases", "progress/segmentFillCases", "progress/segmentFillInlineCases", "progress/transitionShareCases", "progress/glowStepCases", "progress/glowRuleCases",
+            // Modal layers: box, blur, drag, Escape, the event of a show.
+            "sheet-dismiss/startCases", "sheet-dismiss/releaseCases", "sheet-dismiss/entryCases", "sheet-dismiss/ruleCases",
+            "sheet-dismiss/escapeCases", "sheet-dismiss/escapeRuleCases",
+            "media-chrome/modalCases", "media-chrome/modalAreaCases", "media-chrome/placementCases", "media-chrome/modalRuleCases", "media-chrome/shownCases",
+            "motion/blurCases", "motion/glassCases",
+            "carousel/hostCases", "carousel/readCases", "carousel/cardCases", "carousel/stopCases", "carousel/activeCases",
+            "carousel/dotCases", "carousel/areaCases", "carousel/stateCases", "repeater-filter/carouselCases",
         )
 
         /** The wave a whole table belongs to (groups of it that the foundation runs are in [run]). */
@@ -100,7 +112,7 @@ class TableCoverageTest {
         fun isValidatorGroup(table: String, group: String): Boolean =
             group == "documentCases" || group == "schemaCases" || group.endsWith("DocumentCases") || group.endsWith("SchemaCases") ||
                 group == "validityCases" || "$table/$group" in setOf(
-                "inputs/ruleCases", "inputs/formRuleCases",
+                "inputs/ruleCases", "inputs/formRuleCases", "inputs/placementCases",
                 // Where a node may stand and how deep a document may go: what the builder may publish.
                 "composition/nestingCases", "composition/depthCases", "actions/writeTreeCases",
             )

@@ -2,11 +2,11 @@ package com.hotlayout.render.screen
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.displayCutout
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.union
 import androidx.compose.runtime.Composable
+import com.hotlayout.render.widgets.keyboardInset
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
@@ -34,6 +34,6 @@ internal fun rememberScreenInsets(): ScreenInsets {
     val density = LocalDensity.current
     val top = override.top?.value?.toDouble() ?: with(density) { WindowInsets.statusBars.union(WindowInsets.displayCutout).getTop(density).toDp().value.toDouble() }
     val bottom = override.bottom?.value?.toDouble() ?: with(density) { WindowInsets.navigationBars.getBottom(density).toDp().value.toDouble() }
-    val keyboard = with(density) { WindowInsets.ime.getBottom(density).toDp().value.toDouble() }
+    val keyboard = keyboardInset().value.toDouble()
     return ScreenInsets(top, bottom, keyboard)
 }
