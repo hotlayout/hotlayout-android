@@ -30,7 +30,14 @@ class FixtureFramesTest {
     /** The moment the data dictionary calls «now» (`x-sampleNow`): dates and countdowns in the frames do not depend on the day of the run. */
     private val sampleNow = java.time.Instant.parse("2026-10-10T09:00:00.000Z").toEpochMilli()
 
-    private fun frame(fixture: String, screen: String?) {
+    /** Endless motion asks for a frame forever, so the test would never be idle: the frame is taken at rest (the system asks for no motion). */
+    private fun stillMotion() {
+        val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
+        android.provider.Settings.Global.putFloat(context.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 0f)
+    }
+
+    private fun frame(fixture: String, screen: String?, atRest: Boolean = false) {
+        if (atRest) stillMotion()
         compose.setContent {
             Box(Modifier.size(393.dp, 852.dp)) { FixtureScreen(fixture, screen, "en", sampleNow) }
         }
@@ -39,7 +46,8 @@ class FixtureFramesTest {
     }
 
     /** A frame after a press: the fixture's page with the layer its button opens. */
-    private fun frameAfterPress(fixture: String, button: String, name: String) {
+    private fun frameAfterPress(fixture: String, button: String, name: String, atRest: Boolean = false) {
+        if (atRest) stillMotion()
         compose.setContent {
             Box(Modifier.size(393.dp, 852.dp)) { FixtureScreen(fixture, null, "en", sampleNow) }
         }
@@ -49,13 +57,15 @@ class FixtureFramesTest {
         compose.onRoot().captureRoboImage("frames/$name.png")
     }
 
-    @Test fun modalSheetWithBlur() = frameAfterPress("motion-blur-screens", "Open the sheet", "motion-blur-screens-sheet")
+    @Test fun modalSheetWithBlur() = frameAfterPress("motion-blur-screens", "Open the sheet", "motion-blur-screens-sheet", atRest = true)
 
     @Test fun modalSheetFromTheBottom() = frameAfterPress("longpress-groups-sheet-screens", "Quick redeem", "longpress-groups-sheet-screens-redeem")
 
     @Test fun modalSheetThatWaitsForAnAction() = frameAfterPress("longpress-groups-sheet-screens", "Confirm", "longpress-groups-sheet-screens-confirm")
 
     @Test fun modalWindowInTheMiddle() = frameAfterPress("media-chrome-screens", "Complete the mission", "media-chrome-screens-window")
+
+    @Test fun motionAndGlassAtRest() = frame("motion-blur-screens", null, atRest = true)
 
     @Test fun rewardsShowcase() = frame("rewards-showcase-screens", null)
 

@@ -47,14 +47,32 @@ internal object GlassRules {
     val supported: Boolean get() = Build.VERSION.SDK_INT >= 31
 }
 
-/** What the glass nodes of a page blur: the page drawn once WITHOUT them, recorded in a layer. */
+/**
+ * What the glass nodes of a page blur: the page drawn once WITHOUT them, recorded in a layer. A glass
+ * node records its own content in a layer of its own during that pass and is drawn afterwards over
+ * the page, so the tree is traversed once (a second traversal draws the layers of the children
+ * a second time and some of them stay empty).
+ */
 internal class GlassSource(val layer: GraphicsLayer) {
-    /** True while the page is being recorded for the glass: a glass node then draws nothing. */
+    /** True while the page is being recorded for the glass: a glass node then draws nothing into it. */
     var recording = false
 
     /** The place of the page in the root of the window. */
     var origin = Offset.Zero
+
+    /** The glass nodes met during the recording, in tree order. */
+    val entries = ArrayList<GlassEntry>()
 }
+
+/** A glass node of the last recording: its own content, the layer of its blur and where it stands. */
+internal class GlassEntry(
+    val content: GraphicsLayer,
+    val backdrop: GraphicsLayer,
+    val origin: Offset,
+    val size: IntSize,
+    val radiusPx: Float,
+    val shape: Shape,
+)
 
 internal val LocalGlassSource = compositionLocalOf<GlassSource?> { null }
 
@@ -79,19 +97,21 @@ internal fun ProvideGlass(source: GlassSource?, content: @Composable () -> Unit)
 }
 
 /**
- * Records the page twice: once without the glass nodes into [GlassSource.layer], then for the
- * screen, where each glass node draws the recorded page blurred under its own box.
+ * Records the page without its glass nodes into [GlassSource.layer], draws it, then draws every glass
+ * node over it: the recorded page blurred under the box, clipped by the radius, then the node itself.
  */
 internal fun Modifier.glassSource(source: GlassSource): Modifier = this
     .onGloballyPositioned { source.origin = it.positionInRoot() }
     .drawWithContent {
+        source.entries.clear()
         source.recording = true
         try {
             source.layer.record(drawContext.density, drawContext.layoutDirection, IntSize(size.width.toInt(), size.height.toInt())) { this@drawWithContent.drawContent() }
         } finally {
             source.recording = false
         }
-        drawContent()
+        drawLayer(source.layer)
+        for (entry in source.entries) drawGlass(source, entry)
     }
 
 /**
@@ -103,26 +123,34 @@ internal fun Modifier.glassSource(source: GlassSource): Modifier = this
 internal fun Modifier.glass(blur: Int?, shape: Shape): Modifier {
     val source = LocalGlassSource.current ?: return this
     if (blur == null) return this
-    val layer = rememberGraphicsLayer()
+    val content = rememberGraphicsLayer()
+    val backdrop = rememberGraphicsLayer()
     val origin = remember { FloatArray(2) }
     return this
         .onGloballyPositioned { it.positionInRoot().let { p -> origin[0] = p.x; origin[1] = p.y } }
         .drawWithContent {
-            if (source.recording) return@drawWithContent
-            drawBackdrop(source, layer, blur * density, shape, Offset(origin[0], origin[1]))
-            drawContent()
+            if (!source.recording) {
+                drawContent()
+                return@drawWithContent
+            }
+            content.record(drawContext.density, drawContext.layoutDirection, IntSize(size.width.toInt(), size.height.toInt())) { this@drawWithContent.drawContent() }
+            source.entries.add(GlassEntry(content, backdrop, Offset(origin[0], origin[1]), IntSize(size.width.toInt(), size.height.toInt()), blur * density, shape))
         }
 }
 
-private fun DrawScope.drawBackdrop(source: GlassSource, layer: GraphicsLayer, radiusPx: Float, shape: Shape, origin: Offset) {
-    layer.renderEffect = BlurEffect(radiusPx, radiusPx, TileMode.Clamp)
-    val shift = source.origin - origin
-    layer.record(drawContext.density, drawContext.layoutDirection, IntSize(size.width.toInt(), size.height.toInt())) {
-        translate(shift.x, shift.y) { drawLayer(source.layer) }
+private fun DrawScope.drawGlass(source: GlassSource, entry: GlassEntry) {
+    val box = androidx.compose.ui.geometry.Size(entry.size.width.toFloat(), entry.size.height.toFloat())
+    val shift = entry.origin - source.origin
+    entry.backdrop.renderEffect = BlurEffect(entry.radiusPx, entry.radiusPx, TileMode.Clamp)
+    entry.backdrop.record(drawContext.density, drawContext.layoutDirection, entry.size) {
+        translate(-shift.x, -shift.y) { drawLayer(source.layer) }
     }
-    val box = Path().apply { addOutline(shape.createOutline(size, layoutDirection, this@drawBackdrop)) }
-    clipPath(box) { drawLayer(layer) }
+    translate(shift.x, shift.y) {
+        val outline = Path().apply { addOutline(entry.shape.createOutline(box, layoutDirection, this@drawGlass)) }
+        clipPath(outline) { drawLayer(entry.backdrop) }
+        drawLayer(entry.content)
+    }
     GlassProbe.draws.incrementAndGet()
-    GlassProbe.lastRadiusPx = radiusPx
-    GlassProbe.lastBox = Rect(origin, size)
+    GlassProbe.lastRadiusPx = entry.radiusPx
+    GlassProbe.lastBox = Rect(entry.origin, box)
 }

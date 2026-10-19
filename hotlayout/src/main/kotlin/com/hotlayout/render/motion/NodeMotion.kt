@@ -71,6 +71,11 @@ internal fun NodeMotionBox(motion: NodeMotion, rightToLeft: Boolean, turnDegrees
             }
         }
     }
+    // «Reduce motion»: the node is plain, with no layer, no clock and no frames.
+    if (reduced) {
+        Box(modifier, propagateMinConstraints = true) { content() }
+        return
+    }
     val poseNow = {
         val pose = motion.pose(fixed ?: elapsed.doubleValue, reduced, rightToLeft)
         val x = pose.x * density

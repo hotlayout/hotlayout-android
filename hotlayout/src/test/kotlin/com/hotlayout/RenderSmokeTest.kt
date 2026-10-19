@@ -33,6 +33,8 @@ class RenderSmokeTest {
                 documents.add("$name: ${screen.screenId}" to loadDocument(JsonValue.Obj(json.obj!!.with("initialScreenId", JsonValue.Str(screen.screenId)))))
             }
         }
+        // Endless motion asks for a frame forever and the test would never be idle: the system asks for no motion.
+        android.provider.Settings.Global.putFloat(androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>().contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 0f)
         var current by mutableStateOf(documents.first())
         compose.setContent {
             key(current.first) { Box(Modifier.size(393.dp, 852.dp)) { HotlayoutScreen(current.second, locale = "en", now = 1_791_000_000_000) } }
