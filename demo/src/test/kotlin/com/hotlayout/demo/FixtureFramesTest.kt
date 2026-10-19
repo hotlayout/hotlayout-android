@@ -38,6 +38,16 @@ class FixtureFramesTest {
     @Test fun progress() = frame("progress-screens", null)
 
     @Test fun valueCountdown() = frame("value-countdown-screens", null)
+    @Test fun rewardCatalog() = frame("reward-catalog-screens", null)
+
+    @Test fun tasksWithTabs() = frame("tasks-flow-screens", null)
+
+    @Test fun fullCatalog() = frame("full-catalog-screen", null)
+
+    @Test fun rowParts() = frame("parts-screens", "card")
+    @Test fun offsetOverlap() = frame("offset-screens", "overlap")
+
+    @Test fun offsetDetails() = frame("offset-screens", "details")
 
     @Test fun minimalScreen() = frame("minimal-screen", null)
 }
