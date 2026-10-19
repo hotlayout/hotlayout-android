@@ -73,4 +73,12 @@ class FixtureFramesTest {
     @Test fun money() = frame("money-screens", null)
 
     @Test fun valueCountdown() = frame("value-countdown-screens", null)
+
+    @Test fun inputsProfile() = frame("inputs-screens", "profile")
+
+    @Test fun inputsSettings() = frame("inputs-screens", "settings")
+
+    @Test fun surveyGoal() = frame("survey-screens", "goal")
+
+    @Test fun surveyDetails() = frame("survey-screens", "details")
 }

@@ -69,7 +69,7 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
   once, Menu / Shift+F10 long press, key auto-repeat ignored. Compose's `clickable` is NOT used: it is not
   focusable in touch mode and fires on key up. The innermost control consumes the down, so the card around gets nothing.
 - Disabled (`disabledIf`, `requiresFilled`): half opacity, `disabled()` semantics, still focusable, no action,
-  track or haptic. The form walk is `ScreenForm` in `actions/PressRules.kt` (the inputs wave may replace it).
+  track or haptic. The form walk is `ScreenForm` in `actions/FormRules.kt` (inputs wave).
 - Write actions are performed in `HotlayoutScreen.perform` (haptic, track, write to session and `onWrite`),
   gated by `writablePaths`. Options are `Role.RadioButton` + `selected`, toggles `Role.Button` + `toggleableState`;
   the place in the group is `CollectionItemInfo` and the key `ChoicePlaceKey` (size cannot be said otherwise).
@@ -77,7 +77,7 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 - Swipe to confirm: host answers with a task through `onActionTask` (returns a `Job`); busy ends on task end,
   on a shown-screen change (`RenderContext.shownSerial`) or after 8 s without a task.
 - `ChoiceGroup` is drawn and hands a `ChoiceScope` to rows through `RenderContext.choice`; the radio rows
-  (`ListTile`) belong to the lists wave and must call `scope.select`.
+  (`ListTile`) read `RenderContext.choice` and call `select` (tagged `node:<id>`, `Role.RadioButton`, `selected`).
 - Dashed borders are paths with the contract's pattern; `shadowColor: background` tints in `StyleResolve.box`.
 ## Progress scales and value transitions
 
@@ -156,7 +156,7 @@ Family files (one zone per agent):
 | 1 | progress | new `render/widgets/Progress*.kt` (done) |
 | 1 | stack | `render/widgets/Stack*.kt` (`Stack`, `layer`, `fill`) — built |
 | 1 | controls | `render/widgets/RoleWidgets.kt` (Button, Badge, `IconButton`), write actions in `actions/` |
-| 2 | inputs & form | new `render/widgets/Input*.kt`, `data/` session |
+| 2 | inputs & form | `render/widgets/Input*.kt`, `actions/FormRules.kt` (built) |
 | 2 | screen anatomy | `ScreenRoot` in `HotlayoutScreen.kt` → new `render/screen/` |
 | 2 | modals | `ModalLayer` → new `render/modal/` |
 | 2 | carousel | new `render/widgets/Carousel*.kt` |
@@ -186,3 +186,30 @@ wiring test (semantics or pixels through `HotlayoutScreen`) for every capability
 - Rows of `amountPartCases` with plain `ar` digits differ like the money rows (`TextRichCasesTest.platformDiffers`).
 - The demo data carries the dates of the data dictionary (`user.memberSince`, `campaign.endsAt`,
   `offer.endsAt`): without them the showcase's date texts showed their fallback «—».
+
+## Inputs and the form (`render/widgets/Input*.kt`, `actions/FormRules.kt`)
+
+- Rules are pure and table-run (`InputRules`, `InputPartsRules`, `CompositionTracker`; `InputCasesTest`): every group of
+  `input-cases.json` that is a reader's runs; `placementCases` is the validator's. `InputFieldDriver` is the glue between
+  Compose's `TextFieldValue` and the rules and is table-driven too (`InputFieldDriverTest`), because a test process has no
+  IME that could produce a value with a `composition` range.
+- The control is `BasicTextField(TextFieldValue)`. `composition != null` means composing: nothing is written until it is
+  committed; a composition still open when the focus is lost is committed at that moment (one write). One table row
+  (`composing cancelled by losing focus`) differs at the driver level for that reason; the rule alone passes it.
+  Open point: Gboard with suggestions on marks the word being typed as composing, so a Latin word is written when it is
+  committed (space, blur), not per letter; a button pressed mid-word sees the previous text. Fields whose keyboard is not
+  `text` (email, phone, url, number) turn auto-correct off and do not compose on Gboard.
+- The held text is released by an EVENT (`LaunchedEffect` keyed by the value under the path), not by comparison at paint
+  time; a number field compares numbers and needs none. The session beats host data, so on a real screen a typed value
+  stays; the A → B → A path is exercised with a host that forbids the write (`writablePaths`).
+- Text that arrives before the first touch (autofill, `SetText` on an unfocused field) is dropped. `autofill = false` on
+  `HotlayoutScreen` is read into `InputForm.autofill`; Compose content-type hints are not attached yet.
+- The «next» key walks `InputOrder` (document order, shown and enabled fields, not inside a `Repeater`) through
+  per-screen `InputFocusRegistry`s; «done» clears focus. The key never performs an action.
+- A number field in the error state (non-number, not focused) is shown by the border colour only: Compose has no
+  `aria-invalid` without a text, and the contract says the reader adds none.
+- Keyboard: `keyboardInset()` (`InputForm.kt`) reads `WindowInsets.ime`; `ProvideKeyboardInset` states it for tests or a
+  host that measures itself. The screen zones (anatomy wave) must lift the pinned block by it and leave the nav bar
+  under the keyboard; the hook is not applied in `ScreenRoot` yet.
+- Switch and checkbox: whole row is the press area (`pressInput`), `Role.Switch` / `Role.Checkbox` with `toggleableState`;
+  no thumb animation.

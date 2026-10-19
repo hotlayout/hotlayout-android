@@ -23,6 +23,9 @@ import com.hotlayout.render.widgets.ProgressBarWidget
 import com.hotlayout.render.widgets.TabsWidget
 import com.hotlayout.render.widgets.StackWidget
 import com.hotlayout.render.widgets.TextWidget
+import com.hotlayout.render.widgets.TextFieldWidget
+import com.hotlayout.render.widgets.SwitchWidget
+import com.hotlayout.render.widgets.CheckboxWidget
 
 /**
  * Widgets this reader draws. Every other widget of the schema is drawn by the unknown-widget rule
@@ -32,6 +35,7 @@ internal val drawnWidgets: Set<String> = setOf(
     "ProgressBar", "CircularProgress",
     "Screen", "Column", "Row", "Container", "Text", "Image", "Icon", "Button", "Spacer", "Divider", "Badge", "Stack", "IconButton", "ChoiceGroup",
     "Repeater", "Grid", "ListTile", "Accordion", "Tabs", "Tab",
+    "TextField", "Switch", "Checkbox",
 )
 
 /**
@@ -57,6 +61,9 @@ internal fun Widget(call: WidgetCall) {
         "Badge" -> BadgeWidget(call)
         "IconButton" -> IconButtonWidget(call)
         "ChoiceGroup" -> ChoiceGroupWidget(call)
+        "TextField" -> TextFieldWidget(call)
+        "Switch" -> SwitchWidget(call)
+        "Checkbox" -> CheckboxWidget(call)
         "Spacer" -> SpacerWidget(call)
         "Divider" -> DividerWidget(call)
         "ProgressBar" -> ProgressBarWidget(call)

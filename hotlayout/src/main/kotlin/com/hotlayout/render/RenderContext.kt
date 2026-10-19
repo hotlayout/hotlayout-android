@@ -64,6 +64,8 @@ internal data class RenderContext(
     val listPosition: com.hotlayout.render.widgets.ListPosition? = null,
     /** The place of this node in a numbered list from data (`Text.marker: number`); `null` outside one. */
     val listNumber: com.hotlayout.render.widgets.ListNumber? = null,
+    /** The text fields of the screen: the order for the «next» key and their focus (`null` outside a screen). */
+    val form: com.hotlayout.render.widgets.InputForm? = null,
 ) {
     val theme: HotlayoutTheme get() = resolver.theme
 

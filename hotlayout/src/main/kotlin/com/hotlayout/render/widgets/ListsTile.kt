@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +20,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.hotlayout.data.Conditions
@@ -31,19 +32,12 @@ import com.hotlayout.render.RenderContext
 import com.hotlayout.render.StyledText
 import com.hotlayout.render.WidgetCall
 import com.hotlayout.render.acts
+import com.hotlayout.render.interaction.pressInput
 import com.hotlayout.render.color
 import com.hotlayout.text.BindableText
 import com.hotlayout.text.ShownText
 import com.hotlayout.theme.Rgba
 import com.hotlayout.theme.TextStyleValue
-
-/**
- * The choice an option row (`trailing.kind: radio`) belongs to. The `ChoiceGroup` provides it; a
- * row outside a group draws the circle and nothing answers.
- */
-internal class ListTileChoice(val selected: String?, val select: (String) -> Unit)
-
-internal val LocalListTileChoice = compositionLocalOf<ListTileChoice?> { null }
 
 /** The side of a thumbnail in a row, in `xl` units of the theme. */
 private const val THUMBNAIL_SCALE = 2.0
@@ -69,15 +63,19 @@ internal fun ListTileWidget(call: WidgetCall) {
     val subtitle = if (node.props["subtitle"] == null) "" else context.text(node, "subtitle")
     val trailingKind = node.props["trailing"]?.get("kind")?.string ?: "chevron"
     val action = node.props["action"]?.obj?.takeIf(::acts)
-    val choice = LocalListTileChoice.current
+    val choice = context.choice
     val option = node.props["trailing"]?.get("optionValue")?.string
 
     var modifier = if (call.placement.stretchWidth) Modifier.fillMaxWidth() else Modifier
     modifier = when {
         // An option row belongs to the choice: its press selects, and an `action` of the row is not run.
         trailingKind == "radio" && choice != null && option != null ->
-            modifier.semantics(mergeDescendants = true) { role = Role.RadioButton; selected = choice.selected == option }
-                .clickable(remember { MutableInteractionSource() }, null) { choice.select(option) }
+            modifier.semantics(mergeDescendants = true) {
+                testTag = "node:${node.id}"
+                role = Role.RadioButton
+                selected = choice.selected == option
+                onClick { choice.select(option); true }
+            }.pressInput(true, false, { choice.select(option) }, {}) {}
         trailingKind != "radio" && action != null ->
             modifier.semantics(mergeDescendants = true) { role = Role.Button }
                 .clickable(remember { MutableInteractionSource() }, null) { context.press(action, node) }
@@ -163,7 +161,7 @@ private fun TrailingSlot(call: WidgetCall, kind: String) {
         "radio" -> {
             val size = iconWordBox("md", theme).first
             val option = slot["optionValue"]?.string
-            val selected = option != null && LocalListTileChoice.current?.selected == option
+            val selected = option != null && call.context.choice?.selected == option
             RadioMark(
                 selected, size,
                 (theme.colorValue("primary") ?: Rgba(0.2, 0.4, 1.0)).color,

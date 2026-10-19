@@ -55,6 +55,9 @@ import com.hotlayout.render.HotlayoutFonts
 import com.hotlayout.render.ImagePolicy
 import com.hotlayout.render.NodeView
 import com.hotlayout.render.layout.LocalScreenBodyHeight
+import com.hotlayout.actions.InputOrder
+import com.hotlayout.render.widgets.InputFocusRegistries
+import com.hotlayout.render.widgets.InputForm
 import com.hotlayout.render.Placement
 import com.hotlayout.render.RenderContext
 import com.hotlayout.text.LocaleResolution
@@ -91,6 +94,7 @@ public data class ActionSource(val nodeId: String, val screenId: String, val rec
  * @param onHaptic the haptic feedback a press asks for; the reader never vibrates by itself.
  * @param onActionTask the host's answer to an action as a task: a swipe-to-confirm button stays busy until it ends.
  * @param writablePaths the data paths the reader may write to; by default every path of the form of a data path.
+ * @param autofill whether the text fields hand the platform hints for autofill (email, phone, address); `false` hands none.
  */
 @Composable
 public fun HotlayoutScreen(
@@ -106,6 +110,7 @@ public fun HotlayoutScreen(
     images: ImagePolicy = ImagePolicy(),
     fonts: HotlayoutFonts = HotlayoutFonts.System,
     writablePaths: WritablePaths? = null,
+    autofill: Boolean = true,
     onAction: ((HotlayoutAction, ActionSource) -> Unit)? = null,
     onTrack: ((TrackEvent, ActionSource) -> Unit)? = null,
     onWrite: ((String, JsonValue) -> Unit)? = null,
@@ -118,6 +123,7 @@ public fun HotlayoutScreen(
     var flow by remember(document.documentId) { mutableStateOf(Flow(FlowDocument.of(document), entry)) }
     var session by remember(document.documentId) { mutableStateOf<DataScope>(emptyMap()) }
     var shownSerial by remember(document.documentId) { mutableIntStateOf(0) }
+    val focusRegistries = remember(document.documentId) { InputFocusRegistries() }
     val callbacks = rememberUpdatedState(Callbacks(onAction, onTrack, onWrite, onHaptic, onActionTask, onScreenChange, onReport))
 
     LaunchedEffect(document.documentId) {
@@ -197,7 +203,7 @@ public fun HotlayoutScreen(
     val frames = flow.stack
     val pageIndex = frames.indices.lastOrNull { index -> index == 0 || document.screen(frames[index].screenId)?.presentation != ScreenPresentation.Modal } ?: 0
     val resolver = StyleResolver(theme.theme(themeId))
-    val setup = ScreenSetup(document, resolver, resolution, rightToLeft, data, session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts, sink, ::perform, ::write, shownSerial)
+    val setup = ScreenSetup(document, resolver, resolution, rightToLeft, data, session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts, sink, ::perform, ::write, shownSerial, focusRegistries, autofill)
 
     CompositionLocalProvider(LocalLayoutDirection provides if (rightToLeft) LayoutDirection.Rtl else LayoutDirection.Ltr) {
         Box(modifier.fillMaxSize()) {
@@ -240,9 +246,12 @@ private class ScreenSetup(
     val perform: (JsonObject, DocumentNode, List<ListInstance>) -> PressRun,
     val write: (String, JsonValue) -> Unit,
     val shownSerial: Int,
+    val focusRegistries: InputFocusRegistries,
+    val autofill: Boolean,
 ) {
     fun context(screen: ScreenEntry, frame: FlowFrame): RenderContext {
         val host = RecordScope.merge(DataLayers(session = session, data = data))
+        val scope = RecordScope.overlay(host, frame.record) ?: host
         return RenderContext(
             resolver = resolver,
             screenId = screen.screenId,
@@ -262,6 +271,7 @@ private class ScreenSetup(
             screenScope = RecordScope.overlay(host, frame.record) ?: host,
             shownSerial = shownSerial,
             pressRun = perform,
+            form = InputForm(InputOrder.fields(screen.root, scope), focusRegistries.of(screen.screenId), autofill),
         )
     }
 }
