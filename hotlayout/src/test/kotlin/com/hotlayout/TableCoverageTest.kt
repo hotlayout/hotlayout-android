@@ -55,6 +55,10 @@ class TableCoverageTest {
             "value-transition/appearTargetCases", "value-transition/appearFlowCases",
             "align/readCases", "align/heightSourceCases", "align/shiftCases", "align/boxCases", "align/screenCases", "align/ruleCases",
             "offset/pullCases", "offset/pullReadCases",
+            // Screen anatomy: zones, app bar, navigation bar, top zone, insets.
+            "bottom-zone/activeCases", "bottom-zone/childrenCases", "bottom-zone/floatPlaceCases", "bottom-zone/floatZoneCases", "bottom-zone/nav922RuleCases", "bottom-zone/navBadgeAppearScaleCases", "bottom-zone/navBadgeBoxCases", "bottom-zone/navBadgeCases", "bottom-zone/navBadgeDisappearOpacityCases", "bottom-zone/navBadgeMotionCases", "bottom-zone/navHeightCases", "bottom-zone/navShareCases", "bottom-zone/pinCases", "bottom-zone/ruleCases", "bottom-zone/sectionCases", "bottom-zone/zoneCases",
+            "media-chrome/appBar916RuleCases", "media-chrome/appBarCases", "media-chrome/appBarChildrenCases", "media-chrome/appBarDrawnCases", "media-chrome/appBarLeadingCases", "media-chrome/appBarLeadingShownCases", "media-chrome/bodyTopCases", "media-chrome/glyphCases", "media-chrome/safeTopValueCases", "media-chrome/screenAppBarCases", "media-chrome/screenRuleCases", "media-chrome/screenTopPressCases", "media-chrome/screenTopRuleCases", "media-chrome/screenTopZoneCases", "media-chrome/scrolledLayerCases", "media-chrome/scrolledThresholdCases", "media-chrome/shownCases", "media-chrome/statusBarCases", "media-chrome/topZoneCases", "media-chrome/zoneCases",
+            "top-zone/childrenCases", "top-zone/geometryCases", "top-zone/pinCases", "top-zone/ruleCases",
             "progress/ratioCases", "progress/ringCases", "progress/arcCases", "progress/barCases", "progress/paintCases", "progress/segmentCases", "progress/segmentPlaceCases", "progress/segmentPaintCases", "progress/segmentGradientCases", "progress/ringLabelCases", "progress/ringLabelNoneCases", "progress/capCases", "progress/segmentFillCases", "progress/segmentFillInlineCases", "progress/transitionShareCases", "progress/glowStepCases", "progress/glowRuleCases",
             // Modal layers: box, blur, drag, Escape, the event of a show.
             "sheet-dismiss/startCases", "sheet-dismiss/releaseCases", "sheet-dismiss/entryCases", "sheet-dismiss/ruleCases",
@@ -112,7 +116,9 @@ class TableCoverageTest {
         fun isValidatorGroup(table: String, group: String): Boolean =
             group == "documentCases" || group == "schemaCases" || group.endsWith("DocumentCases") || group.endsWith("SchemaCases") ||
                 group == "validityCases" || "$table/$group" in setOf(
-                "inputs/ruleCases", "inputs/formRuleCases", "inputs/placementCases",
+                "inputs/ruleCases", "inputs/formRuleCases",
+                // Where the editor puts a dropped child, not a reader's rule.
+                "media-chrome/appBarPlaceCases", "inputs/placementCases",
                 // Where a node may stand and how deep a document may go: what the builder may publish.
                 "composition/nestingCases", "composition/depthCases", "actions/writeTreeCases",
             )

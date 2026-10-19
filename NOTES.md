@@ -55,7 +55,6 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 
 ## Not built in the foundation (the waves below own them)
 
-- The screen root is one scroll; the zones (fixed app bar and bottom zone, safe insets) are wave 2.
 - `style.backdropBlur` (glass under a node) is read and validated (`motion/glassCases`) but not drawn: Compose
   has no backdrop capture across sibling nodes, and a page's own nodes cannot blur what is drawn under them.
   The blur under a modal layer is drawn (see Modal layers).
@@ -172,7 +171,7 @@ Family files (one zone per agent):
 | 1 | stack | `render/widgets/Stack*.kt` (`Stack`, `layer`, `fill`) — built |
 | 1 | controls | `render/widgets/RoleWidgets.kt` (Button, Badge, `IconButton`), write actions in `actions/` |
 | 2 | inputs & form | `render/widgets/Input*.kt`, `actions/FormRules.kt` (built) |
-| 2 | screen anatomy | `ScreenRoot` in `HotlayoutScreen.kt` → new `render/screen/` |
+| 2 | screen anatomy | `render/screen/` (done) |
 | 2 | modals | `ModalLayer` → new `render/modal/` |
 | 2 | carousel | new `render/widgets/Carousel*.kt` |
 | 2 | gestures & motion | new `render/motion/`, `render/interaction/` |
@@ -255,3 +254,26 @@ wiring test (semantics or pixels through `HotlayoutScreen`) for every capability
   follows the host's manifest. Layers also expose the semantics `dismiss` action when dismissible.
 - Focus moves only when the person moved the stack (`movedSerial`, raised by a press that shows a screen): the layer takes it on
   show, the page anchor after a step back; the first screen and a host `entry` change take none.
+
+## Screen anatomy (wave 2, `render/screen/`)
+
+- `ScreenAnatomy` (pure, port of the contract rules) decides every zone; `ScreenZonesLayout` is ONE Compose `Layout` that
+  measures the children (app bar, top zone, body, pinned block, nav bar, tagged with `inZone`) and places them with those
+  numbers; `AnatomyScreen` composes the zones. `HotlayoutScreen.ScreenRoot` is a thin wrapper (a modal layer passes `shrinks`).
+- A `Measurable` can be measured once, so a shrinking layer's body is measured once with the most room it can have (the rule
+  run with a huge flow gives it); the body is given a minimum height only for `bodyTop: screenTop` under an app bar.
+- The root style is split: background, border, radius, shadow on the container; paddings go to the zones. The zones draw the
+  root's children through `ColumnWidget` with a copy of the root that has no style (the host space is then the body area);
+  `LocalScreenBodyHeight` is the body area less the lead and the tail (and less the floating zone's height).
+- Writing state from measure: `ZoneReport` (bar height for the scrolled threshold, the floating zone's height for the body
+  tail). Both only change when a value changed.
+- Safe insets: `rememberScreenInsets` reads status bar + cutout (top), navigation bar (bottom) and `keyboardInset()`;
+  `HotlayoutScreen(safeAreaTop, safeAreaBottom)` replaces the window's (pass 0 when a Scaffold already consumed them).
+  The top inset lies inside the bar box (or lowers the body without a bar); the bottom one only under a bottom zone.
+  Layers take none. `statusBarIcons` is only in the show event; the reader never touches the system bars.
+- The keyboard lifts the pinned block (not the nav bar) by `keyboardInset()`; the body area shrinks, so a focused field
+  scrolls into view by Compose's own bring-into-view in the body scroll.
+- Navigation bar: always at the bottom for now. `NavBarRules.place` is the hook for wave 3 (`widePlacement`, items in the
+  app bar); `RenderContext.barInset/barScrolled/navInset/navLine` are what the zones hand the bar and the items.
+- The badge dot is tagged `nav-badge-dot` (read with the unmerged tree); the flash runs only on a change of the condition.
+- Not drawn: the bar of navigation of its own at the top and the items in the app bar (wave 3), `backdropBlur` of a floating bar.
