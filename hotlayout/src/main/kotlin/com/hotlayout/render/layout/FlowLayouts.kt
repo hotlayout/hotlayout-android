@@ -22,6 +22,8 @@ import com.hotlayout.render.NodeView
 import com.hotlayout.render.Placement
 import com.hotlayout.render.RenderContext
 import com.hotlayout.render.takesNaturalWidth
+import com.hotlayout.render.widgets.ListSiblings
+import com.hotlayout.render.widgets.at
 import com.hotlayout.theme.NodeStyle
 
 /**
@@ -78,10 +80,11 @@ internal fun ColumnWidget(
     // A column of natural width is as wide as its widest child, and the others stretch to that.
     val width = if (stretch) Modifier.fillMaxWidth() else Modifier.width(IntrinsicSize.Max)
     AlignedColumn(gap, read?.align ?: AlignWord.Start, read?.justify ?: JustifyWord.Start, space.block, space.minBlock, fills, width) {
+        val siblings = ListSiblings(children, context)
         for ((index, child) in children.withIndex()) {
             val natural = takesNaturalWidth(child)
             val pull = if (ignoresFirstPull && index == 0) 0.0 else pullOf(child, node, context)
-            NodeView(child, context, if (natural) Placement.Natural else Placement.Stretched, depth + 1, node?.type, FlowChild(pull = pull, stretch = !natural))
+            NodeView(child, context.at(siblings, index), if (natural) Placement.Natural else Placement.Stretched, depth + 1, node?.type, FlowChild(pull = pull, stretch = !natural))
         }
     }
 }
@@ -125,16 +128,17 @@ internal fun RowWidget(node: DocumentNode, context: RenderContext, depth: Int, s
     // A row of natural width (in another row) is as wide as its children, never greedy.
     val base = if (stretch) Modifier.fillMaxWidth() else Modifier
     val space = hostSpace(node, context)
+    val siblings = ListSiblings(node.children, context)
     when {
         scrollable -> BoxWithConstraints(base) {
             val viewport = maxWidth.takeIf { it != Dp.Infinity }
             AlignedRow(gap, justify, align, space.block, fills, Modifier.horizontalScroll(rememberScrollState())) {
-                for (child in node.children) {
+                for ((index, child) in node.children.withIndex()) {
                     var modifier: Modifier = Modifier
                     if (viewport != null && rowKind(child) != RowKind.Named) {
                         modifier = if (stretchesInScroll(child)) Modifier.width(viewport) else Modifier.widthIn(max = viewport)
                     }
-                    NodeView(child, context, Placement.Natural, depth + 1, node.type, modifier.then(FlowChild(kind = rowKind(child))))
+                    NodeView(child, context.at(siblings, index), Placement.Natural, depth + 1, node.type, modifier.then(FlowChild(kind = rowKind(child))))
                 }
             }
         }
@@ -153,13 +157,13 @@ internal fun RowWidget(node: DocumentNode, context: RenderContext, depth: Int, s
                 AlignWord.Center -> Alignment.CenterVertically
             },
         ) {
-            for (child in node.children) NodeView(child, context, Placement.Natural, depth + 1, node.type)
+            for ((index, child) in node.children.withIndex()) NodeView(child, context.at(siblings, index), Placement.Natural, depth + 1, node.type)
         }
         else -> AlignedRow(gap, justify, align, space.block, fills, base) {
-            for (child in node.children) {
+            for ((index, child) in node.children.withIndex()) {
                 val weight = rowWeight(child)
                 val pull = pullOf(child, node, context)
-                NodeView(child, context, if (weight == null) Placement.Natural else Placement.Stretched, depth + 1, node.type, FlowChild(pull = pull, weight = weight, kind = rowKind(child)))
+                NodeView(child, context.at(siblings, index), if (weight == null) Placement.Natural else Placement.Stretched, depth + 1, node.type, FlowChild(pull = pull, weight = weight, kind = rowKind(child)))
             }
         }
     }

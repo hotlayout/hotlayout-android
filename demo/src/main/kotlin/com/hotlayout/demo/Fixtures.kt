@@ -72,6 +72,11 @@ object SampleData {
             mapOf("title" to "Weekend trip", "day" to "Wed, Oct 14", "points" to 250),
         )
         val tasks = (1..5).map { mapOf("title" to "Challenge $it", "progress" to it * 3, "target" to 20) }
-        return dataScopeOf("items" to items, "activities" to activities, "tasks" to tasks, "user.points" to 12_400)
+        return dataScopeOf("items" to items, "activities" to activities, "tasks" to tasks, "user.points" to 12_400,
+            // The dates the data dictionary promises: without them a date text shows its fallback.
+            "user.memberSince" to "2026-01-15T12:00:00.000Z", "campaign.endsAt" to "2026-11-30T12:00:00.000Z", "offer.endsAt" to "2026-10-31T12:00:00.000Z",
+            // The sample values of the data dictionary for the text fixtures (money, parts, countdown).
+            "user.firstName" to "Alex", "user.level" to 3, "offer.price" to 24580.75, "task.progress" to 3, "task.target" to 5, "task.rewardPoints" to 100,
+            "account.balance" to 24580.75, "account.income" to 42000, "account.spent" to -1200.5, "account.limit" to 500)
     }
 }

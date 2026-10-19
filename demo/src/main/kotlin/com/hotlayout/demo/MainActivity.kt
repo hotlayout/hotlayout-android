@@ -76,7 +76,7 @@ private fun FixtureList() {
 
 /** One fixture drawn by the reader with the demo's data, fonts and theme. */
 @Composable
-fun FixtureScreen(name: String, screenId: String?, locale: String?) {
+fun FixtureScreen(name: String, screenId: String?, locale: String?, now: Long? = null) {
     val context = LocalContext.current
     val document = remember(name, screenId) { runCatching { Fixtures.document(context, name, screenId) } }
     document.onFailure {
@@ -89,6 +89,7 @@ fun FixtureScreen(name: String, screenId: String?, locale: String?) {
         data = remember(name) { SampleData.scope() },
         locale = locale ?: java.util.Locale.getDefault().toLanguageTag(),
         fonts = DemoFonts,
+        now = now,
         onAction = { action, _ ->
             Log.i("HotLayoutDemo", "action ${action.type} standard=${action.standard} invalid=${action.invalid}")
             runStandardAction(context, action)
