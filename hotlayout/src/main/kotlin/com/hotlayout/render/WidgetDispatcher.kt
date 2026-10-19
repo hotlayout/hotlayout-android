@@ -12,6 +12,7 @@ import com.hotlayout.render.widgets.DividerWidget
 import com.hotlayout.render.widgets.IconWidget
 import com.hotlayout.render.widgets.ImageWidget
 import com.hotlayout.render.widgets.SpacerWidget
+import com.hotlayout.render.widgets.StackWidget
 import com.hotlayout.render.widgets.TextWidget
 
 /**
@@ -19,7 +20,7 @@ import com.hotlayout.render.widgets.TextWidget
  * for now (its children in a column, `unknownWidget: 'render-children'`) and reported.
  */
 internal val drawnWidgets: Set<String> = setOf(
-    "Screen", "Column", "Row", "Container", "Text", "Image", "Icon", "Button", "Spacer", "Divider", "Badge",
+    "Screen", "Column", "Row", "Container", "Text", "Image", "Icon", "Button", "Spacer", "Divider", "Badge", "Stack",
 )
 
 /**
@@ -45,6 +46,7 @@ internal fun Widget(call: WidgetCall) {
         "Badge" -> BadgeWidget(call)
         "Spacer" -> SpacerWidget(call)
         "Divider" -> DividerWidget(call)
+        "Stack" -> StackWidget(call)
         else -> {
             // Not drawn by this reader (yet): the children are drawn, as for an unknown widget.
             SideEffect {
