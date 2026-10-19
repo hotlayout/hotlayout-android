@@ -7,6 +7,9 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
+import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
 import com.github.takahirom.roborazzi.captureRoboImage
 import org.junit.Rule
@@ -105,5 +108,37 @@ class FixtureFramesTest {
 
     @Test fun valueCountdown() = frame("value-countdown-screens", null)
 
+    @Test fun inputsProfile() = frame("inputs-screens", "profile")
+
+    @Test fun inputsSettings() = frame("inputs-screens", "settings")
+
+    @Test fun surveyGoal() = frame("survey-screens", "goal")
+
+    @Test fun surveyDetails() = frame("survey-screens", "details")
     @Test fun carouselSteps() = frame("carousel-steps-screens", null)
+
+    /** A frame after the body was scrolled: the app bar and the bottom zone stay, the body has moved. */
+    private fun frameAfterScroll(fixture: String, screen: String, name: String) {
+        compose.setContent {
+            Box(Modifier.size(393.dp, 852.dp)) { FixtureScreen(fixture, screen, "en", sampleNow) }
+        }
+        compose.waitForIdle()
+        compose.onNodeWithTag("screen:$screen").performTouchInput { swipeUp(startY = height * 0.75f, endY = height * 0.25f) }
+        compose.waitForIdle()
+        compose.onRoot().captureRoboImage("frames/$name.png")
+    }
+
+    @Test fun bottomZone() = frame("bottom-zone-screens", "home")
+
+    @Test fun bottomZoneScrolled() = frameAfterScroll("bottom-zone-screens", "home", "bottom-zone-screens-scrolled")
+
+    @Test fun floatingNavigation() = frame("float-nav-swipe-screens", "home")
+
+    @Test fun floatingNavigationScrolled() = frameAfterScroll("float-nav-swipe-screens", "home", "float-nav-swipe-screens-scrolled")
+
+    @Test fun appBar() = frame("app-bar-screens", null)
+
+    @Test fun heroPromo() = frame("hero-screens", "promo")
+
+    @Test fun rewardsShowcaseScrolled() = frameAfterScroll("rewards-showcase-screens", "home", "rewards-showcase-screens-scrolled")
 }

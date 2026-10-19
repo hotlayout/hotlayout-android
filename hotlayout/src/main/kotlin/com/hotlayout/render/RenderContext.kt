@@ -64,6 +64,18 @@ internal data class RenderContext(
     val listPosition: com.hotlayout.render.widgets.ListPosition? = null,
     /** The place of this node in a numbered list from data (`Text.marker: number`); `null` outside one. */
     val listNumber: com.hotlayout.render.widgets.ListNumber? = null,
+    /** The top safe inset the app bar of the screen holds inside its box (set by the screen for the bar only). */
+    val barInset: Double = 0.0,
+    /** The app bar is scrolled: the body is past the threshold (`appBarScrolled`); only the bar itself reads it. */
+    val barScrolled: Boolean = false,
+    /** The bottom safe inset the navigation bar holds under its items; zero when it floats (the inset lies under its box). */
+    val navInset: Double = 0.0,
+    /** The line on top of the navigation bar, which the touch area of an item takes in. */
+    val navLine: Double = 0.0,
+    /** The accessible name of the back arrow of an app bar. */
+    val backLabel: String = "Back",
+    /** The text fields of the screen: the order for the «next» key and their focus (`null` outside a screen). */
+    val form: com.hotlayout.render.widgets.InputForm? = null,
     /** What the carousels of the stack remember, the frame of the stack this screen is, and the indexes of the list instances the node stands in. */
     val carousels: com.hotlayout.render.widgets.CarouselMemory? = null,
     val frameIndex: Int = 0,

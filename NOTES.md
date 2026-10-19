@@ -55,7 +55,6 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 
 ## Not built in the foundation (the waves below own them)
 
-- The screen root is one scroll; the zones (fixed app bar and bottom zone, safe insets) are wave 2.
 - `showOn`, `styleOn`, `propsOn` are not read (wave 3 adaptive; `RenderContext.isShown` is the place).
 
 ## Controls (wave 1)
@@ -65,7 +64,7 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
   once, Menu / Shift+F10 long press, key auto-repeat ignored. Compose's `clickable` is NOT used: it is not
   focusable in touch mode and fires on key up. The innermost control consumes the down, so the card around gets nothing.
 - Disabled (`disabledIf`, `requiresFilled`): half opacity, `disabled()` semantics, still focusable, no action,
-  track or haptic. The form walk is `ScreenForm` in `actions/PressRules.kt` (the inputs wave may replace it).
+  track or haptic. The form walk is `ScreenForm` in `actions/FormRules.kt` (inputs wave).
 - Write actions are performed in `HotlayoutScreen.perform` (haptic, track, write to session and `onWrite`),
   gated by `writablePaths`. Options are `Role.RadioButton` + `selected`, toggles `Role.Button` + `toggleableState`;
   the place in the group is `CollectionItemInfo` and the key `ChoicePlaceKey` (size cannot be said otherwise).
@@ -73,7 +72,7 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 - Swipe to confirm: host answers with a task through `onActionTask` (returns a `Job`); busy ends on task end,
   on a shown-screen change (`RenderContext.shownSerial`) or after 8 s without a task.
 - `ChoiceGroup` is drawn and hands a `ChoiceScope` to rows through `RenderContext.choice`; the radio rows
-  (`ListTile`) belong to the lists wave and must call `scope.select`.
+  (`ListTile`) read `RenderContext.choice` and call `select` (tagged `node:<id>`, `Role.RadioButton`, `selected`).
 - Dashed borders are paths with the contract's pattern; `shadowColor: background` tints in `StyleResolve.box`.
 ## Progress scales and value transitions
 
@@ -168,8 +167,8 @@ Family files (one zone per agent):
 | 1 | progress | new `render/widgets/Progress*.kt` (done) |
 | 1 | stack | `render/widgets/Stack*.kt` (`Stack`, `layer`, `fill`) — built |
 | 1 | controls | `render/widgets/RoleWidgets.kt` (Button, Badge, `IconButton`), write actions in `actions/` |
-| 2 | inputs & form | new `render/widgets/Input*.kt`, `data/` session |
-| 2 | screen anatomy | `ScreenRoot` in `HotlayoutScreen.kt` → new `render/screen/` |
+| 2 | inputs & form | `render/widgets/Input*.kt`, `actions/FormRules.kt` (built) |
+| 2 | screen anatomy | `render/screen/` (done) |
 | 2 | modals | `ModalLayer` → new `render/modal/` |
 | 2 | carousel | new `render/widgets/Carousel*.kt` |
 | 2 | gestures & motion | new `render/motion/`, `render/interaction/` |
@@ -199,6 +198,32 @@ wiring test (semantics or pixels through `HotlayoutScreen`) for every capability
 - The demo data carries the dates of the data dictionary (`user.memberSince`, `campaign.endsAt`,
   `offer.endsAt`): without them the showcase's date texts showed their fallback «—».
 
+## Inputs and the form (`render/widgets/Input*.kt`, `actions/FormRules.kt`)
+
+- Rules are pure and table-run (`InputRules`, `InputPartsRules`, `CompositionTracker`; `InputCasesTest`): every group of
+  `input-cases.json` that is a reader's runs; `placementCases` is the validator's. `InputFieldDriver` is the glue between
+  Compose's `TextFieldValue` and the rules and is table-driven too (`InputFieldDriverTest`), because a test process has no
+  IME that could produce a value with a `composition` range.
+- The control is `BasicTextField(TextFieldValue)`. `composition != null` means composing: nothing is written until it is
+  committed; a composition still open when the focus is lost is committed at that moment (one write). One table row
+  (`composing cancelled by losing focus`) differs at the driver level for that reason; the rule alone passes it.
+  Open point: Gboard with suggestions on marks the word being typed as composing, so a Latin word is written when it is
+  committed (space, blur), not per letter; a button pressed mid-word sees the previous text. Fields whose keyboard is not
+  `text` (email, phone, url, number) turn auto-correct off and do not compose on Gboard.
+- The held text is released by an EVENT (`LaunchedEffect` keyed by the value under the path), not by comparison at paint
+  time; a number field compares numbers and needs none. The session beats host data, so on a real screen a typed value
+  stays; the A → B → A path is exercised with a host that forbids the write (`writablePaths`).
+- Text that arrives before the first touch (autofill, `SetText` on an unfocused field) is dropped. `autofill = false` on
+  `HotlayoutScreen` is read into `InputForm.autofill`; Compose content-type hints are not attached yet.
+- The «next» key walks `InputOrder` (document order, shown and enabled fields, not inside a `Repeater`) through
+  per-screen `InputFocusRegistry`s; «done» clears focus. The key never performs an action.
+- A number field in the error state (non-number, not focused) is shown by the border colour only: Compose has no
+  `aria-invalid` without a text, and the contract says the reader adds none.
+- Keyboard: `keyboardInset()` (`InputForm.kt`) reads `WindowInsets.ime`; `ProvideKeyboardInset` states it for tests or a
+  host that measures itself. The screen zones (anatomy wave) must lift the pinned block by it and leave the nav bar
+  under the keyboard; the hook is not applied in `ScreenRoot` yet.
+- Switch and checkbox: whole row is the press area (`pressInput`), `Role.Switch` / `Role.Checkbox` with `toggleableState`;
+  no thumb animation.
 ## Modal layers (`render/modal/`)
 
 - `ModalStack` holds the page and the layers: the page is one box, each layer a sibling with its own `zIndex` (its own
@@ -226,6 +251,29 @@ wiring test (semantics or pixels through `HotlayoutScreen`) for every capability
   follows the host's manifest. Layers also expose the semantics `dismiss` action when dismissible.
 - Focus moves only when the person moved the stack (`movedSerial`, raised by a press that shows a screen): the layer takes it on
   show, the page anchor after a step back; the first screen and a host `entry` change take none.
+
+## Screen anatomy (wave 2, `render/screen/`)
+
+- `ScreenAnatomy` (pure, port of the contract rules) decides every zone; `ScreenZonesLayout` is ONE Compose `Layout` that
+  measures the children (app bar, top zone, body, pinned block, nav bar, tagged with `inZone`) and places them with those
+  numbers; `AnatomyScreen` composes the zones. `HotlayoutScreen.ScreenRoot` is a thin wrapper (a modal layer passes `shrinks`).
+- A `Measurable` can be measured once, so a shrinking layer's body is measured once with the most room it can have (the rule
+  run with a huge flow gives it); the body is given a minimum height only for `bodyTop: screenTop` under an app bar.
+- The root style is split: background, border, radius, shadow on the container; paddings go to the zones. The zones draw the
+  root's children through `ColumnWidget` with a copy of the root that has no style (the host space is then the body area);
+  `LocalScreenBodyHeight` is the body area less the lead and the tail (and less the floating zone's height).
+- Writing state from measure: `ZoneReport` (bar height for the scrolled threshold, the floating zone's height for the body
+  tail). Both only change when a value changed.
+- Safe insets: `rememberScreenInsets` reads status bar + cutout (top), navigation bar (bottom) and `keyboardInset()`;
+  `HotlayoutScreen(safeAreaTop, safeAreaBottom)` replaces the window's (pass 0 when a Scaffold already consumed them).
+  The top inset lies inside the bar box (or lowers the body without a bar); the bottom one only under a bottom zone.
+  Layers take none. `statusBarIcons` is only in the show event; the reader never touches the system bars.
+- The keyboard lifts the pinned block (not the nav bar) by `keyboardInset()`; the body area shrinks, so a focused field
+  scrolls into view by Compose's own bring-into-view in the body scroll.
+- Navigation bar: always at the bottom for now. `NavBarRules.place` is the hook for wave 3 (`widePlacement`, items in the
+  app bar); `RenderContext.barInset/barScrolled/navInset/navLine` are what the zones hand the bar and the items.
+- The badge dot is tagged `nav-badge-dot` (read with the unmerged tree); the flash runs only on a change of the condition.
+- Not drawn: the bar of navigation of its own at the top and the items in the app bar (wave 3), `backdropBlur` of a floating bar.
 
 ## Node motion, glass, live record (gestures & motion)
 

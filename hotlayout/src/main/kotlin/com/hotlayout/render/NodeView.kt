@@ -14,6 +14,7 @@ import com.hotlayout.actions.PressTarget
 import com.hotlayout.json.JsonObject
 import com.hotlayout.render.interaction.ProvideSiblings
 import com.hotlayout.render.interaction.pressableCard
+import com.hotlayout.render.screen.AppBarRules
 import com.hotlayout.model.DocumentNode
 import com.hotlayout.model.DocumentReader
 import com.hotlayout.render.motion.LocalLayerTurn
@@ -60,7 +61,7 @@ internal fun NodeView(
     modifier: Modifier = Modifier,
 ) {
     if (depth > DocumentReader.MAX_PARSE_DEPTH || !context.isShown(node)) return
-    val style = NodeStyle.effective(node, context.scope)
+    val style = effectiveStyle(node, context)
     // The place among siblings and the number of a list item are the node's own: descendants do not inherit them.
     val inner = context.copy(inherited = NodeStyle.inherited(context.inherited, style, context.resolver), listPosition = null, listNumber = null, cardWidth = null)
     var look = context.resolver.box(style, context.scope)
@@ -68,6 +69,8 @@ internal fun NodeView(
     context.cardWidth?.let { look = look.copy(width = it, minWidth = null, maxWidth = null) }
     // The padding of a carousel lies inside its scroll: the first card stands a padding from the edge.
     if (node.type in carouselHosts && CarouselRules.of(node) != null) look = look.copy(padding = com.hotlayout.theme.Sides.Zero)
+    // The inset of the status bar lies inside the box of the app bar, above its padding.
+    if (node.type == "AppBar" && context.barInset > 0) look = look.copy(padding = look.padding.copy(top = look.padding.top + context.barInset))
     val box = if (node.type in roleSurfaceWidgets) outerOfRole(look) else look
     val press = PressTarget.pressAction(node)
     val long = PressTarget.longPress(node)?.takeIf { node.type in pressableContainers }
@@ -90,6 +93,13 @@ internal fun NodeView(
         val framed = if (glassSource != null) outerBase.glassSource(glassSource) else outerBase
         if (motion == null) body(framed) else NodeMotionBox(motion, context.rightToLeft, turn, framed) { body(Modifier) }
     }
+}
+
+/** The effective style; an app bar that is the zone of its screen lays its scrolled style over it while the body is scrolled. */
+private fun effectiveStyle(node: DocumentNode, context: RenderContext): JsonObject {
+    val style = NodeStyle.effective(node, context.scope)
+    if (node.type != "AppBar" || !context.barScrolled) return style
+    return AppBarRules.withScrolledLayer(style, AppBarRules.scrolledStyle(node), context.resolver)
 }
 
 /** The arguments every widget receives; one value so that the dispatcher signature never changes. */
