@@ -27,6 +27,7 @@ class TableCoverageTest {
             "list-tile/rowCases", "list-tile/lookCases", "list-tile/leadingColorCases",
             "repeater-filter/gridCases", "repeater-filter/numberCases",
             "repeater-group/sameCases", "repeater-group/groupCases", "repeater-group/listCases", "repeater-group/ruleCases",
+            "offset/layerCases", "offset/layerReadCases", "offset/layerPlaceCases",
         )
 
         /** The wave a whole table belongs to (groups of it that the foundation runs are in [run]). */
@@ -68,6 +69,7 @@ class TableCoverageTest {
             "inputs/choiceCases" to "wave 1 · controls", "inputs/choiceSessionCases" to "wave 1 · controls",
             "inputs/choicePlaceCases" to "wave 1 · controls", "inputs/choiceControlCases" to "wave 1 · controls",
             "repeater-filter/carouselCases" to "wave 2 · carousel",
+            "offset/pullCases" to "wave 1 · alignment (pull)", "offset/pullReadCases" to "wave 1 · alignment (pull)",
             "motion/blurCases" to "wave 2 · modals", "motion/glassCases" to "wave 2 · modals",
         )
 

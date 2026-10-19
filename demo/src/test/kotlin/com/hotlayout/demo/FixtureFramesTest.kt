@@ -42,6 +42,9 @@ class FixtureFramesTest {
     @Test fun fullCatalog() = frame("full-catalog-screen", null)
 
     @Test fun rowParts() = frame("parts-screens", "card")
+    @Test fun offsetOverlap() = frame("offset-screens", "overlap")
+
+    @Test fun offsetDetails() = frame("offset-screens", "details")
 
     @Test fun minimalScreen() = frame("minimal-screen", null)
 }
