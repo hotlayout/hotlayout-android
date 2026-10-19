@@ -52,6 +52,7 @@ import com.hotlayout.theme.BackgroundValue
 import com.hotlayout.theme.Corners
 import com.hotlayout.theme.HotlayoutTheme
 import com.hotlayout.theme.Rgba
+import com.hotlayout.render.paint.glass
 import com.hotlayout.theme.ShadowLayer
 import com.hotlayout.theme.Sides
 import com.hotlayout.theme.TextStyleValue
@@ -72,6 +73,8 @@ internal data class RoleSurface(
     val padding: Sides?,
     val corners: Corners?,
     val shadow: List<ShadowLayer>,
+    /** `style.backdropBlur` (glass): the blur under the surface; it lies on the surface of the role. */
+    val backdropBlur: Int? = null,
 ) {
     companion object {
         /** A role border is one point wide. */
@@ -95,14 +98,16 @@ internal data class RoleSurface(
                 padding = resolver.sides(style["padding"]),
                 corners = resolver.corners(style["radius"]),
                 shadow = ShadowTint.apply(resolver.shadow(style["shadow"]).orEmpty(), style, resolver),
+                backdropBlur = look.backdropBlur,
             )
         }
     }
 }
 
 /** Draws the box of a role surface around the content: shadow, shape, fill, border, padding. */
+@androidx.compose.runtime.Composable
 internal fun Modifier.roleBox(surface: RoleSurface, shape: Shape, padding: Sides, rightToLeft: Boolean): Modifier {
-    var modifier = this
+    var modifier = this.glass(surface.backdropBlur, shape)
     if (surface.shadow.isNotEmpty()) modifier = modifier.cssShadows(surface.shadow, shape)
     modifier = modifier.clip(shape)
     modifier = modifier.backgroundOf(surface.gradient ?: surface.background?.let(BackgroundValue::Color), shape, rightToLeft)

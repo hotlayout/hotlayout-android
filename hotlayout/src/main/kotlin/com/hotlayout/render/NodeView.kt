@@ -16,7 +16,15 @@ import com.hotlayout.render.interaction.ProvideSiblings
 import com.hotlayout.render.interaction.pressableCard
 import com.hotlayout.model.DocumentNode
 import com.hotlayout.model.DocumentReader
+import com.hotlayout.render.motion.LocalLayerTurn
+import com.hotlayout.render.motion.NodeMotion
+import com.hotlayout.render.motion.NodeMotionBox
+import com.hotlayout.render.paint.ProvideGlass
+import com.hotlayout.render.paint.glass
+import com.hotlayout.render.paint.glassSource
+import com.hotlayout.render.paint.rememberGlassSource
 import com.hotlayout.theme.BoxLook
+import com.hotlayout.theme.Corners
 import com.hotlayout.theme.NodeStyle
 
 /** Widgets whose style lands on their own surface (a role of the theme), not on the node box. */
@@ -55,13 +63,24 @@ internal fun NodeView(
     val box = if (node.type in roleSurfaceWidgets) outerOfRole(look) else look
     val press = PressTarget.pressAction(node)
     val long = PressTarget.longPress(node)?.takeIf { node.type in pressableContainers }
-    var outer = modifier.then(look.margin.paddingModifier())
-    if (press != null || long != null) outer = outer.then(Modifier.pressableCard(node, inner, press, long))
-    // A named size is the size of the content too: a stack, a column or a row inside it fills that box and aligns
-    // its children by its own words (without this the content sat at the top start of the named box).
+    val outerBase = modifier.then(look.margin.paddingModifier())
     val named = box.width != null || box.height != null
-    Box(outer.nodeBox(box.withoutMargin(), placement.stretchWidth, context.rightToLeft), propagateMinConstraints = named) {
-        ProvideSiblings(node) { Widget(WidgetCall(node, inner, style, placement, depth, parentType, context.listPosition, context.listNumber)) }
+    val glassSource = if (node.type == "Screen") rememberGlassSource(node) else null
+    val motion = if (node.type == "Screen") null else NodeMotion.read(node.fields["motion"])
+    // The root never moves; a node placed by a stack has its motion turned back by the layer of the stack.
+    val turn = if (parentType == "Stack") LocalLayerTurn.current else 0f
+    val body: @Composable (Modifier) -> Unit = { base ->
+        var outer = base
+        if (press != null || long != null) outer = outer.then(Modifier.pressableCard(node, inner, press, long))
+        // A named size is the size of the content too: a stack, a column or a row inside it fills that box and aligns
+        // its children by its own words (without this the content sat at the top start of the named box).
+        Box(outer.glass(box.backdropBlur, (box.radius ?: Corners()).shape()).nodeBox(box.withoutMargin(), placement.stretchWidth, context.rightToLeft), propagateMinConstraints = named) {
+            ProvideSiblings(node) { Widget(WidgetCall(node, inner, style, placement, depth, parentType, context.listPosition, context.listNumber)) }
+        }
+    }
+    ProvideGlass(glassSource) {
+        val framed = if (glassSource != null) outerBase.glassSource(glassSource) else outerBase
+        if (motion == null) body(framed) else NodeMotionBox(motion, context.rightToLeft, turn, framed) { body(Modifier) }
     }
 }
 
