@@ -189,7 +189,12 @@ private class RowPolicy(
         }
         val placeables = measurables.mapIndexed { index, child ->
             val width = widths[index].roundToInt()
-            if (available != null && flows[index].weight != null) child.measure(Constraints.fixedWidth(width)) else child.measure(Constraints(maxWidth = width))
+            when {
+                available != null && flows[index].weight != null -> child.measure(Constraints.fixedWidth(width))
+                // A child that was not shrunk is only bound by the row (content that is not its natural width, such as an overlay, must not be cut to it).
+                widths[index] >= natural[index] - 0.5 && flows[index].kind != RowKind.Named -> child.measure(Constraints(maxWidth = limit?.roundToInt() ?: Constraints.Infinity))
+                else -> child.measure(Constraints(maxWidth = width))
+            }
         }
         val hasShares = available != null && flows.any { it.weight != null }
         val contentWidth = placeables.sumOf { it.width.toDouble() } + gapPx * maxOf(0, placeables.size - 1) - pulls.sum()
