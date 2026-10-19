@@ -23,6 +23,7 @@ class TableCoverageTest {
             "repeater-filter/filterCases", "repeater-filter/limitCases", "repeater-filter/emptinessCases",
             "icon-text/orderCases", "icon-text/glyphCases", "icon-text/buttonSizeCases", "icon-text/iconButtonCases",
             "icon-text/nameCases", "icon-text/iconPathCases",
+            "align/readCases", "align/heightSourceCases", "align/shiftCases", "align/boxCases", "align/screenCases", "align/ruleCases",
         )
 
         /** The wave a whole table belongs to (groups of it that the foundation runs are in [run]). */
