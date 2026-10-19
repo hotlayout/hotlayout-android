@@ -35,6 +35,7 @@ class TableCoverageTest {
             "value-transition/curveCases", "value-transition/stepCases", "value-transition/digitsCases", "value-transition/decisionCases",
             "value-transition/targetCases", "value-transition/appearStepCases", "value-transition/appearDecisionCases",
             "value-transition/appearTargetCases", "value-transition/appearFlowCases",
+            "progress/ratioCases", "progress/ringCases", "progress/arcCases", "progress/barCases", "progress/paintCases", "progress/segmentCases", "progress/segmentPlaceCases", "progress/segmentPaintCases", "progress/segmentGradientCases", "progress/ringLabelCases", "progress/ringLabelNoneCases", "progress/capCases", "progress/segmentFillCases", "progress/segmentFillInlineCases", "progress/transitionShareCases", "progress/glowStepCases", "progress/glowRuleCases",
         )
 
         /** The wave a whole table belongs to (groups of it that the foundation runs are in [run]). */

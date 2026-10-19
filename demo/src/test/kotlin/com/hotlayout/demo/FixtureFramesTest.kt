@@ -38,6 +38,8 @@ class FixtureFramesTest {
 
     @Test fun rewardsShowcase() = frame("rewards-showcase-screens", null)
 
+    @Test fun progress() = frame("progress-screens", null)
+
     @Test fun rewardCatalog() = frame("reward-catalog-screens", null)
 
     @Test fun tasksWithTabs() = frame("tasks-flow-screens", null)
