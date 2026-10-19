@@ -1,0 +1,24 @@
+{
+  "description": "Schema 9.25.0 — the colour of a shadow taken from the own background of the node: «style.shadowColor: background» (rules: x-shadowColor). «middleStopCases» — the positions of the stops of a gradient background and the index of the stop whose colour the shadow takes (nearest to 0.5, the earlier one on a tie; null — no stops). «tintCases» — a node style over the «theme» below laid on the built-in light theme; «expect» — the layers of the shadow as drawn (colour as #rrggbb and opacity), or the layers of the shadow in their own colour when the field does nothing. Written by hand.",
+  "theme": {"color": {"primary": "#4f46e5", "accent": "#db2777", "success": "#059669"}, "elevation": {"medium": [{"offsetX": 0, "offsetY": 8, "blur": 24, "spread": -4, "color": "#000000", "opacity": 0.3}, {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "#111827", "opacity": 0.5}]}},
+  "middleStopCases": [
+    {"name": "two stops: a tie — the first", "positions": [0, 1], "expected": 0},
+    {"name": "three stops: the middle one", "positions": [0, 0.5, 1], "expected": 1},
+    {"name": "four stops: the nearest to the middle", "positions": [0, 0.4, 0.7, 1], "expected": 1},
+    {"name": "a tie inside: the earlier one", "positions": [0.2, 0.8], "expected": 0},
+    {"name": "no stops", "positions": [], "expected": null}
+  ],
+  "tintCases": [
+    {"name": "a solid background: every layer takes its hue and keeps its opacity", "style": {"background": {"kind": "color", "color": "accent"}, "shadow": "medium", "shadowColor": "background"}, "expect": [{"offsetX": 0, "offsetY": 8, "blur": 24, "spread": -4, "color": "#db2777", "opacity": 0.3}, {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "#db2777", "opacity": 0.5}]},
+    {"name": "the opacity of the background does not count", "style": {"background": {"kind": "color", "color": {"token": "success", "opacity": 0.1}}, "shadow": [{"offsetX": 0, "offsetY": 0, "blur": 32, "spread": 0, "color": {"token": "primary", "opacity": 0.6}}], "shadowColor": "background"}, "expect": [{"offsetX": 0, "offsetY": 0, "blur": 32, "spread": 0, "color": "#059669", "opacity": 0.6}]},
+    {"name": "a gradient background: the stop nearest to the middle", "style": {"background": {"kind": "gradient", "gradient": {"angle": 135, "stops": [{"color": "primary", "position": 0}, {"color": "accent", "position": 0.5}, {"color": "success", "position": 1}]}}, "shadow": [{"offsetX": 0, "offsetY": 0, "blur": 20, "spread": 0, "color": {"token": "primary", "opacity": 0.4}}], "shadowColor": "background"}, "expect": [{"offsetX": 0, "offsetY": 0, "blur": 20, "spread": 0, "color": "#db2777", "opacity": 0.4}]},
+    {"name": "no background: the shadow keeps its colour", "style": {"shadow": "medium", "shadowColor": "background"}, "expect": [{"offsetX": 0, "offsetY": 8, "blur": 24, "spread": -4, "color": "#000000", "opacity": 0.3}, {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "#111827", "opacity": 0.5}]},
+    {"name": "no field: the shadow keeps its colour", "style": {"background": {"kind": "color", "color": "accent"}, "shadow": "medium"}, "expect": [{"offsetX": 0, "offsetY": 8, "blur": 24, "spread": -4, "color": "#000000", "opacity": 0.3}, {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "#111827", "opacity": 0.5}]},
+    {"name": "a background token the theme does not know: the shadow keeps its colour", "style": {"background": {"kind": "color", "color": "nebula"}, "shadow": "medium", "shadowColor": "background"}, "expect": [{"offsetX": 0, "offsetY": 8, "blur": 24, "spread": -4, "color": "#000000", "opacity": 0.3}, {"offsetX": 0, "offsetY": 0, "blur": 12, "spread": 0, "color": "#111827", "opacity": 0.5}]},
+    {"name": "no shadow: nothing to colour", "style": {"background": {"kind": "color", "color": "accent"}, "shadowColor": "background"}, "expect": null}
+  ],
+  "ruleCases": [
+    {"name": "the only word", "rule": "words", "expect": ["background"]},
+    {"name": "not inherited", "rule": "inherited", "expect": false}
+  ]
+}

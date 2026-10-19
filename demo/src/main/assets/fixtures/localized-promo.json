@@ -1,0 +1,175 @@
+{
+  "schemaVersion": "9.0.0",
+  "documentId": "localized-promo",
+  "name": "Promo with translations",
+  "initialScreenId": "promo",
+  "screens": [
+    {
+      "screenId": "promo",
+      "name": "Promo",
+      "root": {
+        "id": "promo-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "promo-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Weekend offer"
+              },
+              "showBack": true,
+              "subtitle": {
+                "kind": "literal",
+                "value": "October 2026"
+              }
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "promo-column",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "promo-heading",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Pick your reward of the month"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "displayL"
+                }
+              },
+              {
+                "id": "promo-amount",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "offer.description",
+                    "fallback": "Pay with your card on Saturday and Sunday"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              },
+              {
+                "id": "promo-item",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "gift"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Wireless headphones"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "Selected"
+                    }
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Three days left to choose"
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "promo-badge",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "New"
+                  },
+                  "tone": "success"
+                }
+              },
+              {
+                "id": "promo-submit",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Confirm"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "submit"
+                  },
+                  "fullWidth": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "de",
+      "fr"
+    ],
+    "strings": {
+      "de": {
+        "promo/promo-bar/title": "Wochenendangebot",
+        "promo/promo-bar/subtitle": "Oktober 2026",
+        "promo/promo-heading/content": "Wählen Sie Ihre Belohnung des Monats",
+        "promo/promo-item/title": "Kabellose Kopfhörer",
+        "promo/promo-item/subtitle": "Noch drei Tage zur Auswahl",
+        "promo/promo-item/trailing.text": "Ausgewählt",
+        "promo/promo-badge/label": "Neu",
+        "promo/promo-submit/label": "Bestätigen"
+      },
+      "fr": {
+        "promo/promo-bar/title": "Offre du week-end",
+        "promo/promo-heading/content": "Choisissez votre récompense du mois",
+        "promo/promo-item/subtitle": "Plus que trois jours pour choisir",
+        "promo/promo-item/trailing.text": "Sélectionné",
+        "promo/promo-submit/label": "Confirmer"
+      }
+    }
+  }
+}

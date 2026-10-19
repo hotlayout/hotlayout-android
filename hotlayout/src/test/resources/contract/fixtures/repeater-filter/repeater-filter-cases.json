@@ -1,0 +1,82 @@
+{
+  "description": "Schema 9.23.0 — a filtered list from data: «Repeater.where», a comparison with the value of another path («valuePath») and the emptiness of a filtered list (rules: x-listFilter). The records of «records» are records of a collection «rewards» with the record prefix «reward», written WITHOUT the prefix, as the backend sends them. «outer» is the scope the list stands in (session and data), a flat map of paths. A record is judged in ITS scope: the record under its prefix over «outer». «passed» are the indexes (from zero) of the records that pass, in the order of the collection. No value under «valuePath» (absent, null or the empty string) — a «where» holds for every record. «drawn» are the records a list draws after «limit». The expected values are written by hand.",
+  "records": [
+    { "id": "coffee", "category": "food", "price": 450, "affordable": true },
+    { "id": "cinema", "category": "fun", "price": 1800, "affordable": true },
+    { "id": "cashback", "category": "money", "price": 3000, "affordable": false },
+    { "id": "streaming", "category": "fun", "price": 16000, "affordable": false },
+    { "id": "lunch", "category": "food", "price": 900, "affordable": true }
+  ],
+  "item": "reward",
+  "filterCases": [
+    { "name": "no filter: every record", "outer": {}, "passed": [0, 1, 2, 3, 4] },
+    { "name": "the category chosen in the session: fun", "outer": { "ui.category": "fun" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "passed": [1, 3] },
+    { "name": "the category chosen in the session: food", "outer": { "ui.category": "food" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "passed": [0, 4] },
+    { "name": "nothing chosen yet (absent): every record — All", "outer": {}, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "passed": [0, 1, 2, 3, 4] },
+    { "name": "the chip All writes the empty string: every record", "outer": { "ui.category": "" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "passed": [0, 1, 2, 3, 4] },
+    { "name": "null under the operand path: every record", "outer": { "ui.category": null }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "passed": [0, 1, 2, 3, 4] },
+    { "name": "a category no record has: no record", "outer": { "ui.category": "travel" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "passed": [] },
+    { "name": "neq: everything but the chosen category", "outer": { "ui.category": "fun" }, "where": { "path": "reward.category", "op": "neq", "valuePath": "ui.category" }, "passed": [0, 2, 4] },
+    { "name": "neq with nothing chosen: every record too", "outer": {}, "where": { "path": "reward.category", "op": "neq", "valuePath": "ui.category" }, "passed": [0, 1, 2, 3, 4] },
+    { "name": "a spaces-only operand is a value, not «nothing chosen»", "outer": { "ui.category": " " }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "passed": [] },
+    { "name": "a literal operand, as in visibleIf", "outer": {}, "where": { "path": "reward.category", "op": "eq", "value": "money" }, "passed": [2] },
+    { "name": "order with a literal: price above 1000", "outer": {}, "where": { "path": "reward.price", "op": "gt", "value": 1000 }, "passed": [1, 2, 3] },
+    { "name": "order with another path: price at least the budget", "outer": { "ui.budget": 1800 }, "where": { "path": "reward.price", "op": "gte", "valuePath": "ui.budget" }, "passed": [1, 2, 3] },
+    { "name": "order with another path: price at most the budget", "outer": { "ui.budget": 1800 }, "where": { "path": "reward.price", "op": "lte", "valuePath": "ui.budget" }, "passed": [0, 1, 4] },
+    { "name": "a number budget cleared to the empty string: every record", "outer": { "ui.budget": "" }, "where": { "path": "reward.price", "op": "lte", "valuePath": "ui.budget" }, "passed": [0, 1, 2, 3, 4] },
+    { "name": "a flag of the record", "outer": {}, "where": { "path": "reward.affordable", "op": "isTrue" }, "passed": [0, 1, 4] },
+    { "name": "the record is stronger than the outer scope under the same path", "outer": { "reward.category": "fun", "ui.category": "food" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "passed": [0, 4] },
+    { "name": "a record without the field: out while a filter is set", "records": [{ "id": "a", "category": "fun" }, { "id": "b" }], "outer": { "ui.category": "fun" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "passed": [0] },
+    { "name": "a record without the field: in while nothing is chosen", "records": [{ "id": "a", "category": "fun" }, { "id": "b" }], "outer": {}, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "passed": [0, 1] },
+    { "name": "the record keys may carry the prefix", "records": [{ "reward.id": "a", "reward.category": "fun" }, { "reward.id": "b", "reward.category": "food" }], "outer": { "ui.category": "food" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "passed": [1] },
+    { "name": "an operator of a newer minor: the record is shown", "outer": { "ui.category": "fun" }, "where": { "path": "reward.category", "op": "startsWith", "valuePath": "ui.category" }, "passed": [0, 1, 2, 3, 4] }
+  ],
+  "limitCases": [
+    { "name": "limit counts the records that passed", "outer": { "ui.category": "fun" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "limit": 1, "drawn": [1] },
+    { "name": "limit without a filter: the first records", "outer": {}, "limit": 2, "drawn": [0, 1] },
+    { "name": "limit larger than what passed: what passed", "outer": { "ui.category": "food" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "limit": 5, "drawn": [0, 4] },
+    { "name": "nothing passed: nothing drawn", "outer": { "ui.category": "travel" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "limit": 2, "drawn": [] }
+  ],
+  "gridCases": [
+    { "name": "two columns, two records drawn: one row, no hole", "columns": 2, "outer": { "ui.category": "food" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "cells": [[0, 0], [0, 1]] },
+    { "name": "two columns, three records drawn: the third starts the second row", "columns": 2, "outer": { "ui.category": "fun" }, "where": { "path": "reward.category", "op": "neq", "valuePath": "ui.category" }, "cells": [[0, 0], [0, 1], [1, 0]] },
+    { "name": "three columns, three records drawn: one full row", "columns": 3, "outer": { "ui.category": "fun" }, "where": { "path": "reward.category", "op": "neq", "valuePath": "ui.category" }, "cells": [[0, 0], [0, 1], [0, 2]] },
+    { "name": "three columns, every record: five cells in two rows", "columns": 3, "outer": {}, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "cells": [[0, 0], [0, 1], [0, 2], [1, 0], [1, 1]] },
+    { "name": "two columns, one record: one cell, the row is not filled with a hole", "columns": 2, "outer": { "ui.category": "money" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "cells": [[0, 0]] }
+  ],
+  "carouselCases": [
+    { "name": "one card drawn: one stop, no dots", "viewport": 300, "card": 200, "gap": 8, "outer": { "ui.category": "money" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "stops": 1 },
+    { "name": "two cards drawn: two stops", "viewport": 300, "card": 200, "gap": 8, "outer": { "ui.category": "fun" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "stops": 2 },
+    { "name": "three cards drawn: three stops", "viewport": 300, "card": 200, "gap": 8, "outer": { "ui.category": "fun" }, "where": { "path": "reward.category", "op": "neq", "valuePath": "ui.category" }, "stops": 3 },
+    { "name": "every card: five stops", "viewport": 300, "card": 200, "gap": 8, "outer": {}, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "stops": 5 }
+  ],
+  "numberCases": [
+    { "name": "numbered rows count the records drawn, not the collection", "outer": { "ui.category": "food" }, "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "numbers": [1, 2] },
+    { "name": "three drawn of five: 1, 2, 3", "outer": { "ui.category": "fun" }, "where": { "path": "reward.category", "op": "neq", "valuePath": "ui.category" }, "numbers": [1, 2, 3] }
+  ],
+  "emptinessCases": [
+    { "name": "a filtered list with records: not empty", "outer": { "ui.category": "fun" }, "condition": { "path": "rewards", "op": "isEmpty", "item": "reward", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" } }, "holds": false },
+    { "name": "a category with no record: empty — the empty state shows", "outer": { "ui.category": "travel" }, "condition": { "path": "rewards", "op": "isEmpty", "item": "reward", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" } }, "holds": true },
+    { "name": "isNotEmpty on the same: the list shows", "outer": { "ui.category": "food" }, "condition": { "path": "rewards", "op": "isNotEmpty", "item": "reward", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" } }, "holds": true },
+    { "name": "isNotEmpty with nothing passed", "outer": { "ui.category": "travel" }, "condition": { "path": "rewards", "op": "isNotEmpty", "item": "reward", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" } }, "holds": false },
+    { "name": "nothing chosen: every record counts — not empty", "outer": {}, "condition": { "path": "rewards", "op": "isEmpty", "item": "reward", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" } }, "holds": false },
+    { "name": "no list in the data: empty", "outer": { "ui.category": "fun" }, "noList": true, "condition": { "path": "rewards", "op": "isEmpty", "item": "reward", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" } }, "holds": true },
+    { "name": "an empty list: empty", "outer": { "ui.category": "fun" }, "emptyList": true, "condition": { "path": "rewards", "op": "isEmpty", "item": "reward", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" } }, "holds": true },
+    { "name": "the filter of the empty state is a literal, too", "outer": {}, "condition": { "path": "rewards", "op": "isEmpty", "item": "reward", "where": { "path": "reward.price", "op": "gt", "value": 20000 } }, "holds": true }
+  ],
+  "documentCases": [
+    { "name": "a list with a filter by another path: publishable", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" }, "codes": [] },
+    { "name": "an operand path the dictionary does not have", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.nothing" }, "codes": ["unknown_binding_path"] },
+    { "name": "an operand path that is a list", "where": { "path": "reward.category", "op": "eq", "valuePath": "rewards" }, "codes": ["unknown_binding_path"] },
+    { "name": "a text compared with a number", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.budget" }, "codes": ["visibility_type_mismatch"] },
+    { "name": "order on a text path", "where": { "path": "reward.category", "op": "gt", "valuePath": "ui.category" }, "codes": ["visibility_type_mismatch"] },
+    { "name": "a value and a valuePath together: the shape is broken", "where": { "path": "reward.category", "op": "eq", "value": "fun", "valuePath": "ui.category" }, "codes": ["invalid_document"] },
+    { "name": "valuePath on an operator without an operand: the shape is broken", "where": { "path": "reward.affordable", "op": "isTrue", "valuePath": "ui.category" }, "codes": ["invalid_document"] },
+    { "name": "a filter does not carry a filter", "where": { "path": "rewards", "op": "isEmpty", "item": "reward", "where": { "path": "reward.affordable", "op": "isTrue" } }, "codes": ["invalid_document"] },
+    { "name": "the empty state of a filtered list: publishable", "visibleIf": { "path": "rewards", "op": "isEmpty", "item": "reward", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" } }, "codes": [] },
+    { "name": "the prefix of the empty state is not that of the collection", "visibleIf": { "path": "rewards", "op": "isEmpty", "item": "prize", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" } }, "codes": ["unknown_collection"] },
+    { "name": "a filter on a value path: nothing to count", "visibleIf": { "path": "ui.category", "op": "isEmpty", "item": "reward", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" } }, "codes": ["where_needs_list"] },
+    { "name": "a filter without its prefix: the shape is broken", "visibleIf": { "path": "rewards", "op": "isEmpty", "where": { "path": "reward.category", "op": "eq", "valuePath": "ui.category" } }, "codes": ["invalid_document"] },
+    { "name": "a comparison with another path in visibleIf: publishable", "visibleIf": { "path": "ui.category", "op": "neq", "valuePath": "ui.lastCategory" }, "codes": [] }
+  ]
+}

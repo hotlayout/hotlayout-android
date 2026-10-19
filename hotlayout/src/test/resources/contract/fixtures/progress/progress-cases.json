@@ -1,0 +1,478 @@
+{
+  "description": "One table of cases for every reader (schema 9.7.0): the progress bar and the progress ring. Rules: x-style.layout.progress; policy rows unknownToken, tokenWithoutFieldDefault, unorderedGradient. Numbers are logical pixels under the theme below (the spacing and the «pill» radius are the values of the built-in theme; the gradients are declared for this table). «readerOnly» — a value the builder does not produce or does not publish (an unknown word, a token the theme does not declare, a wrong form); a reader still has to draw it this way. Angles are degrees clockwise from the top of the ring.",
+  "theme": {
+    "spacing": { "none": 0, "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24 },
+    "radius": { "pill": 72 },
+    "color": { "primary": "#4f46e5", "secondary": "#eef0f6", "surface": "#ffffff", "accent": "#0369a1", "success": "#15803d" },
+    "gradient": {
+      "brand": { "angle": 90, "stops": [{ "color": "#4f46e5", "position": 0 }, { "color": "#0369a1", "position": 1 }] },
+      "tricolor": { "angle": 180, "stops": [{ "color": "#ff0000", "position": 0 }, { "color": "#00ff00", "position": 0.5 }, { "color": "#0000ff", "position": 1 }] },
+      "inset": { "angle": 45, "stops": [{ "color": "#4f46e5", "position": 0.25 }, { "color": "#15803d", "position": 0.75 }] }
+    }
+  },
+  "defaults": { "thickness": "sm", "trackColor": "secondary", "color": "primary", "ringSize": "md", "ringSizeUnit": "xl" },
+  "ratioCases": [
+    { "name": "half of the scale", "value": 50, "max": 100, "expect": 0.5 },
+    { "name": "the limit is not 100: three of four", "value": 3, "max": 4, "expect": 0.75 },
+    { "name": "a fractional scale", "value": 0.25, "max": 0.5, "expect": 0.5 },
+    { "name": "one third is not rounded", "value": 1, "max": 3, "expect": 0.3333333333333333 },
+    { "name": "zero value: nothing is filled", "value": 0, "max": 100, "expect": 0 },
+    { "name": "value equal to the limit: the whole scale", "value": 100, "max": 100, "expect": 1 },
+    { "name": "value over the limit is clamped to the whole scale", "value": 150, "max": 100, "expect": 1 },
+    { "name": "negative value is clamped to nothing", "value": -5, "max": 100, "expect": 0 },
+    { "name": "limit 0 is NO scale, not a full one", "value": 5, "max": 0, "expect": 0 },
+    { "name": "limit 0 and value 0", "value": 0, "max": 0, "expect": 0 },
+    { "name": "negative limit is no scale", "value": 5, "max": -10, "expect": 0 },
+    { "name": "negative limit with a negative value is still no scale (not 0.5)", "value": -5, "max": -10, "expect": 0 },
+    { "name": "no value in the data (null): nothing is filled", "value": null, "max": 100, "readerOnly": true, "expect": 0 },
+    { "name": "no limit in the data (null): no scale", "value": 5, "max": null, "readerOnly": true, "expect": 0 },
+    { "name": "a value that is a string is not a number", "value": "50", "max": 100, "readerOnly": true, "expect": 0 }
+  ],
+  "ringCases": [
+    { "name": "size sm, no style: two units", "props": { "size": "sm" }, "style": {}, "expect": { "diameter": 48, "thickness": 8, "boxInline": 48, "boxBlock": 48 } },
+    { "name": "size md, no style: three units", "props": { "size": "md" }, "style": {}, "expect": { "diameter": 72, "thickness": 8, "boxInline": 72, "boxBlock": 72 } },
+    { "name": "size lg, no style: four units", "props": { "size": "lg" }, "style": {}, "expect": { "diameter": 96, "thickness": 8, "boxInline": 96, "boxBlock": 96 } },
+    { "name": "unknown size word (a newer minor): md", "props": { "size": "xl" }, "style": {}, "readerOnly": true, "expect": { "diameter": 72, "thickness": 8, "boxInline": 72, "boxBlock": 72 } },
+    { "name": "no size field: md", "props": {}, "style": {}, "readerOnly": true, "expect": { "diameter": 72, "thickness": 8, "boxInline": 72, "boxBlock": 72 } },
+    { "name": "style.width names the diameter; the height follows it", "props": { "size": "md" }, "style": { "width": 160 }, "expect": { "diameter": 160, "thickness": 8, "boxInline": 160, "boxBlock": 160 } },
+    { "name": "style.height names the diameter; the width follows it", "props": { "size": "md" }, "style": { "height": 120 }, "expect": { "diameter": 120, "thickness": 8, "boxInline": 120, "boxBlock": 120 } },
+    { "name": "style is stronger than the size word", "props": { "size": "lg" }, "style": { "width": 40 }, "expect": { "diameter": 40, "thickness": 8, "boxInline": 40, "boxBlock": 40 } },
+    { "name": "wide box: the diameter is the smaller side, the ring is centred along the row", "props": { "size": "md" }, "style": { "width": 200, "height": 120 }, "expect": { "diameter": 120, "thickness": 8, "boxInline": 200, "boxBlock": 120, "freeInline": 80, "freeBlock": 0 } },
+    { "name": "tall box: the diameter is the smaller side, the ring is centred across the row", "props": { "size": "md" }, "style": { "width": 100, "height": 180 }, "expect": { "diameter": 100, "thickness": 8, "boxInline": 100, "boxBlock": 180, "freeInline": 0, "freeBlock": 80 } },
+    { "name": "the size includes the padding: the diameter is the content side", "props": { "size": "md" }, "style": { "width": 160, "padding": 12 }, "expect": { "diameter": 136, "thickness": 8, "boxInline": 160, "boxBlock": 160 } },
+    { "name": "the size includes the border", "props": { "size": "md" }, "style": { "width": 160, "border": 2 }, "expect": { "diameter": 156, "thickness": 8, "boxInline": 160, "boxBlock": 160 } },
+    { "name": "padding and border together", "props": { "size": "md" }, "style": { "width": 160, "padding": 12, "border": 2 }, "expect": { "diameter": 132, "thickness": 8, "boxInline": 160, "boxBlock": 160 } },
+    { "name": "padding alone names nothing: the size word, and the box grows around it", "props": { "size": "md" }, "style": { "padding": 12 }, "expect": { "diameter": 72, "thickness": 8, "boxInline": 96, "boxBlock": 96 } },
+    { "name": "a box smaller than its padding: no ring, the box stays", "props": { "size": "md" }, "style": { "width": 20, "padding": 12 }, "expect": { "diameter": 0, "thickness": 0, "boxInline": 20, "boxBlock": 24 } },
+    { "name": "maxWidth caps the named width", "props": { "size": "md" }, "style": { "width": 300, "maxWidth": 200 }, "expect": { "diameter": 200, "thickness": 8, "boxInline": 200, "boxBlock": 200 } },
+    { "name": "minWidth alone names the side: the ring is not smaller than it", "props": { "size": "md" }, "style": { "minWidth": 100 }, "expect": { "diameter": 100, "thickness": 8, "boxInline": 100, "boxBlock": 100 } },
+    { "name": "minWidth below the natural size changes nothing", "props": { "size": "md" }, "style": { "minWidth": 40 }, "expect": { "diameter": 72, "thickness": 8, "boxInline": 72, "boxBlock": 72 } },
+    { "name": "maxWidth alone names the side: the ring is not larger than it", "props": { "size": "lg" }, "style": { "maxWidth": 40 }, "expect": { "diameter": 40, "thickness": 8, "boxInline": 40, "boxBlock": 40 } },
+    { "name": "minWidth with a named smaller height: the height wins, the ring is centred", "props": { "size": "md" }, "style": { "minWidth": 100, "height": 60 }, "expect": { "diameter": 60, "thickness": 8, "boxInline": 100, "boxBlock": 60, "freeInline": 40, "freeBlock": 0 } },
+    { "name": "inverted range: the minimum wins", "props": { "size": "md" }, "style": { "width": 80, "minWidth": 120, "maxWidth": 100 }, "expect": { "diameter": 120, "thickness": 8, "boxInline": 120, "boxBlock": 120 } },
+    { "name": "under a row weight the width fields do not name the diameter", "props": { "size": "sm" }, "style": { "width": 200, "minWidth": 150 }, "applied": { "width": false, "height": true }, "expect": { "diameter": 48, "thickness": 8, "boxBlock": 48 } },
+    { "name": "under a row weight a named height still names the diameter", "props": { "size": "sm" }, "style": { "width": 200, "height": 100 }, "applied": { "width": false, "height": true }, "expect": { "diameter": 100, "thickness": 8, "boxBlock": 100 } },
+    { "name": "a fill layer of a stack: no field names the diameter", "props": { "size": "lg" }, "style": { "width": 200, "height": 200 }, "applied": { "width": false, "height": false }, "expect": { "diameter": 96, "thickness": 8 } },
+    { "name": "thickness by a token", "props": { "size": "md", "thickness": "md" }, "style": {}, "expect": { "diameter": 72, "thickness": 12, "boxInline": 72, "boxBlock": 72 } },
+    { "name": "thickness by a number", "props": { "size": "md", "thickness": 20 }, "style": {}, "expect": { "diameter": 72, "thickness": 20, "boxInline": 72, "boxBlock": 72 } },
+    { "name": "the thickness does not change the box: the arc is inside the circle", "props": { "size": "md", "thickness": 30 }, "style": {}, "expect": { "diameter": 72, "thickness": 30, "boxInline": 72, "boxBlock": 72 } },
+    { "name": "thickness equal to half of the diameter: a disc", "props": { "size": "sm", "thickness": 24 }, "style": {}, "expect": { "diameter": 48, "thickness": 24, "boxInline": 48, "boxBlock": 48 } },
+    { "name": "thickness over half of the diameter is clamped to the half", "props": { "size": "sm", "thickness": 40 }, "style": {}, "expect": { "diameter": 48, "thickness": 24, "boxInline": 48, "boxBlock": 48 } },
+    { "name": "zero thickness: nothing is drawn, the box stays", "props": { "size": "md", "thickness": "none" }, "style": {}, "expect": { "diameter": 72, "thickness": 0, "boxInline": 72, "boxBlock": 72 } },
+    { "name": "a big ring with a thick arc", "props": { "size": "md", "thickness": 16 }, "style": { "width": 240, "height": 240 }, "expect": { "diameter": 240, "thickness": 16, "boxInline": 240, "boxBlock": 240 } },
+    { "name": "348: a label in the middle does not enlarge the box: size md with a percent label is 72 × 72, not 72 × 77", "props": { "size": "md", "labelFormat": "percent" }, "style": {}, "expect": { "diameter": 72, "thickness": 8, "boxInline": 72, "boxBlock": 72 } },
+    { "name": "348: the same with the label «value of max»", "props": { "size": "sm", "labelFormat": "valueOfMax" }, "style": {}, "expect": { "diameter": 48, "thickness": 8, "boxInline": 48, "boxBlock": 48 } }
+  ],
+  "arcCases": [
+    { "name": "a quarter, LTR: from the top to three o'clock", "ratio": 0.25, "direction": "ltr", "expect": { "startDeg": 0, "sweepDeg": 90 } },
+    { "name": "a quarter, RTL: the SAME arc, the ring is not mirrored", "ratio": 0.25, "direction": "rtl", "expect": { "startDeg": 0, "sweepDeg": 90 } },
+    { "name": "three quarters: to nine o'clock", "ratio": 0.75, "direction": "ltr", "expect": { "startDeg": 0, "sweepDeg": 270 } },
+    { "name": "nothing", "ratio": 0, "direction": "ltr", "expect": { "startDeg": 0, "sweepDeg": 0 } },
+    { "name": "the whole circle", "ratio": 1, "direction": "rtl", "expect": { "startDeg": 0, "sweepDeg": 360 } }
+  ],
+  "barCases": [
+    { "name": "no thickness field: the token sm", "props": {}, "trackInline": 300, "ratio": 0.5, "direction": "ltr", "expect": { "trackBlock": 8, "fillInline": 150, "trackRadius": 4, "fillRadius": 4, "fillFrom": "left" } },
+    { "name": "thickness by a token", "props": { "thickness": "lg" }, "trackInline": 300, "ratio": 0.5, "direction": "ltr", "expect": { "trackBlock": 16, "fillInline": 150, "trackRadius": 8, "fillRadius": 8, "fillFrom": "left" } },
+    { "name": "thickness by a number", "props": { "thickness": 20 }, "trackInline": 300, "ratio": 0.5, "direction": "ltr", "expect": { "trackBlock": 20, "fillInline": 150, "trackRadius": 10, "fillRadius": 10, "fillFrom": "left" } },
+    { "name": "RTL: the fill grows from the right", "props": { "thickness": 20 }, "trackInline": 300, "ratio": 0.5, "direction": "rtl", "expect": { "trackBlock": 20, "fillInline": 150, "trackRadius": 10, "fillRadius": 10, "fillFrom": "right" } },
+    { "name": "a fill narrower than the thickness: a narrow oval, the radius is half of its WIDTH", "props": { "thickness": 20 }, "trackInline": 300, "ratio": 0.02, "direction": "ltr", "expect": { "trackBlock": 20, "fillInline": 6, "trackRadius": 10, "fillRadius": 3, "fillFrom": "left" } },
+    { "name": "empty scale: no fill", "props": { "thickness": 20 }, "trackInline": 300, "ratio": 0, "direction": "ltr", "expect": { "trackBlock": 20, "fillInline": 0, "trackRadius": 10, "fillRadius": 0, "fillFrom": "left" } },
+    { "name": "full scale: the fill is the track", "props": { "thickness": 20 }, "trackInline": 300, "ratio": 1, "direction": "ltr", "expect": { "trackBlock": 20, "fillInline": 300, "trackRadius": 10, "fillRadius": 10, "fillFrom": "left" } },
+    { "name": "the thickest bar: the radius is half of the thickness while it is under the pill token", "props": { "thickness": 128 }, "trackInline": 300, "ratio": 0.5, "direction": "ltr", "expect": { "trackBlock": 128, "fillInline": 150, "trackRadius": 64, "fillRadius": 64, "fillFrom": "left" } },
+    { "name": "a short thick track: the radius is half of the shorter side", "props": { "thickness": 128 }, "trackInline": 100, "ratio": 0.5, "direction": "ltr", "expect": { "trackBlock": 128, "fillInline": 50, "trackRadius": 50, "fillRadius": 25, "fillFrom": "left" } },
+    { "name": "zero thickness: no track and no fill", "props": { "thickness": "none" }, "trackInline": 300, "ratio": 0.5, "direction": "ltr", "expect": { "trackBlock": 0, "fillInline": 150, "trackRadius": 0, "fillRadius": 0, "fillFrom": "left" } },
+    { "name": "a token the theme does not declare: the default thickness", "props": { "thickness": "huge" }, "trackInline": 300, "ratio": 0.5, "direction": "ltr", "readerOnly": true, "expect": { "trackBlock": 8, "fillInline": 150, "trackRadius": 4, "fillRadius": 4, "fillFrom": "left" } },
+    { "name": "a thickness of a wrong form (a fraction): the default thickness", "props": { "thickness": 12.5 }, "trackInline": 300, "ratio": 0.5, "direction": "ltr", "readerOnly": true, "expect": { "trackBlock": 8, "fillInline": 150, "trackRadius": 4, "fillRadius": 4, "fillFrom": "left" } }
+  ],
+  "paintCases": [
+    { "name": "no new fields: the scale as before 9.7.0", "props": { "color": "primary" }, "ratio": 0.5, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "color", "hex": "#4f46e5", "opacity": 1 } } },
+    { "name": "track color by a token", "props": { "color": "primary", "trackColor": "surface" }, "ratio": 0.5, "expect": { "track": { "hex": "#ffffff", "opacity": 1 }, "fill": { "kind": "color", "hex": "#4f46e5", "opacity": 1 } } },
+    { "name": "the white ring on a gradient: a 30% white track under a white fill", "props": { "color": "surface", "trackColor": { "token": "surface", "opacity": 0.3 } }, "ratio": 0.75, "expect": { "track": { "hex": "#ffffff", "opacity": 0.3 }, "fill": { "kind": "color", "hex": "#ffffff", "opacity": 1 } } },
+    { "name": "track color by an own value", "props": { "color": "primary", "trackColor": { "value": "#102030" } }, "ratio": 0.5, "expect": { "track": { "hex": "#102030", "opacity": 1 }, "fill": { "kind": "color", "hex": "#4f46e5", "opacity": 1 } } },
+    { "name": "track color by an own value with opacity", "props": { "color": "primary", "trackColor": { "value": "#102030", "opacity": 0.2 } }, "ratio": 0.5, "expect": { "track": { "hex": "#102030", "opacity": 0.2 }, "fill": { "kind": "color", "hex": "#4f46e5", "opacity": 1 } } },
+    { "name": "a track token the theme does not declare: the default track", "props": { "color": "primary", "trackColor": "ghost" }, "ratio": 0.5, "readerOnly": true, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "color", "hex": "#4f46e5", "opacity": 1 } } },
+    { "name": "a track color of a wrong form: the default track", "props": { "color": "primary", "trackColor": "#FFF" }, "ratio": 0.5, "readerOnly": true, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "color", "hex": "#4f46e5", "opacity": 1 } } },
+    { "name": "a translucent fill: the track stays under it, the fill is painted over", "props": { "color": { "token": "primary", "opacity": 0.5 } }, "ratio": 0.5, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "color", "hex": "#4f46e5", "opacity": 0.5 } } },
+    { "name": "a fill token the theme does not declare: the default of the field", "props": { "color": "ghost" }, "ratio": 0.5, "readerOnly": true, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "color", "hex": "#4f46e5", "opacity": 1 } } },
+    { "name": "gradient token, full scale: the stops span the whole scale", "props": { "color": "primary", "gradient": "brand" }, "ratio": 1, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "gradient", "stops": [{ "hex": "#4f46e5", "opacity": 1, "at": 0 }, { "hex": "#0369a1", "opacity": 1, "at": 1 }] } } },
+    { "name": "gradient token, half of the scale: the WHOLE gradient lies on the filled half", "props": { "color": "primary", "gradient": "brand" }, "ratio": 0.5, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "gradient", "stops": [{ "hex": "#4f46e5", "opacity": 1, "at": 0 }, { "hex": "#0369a1", "opacity": 1, "at": 0.5 }] } } },
+    { "name": "the gradient is stronger than a named color", "props": { "color": "success", "gradient": "brand" }, "ratio": 1, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "gradient", "stops": [{ "hex": "#4f46e5", "opacity": 1, "at": 0 }, { "hex": "#0369a1", "opacity": 1, "at": 1 }] } } },
+    { "name": "three stops at 40%: the middle stop is at 20% of the scale; the angle of the token is not read", "props": { "color": "primary", "gradient": "tricolor" }, "ratio": 0.4, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "gradient", "stops": [{ "hex": "#ff0000", "opacity": 1, "at": 0 }, { "hex": "#00ff00", "opacity": 1, "at": 0.2 }, { "hex": "#0000ff", "opacity": 1, "at": 0.4 }] } } },
+    { "name": "stops that do not start at 0 and do not end at 1: the first color runs from the start of the scale, the last one to the end of the fill", "props": { "color": "primary", "gradient": "inset" }, "ratio": 0.8, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "gradient", "stops": [{ "hex": "#4f46e5", "opacity": 1, "at": 0.2 }, { "hex": "#15803d", "opacity": 1, "at": 0.6 }] } } },
+    { "name": "empty scale with a gradient: every stop is at the start, nothing is drawn", "props": { "color": "primary", "gradient": "brand" }, "ratio": 0, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "gradient", "stops": [{ "hex": "#4f46e5", "opacity": 1, "at": 0 }, { "hex": "#0369a1", "opacity": 1, "at": 0 }] } } },
+    { "name": "own gradient of color references: tokens and a tint", "props": { "color": "primary", "gradient": { "angle": 180, "stops": [{ "color": "primary", "position": 0 }, { "color": { "token": "accent", "opacity": 0.5 }, "position": 1 }] } }, "ratio": 1, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "gradient", "stops": [{ "hex": "#4f46e5", "opacity": 1, "at": 0 }, { "hex": "#0369a1", "opacity": 0.5, "at": 1 }] } } },
+    { "name": "own gradient of own colors", "props": { "color": "primary", "gradient": { "angle": 90, "stops": [{ "color": { "value": "#ffffff" }, "position": 0 }, { "color": { "value": "#ffffff", "opacity": 0.4 }, "position": 1 }] } }, "ratio": 0.5, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "gradient", "stops": [{ "hex": "#ffffff", "opacity": 1, "at": 0 }, { "hex": "#ffffff", "opacity": 0.4, "at": 0.5 }] } } },
+    { "name": "a gradient token the theme does not declare: the solid color", "props": { "color": "success", "gradient": "sunset" }, "ratio": 0.5, "readerOnly": true, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "color", "hex": "#15803d", "opacity": 1 } } },
+    { "name": "own gradient with unordered stops is not drawn: the solid color", "props": { "color": "success", "gradient": { "angle": 90, "stops": [{ "color": "primary", "position": 0.8 }, { "color": "accent", "position": 0.2 }] } }, "ratio": 0.5, "readerOnly": true, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "color", "hex": "#15803d", "opacity": 1 } } },
+    { "name": "own gradient with a stop on an unknown color: the solid color, not the gradient without the stop", "props": { "color": "success", "gradient": { "angle": 90, "stops": [{ "color": "primary", "position": 0 }, { "color": "ghost", "position": 1 }] } }, "ratio": 0.5, "readerOnly": true, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "color", "hex": "#15803d", "opacity": 1 } } },
+    { "name": "a gradient of a wrong form (one stop): the solid color", "props": { "color": "success", "gradient": { "angle": 90, "stops": [{ "color": "primary", "position": 0 }] } }, "ratio": 0.5, "readerOnly": true, "expect": { "track": { "hex": "#eef0f6", "opacity": 1 }, "fill": { "kind": "color", "hex": "#15803d", "opacity": 1 } } }
+  ],
+  "segmentsNote": "Schema 9.11.0 — «ProgressBar.segments»: the same scale cut into equal steps. Rules: x-style.layout.progressSegments; policy rows unreadableSegments, segmentsSemantics. The gap between steps is the token xs (4). «states» — one letter per step from the logical start: f — filled, c — current (the first unfilled one), u — unfilled. Widths and starts are not rounded. «expect: null» — the steps are not drawn, the bar is continuous with the same ratio. In a right-to-left language the same numbers are measured from the right edge. «segmentPlaceCases»: the kind of the bar — steps or continuous — is decided by the width the PLACE gives it (`placeInline`), never by its own measure; the own minimum width is the same in both kinds — (segments − 1) × gap — so a bar in a place «by content» does not flip between the kinds on every frame.",
+  "segmentCases": [
+    { "name": "six steps on a track of 320, half of the scale", "props": { "segments": 6 }, "trackInline": 320, "value": 3, "max": 6, "direction": "ltr", "expect": { "inline": 50, "starts": [0, 54, 108, 162, 216, 270], "filled": 3, "current": 3, "states": "fffcuu", "radius": 4, "filledInline": 158, "fillFrom": "left" } },
+    { "name": "the same in a right-to-left language: the first step is on the right", "props": { "segments": 6 }, "trackInline": 320, "value": 3, "max": 6, "direction": "rtl", "expect": { "inline": 50, "starts": [0, 54, 108, 162, 216, 270], "filled": 3, "current": 3, "states": "fffcuu", "radius": 4, "filledInline": 158, "fillFrom": "right" } },
+    { "name": "a track of 329: half pixels, nothing is rounded", "props": { "segments": 6 }, "trackInline": 329, "value": 0, "max": 6, "direction": "ltr", "expect": { "inline": 51.5, "starts": [0, 55.5, 111, 166.5, 222, 277.5], "filled": 0, "current": 0, "states": "cuuuuu", "radius": 4, "filledInline": 0, "fillFrom": "left" } },
+    { "name": "every step filled: there is no current step", "props": { "segments": 6 }, "trackInline": 320, "value": 6, "max": 6, "direction": "ltr", "expect": { "inline": 50, "starts": [0, 54, 108, 162, 216, 270], "filled": 6, "current": null, "states": "ffffff", "radius": 4, "filledInline": 320, "fillFrom": "left" } },
+    { "name": "seven steps on 300: a width that is not a whole pixel", "props": { "segments": 7 }, "trackInline": 300, "value": 3, "max": 7, "direction": "ltr", "expect": { "inline": 39.42857142857143, "starts": [0, 43.42857142857143, 86.85714285714286, 130.28571428571428, 173.71428571428572, 217.14285714285714, 260.57142857142856], "filled": 3, "current": 3, "states": "fffcuuu", "radius": 4, "filledInline": 126.28571428571429, "fillFrom": "left" } },
+    { "name": "a step is filled whole or not at all: two and a half is two", "props": { "segments": 6 }, "trackInline": 320, "value": 2.5, "max": 6, "direction": "ltr", "expect": { "inline": 50, "starts": [0, 54, 108, 162, 216, 270], "filled": 2, "current": 2, "states": "ffcuuu", "radius": 4, "filledInline": 104, "fillFrom": "left" } },
+    { "name": "0.3 of 0.4 on four steps is three steps, though the product is 2.9999999999999996", "props": { "segments": 4 }, "trackInline": 300, "value": 0.3, "max": 0.4, "direction": "ltr", "expect": { "inline": 72, "starts": [0, 76, 152, 228], "filled": 3, "current": 3, "states": "fffc", "radius": 4, "filledInline": 224, "fillFrom": "left" } },
+    { "name": "the scale and the steps are different numbers: 50 of 100 on four steps", "props": { "segments": 4 }, "trackInline": 300, "value": 50, "max": 100, "direction": "ltr", "expect": { "inline": 72, "starts": [0, 76, 152, 228], "filled": 2, "current": 2, "states": "ffcu", "radius": 4, "filledInline": 148, "fillFrom": "left" } },
+    { "name": "49 of 100 on four steps: one step", "props": { "segments": 4 }, "trackInline": 300, "value": 49, "max": 100, "direction": "ltr", "expect": { "inline": 72, "starts": [0, 76, 152, 228], "filled": 1, "current": 1, "states": "fcuu", "radius": 4, "filledInline": 72, "fillFrom": "left" } },
+    { "name": "a value above the limit: every step filled", "props": { "segments": 6 }, "trackInline": 320, "value": 9, "max": 6, "direction": "ltr", "expect": { "inline": 50, "starts": [0, 54, 108, 162, 216, 270], "filled": 6, "current": null, "states": "ffffff", "radius": 4, "filledInline": 320, "fillFrom": "left" } },
+    { "name": "a negative value: nothing filled, the first step is current", "props": { "segments": 6 }, "trackInline": 320, "value": -2, "max": 6, "direction": "ltr", "expect": { "inline": 50, "starts": [0, 54, 108, 162, 216, 270], "filled": 0, "current": 0, "states": "cuuuuu", "radius": 4, "filledInline": 0, "fillFrom": "left" } },
+    { "name": "a limit of zero is no scale: nothing filled", "props": { "segments": 6 }, "trackInline": 320, "value": 3, "max": 0, "direction": "ltr", "expect": { "inline": 50, "starts": [0, 54, 108, 162, 216, 270], "filled": 0, "current": 0, "states": "cuuuuu", "radius": 4, "filledInline": 0, "fillFrom": "left" } },
+    { "name": "two steps — the fewest", "props": { "segments": 2 }, "trackInline": 100, "value": 1, "max": 2, "direction": "ltr", "expect": { "inline": 48, "starts": [0, 52], "filled": 1, "current": 1, "states": "fc", "radius": 4, "filledInline": 48, "fillFrom": "left" } },
+    { "name": "twelve steps — the most, on a track of 288", "props": { "segments": 12 }, "trackInline": 288, "value": 12, "max": 12, "direction": "ltr", "expect": { "inline": 20.333333333333332, "filled": 12, "current": null, "states": "ffffffffffff", "radius": 4, "filledInline": 288, "fillFrom": "left" } },
+    { "name": "a thick bar with narrow steps: the radius is half the SHORTER side", "props": { "segments": 12, "thickness": "lg" }, "trackInline": 100, "value": 0, "max": 12, "direction": "ltr", "expect": { "inline": 4.666666666666667, "filled": 0, "current": 0, "states": "cuuuuuuuuuuu", "radius": 2.3333333333333335, "filledInline": 0, "fillFrom": "left" } },
+    { "name": "steps narrower than one pixel: the continuous bar", "props": { "segments": 12 }, "trackInline": 50, "value": 6, "max": 12, "direction": "ltr", "expect": null },
+    { "name": "one step is not steps: the continuous bar", "props": { "segments": 1 }, "trackInline": 320, "value": 3, "max": 6, "direction": "ltr", "readerOnly": true, "expect": null },
+    { "name": "thirteen steps — above the bound: the continuous bar", "props": { "segments": 13 }, "trackInline": 320, "value": 3, "max": 6, "direction": "ltr", "readerOnly": true, "expect": null },
+    { "name": "a fractional number of steps: the continuous bar", "props": { "segments": 2.5 }, "trackInline": 320, "value": 3, "max": 6, "direction": "ltr", "readerOnly": true, "expect": null },
+    { "name": "the number of steps as a string: the continuous bar", "props": { "segments": "6" }, "trackInline": 320, "value": 3, "max": 6, "direction": "ltr", "readerOnly": true, "expect": null },
+    { "name": "no «segments» field: the continuous bar, as before 9.11.0", "props": {}, "trackInline": 320, "value": 3, "max": 6, "direction": "ltr", "expect": null }
+  ],
+  "segmentPlaceCases": [
+    { "name": "336: a stack «by content», 12 steps, gap 4: the bar's own minimum is 44, the step on it is 0, so the bar is continuous — and stays continuous at 44, it does not flip back to steps", "props": { "segments": 12 }, "placeInline": 44, "expect": { "kind": "continuous", "ownMinInline": 44 } },
+    { "name": "336: the place of 55 gives a step of 11/12, less than 1: continuous (the place decides, the bar's own width does not)", "props": { "segments": 12 }, "placeInline": 55, "expect": { "kind": "continuous", "ownMinInline": 44 } },
+    { "name": "336: the place of 56 gives a step of exactly 1: steps", "props": { "segments": 12 }, "placeInline": 56, "expect": { "kind": "steps", "ownMinInline": 44, "inline": 1 } },
+    { "name": "336: a place of 200: 12 steps of 13", "props": { "segments": 12 }, "placeInline": 200, "expect": { "kind": "steps", "ownMinInline": 44, "inline": 13 } },
+    { "name": "336: six steps by content: the own minimum is 20 in both kinds", "props": { "segments": 6 }, "placeInline": 20, "expect": { "kind": "continuous", "ownMinInline": 20 } },
+    { "name": "336: two steps, the fewest: the own minimum is one gap, a place of 6 gives steps of exactly 1", "props": { "segments": 2 }, "placeInline": 6, "expect": { "kind": "steps", "ownMinInline": 4, "inline": 1 } }
+  ],
+  "segmentPaintCases": [
+    { "name": "no «currentColor»: the current step looks like every unfilled one", "props": { "segments": 6 }, "expect": { "current": null, "unfilled": { "hex": "#eef0f6", "opacity": 1 } } },
+    { "name": "the current step by a token", "props": { "segments": 6, "currentColor": "accent" }, "expect": { "current": { "hex": "#0369a1", "opacity": 1 }, "unfilled": { "hex": "#eef0f6", "opacity": 1 } } },
+    { "name": "the current step by a token with opacity", "props": { "segments": 6, "currentColor": { "token": "primary", "opacity": 0.35 } }, "expect": { "current": { "hex": "#4f46e5", "opacity": 0.35 }, "unfilled": { "hex": "#eef0f6", "opacity": 1 } } },
+    { "name": "the unfilled steps take the track color", "props": { "segments": 6, "trackColor": "surface", "currentColor": "accent" }, "expect": { "current": { "hex": "#0369a1", "opacity": 1 }, "unfilled": { "hex": "#ffffff", "opacity": 1 } } },
+    { "name": "a current color token the theme does not declare: as unfilled", "props": { "segments": 6, "currentColor": "brandNow" }, "readerOnly": true, "expect": { "current": null, "unfilled": { "hex": "#eef0f6", "opacity": 1 } } },
+    { "name": "a current color of a wrong form: as unfilled", "props": { "segments": 6, "currentColor": 7 }, "readerOnly": true, "expect": { "current": null, "unfilled": { "hex": "#eef0f6", "opacity": 1 } } }
+  ],
+  "segmentGradientCases": [
+    { "name": "the gradient runs along the filled steps as along one fill: from the start of the first to the end of the last filled", "props": { "segments": 6, "gradient": "brand" }, "trackInline": 320, "value": 3, "max": 6, "expect": { "lineFrom": 0, "lineTo": 158, "stops": [{ "hex": "#4f46e5", "at": 0 }, { "hex": "#0369a1", "at": 158 }], "gapsCutOut": true } },
+    { "name": "one filled step: the whole gradient inside it", "props": { "segments": 6, "gradient": "brand" }, "trackInline": 320, "value": 1, "max": 6, "expect": { "lineFrom": 0, "lineTo": 50, "stops": [{ "hex": "#4f46e5", "at": 0 }, { "hex": "#0369a1", "at": 50 }], "gapsCutOut": true } },
+    { "name": "every step filled: the gradient spans the whole track", "props": { "segments": 6, "gradient": "brand" }, "trackInline": 320, "value": 6, "max": 6, "expect": { "lineFrom": 0, "lineTo": 320, "stops": [{ "hex": "#4f46e5", "at": 0 }, { "hex": "#0369a1", "at": 320 }], "gapsCutOut": true } }
+  ],
+  "labelNote": "Schema 9.17.0 — the own style of the label of a ring: «CircularProgress.labelTypography» and «labelColor». Rules: x-style.layout.progressLabel. «style» is the style of the node (it gives the diameter and, in one row, proves the label does not inherit). «expect.typography» is the text style the label is drawn with, resolved in «labelTheme»: the token that gives the typeface and the numbers after the overrides; «lineBlock» is fontSize x lineHeight. «expect.color» is the resolved colour. The box of the node is the ring alone: «boxInline» x «boxBlock» never grow with the label. The label is ONE line in the center and is not clipped by the ring.",
+  "labelTheme": {"typography": {"displayL": {"fontSize": 24, "lineHeight": 1.1667, "fontWeight": 700}, "titleM": {"fontSize": 18, "lineHeight": 1.3333, "fontWeight": 700}, "titleS": {"fontSize": 16, "lineHeight": 1.5, "fontWeight": 500}, "bodyM": {"fontSize": 14, "lineHeight": 1.4286, "fontWeight": 400}, "bodyS": {"fontSize": 12, "lineHeight": 1.3333, "fontWeight": 400}, "caption": {"fontSize": 10, "lineHeight": 1.2, "fontWeight": 500}, "numericL": {"fontSize": 20, "lineHeight": 1.2, "fontWeight": 600}}, "color": {"onSurface": "#111827", "primary": "#4f46e5", "accent": "#0369a1", "muted": "#6b7280"}},
+  "ringLabelCases": [
+    {"name": "no label fields, size sm: the label as before 9.17.0 — caption, onSurface", "props": {"labelFormat": "valueOfMax", "size": "sm"}, "style": {}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 48, "boxInline": 48, "boxBlock": 48, "typography": {"token": "caption", "fontSize": 10, "fontWeight": 500, "lineHeight": 1.2, "lineBlock": 12.0}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "no label fields, size md", "props": {"labelFormat": "valueOfMax", "size": "md"}, "style": {}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 72, "boxInline": 72, "boxBlock": 72, "typography": {"token": "caption", "fontSize": 10, "fontWeight": 500, "lineHeight": 1.2, "lineBlock": 12.0}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "no label fields, size lg", "props": {"labelFormat": "valueOfMax", "size": "lg"}, "style": {}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 96, "boxInline": 96, "boxBlock": 96, "typography": {"token": "caption", "fontSize": 10, "fontWeight": 500, "lineHeight": 1.2, "lineBlock": 12.0}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "no label fields, a named diameter of 240: the ring grows, the label does NOT (scalesWithDiameter: false)", "props": {"labelFormat": "valueOfMax", "size": "md"}, "style": {"width": 240, "height": 240}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 240, "boxInline": 240, "boxBlock": 240, "typography": {"token": "caption", "fontSize": 10, "fontWeight": 500, "lineHeight": 1.2, "lineBlock": 12.0}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "a text style token, size sm", "props": {"labelFormat": "valueOfMax", "size": "sm", "labelTypography": "bodyS"}, "style": {}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 48, "boxInline": 48, "boxBlock": 48, "typography": {"token": "bodyS", "fontSize": 12, "fontWeight": 400, "lineHeight": 1.3333, "lineBlock": 15.9996}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "a text style token, size md", "props": {"labelFormat": "valueOfMax", "size": "md", "labelTypography": "titleM"}, "style": {}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 72, "boxInline": 72, "boxBlock": 72, "typography": {"token": "titleM", "fontSize": 18, "fontWeight": 700, "lineHeight": 1.3333, "lineBlock": 23.9994}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "a text style token, size lg", "props": {"labelFormat": "valueOfMax", "size": "lg", "labelTypography": "numericL"}, "style": {}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 96, "boxInline": 96, "boxBlock": 96, "typography": {"token": "numericL", "fontSize": 20, "fontWeight": 600, "lineHeight": 1.2, "lineBlock": 24.0}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "a big ring with a big label: a named diameter of 240 and displayL", "props": {"labelFormat": "valueOfMax", "size": "md", "labelTypography": "displayL"}, "style": {"width": 240, "height": 240}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 240, "boxInline": 240, "boxBlock": 240, "typography": {"token": "displayL", "fontSize": 24, "fontWeight": 700, "lineHeight": 1.1667, "lineBlock": 28.0008}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "a token with overrides: displayL at font size 48, weight 800", "props": {"labelFormat": "valueOfMax", "size": "md", "labelTypography": {"token": "displayL", "fontSize": 48, "fontWeight": 800}}, "style": {"width": 240, "height": 240}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 240, "boxInline": 240, "boxBlock": 240, "typography": {"token": "displayL", "fontSize": 48, "fontWeight": 800, "lineHeight": 1.1667, "lineBlock": 56.0016}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "only the colour: the font stays caption", "props": {"labelFormat": "valueOfMax", "size": "md", "labelColor": "primary"}, "style": {}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 72, "boxInline": 72, "boxBlock": 72, "typography": {"token": "caption", "fontSize": 10, "fontWeight": 500, "lineHeight": 1.2, "lineBlock": 12.0}, "color": {"hex": "#4f46e5", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "a tint of a token", "props": {"labelFormat": "valueOfMax", "size": "md", "labelColor": {"token": "primary", "opacity": 0.6}}, "style": {}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 72, "boxInline": 72, "boxBlock": 72, "typography": {"token": "caption", "fontSize": 10, "fontWeight": 500, "lineHeight": 1.2, "lineBlock": 12.0}, "color": {"hex": "#4f46e5", "opacity": 0.6}, "lines": 1, "placement": "center"}},
+    {"name": "an own colour value", "props": {"labelFormat": "valueOfMax", "size": "md", "labelColor": {"value": "#ff7a59"}}, "style": {}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 72, "boxInline": 72, "boxBlock": 72, "typography": {"token": "caption", "fontSize": 10, "fontWeight": 500, "lineHeight": 1.2, "lineBlock": 12.0}, "color": {"hex": "#ff7a59", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "both fields on a named diameter", "props": {"labelFormat": "valueOfMax", "size": "lg", "labelTypography": "displayL", "labelColor": "accent"}, "style": {"width": 200}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 200, "boxInline": 200, "boxBlock": 200, "typography": {"token": "displayL", "fontSize": 24, "fontWeight": 700, "lineHeight": 1.1667, "lineBlock": 28.0008}, "color": {"hex": "#0369a1", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "the label does not size the ring: displayL at 96 in a ring of 48 keeps the box 48 x 48 and is not clipped by the ring", "props": {"labelFormat": "valueOfMax", "size": "sm", "labelTypography": {"token": "displayL", "fontSize": 96}}, "style": {}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 48, "boxInline": 48, "boxBlock": 48, "typography": {"token": "displayL", "fontSize": 96, "fontWeight": 700, "lineHeight": 1.1667, "lineBlock": 112.0032}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "percent: the same style rules", "props": {"labelFormat": "percent", "size": "md", "labelTypography": "titleM", "labelColor": "accent"}, "style": {}, "value": 74, "max": 119, "expect": {"text": "62%", "diameter": 72, "boxInline": 72, "boxBlock": 72, "typography": {"token": "titleM", "fontSize": 18, "fontWeight": 700, "lineHeight": 1.3333, "lineBlock": 23.9994}, "color": {"hex": "#0369a1", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "the label does not inherit: colour and typography of the NODE style do not reach it", "props": {"labelFormat": "valueOfMax", "size": "md"}, "style": {"color": "primary", "typography": "displayL", "fontStyle": "italic", "textDecoration": "underline"}, "value": 74, "max": 119, "expect": {"text": "74 / 119", "diameter": 72, "boxInline": 72, "boxBlock": 72, "typography": {"token": "caption", "fontSize": 10, "fontWeight": 500, "lineHeight": 1.2, "lineBlock": 12.0}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "READER: a text style token the theme does not know — the default (unknown: use-default)", "props": {"labelFormat": "valueOfMax", "size": "md", "labelTypography": "hero"}, "style": {}, "value": 74, "max": 119, "readerOnly": "the validator rejects the token", "expect": {"text": "74 / 119", "diameter": 72, "boxInline": 72, "boxBlock": 72, "typography": {"token": "caption", "fontSize": 10, "fontWeight": 500, "lineHeight": 1.2, "lineBlock": 12.0}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "READER: a colour token the theme does not know — the default", "props": {"labelFormat": "valueOfMax", "size": "md", "labelColor": "brandPink"}, "style": {}, "value": 74, "max": 119, "readerOnly": "the validator rejects the token", "expect": {"text": "74 / 119", "diameter": 72, "boxInline": 72, "boxBlock": 72, "typography": {"token": "caption", "fontSize": 10, "fontWeight": 500, "lineHeight": 1.2, "lineBlock": 12.0}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "READER: fields of a wrong shape — the defaults", "props": {"labelFormat": "valueOfMax", "size": "md", "labelTypography": 18, "labelColor": "#FFF"}, "style": {}, "value": 74, "max": 119, "readerOnly": "the schema rejects the shape", "expect": {"text": "74 / 119", "diameter": 72, "boxInline": 72, "boxBlock": 72, "typography": {"token": "caption", "fontSize": 10, "fontWeight": 500, "lineHeight": 1.2, "lineBlock": 12.0}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}},
+    {"name": "READER: an unknown token inside overrides — the default style as a whole, the overrides do not travel to caption", "props": {"labelFormat": "valueOfMax", "size": "md", "labelTypography": {"token": "hero", "fontSize": 40}}, "style": {}, "value": 74, "max": 119, "readerOnly": "the validator rejects the token", "expect": {"text": "74 / 119", "diameter": 72, "boxInline": 72, "boxBlock": 72, "typography": {"token": "caption", "fontSize": 10, "fontWeight": 500, "lineHeight": 1.2, "lineBlock": 12.0}, "color": {"hex": "#111827", "opacity": 1}, "lines": 1, "placement": "center"}}
+  ],
+  "ringLabelNoneCases": [
+    {"name": "labelFormat none: the label fields are kept in the document and draw nothing", "props": {"labelFormat": "none", "size": "md", "labelTypography": "displayL", "labelColor": "accent"}, "style": {}, "value": 74, "max": 119, "expect": {"text": null, "diameter": 72}},
+    {"name": "no labelFormat field at all: nothing is drawn, as before", "props": {"size": "md", "labelTypography": "displayL"}, "style": {}, "value": 74, "max": 119, "expect": {"text": null, "diameter": 72}}
+  ],
+  "capNote": "Schema 9.21.0 — round ends of a scale: «cap: round» (rules: x-style.layout.progressCap). A ring row: the ratio, the diameter and the thickness in logical pixels; «expected» — what is drawn over the track (none, dot, arc, full), the centres of the ends in degrees from the top clockwise and thetaC in radians. A bar row: the length of the track; «expected» — the length of the fill and the radius of every end. Compare with a tolerance of 1e-6.",
+  "capCases": [
+    {
+      "name": "ring: nothing filled — nothing over the track",
+      "widget": "CircularProgress",
+      "ratio": 0,
+      "diameter": 96,
+      "thickness": 8,
+      "expected": {
+        "kind": "none",
+        "startDeg": 0,
+        "endDeg": 0,
+        "capAngle": 0.090909091
+      }
+    },
+    {
+      "name": "ring: a negative ratio is nothing",
+      "widget": "CircularProgress",
+      "ratio": -0.2,
+      "diameter": 96,
+      "thickness": 8,
+      "expected": {
+        "kind": "none",
+        "startDeg": 0,
+        "endDeg": 0,
+        "capAngle": 0.090909091
+      }
+    },
+    {
+      "name": "ring: a tiny share is a dot of the thickness at thetaC, not a sliver past 0 %",
+      "widget": "CircularProgress",
+      "ratio": 0.01,
+      "diameter": 96,
+      "thickness": 8,
+      "expected": {
+        "kind": "dot",
+        "startDeg": 5.208707228,
+        "endDeg": 5.208707228,
+        "capAngle": 0.090909091
+      }
+    },
+    {
+      "name": "ring: just under two cap angles is still a dot",
+      "widget": "CircularProgress",
+      "ratio": 0.028,
+      "diameter": 96,
+      "thickness": 8,
+      "expected": {
+        "kind": "dot",
+        "startDeg": 5.208707228,
+        "endDeg": 5.208707228,
+        "capAngle": 0.090909091
+      }
+    },
+    {
+      "name": "ring: just over two cap angles is a short arc with two ends",
+      "widget": "CircularProgress",
+      "ratio": 0.03,
+      "diameter": 96,
+      "thickness": 8,
+      "expected": {
+        "kind": "arc",
+        "startDeg": 5.208707228,
+        "endDeg": 5.591292772,
+        "capAngle": 0.090909091
+      }
+    },
+    {
+      "name": "ring: a quarter — square arc between the centres of two round ends",
+      "widget": "CircularProgress",
+      "ratio": 0.25,
+      "diameter": 96,
+      "thickness": 8,
+      "expected": {
+        "kind": "arc",
+        "startDeg": 5.208707228,
+        "endDeg": 84.791292772,
+        "capAngle": 0.090909091
+      }
+    },
+    {
+      "name": "ring: three quarters",
+      "widget": "CircularProgress",
+      "ratio": 0.75,
+      "diameter": 96,
+      "thickness": 8,
+      "expected": {
+        "kind": "arc",
+        "startDeg": 5.208707228,
+        "endDeg": 264.791292772,
+        "capAngle": 0.090909091
+      }
+    },
+    {
+      "name": "ring: almost full — the ends do not meet past 100 %",
+      "widget": "CircularProgress",
+      "ratio": 0.99,
+      "diameter": 96,
+      "thickness": 8,
+      "expected": {
+        "kind": "arc",
+        "startDeg": 5.208707228,
+        "endDeg": 351.191292772,
+        "capAngle": 0.090909091
+      }
+    },
+    {
+      "name": "ring: full — the whole ring, no ends, no seam",
+      "widget": "CircularProgress",
+      "ratio": 1,
+      "diameter": 96,
+      "thickness": 8,
+      "expected": {
+        "kind": "full",
+        "startDeg": 0,
+        "endDeg": 360,
+        "capAngle": 0.090909091
+      }
+    },
+    {
+      "name": "ring: over full is full",
+      "widget": "CircularProgress",
+      "ratio": 1.4,
+      "diameter": 96,
+      "thickness": 8,
+      "expected": {
+        "kind": "full",
+        "startDeg": 0,
+        "endDeg": 360,
+        "capAngle": 0.090909091
+      }
+    },
+    {
+      "name": "ring: zero thickness draws nothing",
+      "widget": "CircularProgress",
+      "ratio": 0.5,
+      "diameter": 96,
+      "thickness": 0,
+      "expected": {
+        "kind": "none",
+        "startDeg": 0,
+        "endDeg": 0,
+        "capAngle": 0.0
+      }
+    },
+    {
+      "name": "ring: a thick stroke on a small ring",
+      "widget": "CircularProgress",
+      "ratio": 0.5,
+      "diameter": 48,
+      "thickness": 12,
+      "expected": {
+        "kind": "arc",
+        "startDeg": 19.098593171,
+        "endDeg": 160.901406829,
+        "capAngle": 0.333333333
+      }
+    },
+    {
+      "name": "ring: thickness over half of the diameter is clamped to half",
+      "widget": "CircularProgress",
+      "ratio": 0.5,
+      "diameter": 40,
+      "thickness": 30,
+      "expected": {
+        "kind": "arc",
+        "startDeg": 57.295779513,
+        "endDeg": 122.704220487,
+        "capAngle": 1.0
+      }
+    },
+    {
+      "name": "bar: nothing filled",
+      "widget": "ProgressBar",
+      "ratio": 0,
+      "track": 300,
+      "thickness": 8,
+      "expected": {
+        "fillInline": 0,
+        "radius": 4.0
+      }
+    },
+    {
+      "name": "bar: a tiny share is a dot of the thickness",
+      "widget": "ProgressBar",
+      "ratio": 0.01,
+      "track": 300,
+      "thickness": 8,
+      "expected": {
+        "fillInline": 8,
+        "radius": 4.0
+      }
+    },
+    {
+      "name": "bar: half",
+      "widget": "ProgressBar",
+      "ratio": 0.5,
+      "track": 300,
+      "thickness": 8,
+      "expected": {
+        "fillInline": 150.0,
+        "radius": 4.0
+      }
+    },
+    {
+      "name": "bar: full",
+      "widget": "ProgressBar",
+      "ratio": 1,
+      "track": 300,
+      "thickness": 8,
+      "expected": {
+        "fillInline": 300,
+        "radius": 4.0
+      }
+    },
+    {
+      "name": "bar: over full is the track",
+      "widget": "ProgressBar",
+      "ratio": 1.2,
+      "track": 300,
+      "thickness": 8,
+      "expected": {
+        "fillInline": 300,
+        "radius": 4.0
+      }
+    },
+    {
+      "name": "bar: a dot never runs past the track",
+      "widget": "ProgressBar",
+      "ratio": 0.5,
+      "track": 6,
+      "thickness": 8,
+      "expected": {
+        "fillInline": 6,
+        "radius": 4.0
+      }
+    },
+    {
+      "name": "bar: the radius is half of the thickness, whatever the theme «pill»",
+      "widget": "ProgressBar",
+      "ratio": 0.4,
+      "track": 200,
+      "thickness": 16,
+      "expected": {
+        "fillInline": 80.0,
+        "radius": 8.0
+      }
+    }
+  ],
+  "segmentFillNote": "Schema 9.25.0 — the steps of a bar during a value transition (rules: x-segmentsTransition). «segmentFillCases»: the ratio at the start and at the end of the transition, the eased share e of the curve of x-valueTransition at the moment; «expected» — the number of filled steps with a fraction, the fill of every step (0 to 1, from the logical start) and the current step (the first one not full; null — every step is full). At rest (e = 1, or no transition) the steps are whole, as in 9.11. «segmentFillInlineCases» — the length of the gradient line along the drawn fill for a step of «step» and a gap of «gap» logical pixels. «transitionShareCases» — the eased share recovered from the shown value of the scale. Compare with a tolerance of 1e-9.",
+  "segmentFillCases": [
+    {"name": "appear 4 of 6: the first frame is empty", "segments": 6, "fromRatio": 0, "toRatio": 0.6666666666666666, "eased": 0, "expected": {"units": 0, "fills": [0, 0, 0, 0, 0, 0], "current": 0}},
+    {"name": "appear 4 of 6 halfway along the curve: two whole steps", "segments": 6, "fromRatio": 0, "toRatio": 0.6666666666666666, "eased": 0.5, "expected": {"units": 2, "fills": [1, 1, 0, 0, 0, 0], "current": 2}},
+    {"name": "appear 4 of 6 at e = 0.875: the fourth step is half filled", "segments": 6, "fromRatio": 0, "toRatio": 0.6666666666666666, "eased": 0.875, "expected": {"units": 3.5, "fills": [1, 1, 1, 0.5, 0, 0], "current": 3}},
+    {"name": "appear 4 of 6 at the end: whole steps at rest", "segments": 6, "fromRatio": 0, "toRatio": 0.6666666666666666, "eased": 1, "expected": {"units": 4, "fills": [1, 1, 1, 1, 0, 0], "current": 4}},
+    {"name": "the end is a picture at rest: 0.55 of 6 grows to three steps, not 3.3", "segments": 6, "fromRatio": 0, "toRatio": 0.55, "eased": 1, "expected": {"units": 3, "fills": [1, 1, 1, 0, 0, 0], "current": 3}},
+    {"name": "0.55 of 6 halfway: one and a half steps", "segments": 6, "fromRatio": 0, "toRatio": 0.55, "eased": 0.5, "expected": {"units": 1.5, "fills": [1, 0.5, 0, 0, 0, 0], "current": 1}},
+    {"name": "a change inside one step moves nothing", "segments": 6, "fromRatio": 0.5, "toRatio": 0.55, "eased": 0.5, "expected": {"units": 3, "fills": [1, 1, 1, 0, 0, 0], "current": 3}},
+    {"name": "a step forward: the next step fills smoothly", "segments": 5, "fromRatio": 0.4, "toRatio": 0.6, "eased": 0.25, "expected": {"units": 2.25, "fills": [1, 1, 0.25, 0, 0], "current": 2}},
+    {"name": "down: the steps empty from the end", "segments": 6, "fromRatio": 0.6666666666666666, "toRatio": 0.16666666666666666, "eased": 0.5, "expected": {"units": 2.5, "fills": [1, 1, 0.5, 0, 0, 0], "current": 2}},
+    {"name": "to full: no current step at the end", "segments": 4, "fromRatio": 0.5, "toRatio": 1, "eased": 1, "expected": {"units": 4, "fills": [1, 1, 1, 1], "current": null}},
+    {"name": "the precision of 9.11 at both ends: 0.3 of 10 is three steps", "segments": 10, "fromRatio": 0, "toRatio": 0.30000000000000004, "eased": 1, "expected": {"units": 3, "fills": [1, 1, 1, 0, 0, 0, 0, 0, 0, 0], "current": 3}},
+    {"name": "the eased share is clamped to 0…1", "segments": 6, "fromRatio": 0, "toRatio": 1, "eased": 1.4, "expected": {"units": 6, "fills": [1, 1, 1, 1, 1, 1], "current": null}}
+  ],
+  "segmentFillInlineCases": [
+    {"name": "nothing filled — no line", "units": 0, "step": 50, "gap": 4, "expected": 0},
+    {"name": "two whole steps: one gap inside", "units": 2, "step": 50, "gap": 4, "expected": 104},
+    {"name": "three and a half: three gaps", "units": 3.5, "step": 50, "gap": 4, "expected": 187},
+    {"name": "a quarter of the first step: no gap", "units": 0.25, "step": 50, "gap": 4, "expected": 12.5}
+  ],
+  "transitionShareCases": [
+    {"name": "halfway up", "from": 0, "to": 100, "shown": 50, "expected": 0.5},
+    {"name": "a quarter down", "from": 100, "to": 0, "shown": 75, "expected": 0.25},
+    {"name": "equal ends — the transition is over", "from": 40, "to": 40, "shown": 40, "expected": 1},
+    {"name": "past the end stays at the end", "from": 0, "to": 100, "shown": 150, "expected": 1},
+    {"name": "before the start stays at the start", "from": 0, "to": 100, "shown": -5, "expected": 0}
+  ],
+  "glowNote": "Schema 9.25.0 — the glow of a scale: «glow: soft | strong» on ProgressBar and CircularProgress (rules: x-progressGlow). «glowStepCases»: which step of a bar with steps glows — «fills» are the fills of the steps (0 to 1), «currentPainted» says whether «currentColor» is there and resolves; «expected.kind» is «current» (the whole step glows in currentColor), «front» (the drawn part of the last step with any fill glows in the fill paint, «fill» is its share) or «none». «glowRuleCases» — keys of x-progressGlow.",
+  "glowStepCases": [
+    {"name": "at rest, 3 of 6, no current colour: the last filled step", "fills": [1, 1, 1, 0, 0, 0], "currentPainted": false, "expected": {"kind": "front", "index": 2, "fill": 1}},
+    {"name": "at rest, 3 of 6, a current colour: the current step", "fills": [1, 1, 1, 0, 0, 0], "currentPainted": true, "expected": {"kind": "current", "index": 3}},
+    {"name": "everything filled, a current colour: no current step, the last filled glows", "fills": [1, 1, 1, 1], "currentPainted": true, "expected": {"kind": "front", "index": 3, "fill": 1}},
+    {"name": "nothing filled, no current colour: no glow", "fills": [0, 0, 0, 0], "currentPainted": false, "expected": {"kind": "none"}},
+    {"name": "nothing filled, a current colour: the first step glows in it", "fills": [0, 0, 0, 0], "currentPainted": true, "expected": {"kind": "current", "index": 0}},
+    {"name": "during a transition, no current colour: the step that is filling", "fills": [1, 1, 0.5, 0, 0, 0], "currentPainted": false, "expected": {"kind": "front", "index": 2, "fill": 0.5}},
+    {"name": "during a transition, a current colour: the step that is filling is the current one", "fills": [1, 1, 0.5, 0, 0, 0], "currentPainted": true, "expected": {"kind": "current", "index": 2}}
+  ],
+  "glowRuleCases": [
+    {"name": "the word soft: sigma 4", "rule": "strength.soft.sigma", "expect": 4},
+    {"name": "the word soft: opacity 0.55", "rule": "strength.soft.opacity", "expect": 0.55},
+    {"name": "the word strong: sigma 8", "rule": "strength.strong.sigma", "expect": 8},
+    {"name": "the word strong: opacity 0.9", "rule": "strength.strong.opacity", "expect": 0.9},
+    {"name": "read on the bar and the ring", "rule": "on", "expect": ["ProgressBar", "CircularProgress"]},
+    {"name": "other steps do not glow", "rule": "segments.others", "expect": "no glow"}
+  ]
+}

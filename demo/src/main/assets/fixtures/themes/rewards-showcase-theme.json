@@ -1,0 +1,686 @@
+{
+  "themeContractVersion": "4.0.0",
+  "defaultThemeId": "light",
+  "themes": {
+    "light": {
+      "id": "light",
+      "name": "Rewards showcase",
+      "source": "Showcase palette of the contract 9 fixture. Invented for the fixture, belongs to no brand.",
+      "brightness": "light",
+      "provisional": [],
+      "fontFamilies": {
+        "body": {
+          "primary": "Inter",
+          "fallback": [
+            "system-ui",
+            "-apple-system",
+            "Segoe UI",
+            "Roboto",
+            "sans-serif"
+          ]
+        },
+        "heading": {
+          "primary": "Inter",
+          "fallback": [
+            "system-ui",
+            "-apple-system",
+            "sans-serif"
+          ]
+        }
+      },
+      "spacing": {
+        "none": 0,
+        "xs": 4,
+        "sm": 8,
+        "md": 12,
+        "lg": 16,
+        "xl": 24,
+        "xxl": 40,
+        "chipY": 6
+      },
+      "radius": {
+        "none": 0,
+        "sm": 8,
+        "md": 12,
+        "lg": 20,
+        "pill": 72,
+        "card": 28,
+        "sheet": 32
+      },
+      "color": {
+        "primary": "#5b34e0",
+        "onPrimary": "#ffffff",
+        "secondary": "#ece8fb",
+        "accent": "#0369a1",
+        "surface": "#ffffff",
+        "onSurface": "#17132b",
+        "muted": "#5d5876",
+        "border": "#e2ddf1",
+        "success": "#15803d",
+        "warning": "#b45309",
+        "danger": "#dc2626",
+        "locked": "#6f6a88",
+        "inProgress": "#0369a1",
+        "completed": "#166534",
+        "canvas": "#f5f3fb",
+        "onBrand": "#ffffff",
+        "brandText": "#5b34e0",
+        "ink": "#120b2e",
+        "gold": "#ffd166"
+      },
+      "typography": {
+        "displayL": {
+          "fontSize": 26,
+          "lineHeight": 1.1538,
+          "fontWeight": 800,
+          "letterSpacing": -0.4,
+          "role": "heading"
+        },
+        "titleM": {
+          "fontSize": 18,
+          "lineHeight": 1.3333,
+          "fontWeight": 700,
+          "role": "heading"
+        },
+        "titleS": {
+          "fontSize": 16,
+          "lineHeight": 1.375,
+          "fontWeight": 600,
+          "role": "body"
+        },
+        "bodyM": {
+          "fontSize": 14,
+          "lineHeight": 1.4286,
+          "fontWeight": 400,
+          "role": "body"
+        },
+        "bodyS": {
+          "fontSize": 12,
+          "lineHeight": 1.3333,
+          "fontWeight": 400,
+          "role": "body"
+        },
+        "caption": {
+          "fontSize": 10,
+          "lineHeight": 1.2,
+          "fontWeight": 500,
+          "role": "body"
+        },
+        "numericL": {
+          "fontSize": 20,
+          "lineHeight": 1.2,
+          "fontWeight": 700,
+          "role": "body"
+        },
+        "eyebrow": {
+          "fontSize": 11,
+          "lineHeight": 1.2727,
+          "fontWeight": 700,
+          "letterSpacing": 1.2,
+          "role": "body"
+        },
+        "chip": {
+          "fontSize": 12,
+          "lineHeight": 1.3333,
+          "fontWeight": 600,
+          "role": "body"
+        },
+        "statValue": {
+          "fontSize": 28,
+          "lineHeight": 1.1429,
+          "fontWeight": 800,
+          "letterSpacing": -0.5,
+          "role": "heading"
+        }
+      },
+      "origins": {},
+      "elevation": {
+        "none": [],
+        "low": [
+          {
+            "offsetX": 0,
+            "offsetY": 1,
+            "blur": 2,
+            "spread": 0,
+            "color": "#1b1340",
+            "opacity": 0.12
+          }
+        ],
+        "medium": [
+          {
+            "offsetX": 0,
+            "offsetY": 8,
+            "blur": 20,
+            "spread": 0,
+            "color": "#1b1340",
+            "opacity": 0.18
+          }
+        ],
+        "card": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 6,
+            "spread": 0,
+            "color": "#1b1340",
+            "opacity": 0.06
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 14,
+            "blur": 32,
+            "spread": -8,
+            "color": "#1b1340",
+            "opacity": 0.16
+          }
+        ],
+        "floating": [
+          {
+            "offsetX": 0,
+            "offsetY": 4,
+            "blur": 10,
+            "spread": 0,
+            "color": "#5b34e0",
+            "opacity": 0.14
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 18,
+            "blur": 36,
+            "spread": -10,
+            "color": "#5b34e0",
+            "opacity": 0.38
+          }
+        ]
+      },
+      "roles": {
+        "badgeTone": {
+          "neutral": {
+            "background": "secondary",
+            "foreground": "onSurface"
+          },
+          "success": {
+            "background": "success",
+            "foreground": "onPrimary"
+          },
+          "warning": {
+            "background": "warning",
+            "foreground": "onPrimary"
+          },
+          "danger": {
+            "background": "danger",
+            "foreground": "onPrimary"
+          },
+          "accent": {
+            "background": "accent",
+            "foreground": "onPrimary"
+          }
+        },
+        "buttonVariant": {
+          "primary": {
+            "background": "primary",
+            "foreground": "onPrimary"
+          },
+          "secondary": {
+            "background": "surface",
+            "foreground": "brandText",
+            "border": "brandText"
+          },
+          "ghost": {
+            "foreground": "brandText"
+          }
+        }
+      },
+      "gradient": {
+        "brandBackdrop": {
+          "angle": 90,
+          "stops": [
+            {
+              "color": "#f1ecff",
+              "position": 0
+            },
+            {
+              "color": "#eaf4ff",
+              "position": 1
+            }
+          ]
+        },
+        "heroAurora": {
+          "angle": 135,
+          "stops": [
+            {
+              "color": "#7a3ff5",
+              "position": 0
+            },
+            {
+              "color": "#4a25c4",
+              "position": 0.5
+            },
+            {
+              "color": "#27126e",
+              "position": 1
+            }
+          ]
+        },
+        "missionSunset": {
+          "angle": 135,
+          "stops": [
+            {
+              "color": "#c2410c",
+              "position": 0
+            },
+            {
+              "color": "#9d174d",
+              "position": 1
+            }
+          ]
+        },
+        "missionOcean": {
+          "angle": 45,
+          "stops": [
+            {
+              "color": "#1e3a8a",
+              "position": 0
+            },
+            {
+              "color": "#0369a1",
+              "position": 1
+            }
+          ]
+        },
+        "missionForest": {
+          "angle": 315,
+          "stops": [
+            {
+              "color": "#115e59",
+              "position": 0
+            },
+            {
+              "color": "#15803d",
+              "position": 1
+            }
+          ]
+        },
+        "missionDusk": {
+          "angle": 180,
+          "stops": [
+            {
+              "color": "#5d5876",
+              "position": 0
+            },
+            {
+              "color": "#3f3a57",
+              "position": 1
+            }
+          ]
+        },
+        "ctaGlow": {
+          "angle": 90,
+          "stops": [
+            {
+              "color": "#6d3bf2",
+              "position": 0
+            },
+            {
+              "color": "#b524c8",
+              "position": 1
+            }
+          ]
+        },
+        "catalogNight": {
+          "angle": 180,
+          "stops": [
+            {
+              "color": "#2a1d7a",
+              "position": 0
+            },
+            {
+              "color": "#120b2e",
+              "position": 1
+            }
+          ]
+        }
+      }
+    },
+    "dark": {
+      "id": "dark",
+      "name": "Rewards showcase dark",
+      "source": "Showcase palette of the contract 9 fixture. Invented for the fixture, belongs to no brand.",
+      "brightness": "dark",
+      "provisional": [],
+      "fontFamilies": {
+        "body": {
+          "primary": "Inter",
+          "fallback": [
+            "system-ui",
+            "-apple-system",
+            "Segoe UI",
+            "Roboto",
+            "sans-serif"
+          ]
+        },
+        "heading": {
+          "primary": "Inter",
+          "fallback": [
+            "system-ui",
+            "-apple-system",
+            "sans-serif"
+          ]
+        }
+      },
+      "spacing": {
+        "none": 0,
+        "xs": 4,
+        "sm": 8,
+        "md": 12,
+        "lg": 16,
+        "xl": 24,
+        "xxl": 40,
+        "chipY": 6
+      },
+      "radius": {
+        "none": 0,
+        "sm": 8,
+        "md": 12,
+        "lg": 20,
+        "pill": 72,
+        "card": 28,
+        "sheet": 32
+      },
+      "color": {
+        "primary": "#6d4cf0",
+        "onPrimary": "#ffffff",
+        "secondary": "#2a2345",
+        "accent": "#0b74b0",
+        "surface": "#1b1630",
+        "onSurface": "#f3f1fb",
+        "muted": "#aaa5c3",
+        "border": "#3a3357",
+        "success": "#15803d",
+        "warning": "#b45309",
+        "danger": "#dc2626",
+        "locked": "#8f8aa8",
+        "inProgress": "#4bb4f0",
+        "completed": "#4ade80",
+        "canvas": "#0f0b1f",
+        "onBrand": "#ffffff",
+        "brandText": "#b9a8ff",
+        "ink": "#07041a",
+        "gold": "#ffd166"
+      },
+      "typography": {
+        "displayL": {
+          "fontSize": 26,
+          "lineHeight": 1.1538,
+          "fontWeight": 800,
+          "letterSpacing": -0.4,
+          "role": "heading"
+        },
+        "titleM": {
+          "fontSize": 18,
+          "lineHeight": 1.3333,
+          "fontWeight": 700,
+          "role": "heading"
+        },
+        "titleS": {
+          "fontSize": 16,
+          "lineHeight": 1.375,
+          "fontWeight": 600,
+          "role": "body"
+        },
+        "bodyM": {
+          "fontSize": 14,
+          "lineHeight": 1.4286,
+          "fontWeight": 400,
+          "role": "body"
+        },
+        "bodyS": {
+          "fontSize": 12,
+          "lineHeight": 1.3333,
+          "fontWeight": 400,
+          "role": "body"
+        },
+        "caption": {
+          "fontSize": 10,
+          "lineHeight": 1.2,
+          "fontWeight": 500,
+          "role": "body"
+        },
+        "numericL": {
+          "fontSize": 20,
+          "lineHeight": 1.2,
+          "fontWeight": 700,
+          "role": "body"
+        },
+        "eyebrow": {
+          "fontSize": 11,
+          "lineHeight": 1.2727,
+          "fontWeight": 700,
+          "letterSpacing": 1.2,
+          "role": "body"
+        },
+        "chip": {
+          "fontSize": 12,
+          "lineHeight": 1.3333,
+          "fontWeight": 600,
+          "role": "body"
+        },
+        "statValue": {
+          "fontSize": 28,
+          "lineHeight": 1.1429,
+          "fontWeight": 800,
+          "letterSpacing": -0.5,
+          "role": "heading"
+        }
+      },
+      "origins": {},
+      "elevation": {
+        "none": [],
+        "low": [
+          {
+            "offsetX": 0,
+            "offsetY": 1,
+            "blur": 2,
+            "spread": 0,
+            "color": "#000000",
+            "opacity": 0.24
+          }
+        ],
+        "medium": [
+          {
+            "offsetX": 0,
+            "offsetY": 8,
+            "blur": 20,
+            "spread": 0,
+            "color": "#000000",
+            "opacity": 0.36
+          }
+        ],
+        "card": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 6,
+            "spread": 0,
+            "color": "#000000",
+            "opacity": 0.12
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 14,
+            "blur": 32,
+            "spread": -8,
+            "color": "#000000",
+            "opacity": 0.32
+          }
+        ],
+        "floating": [
+          {
+            "offsetX": 0,
+            "offsetY": 4,
+            "blur": 10,
+            "spread": 0,
+            "color": "#6d4cf0",
+            "opacity": 0.28
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 18,
+            "blur": 36,
+            "spread": -10,
+            "color": "#6d4cf0",
+            "opacity": 0.76
+          }
+        ]
+      },
+      "roles": {
+        "badgeTone": {
+          "neutral": {
+            "background": "secondary",
+            "foreground": "onSurface"
+          },
+          "success": {
+            "background": "success",
+            "foreground": "onPrimary"
+          },
+          "warning": {
+            "background": "warning",
+            "foreground": "onPrimary"
+          },
+          "danger": {
+            "background": "danger",
+            "foreground": "onPrimary"
+          },
+          "accent": {
+            "background": "accent",
+            "foreground": "onPrimary"
+          }
+        },
+        "buttonVariant": {
+          "primary": {
+            "background": "primary",
+            "foreground": "onPrimary"
+          },
+          "secondary": {
+            "background": "surface",
+            "foreground": "brandText",
+            "border": "brandText"
+          },
+          "ghost": {
+            "foreground": "brandText"
+          }
+        }
+      },
+      "gradient": {
+        "brandBackdrop": {
+          "angle": 90,
+          "stops": [
+            {
+              "color": "#1d1740",
+              "position": 0
+            },
+            {
+              "color": "#12213a",
+              "position": 1
+            }
+          ]
+        },
+        "heroAurora": {
+          "angle": 135,
+          "stops": [
+            {
+              "color": "#7a3ff5",
+              "position": 0
+            },
+            {
+              "color": "#4a25c4",
+              "position": 0.5
+            },
+            {
+              "color": "#27126e",
+              "position": 1
+            }
+          ]
+        },
+        "missionSunset": {
+          "angle": 135,
+          "stops": [
+            {
+              "color": "#c2410c",
+              "position": 0
+            },
+            {
+              "color": "#9d174d",
+              "position": 1
+            }
+          ]
+        },
+        "missionOcean": {
+          "angle": 45,
+          "stops": [
+            {
+              "color": "#1e3a8a",
+              "position": 0
+            },
+            {
+              "color": "#0369a1",
+              "position": 1
+            }
+          ]
+        },
+        "missionForest": {
+          "angle": 315,
+          "stops": [
+            {
+              "color": "#115e59",
+              "position": 0
+            },
+            {
+              "color": "#15803d",
+              "position": 1
+            }
+          ]
+        },
+        "missionDusk": {
+          "angle": 180,
+          "stops": [
+            {
+              "color": "#4a4563",
+              "position": 0
+            },
+            {
+              "color": "#2c2840",
+              "position": 1
+            }
+          ]
+        },
+        "ctaGlow": {
+          "angle": 90,
+          "stops": [
+            {
+              "color": "#6d3bf2",
+              "position": 0
+            },
+            {
+              "color": "#b524c8",
+              "position": 1
+            }
+          ]
+        },
+        "catalogNight": {
+          "angle": 180,
+          "stops": [
+            {
+              "color": "#2a1d7a",
+              "position": 0
+            },
+            {
+              "color": "#120b2e",
+              "position": 1
+            }
+          ]
+        }
+      }
+    }
+  }
+}

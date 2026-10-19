@@ -1,0 +1,47 @@
+{
+  "description": "The top zone of nodes (schema 9.24.0, «pin: 'top'», rules: x-style.layout.topZone). Written by hand; one table for every reader. «childrenCases» — which children of the screen root stand in which zone; «rootProps» are the props of the root (absent: none). «pinCases» — whether a node carries the word (an own field). «geometryCases» — the box of the top zone in logical points from the physical top of the screen: «appBarHeight» includes the safe inset inside the app bar, «pinned» are the SHOWN pinned nodes in document order. «documentCases» — whether the word is read on a node and, if not, why (the first reason in the order onZone, outsideScreen, withBodyAtScreenTop, notInRun); a document with such a node is not published. «ruleCases» — data of the block.",
+  "childrenCases": [
+    { "name": "no word: as before", "children": [{ "id": "bar", "type": "AppBar" }, { "id": "a", "type": "Text" }], "expect": { "appBar": "bar", "topPinned": [], "body": ["a"], "pinned": null, "navBar": null } },
+    { "name": "a greeting pinned under the app bar", "children": [{ "id": "bar", "type": "AppBar" }, { "id": "hello", "type": "Row", "pin": "top" }, { "id": "a", "type": "Text" }], "expect": { "appBar": "bar", "topPinned": ["hello"], "body": ["a"], "pinned": null, "navBar": null } },
+    { "name": "without an app bar the run starts with the first child", "children": [{ "id": "head", "type": "Row", "pin": "top" }, { "id": "chips", "type": "Row", "pin": "top" }, { "id": "grid", "type": "Repeater" }, { "id": "nav", "type": "NavBar" }], "expect": { "appBar": null, "topPinned": ["head", "chips"], "body": ["grid"], "pinned": null, "navBar": "nav" } },
+    { "name": "the first child without the word ends the run", "children": [{ "id": "head", "type": "Row", "pin": "top" }, { "id": "a", "type": "Text" }, { "id": "chips", "type": "Row", "pin": "top" }], "expect": { "appBar": null, "topPinned": ["head"], "body": ["a", "chips"], "pinned": null, "navBar": null } },
+    { "name": "a word after a child without it is not read", "children": [{ "id": "a", "type": "Text" }, { "id": "head", "type": "Row", "pin": "top" }], "expect": { "appBar": null, "topPinned": [], "body": ["a", "head"], "pinned": null, "navBar": null } },
+    { "name": "top and bottom on one screen", "children": [{ "id": "bar", "type": "AppBar" }, { "id": "head", "type": "Row", "pin": "top" }, { "id": "a", "type": "Text" }, { "id": "cta", "type": "Button", "pin": "bottom" }, { "id": "nav", "type": "NavBar" }], "expect": { "appBar": "bar", "topPinned": ["head"], "body": ["a"], "pinned": "cta", "navBar": "nav" } },
+    { "name": "every child pinned to the top: the body is empty", "children": [{ "id": "head", "type": "Row", "pin": "top" }, { "id": "chips", "type": "Row", "pin": "top" }], "expect": { "appBar": null, "topPinned": ["head", "chips"], "body": [], "pinned": null, "navBar": null } },
+    { "name": "a hidden pinned node is still in the run (document order, not visibility)", "children": [{ "id": "head", "type": "Row", "pin": "top", "visibleIf": { "path": "user.vip", "op": "isTrue" } }, { "id": "chips", "type": "Row", "pin": "top" }, { "id": "a", "type": "Text" }], "expect": { "appBar": null, "topPinned": ["head", "chips"], "body": ["a"], "pinned": null, "navBar": null } },
+    { "name": "the body from the top of the screen: the word is not read", "rootProps": { "bodyTop": "screenTop" }, "children": [{ "id": "bar", "type": "AppBar" }, { "id": "head", "type": "Row", "pin": "top" }, { "id": "a", "type": "Text" }], "expect": { "appBar": "bar", "topPinned": [], "body": ["head", "a"], "pinned": null, "navBar": null } },
+    { "name": "a navigation bar with the word is not pinned: it is a zone", "children": [{ "id": "nav", "type": "NavBar", "pin": "top" }], "expect": { "appBar": null, "topPinned": [], "body": [], "pinned": null, "navBar": "nav" } }
+  ],
+  "pinCases": [
+    { "name": "the word", "node": { "pin": "top" }, "expect": true },
+    { "name": "the bottom word is not the top one", "node": { "pin": "bottom" }, "expect": false },
+    { "name": "no field", "node": {}, "expect": false },
+    { "name": "a word of another case", "node": { "pin": "Top" }, "expect": false },
+    { "name": "not a string", "node": { "pin": true }, "expect": false }
+  ],
+  "geometryCases": [
+    { "name": "under an app bar: the root top padding, the bar, the screen gap, the node", "input": { "appBarHeight": 56, "pinned": [{ "height": 48 }], "rootPaddingTop": 8, "gap": 20 }, "expect": { "height": 132, "appBar": { "top": 8, "height": 56 }, "pinned": [{ "top": 84, "height": 48 }], "bodyTop": 132 } },
+    { "name": "two nodes under an app bar: the screen gap between them", "input": { "appBarHeight": 56, "pinned": [{ "height": 48 }, { "height": 40 }], "rootPaddingTop": 8, "gap": 20 }, "expect": { "height": 192, "appBar": { "top": 8, "height": 56 }, "pinned": [{ "top": 84, "height": 48 }, { "top": 152, "height": 40 }], "bodyTop": 192 } },
+    { "name": "without an app bar: the safe inset and the root top padding above the first node", "input": { "pinned": [{ "height": 60 }], "rootPaddingTop": 8, "gap": 20, "safeTop": 47 }, "expect": { "height": 115, "appBar": null, "pinned": [{ "top": 55, "height": 60 }], "bodyTop": 115 } },
+    { "name": "a pulled second node overlaps the first by its pull minus the gap", "input": { "pinned": [{ "height": 60 }, { "height": 80, "pull": 50 }], "rootPaddingTop": 8, "gap": 20, "safeTop": 0 }, "expect": { "height": 118, "appBar": null, "pinned": [{ "top": 8, "height": 60 }, { "top": 38, "height": 80 }], "bodyTop": 118 } },
+    { "name": "a pull on the first node is not read", "input": { "pinned": [{ "height": 60, "pull": 50 }], "rootPaddingTop": 8, "gap": 20, "safeTop": 0 }, "expect": { "height": 68, "appBar": null, "pinned": [{ "top": 8, "height": 60 }], "bodyTop": 68 } },
+    { "name": "with an app bar the safe inset is inside its box, not added again", "input": { "appBarHeight": 103, "pinned": [{ "height": 48 }], "rootPaddingTop": 0, "gap": 12, "safeTop": 47 }, "expect": { "height": 163, "appBar": { "top": 0, "height": 103 }, "pinned": [{ "top": 115, "height": 48 }], "bodyTop": 163 } }
+  ],
+  "documentCases": [
+    { "name": "a node in the run is read", "rootProps": {}, "children": [{ "id": "bar", "type": "AppBar" }, { "id": "head", "type": "Row", "pin": "top" }], "node": "head", "expect": null },
+    { "name": "a word after a child without it", "rootProps": {}, "children": [{ "id": "a", "type": "Text" }, { "id": "head", "type": "Row", "pin": "top" }], "node": "head", "expect": "notInRun" },
+    { "name": "the body from the top of the screen", "rootProps": { "bodyTop": "screenTop" }, "children": [{ "id": "head", "type": "Row", "pin": "top" }], "node": "head", "expect": "withBodyAtScreenTop" },
+    { "name": "the app bar is a zone already", "rootProps": {}, "children": [{ "id": "bar", "type": "AppBar", "pin": "top" }], "node": "bar", "expect": "onZone" },
+    { "name": "a node inside a column is not a child of the screen", "parentType": "Column", "children": [{ "id": "head", "type": "Row", "pin": "top" }], "node": "head", "expect": "outsideScreen" }
+  ],
+  "ruleCases": [
+    { "name": "the field and the word", "rule": "word", "expect": "top" },
+    { "name": "the run counts the document, not visibility", "rule": "counts", "expect": "document-order-not-visibility" },
+    { "name": "the zone never scrolls", "rule": "scrolls", "expect": "never" },
+    { "name": "between the nodes — the screen gap", "rule": "place.between", "expect": "screen-gap" },
+    { "name": "the pull of the first node is not read", "rule": "place.pullOfTheFirst", "expect": "not-read" },
+    { "name": "the body is clipped at the bottom edge of the zone", "rule": "body.clip", "expect": "bottom-edge-of-the-top-zone" },
+    { "name": "with the body from the top of the screen the word is not read", "rule": "withBodyAtScreenTop", "expect": "not-read-the-nodes-are-children-of-the-body" },
+    { "name": "an older reader scrolls the node with the body", "rule": "olderReader", "expect": "reads-the-word-as-no-field-the-nodes-scroll-with-the-body" }
+  ]
+}

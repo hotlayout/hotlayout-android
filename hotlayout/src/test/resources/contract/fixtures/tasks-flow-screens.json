@@ -1,0 +1,598 @@
+{
+  "schemaVersion": "9.0.0",
+  "documentId": "tasks-flow",
+  "name": "Tasks and reward",
+  "initialScreenId": "tasks",
+  "screens": [
+    {
+      "screenId": "tasks",
+      "name": "Tasks",
+      "root": {
+        "id": "tasks-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "tasks-app-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Tasks"
+              },
+              "subtitle": {
+                "kind": "binding",
+                "path": "taskGroup.title",
+                "fallback": "October challenge"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              },
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            }
+          },
+          {
+            "id": "task-tabs",
+            "type": "Tabs",
+            "props": {
+              "initialTab": 0
+            },
+            "children": [
+              {
+                "id": "tab-active",
+                "type": "Tab",
+                "props": {
+                  "title": {
+                    "kind": "literal",
+                    "value": "Active"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "task-list",
+                    "type": "Repeater",
+                    "props": {
+                      "source": "tasks",
+                      "item": "task",
+                      "direction": "column",
+                      "gap": "sm"
+                    },
+                    "children": [
+                      {
+                        "id": "task-card",
+                        "type": "Container",
+                        "props": {
+                          "gap": "sm"
+                        },
+                        "style": {
+                          "padding": "sm",
+                          "radius": "lg",
+                          "background": {
+                            "kind": "color",
+                            "color": "surface"
+                          },
+                          "shadow": "low"
+                        },
+                        "children": [
+                          {
+                            "id": "task-row",
+                            "type": "ListTile",
+                            "props": {
+                              "leading": {
+                                "kind": "image",
+                                "source": {
+                                  "kind": "binding",
+                                  "path": "task.image",
+                                  "fallback": "placeholder"
+                                }
+                              },
+                              "title": {
+                                "kind": "binding",
+                                "path": "task.title",
+                                "fallback": "Task"
+                              },
+                              "subtitle": {
+                                "kind": "binding",
+                                "path": "task.description",
+                                "fallback": ""
+                              },
+                              "trailing": {
+                                "kind": "text",
+                                "text": {
+                                  "kind": "binding",
+                                  "path": "task.rewardPoints",
+                                  "fallback": "0"
+                                },
+                                "icon": "star"
+                              },
+                              "action": {
+                                "type": "navigate",
+                                "params": {
+                                  "screenId": "task-details"
+                                }
+                              }
+                            },
+                            "style": {
+                              "padding": {
+                                "top": "sm",
+                                "bottom": "sm"
+                              }
+                            }
+                          },
+                          {
+                            "id": "task-status",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "binding",
+                                "path": "task.status",
+                                "fallback": "inProgress"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "color": "accent",
+                              "typography": "caption"
+                            },
+                            "styleWhen": [
+                              {
+                                "when": {
+                                  "path": "task.status",
+                                  "op": "eq",
+                                  "value": "completed"
+                                },
+                                "style": {
+                                  "color": "success"
+                                }
+                              },
+                              {
+                                "when": {
+                                  "path": "task.status",
+                                  "op": "eq",
+                                  "value": "locked"
+                                },
+                                "style": {
+                                  "color": "muted"
+                                }
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "tasks-empty",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "No active tasks yet — check back tomorrow"
+                      },
+                      "align": "center",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "bodyS"
+                    },
+                    "visibleIf": {
+                      "path": "tasks",
+                      "op": "isEmpty"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "tab-progress",
+                "type": "Tab",
+                "props": {
+                  "title": {
+                    "kind": "literal",
+                    "value": "Challenge"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "group-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "taskGroup.title",
+                        "fallback": "October challenge"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "group-progress",
+                    "type": "ProgressBar",
+                    "props": {
+                      "value": {
+                        "kind": "binding",
+                        "path": "taskGroup.completedTasks",
+                        "fallback": 0
+                      },
+                      "max": {
+                        "kind": "binding",
+                        "path": "taskGroup.totalTasks",
+                        "fallback": 5
+                      },
+                      "color": "primary",
+                      "labelFormat": "valueOfMax"
+                    }
+                  },
+                  {
+                    "id": "group-done",
+                    "type": "Badge",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Challenge completed"
+                      },
+                      "tone": "success"
+                    },
+                    "visibleIf": {
+                      "path": "taskGroup.completed",
+                      "op": "isTrue"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "task-details",
+      "name": "Task details",
+      "root": {
+        "id": "details-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "details-column",
+            "type": "Column",
+            "props": {
+              "gap": "md",
+              "align": "center"
+            },
+            "children": [
+              {
+                "id": "ring-stack",
+                "type": "Stack",
+                "props": {
+                  "alignHorizontal": "center",
+                  "alignVertical": "center"
+                },
+                "children": [
+                  {
+                    "id": "task-ring",
+                    "type": "CircularProgress",
+                    "props": {
+                      "value": {
+                        "kind": "binding",
+                        "path": "task.progress",
+                        "fallback": 0
+                      },
+                      "max": {
+                        "kind": "binding",
+                        "path": "task.target",
+                        "fallback": 5
+                      },
+                      "color": "primary",
+                      "size": "lg"
+                    }
+                  },
+                  {
+                    "id": "ring-value",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "task.progress",
+                        "fallback": "0"
+                      },
+                      "align": "center",
+                      "overflow": "clip"
+                    },
+                    "style": {
+                      "typography": "numericL"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "task-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "task.title",
+                    "fallback": "Task of the month"
+                  },
+                  "align": "center",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                },
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "task.status",
+                      "op": "eq",
+                      "value": "completed"
+                    },
+                    "style": {
+                      "color": "success"
+                    }
+                  },
+                  {
+                    "when": {
+                      "path": "task.status",
+                      "op": "eq",
+                      "value": "locked"
+                    },
+                    "style": {
+                      "color": "muted"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "task-description",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "task.description",
+                    "fallback": "Any amount, any merchant"
+                  },
+                  "align": "center",
+                  "overflow": "visible"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              },
+              {
+                "id": "done-badge",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Completed"
+                  },
+                  "tone": "success"
+                },
+                "visibleIf": {
+                  "path": "task.completed",
+                  "op": "isTrue"
+                }
+              },
+              {
+                "id": "task-completed-at",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "task.completedAt",
+                    "fallback": "—",
+                    "format": "dateTime"
+                  },
+                  "align": "center",
+                  "overflow": "clip"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "caption"
+                },
+                "visibleIf": {
+                  "path": "task.completed",
+                  "op": "isTrue"
+                }
+              },
+              {
+                "id": "claim",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Claim reward"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "reward-sheet"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "back-to-tasks",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "All tasks"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "tasks"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "back",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back"
+                  },
+                  "variant": "ghost",
+                  "action": {
+                    "type": "navigate.back"
+                  },
+                  "fullWidth": false
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "reward-sheet",
+      "name": "Reward",
+      "presentation": "modal",
+      "root": {
+        "id": "reward-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "reward-column",
+            "type": "Column",
+            "props": {
+              "gap": "md",
+              "align": "center"
+            },
+            "children": [
+              {
+                "id": "reward-icon",
+                "type": "Icon",
+                "props": {
+                  "name": "gift",
+                  "size": "lg",
+                  "alt": "Gift"
+                },
+                "style": {
+                  "color": "primary"
+                }
+              },
+              {
+                "id": "reward-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "You earned"
+                  },
+                  "align": "center",
+                  "overflow": "clip"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "reward-points",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "task.rewardPoints",
+                    "fallback": "100"
+                  },
+                  "align": "center",
+                  "overflow": "clip"
+                },
+                "style": {
+                  "color": "primary",
+                  "typography": "numericL"
+                }
+              },
+              {
+                "id": "reward-unit",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "points"
+                  },
+                  "align": "center",
+                  "overflow": "clip"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              },
+              {
+                "id": "reward-close",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Great"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate.back",
+                    "params": {}
+                  },
+                  "fullWidth": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "entryPoints": {
+    "tasks": "tasks",
+    "reward": "task-details"
+  }
+}

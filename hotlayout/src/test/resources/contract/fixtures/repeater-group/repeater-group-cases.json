@@ -1,0 +1,72 @@
+{
+  "description": "Schema 9.26.0 — grouping of a list from data (rules: x-repeaterGroup). «sameCases»: whether two values under the «groupBy» path are one group. «groupCases»: the values of the drawn records in order; «expect» — the groups as the index of the first record and the number of records. «listCases»: the records of the collection «activities» (record prefix «activity»), an optional «where» and «limit», and «groupBy»; «expect» — what the list draws in order: «header:<activity.day of the first record of the group>» or «record:<activity.title>». «documentCases»: a Repeater; «expect» — the validation codes. «ruleCases»: data of the block. Written by hand.",
+  "sameCases": [
+    {"name": "the same text", "left": "Today", "right": "Today", "expect": true},
+    {"name": "different text", "left": "Today", "right": "Yesterday", "expect": false},
+    {"name": "text differs in case", "left": "today", "right": "Today", "expect": false},
+    {"name": "the same number", "left": 3, "right": 3, "expect": true},
+    {"name": "a number and its text are two groups", "left": 1, "right": "1", "expect": false},
+    {"name": "true and true", "left": true, "right": true, "expect": true},
+    {"name": "true and false", "left": true, "right": false, "expect": false},
+    {"name": "absent and absent", "left": null, "right": null, "expect": true},
+    {"name": "absent and the empty string are one value", "left": null, "right": "", "expect": true},
+    {"name": "absent and a value", "left": null, "right": "Today", "expect": false},
+    {"name": "an object is a group of its own", "left": {"d": 1}, "right": {"d": 1}, "expect": false}
+  ],
+  "groupCases": [
+    {"name": "no records — no groups", "values": [], "expect": []},
+    {"name": "one record — one group", "values": ["Today"], "expect": [{"start": 0, "size": 1}]},
+    {"name": "two days", "values": ["Today", "Today", "Yesterday"], "expect": [{"start": 0, "size": 2}, {"start": 2, "size": 1}]},
+    {"name": "three days of 2, 2, 1", "values": ["Today", "Today", "Yesterday", "Yesterday", "Wed, Oct 14"], "expect": [{"start": 0, "size": 2}, {"start": 2, "size": 2}, {"start": 4, "size": 1}]},
+    {"name": "the same day after another one starts a new group", "values": ["Today", "Yesterday", "Today"], "expect": [{"start": 0, "size": 1}, {"start": 1, "size": 1}, {"start": 2, "size": 1}]},
+    {"name": "absent values together are one group", "values": [null, "", null, "Today"], "expect": [{"start": 0, "size": 3}, {"start": 3, "size": 1}]},
+    {"name": "every value different — a group per record", "values": [1, 2, 3], "expect": [{"start": 0, "size": 1}, {"start": 1, "size": 1}, {"start": 2, "size": 1}]}
+  ],
+  "listCases": [
+    {"name": "history by days", "records": [
+      {"title": "Coffee week", "day": "Today"},
+      {"title": "Movie night", "day": "Today"},
+      {"title": "Strong week", "day": "Yesterday"},
+      {"title": "Daily check-in", "day": "Yesterday"},
+      {"title": "Weekend trip", "day": "Wed, Oct 14"}
+    ], "expect": ["header:Today", "record:Coffee week", "record:Movie night", "header:Yesterday", "record:Strong week", "record:Daily check-in", "header:Wed, Oct 14", "record:Weekend trip"]},
+    {"name": "groups after the filter: a day with no record left has no header", "records": [
+      {"title": "Coffee week", "day": "Today", "points": 120},
+      {"title": "Movie night", "day": "Today", "points": -300},
+      {"title": "Strong week", "day": "Yesterday", "points": -80},
+      {"title": "Weekend trip", "day": "Wed, Oct 14", "points": 250}
+    ], "where": {"path": "activity.points", "op": "gt", "value": 0}, "expect": ["header:Today", "record:Coffee week", "header:Wed, Oct 14", "record:Weekend trip"]},
+    {"name": "the filter joins two runs of the same day into one group", "records": [
+      {"title": "Coffee week", "day": "Today", "points": 120},
+      {"title": "Movie night", "day": "Yesterday", "points": -300},
+      {"title": "Strong week", "day": "Today", "points": 80}
+    ], "where": {"path": "activity.points", "op": "gt", "value": 0}, "expect": ["header:Today", "record:Coffee week", "record:Strong week"]},
+    {"name": "groups after the limit", "records": [
+      {"title": "Coffee week", "day": "Today"},
+      {"title": "Movie night", "day": "Today"},
+      {"title": "Strong week", "day": "Yesterday"},
+      {"title": "Weekend trip", "day": "Wed, Oct 14"}
+    ], "limit": 3, "expect": ["header:Today", "record:Coffee week", "record:Movie night", "header:Yesterday", "record:Strong week"]},
+    {"name": "the order of the data, not sorted", "records": [
+      {"title": "Coffee week", "day": "Today"},
+      {"title": "Strong week", "day": "Yesterday"},
+      {"title": "Movie night", "day": "Today"}
+    ], "expect": ["header:Today", "record:Coffee week", "header:Yesterday", "record:Strong week", "header:Today", "record:Movie night"]},
+    {"name": "an empty list — no headers", "records": [], "expect": []}
+  ],
+  "documentCases": [
+    {"name": "a list in a column grouped by a field of the record, with a header", "props": {"groupBy": "activity.day"}, "children": ["record", "header"], "expect": []},
+    {"name": "grouping without a header", "props": {"groupBy": "activity.day"}, "children": ["record"], "expect": ["repeater_group_header"]},
+    {"name": "a header without grouping", "props": {}, "children": ["record", "header"], "expect": ["repeater_group_header"]},
+    {"name": "a path of another entity", "props": {"groupBy": "task.status"}, "children": ["record", "header"], "expect": ["repeater_group_unknown_path"]},
+    {"name": "a grid with grouping", "props": {"groupBy": "activity.day", "columns": 2}, "children": ["record", "header"], "expect": ["repeater_group_not_column"]},
+    {"name": "a carousel row with grouping", "props": {"groupBy": "activity.day", "direction": "row"}, "children": ["record", "header"], "expect": ["repeater_group_not_column"]},
+    {"name": "columns on a wide screen only — still not a column everywhere", "props": {"groupBy": "activity.day"}, "propsOn": {"expanded": {"columns": 3}}, "children": ["record", "header"], "expect": ["repeater_group_not_column"]},
+    {"name": "no grouping, one child — as before 9.26.0", "props": {}, "children": ["record"], "expect": []}
+  ],
+  "ruleCases": [
+    {"name": "the header is the second child", "rule": "header.child", "expect": 1},
+    {"name": "groups after the filter and the limit", "rule": "after", "expect": ["where", "limit"]},
+    {"name": "the field", "rule": "prop", "expect": "groupBy"}
+  ]
+}

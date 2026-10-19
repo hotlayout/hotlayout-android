@@ -1,0 +1,893 @@
+{
+  "description": "Image box, app bar, modal layer and status bar: cases shared by every reader of the contract (schema 9.9.0). Written by hand; numbers are logical pixels. `tokens` are the values of the built-in theme the rows use (spacing steps, the `pill` radius) — a reader takes them from the theme, the rows only say which numbers the expectations were computed with. `ratioCases`: the field `Image.aspectRatio` as it stands in a document (the key is absent in the row «no field») → the ratio width / height the reader uses, given as a pair (compare the quotient). `ratioDocumentCases`: is the value accepted by the JSON Schema (`schema`) and, when it is, which validator code refuses to publish it (`code`, null: none). `imageBoxCases`: `width` is the width of the node box — named by `style.width` or given by the parent; `style` holds the named `height` / `minHeight` / `maxHeight` (absent: not named); the box of the image is `expect`, and `byRatio` says whether the proportion was used at all. `paintCases`: where the picture with the natural ratio `natural` (width / height of the file) lies in the box for `fit` — a rectangle in box coordinates, centred; with `cover` it sticks out of the box and is clipped. `radiusCases`: the effective corner radius of a box (named radius clamped to half of the smaller side) and whether the box is a circle. `circleCases`: which style fields the «Circle» shortcut of the builder writes for a side (`pill`: the value of the token, `maxRadius`: the limit of an own radius). `appBarCases`: `width` is the content width of the bar, `actionSides` — sides of the VISIBLE actions in document order, `titleNatural` — the natural width of the title block (the longer of title and subtitle on one line); `expect` is in READING order from the start edge: `leading` / `trailing` — widths of the side zones with their gap, `titleStart` and `actionStarts` — offsets from the start edge. `rtlLeft` (where present) is the same layout as offsets from the LEFT edge in a right-to-left script: left = width − start − size. `modalCases`: `viewport` is the area the host gave the screen, `contentHeight` — the height of the layer content measured at the layer width, `margin` — the window margin (`center.margin`); `expect` is the rectangle of the layer and whether its content scrolls inside it. `placementCases` / `statusBarCases`: how a reader reads the two screen fields (`null`: no request). `documentCases`: a tiny document described by `screens` (first is the initial one unless `initial` names another; `appBarChildren` puts an app bar with these child types on the first screen) → accepted by the JSON Schema or not, and the validator codes it must report (empty: publishable). `shownCases`: the stack AFTER the change (last frame is the top), what happened to it, and the «screen shown» event the host must get — exactly these keys: `modalPlacement` and `statusBarIcons` appear only when the screen names them. `screenAppBarCases` (clarification before release, the screen anatomy): the types of the children of a screen root in document order → the index of the child that is the APP BAR ZONE, or null; `hidden` says which children a condition hides now — it never moves the zone to another node (`zoneNow` false: the zone is empty). `zoneCases`: the zones of a screen in its own coordinates (from its top edge). Input: `height` — the height the host gave (for a modal layer, `shrink` true — the AVAILABLE height), `appBarHeight` — the box of the bar with its own padding (the key is absent when there is no zone), `padding` — top and bottom padding of the screen root, `gap` — the gap of the screen, `bodyContentHeight` — the flow of the visible body children with the pull of the FIRST one not applied (absent — no visible children), `firstPull`, `scrollTop`. Expectation: `appBar` — its box, the same at any scroll; `body` — the area everything scrolled is clipped by; `contentTop` — the top of the first body child at this scroll; `contentHeight` — the length of what scrolls, measured from the top of the body area. `screenRuleCases`: a dotted path in `x-style.layout.screen` → its value; rows no geometry can say (background, clipping, the web block without its own height). `modalAreaCases`: the area of a modal layer is the area the host gave the screen — `frame` and `insets` describe a HOST, `area` is what it gave, `expect` is the window in FRAME coordinates.",
+  "tokens": { "spacing": { "xs": 4, "sm": 8, "xl": 24 }, "radius": { "pill": 72 }, "backSide": 24, "gap": 8, "actionGap": 4, "windowMargin": 24, "windowMaxWidth": 400, "maxRadius": 256 },
+  "ratioCases": [
+    { "name": "word 1:1", "aspectRatio": "1:1", "expect": { "width": 1, "height": 1 } },
+    { "name": "word 16:9", "aspectRatio": "16:9", "expect": { "width": 16, "height": 9 } },
+    { "name": "word 4:3", "aspectRatio": "4:3", "expect": { "width": 4, "height": 3 } },
+    { "name": "own pair 343 : 120 — a banner taken from a mock as is", "aspectRatio": { "width": 343, "height": 120 }, "expect": { "width": 343, "height": 120 } },
+    { "name": "own pair 1 : 1", "aspectRatio": { "width": 1, "height": 1 }, "expect": { "width": 1, "height": 1 } },
+    { "name": "own pair 3 : 4 — a portrait frame", "aspectRatio": { "width": 3, "height": 4 }, "expect": { "width": 3, "height": 4 } },
+    { "name": "only the ratio matters: 686 : 240 is the same frame as 343 : 120", "aspectRatio": { "width": 686, "height": 240 }, "expect": { "width": 343, "height": 120 } },
+    { "name": "the widest allowed frame, 8 : 1", "aspectRatio": { "width": 8, "height": 1 }, "expect": { "width": 8, "height": 1 } },
+    { "name": "the tallest allowed frame, 1 : 8", "aspectRatio": { "width": 1, "height": 8 }, "expect": { "width": 1, "height": 8 } },
+    { "name": "wider than the range: clamped to 8 : 1", "aspectRatio": { "width": 9, "height": 1 }, "expect": { "width": 8, "height": 1 } },
+    { "name": "taller than the range: clamped to 1 : 8", "aspectRatio": { "width": 1, "height": 1200 }, "expect": { "width": 1, "height": 8 } },
+    { "name": "a word of a newer minor: the field default, 16:9", "aspectRatio": "21:9", "expect": { "width": 16, "height": 9 } },
+    { "name": "a zero side is not a proportion: 16:9", "aspectRatio": { "width": 0, "height": 5 }, "expect": { "width": 16, "height": 9 } },
+    { "name": "a negative side: 16:9", "aspectRatio": { "width": -4, "height": 3 }, "expect": { "width": 16, "height": 9 } },
+    { "name": "a side written as a string: 16:9", "aspectRatio": { "width": "3", "height": 2 }, "expect": { "width": 16, "height": 9 } },
+    { "name": "a pair without a side: 16:9", "aspectRatio": { "width": 3 }, "expect": { "width": 16, "height": 9 } },
+    { "name": "null: 16:9", "aspectRatio": null, "expect": { "width": 16, "height": 9 } },
+    { "name": "a bare number: 16:9", "aspectRatio": 1.5, "expect": { "width": 16, "height": 9 } },
+    { "name": "no field (a document not from the builder): 16:9", "expect": { "width": 16, "height": 9 } },
+    { "name": "a fractional side the schema refuses is still a ratio for a reader: 2.5 : 1", "aspectRatio": { "width": 2.5, "height": 1 }, "expect": { "width": 5, "height": 2 } }
+  ],
+  "ratioDocumentCases": [
+    { "name": "a word of the list", "aspectRatio": "1:1", "schema": true, "code": null },
+    { "name": "an own pair", "aspectRatio": { "width": 343, "height": 120 }, "schema": true, "code": null },
+    { "name": "the edge 8 : 1", "aspectRatio": { "width": 8, "height": 1 }, "schema": true, "code": null },
+    { "name": "the edge 1 : 8", "aspectRatio": { "width": 150, "height": 1200 }, "schema": true, "code": null },
+    { "name": "9 : 1 — the sides are fine, the ratio is not", "aspectRatio": { "width": 9, "height": 1 }, "schema": true, "code": "image_ratio_out_of_range" },
+    { "name": "1200 : 1", "aspectRatio": { "width": 1200, "height": 1 }, "schema": true, "code": "image_ratio_out_of_range" },
+    { "name": "1 : 9", "aspectRatio": { "width": 1, "height": 9 }, "schema": true, "code": "image_ratio_out_of_range" },
+    { "name": "a zero side", "aspectRatio": { "width": 0, "height": 1 }, "schema": false, "code": null },
+    { "name": "a side above the limit", "aspectRatio": { "width": 1201, "height": 600 }, "schema": false, "code": null },
+    { "name": "a fractional side", "aspectRatio": { "width": 2.5, "height": 1 }, "schema": false, "code": null },
+    { "name": "a pair without a side", "aspectRatio": { "width": 3 }, "schema": false, "code": null },
+    { "name": "an extra key in the pair", "aspectRatio": { "width": 3, "height": 2, "depth": 1 }, "schema": false, "code": null },
+    { "name": "a word that is not in the list", "aspectRatio": "21:9", "schema": false, "code": null },
+    { "name": "a pair written as a string", "aspectRatio": "343:120", "schema": false, "code": null }
+  ],
+  "imageBoxCases": [
+    { "name": "no named height: the proportion gives it — 16:9 at 320", "aspectRatio": "16:9", "width": 320, "style": {}, "expect": { "width": 320, "height": 180, "byRatio": true } },
+    { "name": "1:1 at a named width of 56", "aspectRatio": "1:1", "width": 56, "style": {}, "expect": { "width": 56, "height": 56, "byRatio": true } },
+    { "name": "4:3 at a named width of 120", "aspectRatio": "4:3", "width": 120, "style": {}, "expect": { "width": 120, "height": 90, "byRatio": true } },
+    { "name": "own 343 : 120 at exactly 343", "aspectRatio": { "width": 343, "height": 120 }, "width": 343, "style": {}, "expect": { "width": 343, "height": 120, "byRatio": true } },
+    { "name": "own 343 : 120 at 337 — the height is not rounded", "aspectRatio": { "width": 343, "height": 120 }, "width": 337, "style": {}, "expect": { "width": 337, "height": 117.9009, "byRatio": true } },
+    { "name": "NAMED HEIGHT WINS: 16:9 in a 56 × 56 box is 56 × 56 — the avatar", "aspectRatio": "16:9", "width": 56, "style": { "height": 56 }, "expect": { "width": 56, "height": 56, "byRatio": false } },
+    { "name": "named height: 1:1 in a 96 × 64 box is 96 × 64", "aspectRatio": "1:1", "width": 96, "style": { "height": 64 }, "expect": { "width": 96, "height": 64, "byRatio": false } },
+    { "name": "named height without a named width: the width is the parent's, the proportion is still not read", "aspectRatio": "1:1", "width": 345, "style": { "height": 120 }, "expect": { "width": 345, "height": 120, "byRatio": false } },
+    { "name": "the height by the proportion is capped by maxHeight", "aspectRatio": "16:9", "width": 320, "style": { "maxHeight": 120 }, "expect": { "width": 320, "height": 120, "byRatio": true } },
+    { "name": "the height by the proportion is raised by minHeight", "aspectRatio": "16:9", "width": 160, "style": { "minHeight": 120 }, "expect": { "width": 160, "height": 120, "byRatio": true } },
+    { "name": "limits that do not bite change nothing", "aspectRatio": "16:9", "width": 320, "style": { "minHeight": 100, "maxHeight": 240 }, "expect": { "width": 320, "height": 180, "byRatio": true } },
+    { "name": "an inverted range: the minimum wins", "aspectRatio": "16:9", "width": 320, "style": { "minHeight": 200, "maxHeight": 120 }, "expect": { "width": 320, "height": 200, "byRatio": true } },
+    { "name": "a named height is clamped by maxHeight too", "aspectRatio": "1:1", "width": 200, "style": { "height": 300, "maxHeight": 200 }, "expect": { "width": 200, "height": 200, "byRatio": false } },
+    { "name": "a named height is raised by minHeight too", "aspectRatio": "1:1", "width": 200, "style": { "height": 40, "minHeight": 64 }, "expect": { "width": 200, "height": 64, "byRatio": false } },
+    { "name": "an unknown word of the proportion: 16:9", "aspectRatio": "21:9", "width": 320, "style": {}, "expect": { "width": 320, "height": 180, "byRatio": true } },
+    { "name": "a proportion wider than the range is clamped to 8 : 1", "aspectRatio": { "width": 9, "height": 1 }, "width": 320, "style": {}, "expect": { "width": 320, "height": 40, "byRatio": true } },
+    { "name": "a proportion taller than the range is clamped to 1 : 8", "aspectRatio": { "width": 1, "height": 1200 }, "width": 100, "style": {}, "expect": { "width": 100, "height": 800, "byRatio": true } },
+    { "name": "a box of zero width has zero height", "aspectRatio": "16:9", "width": 0, "style": {}, "expect": { "width": 0, "height": 0, "byRatio": true } }
+  ],
+  "paintCases": [
+    { "name": "a square picture in a square box, cover", "box": { "width": 56, "height": 56 }, "natural": 1, "fit": "cover", "expect": { "x": 0, "y": 0, "width": 56, "height": 56 } },
+    { "name": "a square picture in a wide box, cover: full width, cropped above and below", "box": { "width": 96, "height": 64 }, "natural": 1, "fit": "cover", "expect": { "x": 0, "y": -16, "width": 96, "height": 96 } },
+    { "name": "a square picture in a wide box, contain: full height, bands at the sides", "box": { "width": 96, "height": 64 }, "natural": 1, "fit": "contain", "expect": { "x": 16, "y": 0, "width": 64, "height": 64 } },
+    { "name": "a 2 : 1 picture in a 16:9 box, cover: cropped at the sides", "box": { "width": 320, "height": 180 }, "natural": 2, "fit": "cover", "expect": { "x": -20, "y": 0, "width": 360, "height": 180 } },
+    { "name": "a 2 : 1 picture in a 16:9 box, contain: bands above and below", "box": { "width": 320, "height": 180 }, "natural": 2, "fit": "contain", "expect": { "x": 0, "y": 10, "width": 320, "height": 160 } },
+    { "name": "equal proportions: the picture is the box, either way", "box": { "width": 100, "height": 200 }, "natural": 0.5, "fit": "contain", "expect": { "x": 0, "y": 0, "width": 100, "height": 200 } },
+    { "name": "a tall picture in a circle box, cover: cropped above and below, centred", "box": { "width": 64, "height": 64 }, "natural": 0.5, "fit": "cover", "expect": { "x": 0, "y": -32, "width": 64, "height": 128 } },
+    { "name": "an unknown word of fit is the field default, cover", "box": { "width": 96, "height": 64 }, "natural": 1, "fit": "fill", "expect": { "x": 0, "y": -16, "width": 96, "height": 96 } },
+    { "name": "no fit at all (a document before 8.11.0): cover", "box": { "width": 96, "height": 64 }, "natural": 1, "expect": { "x": 0, "y": -16, "width": 96, "height": 96 } }
+  ],
+  "radiusCases": [
+    { "name": "the avatar: 56 × 56 with pill is a circle", "box": { "width": 56, "height": 56 }, "radius": 72, "expect": { "radius": 28, "circle": true } },
+    { "name": "the largest circle pill gives: 144 × 144", "box": { "width": 144, "height": 144 }, "radius": 72, "expect": { "radius": 72, "circle": true } },
+    { "name": "160 × 160 with pill is NOT a circle: the token is a number, not «half of the side»", "box": { "width": 160, "height": 160 }, "radius": 72, "expect": { "radius": 72, "circle": false } },
+    { "name": "160 × 160 with an own radius of 80 is a circle", "box": { "width": 160, "height": 160 }, "radius": 80, "expect": { "radius": 80, "circle": true } },
+    { "name": "a wide box with pill is a pill, not a circle", "box": { "width": 96, "height": 64 }, "radius": 72, "expect": { "radius": 32, "circle": false } },
+    { "name": "a rounded square", "box": { "width": 64, "height": 64 }, "radius": 12, "expect": { "radius": 12, "circle": false } },
+    { "name": "no radius: straight corners", "box": { "width": 64, "height": 64 }, "radius": 0, "expect": { "radius": 0, "circle": false } },
+    { "name": "exactly half of the side", "box": { "width": 48, "height": 48 }, "radius": 24, "expect": { "radius": 24, "circle": true } },
+    { "name": "an odd side: half of 57 is 28.5", "box": { "width": 57, "height": 57 }, "radius": 29, "expect": { "radius": 28.5, "circle": true } }
+  ],
+  "circleCases": [
+    { "name": "the avatar", "side": 56, "expect": { "width": 56, "height": 56, "radius": "pill" } },
+    { "name": "the largest circle of the token", "side": 144, "expect": { "width": 144, "height": 144, "radius": "pill" } },
+    { "name": "one step above: an own radius, half of the side", "side": 146, "expect": { "width": 146, "height": 146, "radius": 73 } },
+    { "name": "an odd side: the radius is rounded up, the reader clamps it", "side": 161, "expect": { "width": 161, "height": 161, "radius": 81 } },
+    { "name": "the largest circle an own radius gives: 512", "side": 512, "expect": { "width": 512, "height": 512, "radius": 256 } }
+  ],
+  "appBarCases": [
+    {
+      "name": "back, two actions, a short title: the title is centred in the BAR",
+      "width": 369, "showBack": true, "actionSides": [40, 40], "titleNatural": 100.8,
+      "expect": { "leading": 32, "trailing": 92, "titleRoom": 245, "titleWidth": 100.8, "titleStart": 134.1, "centered": true, "truncated": false, "actionStarts": [285, 329] },
+      "rtlLeft": { "back": 345, "title": 134.1, "actions": [44, 0] }
+    },
+    {
+      "name": "back only: no counterweight opposite the arrow, the title is still centred",
+      "width": 369, "showBack": true, "actionSides": [], "titleNatural": 100,
+      "expect": { "leading": 32, "trailing": 0, "titleRoom": 337, "titleWidth": 100, "titleStart": 134.5, "centered": true, "truncated": false, "actionStarts": [] }
+    },
+    {
+      "name": "no back, no actions: no zones and no gaps, the title has the whole bar",
+      "width": 369, "showBack": false, "actionSides": [], "titleNatural": 100,
+      "expect": { "leading": 0, "trailing": 0, "titleRoom": 369, "titleWidth": 100, "titleStart": 134.5, "centered": true, "truncated": false, "actionStarts": [] }
+    },
+    {
+      "name": "no back, one action (a sheet with «close»): centred in the bar, not in what is left",
+      "width": 369, "showBack": false, "actionSides": [40], "titleNatural": 120,
+      "expect": { "leading": 0, "trailing": 48, "titleRoom": 321, "titleWidth": 120, "titleStart": 124.5, "centered": true, "truncated": false, "actionStarts": [329] },
+      "rtlLeft": { "back": null, "title": 124.5, "actions": [0] }
+    },
+    {
+      "name": "back, two actions, a title that fits only off-centre: shifted just off the wider zone",
+      "width": 369, "showBack": true, "actionSides": [40, 40], "titleNatural": 200,
+      "expect": { "leading": 32, "trailing": 92, "titleRoom": 245, "titleWidth": 200, "titleStart": 77, "centered": false, "truncated": false, "actionStarts": [285, 329] },
+      "rtlLeft": { "back": 345, "title": 92, "actions": [44, 0] }
+    },
+    {
+      "name": "back, two actions, a long title: it takes all the room between the zones and is ellipsized",
+      "width": 369, "showBack": true, "actionSides": [40, 40], "titleNatural": 300,
+      "expect": { "leading": 32, "trailing": 92, "titleRoom": 245, "titleWidth": 245, "titleStart": 32, "centered": false, "truncated": true, "actionStarts": [285, 329] },
+      "rtlLeft": { "back": 345, "title": 92, "actions": [44, 0] }
+    },
+    {
+      "name": "back only, a long title: shifted off the arrow, not cut by a counterweight",
+      "width": 369, "showBack": true, "actionSides": [], "titleNatural": 320,
+      "expect": { "leading": 32, "trailing": 0, "titleRoom": 337, "titleWidth": 320, "titleStart": 32, "centered": false, "truncated": false, "actionStarts": [] }
+    },
+    {
+      "name": "back only, a title longer than the room: all 337, ellipsized (before 9.9.0 it was cut at 305)",
+      "width": 369, "showBack": true, "actionSides": [], "titleNatural": 400,
+      "expect": { "leading": 32, "trailing": 0, "titleRoom": 337, "titleWidth": 337, "titleStart": 32, "centered": false, "truncated": true, "actionStarts": [] }
+    },
+    {
+      "name": "two small actions (28) without back",
+      "width": 369, "showBack": false, "actionSides": [28, 28], "titleNatural": 150,
+      "expect": { "leading": 0, "trailing": 68, "titleRoom": 301, "titleWidth": 150, "titleStart": 109.5, "centered": true, "truncated": false, "actionStarts": [309, 341] }
+    },
+    {
+      "name": "actions of different sizes (48 and 28) keep the document order",
+      "width": 369, "showBack": false, "actionSides": [48, 28], "titleNatural": 100,
+      "expect": { "leading": 0, "trailing": 88, "titleRoom": 281, "titleWidth": 100, "titleStart": 134.5, "centered": true, "truncated": false, "actionStarts": [289, 341] }
+    },
+    {
+      "name": "one of two actions is hidden by its condition: it takes no room, the other stands at the edge",
+      "width": 369, "showBack": true, "actionSides": [40], "titleNatural": 100,
+      "expect": { "leading": 32, "trailing": 48, "titleRoom": 289, "titleWidth": 100, "titleStart": 134.5, "centered": true, "truncated": false, "actionStarts": [329] }
+    },
+    {
+      "name": "a 320 screen, back and two actions: 172 for the title",
+      "width": 296, "showBack": true, "actionSides": [40, 40], "titleNatural": 180,
+      "expect": { "leading": 32, "trailing": 92, "titleRoom": 172, "titleWidth": 172, "titleStart": 32, "centered": false, "truncated": true, "actionStarts": [212, 256] }
+    },
+    {
+      "name": "a 320 screen, back and one action",
+      "width": 296, "showBack": true, "actionSides": [40], "titleNatural": 140,
+      "expect": { "leading": 32, "trailing": 48, "titleRoom": 216, "titleWidth": 140, "titleStart": 78, "centered": true, "truncated": false, "actionStarts": [256] }
+    },
+    {
+      "name": "a bar narrower than its zones: no room for the title, the leading zone keeps its place",
+      "width": 100, "showBack": true, "actionSides": [40, 40], "titleNatural": 50,
+      "expect": { "leading": 32, "trailing": 92, "titleRoom": 0, "titleWidth": 0, "titleStart": 32, "centered": false, "truncated": true, "actionStarts": [16, 60] }
+    },
+    {
+      "name": "an empty title: zero width in the middle of the bar",
+      "width": 369, "showBack": true, "actionSides": [40], "titleNatural": 0,
+      "expect": { "leading": 32, "trailing": 48, "titleRoom": 289, "titleWidth": 0, "titleStart": 184.5, "centered": true, "truncated": false, "actionStarts": [329] }
+    }
+  ],
+  "screenAppBarCases": [
+    { "name": "the first child is an app bar: it is the app bar zone", "children": ["AppBar", "Column", "Text"], "expect": 0 },
+    { "name": "an app bar and nothing else", "children": ["AppBar"], "expect": 0 },
+    { "name": "no app bar: every child belongs to the body", "children": ["Column", "Text"], "expect": null },
+    { "name": "an empty screen", "children": [], "expect": null },
+    { "name": "an app bar that is not the first child (a document the builder does not make): an ordinary child of the body", "children": ["Text", "AppBar"], "expect": null },
+    { "name": "two app bars: only the first one is the zone, the second is drawn in the body", "children": ["AppBar", "AppBar", "Text"], "expect": 0 },
+    { "name": "the first child is an app bar hidden by a condition: the zone is still ITS — it is empty now, and the next node does not become the bar", "children": ["AppBar", "AppBar", "Text"], "hidden": [true, false, false], "expect": 0, "zoneNow": false }
+  ],
+  "zoneCases": [
+    { "name": "320 × 568, an app bar: the body area is what is left under the bar, full height of it", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 400, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 496 }, "contentTop": 84, "contentHeight": 428, "maxScroll": 0, "scrollTop": 0, "scrolls": false } },
+    { "name": "393 × 852, an app bar", "height": 852, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 400, "expect": { "height": 852, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 780 }, "contentTop": 84, "contentHeight": 428, "maxScroll": 0, "scrollTop": 0, "scrolls": false } },
+    { "name": "320 × 568, no app bar: the body is the whole screen, all four paddings are inside its scroll", "height": 568, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 400, "expect": { "height": 568, "appBar": null, "body": { "top": 0, "height": 568 }, "contentTop": 16, "contentHeight": 432, "maxScroll": 0, "scrollTop": 0, "scrolls": false } },
+    { "name": "393 × 852, no app bar", "height": 852, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 400, "expect": { "height": 852, "appBar": null, "body": { "top": 0, "height": 852 }, "contentTop": 16, "contentHeight": 432, "maxScroll": 0, "scrollTop": 0, "scrolls": false } },
+    { "name": "an app bar hidden by a condition: no zone — the same numbers as without a bar, the top padding is back with the body", "height": 568, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 400, "expect": { "height": 568, "appBar": null, "body": { "top": 0, "height": 568 }, "contentTop": 16, "contentHeight": 432, "maxScroll": 0, "scrollTop": 0, "scrolls": false } },
+    { "name": "a long body under a bar, not scrolled: the first frame is the plain column — bar, gap, content", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 496 }, "contentTop": 84, "contentHeight": 1028, "maxScroll": 532, "scrollTop": 0, "scrolls": true } },
+    { "name": "the same body scrolled by 300: the bar is where it was, the body area is where it was, the content moved by 300 and is clipped at the bottom edge of the bar", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "scrollTop": 300, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 496 }, "contentTop": -216, "contentHeight": 1028, "maxScroll": 532, "scrollTop": 300, "scrolls": true } },
+    { "name": "scrolled past the end: the offset is clamped, the bottom padding is the last thing in the scroll", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "scrollTop": 9999, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 496 }, "contentTop": -448, "contentHeight": 1028, "maxScroll": 532, "scrollTop": 532, "scrolls": true } },
+    { "name": "no app bar, a long body scrolled by 300: the content is clipped at the top of the screen", "height": 568, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "scrollTop": 300, "expect": { "height": 568, "appBar": null, "body": { "top": 0, "height": 568 }, "contentTop": -284, "contentHeight": 1032, "maxScroll": 464, "scrollTop": 300, "scrolls": true } },
+    { "name": "an app bar and no body children: no gap under the bar, only the bottom padding", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 496 }, "contentTop": 72, "contentHeight": 16, "maxScroll": 0, "scrollTop": 0, "scrolls": false } },
+    { "name": "no paddings and no gap: the body starts right under the bar", "height": 568, "appBarHeight": 56, "padding": { "top": 0, "bottom": 0 }, "gap": 0, "bodyContentHeight": 600, "expect": { "height": 568, "appBar": { "top": 0, "height": 56 }, "body": { "top": 56, "height": 512 }, "contentTop": 56, "contentHeight": 600, "maxScroll": 88, "scrollTop": 0, "scrolls": true } },
+    { "name": "the first body child pulled by 40 over a gap of 12: it lies 28 over the bar, and the body area is raised by the same 28", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "firstPull": 40, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 44, "height": 524 }, "contentTop": 44, "contentHeight": 1016, "maxScroll": 492, "scrollTop": 0, "scrolls": true } },
+    { "name": "the same pulled child after scrolling by 300: the raised edge has not moved — the content is clipped 28 above the bottom edge of the bar, the bar itself stays", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "firstPull": 40, "scrollTop": 300, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 44, "height": 524 }, "contentTop": -256, "contentHeight": 1016, "maxScroll": 492, "scrollTop": 300, "scrolls": true } },
+    { "name": "a pull not larger than the gap: the child only comes closer to the bar, nothing is raised", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "firstPull": 8, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 496 }, "contentTop": 76, "contentHeight": 1020, "maxScroll": 524, "scrollTop": 0, "scrolls": true } },
+    { "name": "a pull larger than the whole bar zone: the body area starts at the top of the screen and no higher; what is above it is cut by the screen", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "firstPull": 128, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 0, "height": 568 }, "contentTop": -44, "contentHeight": 972, "maxScroll": 404, "scrollTop": 0, "scrolls": true } },
+    { "name": "no app bar, the first child pulled by 40: into the top padding and beyond — nothing to raise", "height": 568, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "firstPull": 40, "expect": { "height": 568, "appBar": null, "body": { "top": 0, "height": 568 }, "contentTop": -24, "contentHeight": 992, "maxScroll": 424, "scrollTop": 0, "scrolls": true } },
+    { "name": "a modal layer with a bar, short: the layer is as tall as its content", "height": 548, "shrink": true, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 60, "expect": { "height": 160, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 88 }, "contentTop": 84, "contentHeight": 88, "maxScroll": 0, "scrollTop": 0, "scrolls": false } },
+    { "name": "a modal layer with a bar, taller than the available height, scrolled by 200: the layer is the available height, its BODY scrolls, its bar stays", "height": 548, "shrink": true, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "scrollTop": 200, "expect": { "height": 548, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 476 }, "contentTop": -116, "contentHeight": 1028, "maxScroll": 552, "scrollTop": 200, "scrolls": true } },
+    { "name": "a modal layer without a bar, taller than the available height: the whole layer is its body", "height": 548, "shrink": true, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "expect": { "height": 548, "appBar": null, "body": { "top": 0, "height": 548 }, "contentTop": 16, "contentHeight": 1032, "maxScroll": 484, "scrollTop": 0, "scrolls": true } }
+  ],
+  "screenRuleCases": [
+    { "name": "only the body scrolls", "rule": "scrolls", "expect": "body-only" },
+    { "name": "and only vertically", "rule": "scrollAxis", "expect": "vertical" },
+    { "name": "the background of the screen root lies under every zone and does not move when the body scrolls", "rule": "background", "expect": "under-all-zones-fixed" },
+    { "name": "what left the body area is clipped by it", "rule": "body.clip", "expect": "body-area" },
+    { "name": "so nothing shows through a transparent bar but the background", "rule": "contentUnderAppBar", "expect": "never" },
+    { "name": "the body is painted over the bar where a pulled first child overlaps it", "rule": "body.paintOrder", "expect": "body-over-app-bar" },
+    { "name": "the bottom zone is filled since 9.12 — a pinned block, then the navigation bar: its rules are a block of their own", "rule": "bottom.content", "expect": "x-style.layout.bottomZone" },
+    { "name": "a web block without its own height: the host decides", "rule": "withoutOwnHeight.decides", "expect": "host" },
+    { "name": "— by default the bar sticks to the top of what scrolls", "rule": "withoutOwnHeight.default", "expect": "app-bar-sticks-to-the-top-of-the-scrolling-ancestor" },
+    { "name": "— switched off by the host, it is the top row of the block and scrolls with the page", "rule": "withoutOwnHeight.otherwise", "expect": "app-bar-is-the-top-row-and-scrolls-with-the-page" },
+    { "name": "— a stuck bar lies over the content that travels under it, so its zone paints the background of the screen root under itself: no text shows through", "rule": "withoutOwnHeight.stuckBackdrop", "expect": "screen-root-background-under-the-app-bar-zone" },
+    { "name": "— the block grows with its content, so its background grows and scrolls with the page", "rule": "withoutOwnHeight.background", "expect": "grows-and-scrolls-with-the-page" },
+    { "name": "— and the document has no field for it", "rule": "withoutOwnHeight.documentField", "expect": "none" },
+    { "name": "339: a modal layer of a reader without its own height lies in the VISIBLE part of the block, not taller than the window — the sheet stands on its lower edge, the window `center` in its middle, the scrim covers the block", "rule": "withoutOwnHeight.layerArea", "expect": "visible-part-of-the-block-not-taller-than-the-window" },
+    { "name": "339: the reader may not use fixed positioning for it (the root clips: a boundary of trust) — the area is a sticky one inside the root", "rule": "withoutOwnHeight.layerNoFixed", "expect": true },
+    { "name": "339: a host that needs the exact area gives the screen an own height", "rule": "withoutOwnHeight.layerOtherwise", "expect": "host-asks-for-an-own-height" }
+  ],
+  "modalCases": [
+    { "name": "a sheet on a 320 screen: full width, as tall as its content, at the bottom", "placement": "bottom", "viewport": { "width": 320, "height": 548 }, "contentHeight": 176, "margin": 24, "expect": { "x": 0, "y": 372, "width": 320, "height": 176, "scrolls": false } },
+    { "name": "a sheet on a 393 screen", "placement": "bottom", "viewport": { "width": 393, "height": 793 }, "contentHeight": 300, "margin": 24, "expect": { "x": 0, "y": 493, "width": 393, "height": 300, "scrolls": false } },
+    { "name": "a sheet taller than the screen: it stops at the top and scrolls inside", "placement": "bottom", "viewport": { "width": 320, "height": 548 }, "contentHeight": 900, "margin": 24, "expect": { "x": 0, "y": 0, "width": 320, "height": 548, "scrolls": true } },
+    { "name": "a sheet on a tablet is still full width", "placement": "bottom", "viewport": { "width": 768, "height": 1024 }, "contentHeight": 400, "margin": 24, "expect": { "x": 0, "y": 624, "width": 768, "height": 400, "scrolls": false } },
+    { "name": "a window on a 320 screen: 272 wide, in the middle", "placement": "center", "viewport": { "width": 320, "height": 548 }, "contentHeight": 268, "margin": 24, "expect": { "x": 24, "y": 140, "width": 272, "height": 268, "scrolls": false } },
+    { "name": "a window on a 393 screen: 345 wide", "placement": "center", "viewport": { "width": 393, "height": 793 }, "contentHeight": 248, "margin": 24, "expect": { "x": 24, "y": 272.5, "width": 345, "height": 248, "scrolls": false } },
+    { "name": "a window on a tablet: never wider than 400", "placement": "center", "viewport": { "width": 768, "height": 1024 }, "contentHeight": 300, "margin": 24, "expect": { "x": 184, "y": 362, "width": 400, "height": 300, "scrolls": false } },
+    { "name": "the width where the limit starts to bite: 448", "placement": "center", "viewport": { "width": 448, "height": 800 }, "contentHeight": 200, "margin": 24, "expect": { "x": 24, "y": 300, "width": 400, "height": 200, "scrolls": false } },
+    { "name": "one more: 449 — the margins grow, the window does not", "placement": "center", "viewport": { "width": 449, "height": 800 }, "contentHeight": 200, "margin": 24, "expect": { "x": 24.5, "y": 300, "width": 400, "height": 200, "scrolls": false } },
+    { "name": "a window with content taller than the screen: margins above and below, scrolls inside", "placement": "center", "viewport": { "width": 320, "height": 548 }, "contentHeight": 620, "margin": 24, "expect": { "x": 24, "y": 24, "width": 272, "height": 500, "scrolls": true } },
+    { "name": "content of exactly the available height does not scroll", "placement": "center", "viewport": { "width": 393, "height": 793 }, "contentHeight": 745, "margin": 24, "expect": { "x": 24, "y": 24, "width": 345, "height": 745, "scrolls": false } },
+    { "name": "one more pixel of content scrolls", "placement": "center", "viewport": { "width": 393, "height": 793 }, "contentHeight": 746, "margin": 24, "expect": { "x": 24, "y": 24, "width": 345, "height": 745, "scrolls": true } },
+    { "name": "an empty window: zero height in the middle", "placement": "center", "viewport": { "width": 320, "height": 548 }, "contentHeight": 0, "margin": 24, "expect": { "x": 24, "y": 274, "width": 272, "height": 0, "scrolls": false } },
+    { "name": "an area narrower than two margins: zero width, not a negative one", "placement": "center", "viewport": { "width": 40, "height": 100 }, "contentHeight": 10, "margin": 24, "expect": { "x": 20, "y": 45, "width": 0, "height": 10, "scrolls": false } },
+    { "name": "an unknown word of the placement (a newer minor): a sheet", "placement": "top", "viewport": { "width": 320, "height": 548 }, "contentHeight": 176, "margin": 24, "expect": { "x": 0, "y": 372, "width": 320, "height": 176, "scrolls": false } },
+    { "name": "no field: a sheet — the modal screen of 8.12.0", "viewport": { "width": 320, "height": 548 }, "contentHeight": 176, "margin": 24, "expect": { "x": 0, "y": 372, "width": 320, "height": 176, "scrolls": false } }
+  ],
+  "modalAreaCases": [
+    { "name": "a host that gives the screen the area between the status bar and the home indicator of a 393 × 852 phone (59 above, 34 below): the window stands in the centre of THAT area", "frame": { "width": 393, "height": 852 }, "insets": { "top": 59, "bottom": 34 }, "contentHeight": 280, "margin": 24, "area": { "x": 0, "y": 59, "width": 393, "height": 759 }, "expect": { "x": 24, "y": 298.5, "width": 345, "height": 280, "centerY": 438.5 } },
+    { "name": "the same on 320 × 568 with 20 above and 16 below", "frame": { "width": 320, "height": 568 }, "insets": { "top": 20, "bottom": 16 }, "contentHeight": 268, "margin": 24, "area": { "x": 0, "y": 20, "width": 320, "height": 532 }, "expect": { "x": 24, "y": 152, "width": 272, "height": 268, "centerY": 286 } },
+    { "name": "a host that lays the reader edge to edge (no insets): the centre of the area is the centre of the glass", "frame": { "width": 393, "height": 852 }, "insets": { "top": 0, "bottom": 0 }, "contentHeight": 280, "margin": 24, "area": { "x": 0, "y": 0, "width": 393, "height": 852 }, "expect": { "x": 24, "y": 286, "width": 345, "height": 280, "centerY": 426 } }
+  ],
+  "placementCases": [
+    { "name": "center", "value": "center", "expect": "center" },
+    { "name": "bottom", "value": "bottom", "expect": "bottom" },
+    { "name": "a word of a newer minor", "value": "top", "expect": "bottom" },
+    { "name": "a different case is a different word", "value": "Center", "expect": "bottom" },
+    { "name": "a number", "value": 1, "expect": "bottom" },
+    { "name": "null", "value": null, "expect": "bottom" },
+    { "name": "no field", "expect": "bottom" }
+  ],
+  "statusBarCases": [
+    { "name": "light icons", "value": "light", "expect": "light" },
+    { "name": "dark icons", "value": "dark", "expect": "dark" },
+    { "name": "«auto» is not a word: no field already says it", "value": "auto", "expect": null },
+    { "name": "a word of a newer minor", "value": "hidden", "expect": null },
+    { "name": "a boolean", "value": true, "expect": null },
+    { "name": "null", "value": null, "expect": null },
+    { "name": "no field", "expect": null }
+  ],
+  "documentCases": [
+    { "name": "a page and a window opened from it", "screens": [{ "id": "a" }, { "id": "b", "presentation": "modal", "modalPlacement": "center" }], "schema": true, "codes": [] },
+    { "name": "a sheet named explicitly", "screens": [{ "id": "a" }, { "id": "b", "presentation": "modal", "modalPlacement": "bottom" }], "schema": true, "codes": [] },
+    { "name": "a placement on a page: there is no layer to place", "screens": [{ "id": "a" }, { "id": "b", "modalPlacement": "center" }], "schema": true, "codes": ["invalid_document"] },
+    { "name": "the same with the default word: the field still means nothing on a page", "screens": [{ "id": "a" }, { "id": "b", "modalPlacement": "bottom" }], "schema": true, "codes": ["invalid_document"] },
+    { "name": "a placement on a screen named `page` explicitly", "screens": [{ "id": "a" }, { "id": "b", "presentation": "page", "modalPlacement": "center" }], "schema": true, "codes": ["invalid_document"] },
+    { "name": "the first shown screen cannot be a window either", "screens": [{ "id": "a", "presentation": "modal", "modalPlacement": "center" }, { "id": "b" }], "schema": true, "codes": ["invalid_document"] },
+    { "name": "a word that is not a placement", "screens": [{ "id": "a" }, { "id": "b", "presentation": "modal", "modalPlacement": "top" }], "schema": false, "codes": [] },
+    { "name": "`presentation` has no third word: `dialog` is not a presentation", "screens": [{ "id": "a" }, { "id": "b", "presentation": "dialog" }], "schema": false, "codes": [] },
+    { "name": "status bar icons on a page and on a layer", "screens": [{ "id": "a", "statusBarIcons": "light" }, { "id": "b", "presentation": "modal", "statusBarIcons": "dark" }], "schema": true, "codes": [] },
+    { "name": "«auto» is not a request", "screens": [{ "id": "a", "statusBarIcons": "auto" }], "schema": false, "codes": [] },
+    { "name": "an app bar without children — as before 9.9.0", "screens": [{ "id": "a" }], "appBarChildren": null, "schema": true, "codes": [] },
+    { "name": "an app bar with an empty list of actions", "screens": [{ "id": "a" }], "appBarChildren": [], "schema": true, "codes": [] },
+    { "name": "an app bar with two actions", "screens": [{ "id": "a" }], "appBarChildren": ["IconButton", "IconButton"], "schema": true, "codes": [] },
+    { "name": "three actions do not fit beside a title", "screens": [{ "id": "a" }], "appBarChildren": ["IconButton", "IconButton", "IconButton"], "schema": true, "codes": ["max_children_exceeded"] },
+    { "name": "a button with a label is not an action of the bar", "screens": [{ "id": "a" }], "appBarChildren": ["Button"], "schema": true, "codes": ["child_not_allowed"] },
+    { "name": "neither is a text", "screens": [{ "id": "a" }], "appBarChildren": ["IconButton", "Text"], "schema": true, "codes": ["child_not_allowed"] }
+  ],
+  "shownCases": [
+    {
+      "name": "the first screen asks for light icons",
+      "stack": [{ "screenId": "a", "presentation": "page", "statusBarIcons": "light" }], "transition": "start",
+      "expect": { "documentId": "d", "screenId": "a", "entry": null, "presentation": "page", "cause": "entry", "depth": 1, "record": null, "statusBarIcons": "light" }
+    },
+    {
+      "name": "a screen that asks for nothing: the event of 9.8.0, key for key",
+      "stack": [{ "screenId": "a", "presentation": "page" }], "transition": "start",
+      "expect": { "documentId": "d", "screenId": "a", "entry": null, "presentation": "page", "cause": "entry", "depth": 1, "record": null }
+    },
+    {
+      "name": "a window is shown: the event says where the layer lies",
+      "stack": [{ "screenId": "a", "presentation": "page", "statusBarIcons": "light" }, { "screenId": "done", "presentation": "modal", "modalPlacement": "center" }], "transition": "push",
+      "expect": { "documentId": "d", "screenId": "done", "entry": null, "presentation": "modal", "cause": "forward", "depth": 2, "record": null, "modalPlacement": "center" }
+    },
+    {
+      "name": "a sheet without the field: no key — the default is data, not an event field",
+      "stack": [{ "screenId": "a", "presentation": "page" }, { "screenId": "sheet", "presentation": "modal" }], "transition": "push",
+      "expect": { "documentId": "d", "screenId": "sheet", "entry": null, "presentation": "modal", "cause": "forward", "depth": 2, "record": null }
+    },
+    {
+      "name": "a sheet that names `bottom` says so",
+      "stack": [{ "screenId": "a", "presentation": "page" }, { "screenId": "sheet", "presentation": "modal", "modalPlacement": "bottom" }], "transition": "push",
+      "expect": { "documentId": "d", "screenId": "sheet", "entry": null, "presentation": "modal", "cause": "forward", "depth": 2, "record": null, "modalPlacement": "bottom" }
+    },
+    {
+      "name": "a placement on a page (a document not from the builder) is not read and not handed over",
+      "stack": [{ "screenId": "a", "presentation": "page" }, { "screenId": "b", "presentation": "page", "modalPlacement": "center" }], "transition": "push",
+      "expect": { "documentId": "d", "screenId": "b", "entry": null, "presentation": "page", "cause": "forward", "depth": 2, "record": null }
+    },
+    {
+      "name": "the window is closed: a new show of the page beneath, with ITS request",
+      "stack": [{ "screenId": "a", "presentation": "page", "statusBarIcons": "light" }], "transition": "pop",
+      "expect": { "documentId": "d", "screenId": "a", "entry": null, "presentation": "page", "cause": "back", "depth": 1, "record": null, "statusBarIcons": "light" }
+    },
+    {
+      "name": "a window with a record and its own request: every field at once",
+      "stack": [{ "screenId": "a", "presentation": "page" }, { "screenId": "done", "presentation": "modal", "modalPlacement": "center", "statusBarIcons": "dark", "record": { "task.id": "walk" } }], "transition": "push",
+      "expect": { "documentId": "d", "screenId": "done", "entry": null, "presentation": "modal", "cause": "forward", "depth": 2, "record": { "task.id": "walk" }, "modalPlacement": "center", "statusBarIcons": "dark" }
+    },
+    { "name": "341: the first screen is named modal in the document (a broken one: the validator does not publish it): the reader draws a page and the event says `page`, without `modalPlacement`", "stack": [{ "screenId": "a", "presentation": "modal", "modalPlacement": "center" }], "transition": "start", "expect": { "documentId": "d", "screenId": "a", "entry": null, "presentation": "page", "cause": "entry", "depth": 1, "record": null } },
+    { "name": "341: the same after the window above it is closed: the first screen is still a page, with its request", "stack": [{ "screenId": "a", "presentation": "modal", "modalPlacement": "bottom", "statusBarIcons": "dark" }], "transition": "pop", "expect": { "documentId": "d", "screenId": "a", "entry": null, "presentation": "page", "cause": "back", "depth": 1, "record": null, "statusBarIcons": "dark" } },
+    { "name": "341: a window over the first screen named modal: the window is a window, the first screen under it is a page", "stack": [{ "screenId": "a", "presentation": "modal" }, { "screenId": "done", "presentation": "modal", "modalPlacement": "center" }], "transition": "push", "expect": { "documentId": "d", "screenId": "done", "entry": null, "presentation": "modal", "cause": "forward", "depth": 2, "record": null, "modalPlacement": "center" } }
+  ],
+  "modalRuleCases": [
+    { "name": "338: every layer of the stack is its own stacking context — the scrim covers the WHOLE page under it, with the app bar and a pulled body", "rule": "above", "expect": "whole-page-including-app-bar" },
+    { "name": "338: the area of the layer is the one the host gave the screen", "rule": "area", "expect": "the-area-the-host-gave-the-screen" }
+  ],
+  "appBarDrawnCases": [
+    { "name": "342: two actions, both visible: both are drawn", "width": 369, "showBack": true, "actionSide": 40, "titleNatural": 100.8, "visible": [true, true], "expect": { "drawn": [true, true], "titleRoom": 245 } },
+    { "name": "342: three visible actions: the first two are drawn, the third is not", "width": 369, "showBack": true, "actionSide": 40, "titleNatural": 100.8, "visible": [true, true, true], "expect": { "drawn": [true, true, false], "titleRoom": 245 } },
+    { "name": "342: eight actions: two are drawn, the title keeps its room (with all eight the title would have a width of 0)", "width": 369, "showBack": true, "actionSide": 40, "titleNatural": 100.8, "visible": [true, true, true, true, true, true, true, true], "expect": { "drawn": [true, true, false, false, false, false, false, false], "titleRoom": 245 } },
+    { "name": "342: the second action is hidden by a condition: the first and the third are drawn (a hidden one is not counted)", "width": 369, "showBack": true, "actionSide": 40, "titleNatural": 100.8, "visible": [true, false, true], "expect": { "drawn": [true, false, true], "titleRoom": 245 } },
+    { "name": "342: the first two are hidden, three are visible after them: the first two VISIBLE are drawn", "width": 369, "showBack": true, "actionSide": 40, "titleNatural": 100.8, "visible": [false, false, true, true, true], "expect": { "drawn": [false, false, true, true, false], "titleRoom": 245 } },
+    { "name": "342: all hidden: nothing is drawn, the title has the room that the back arrow leaves", "width": 369, "showBack": true, "actionSide": 40, "titleNatural": 100.8, "visible": [false, false, false], "expect": { "drawn": [false, false, false], "titleRoom": 337 } },
+    { "name": "342: one action: one is drawn", "width": 369, "showBack": false, "actionSide": 40, "titleNatural": 100.8, "visible": [true], "expect": { "drawn": [true], "titleRoom": 321 } }
+  ],
+  "description916": "Groups added by schema 9.16.0 (the rows above are untouched, except ONE document row: «three actions do not fit beside a title» is now accepted by the structure — an app bar holds up to three children, the leading node and two actions — and refused by the validator). Written out as plain numbers; logical pixels. `appBarLeadingCases`: the zones of an app bar with a node in the LEADING zone — the input of `appBarCases` plus `leadingNatural` (the natural outer width of the VISIBLE leading node, or its named `style.width`; absent — no visible leading node, `showBack` applies) and `titleAlign` as it stands in the document (absent — no field). `expect.leadingWidth` is what stands in the leading zone WITHOUT the gap (the node clamped to half of the bar, the back square, or zero), `expect.leading` — with the gap. `rtlLeft` — the same layout measured from the LEFT edge in a right-to-left script: `leading` is the left edge of what stands in the leading zone (null — nothing). `appBarLeadingShownCases`: what is drawn in the leading zone — `nodeVisible` null: the bar has no leading node; true / false: its condition. `appBarChildrenCases`: which child of the bar is the leading node and which are actions, by index in document order (visibility is not counted here). `appBarPlaceCases`: where a child put into the bar goes — the answer shared by the validator and the builder. `appBar916DocumentCases`: is the document accepted by the JSON Schema (`schema`) and, when it is, which validator codes refuse to publish it. `appBarChildren` — children of the bar, `bodyChildren` — children of the screen root next to a bar, `appBarProps` — extra props of the bar. `glyphCases`: the own size of a drawing (`glyphSize`) on an «Icon» and an «IconButton». `typography` is the measured font token of the size word (font size, line-height multiplier) in the built-in theme, `padding` — the padding on ONE side (the block padding of the button of that size, or the named one), `border` — the border width on one side, `style` — the NAMED `width` / `height` of the node. `expect`: `glyph` — the side of the drawing, `content` — the content box, `box` — the node box, `own` — whether the number was read. Compare to two decimals: the line of `bodyM` is 14 × 1.4286. `appBar916RuleCases`: a dotted path in `x-style.layout` → its value.",
+  "tokens916": { "maxShare": 0.5, "glyphSize": { "min": 8, "max": 128 }, "buttonPadding": { "sm": 4, "md": 8, "lg": 12 } },
+  "appBarLeadingCases": [
+    { "name": "393: a short button «‹ Exit» (76), no actions, title center", "width": 369, "showBack": true, "leadingNatural": 76, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 0, "titleRoom": 285, "titleWidth": 100.8, "titleStart": 134.1, "centered": true, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 293, "title": 134.1, "actions": []} },
+    { "name": "393: a short button «‹ Exit» (76), no actions, title start", "width": 369, "showBack": true, "leadingNatural": 76, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 0, "titleRoom": 285, "titleWidth": 100.8, "titleStart": 84, "centered": false, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 293, "title": 184.2, "actions": []}, "titleAlign": "start" },
+    { "name": "393: a short button «‹ Exit» (76), one action, title center", "width": 369, "showBack": true, "leadingNatural": 76, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 48, "titleRoom": 237, "titleWidth": 100.8, "titleStart": 134.1, "centered": true, "truncated": false, "actionStarts": [329]}, "rtlLeft": { "leading": 293, "title": 134.1, "actions": [0]} },
+    { "name": "393: a short button «‹ Exit» (76), one action, title start", "width": 369, "showBack": true, "leadingNatural": 76, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 48, "titleRoom": 237, "titleWidth": 100.8, "titleStart": 84, "centered": false, "truncated": false, "actionStarts": [329]}, "rtlLeft": { "leading": 293, "title": 184.2, "actions": [0]}, "titleAlign": "start" },
+    { "name": "393: a short button «‹ Exit» (76), two actions, title center", "width": 369, "showBack": true, "leadingNatural": 76, "actionSides": [40, 40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 92, "titleRoom": 193, "titleWidth": 100.8, "titleStart": 134.1, "centered": true, "truncated": false, "actionStarts": [285, 329]}, "rtlLeft": { "leading": 293, "title": 134.1, "actions": [44, 0]} },
+    { "name": "393: a short button «‹ Exit» (76), two actions, title start", "width": 369, "showBack": true, "leadingNatural": 76, "actionSides": [40, 40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 92, "titleRoom": 193, "titleWidth": 100.8, "titleStart": 84, "centered": false, "truncated": false, "actionStarts": [285, 329]}, "rtlLeft": { "leading": 293, "title": 184.2, "actions": [44, 0]}, "titleAlign": "start" },
+    { "name": "393: a long button (220), no actions, title center", "width": 369, "showBack": true, "leadingNatural": 220, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 184.5, "leading": 192.5, "trailing": 0, "titleRoom": 176.5, "titleWidth": 100.8, "titleStart": 192.5, "centered": false, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 184.5, "title": 75.7, "actions": []} },
+    { "name": "393: a long button (220), no actions, title start", "width": 369, "showBack": true, "leadingNatural": 220, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 184.5, "leading": 192.5, "trailing": 0, "titleRoom": 176.5, "titleWidth": 100.8, "titleStart": 192.5, "centered": false, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 184.5, "title": 75.7, "actions": []}, "titleAlign": "start" },
+    { "name": "393: a long button (220), one action, title center", "width": 369, "showBack": true, "leadingNatural": 220, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 184.5, "leading": 192.5, "trailing": 48, "titleRoom": 128.5, "titleWidth": 100.8, "titleStart": 192.5, "centered": false, "truncated": false, "actionStarts": [329]}, "rtlLeft": { "leading": 184.5, "title": 75.7, "actions": [0]} },
+    { "name": "393: a long button (220), one action, title start", "width": 369, "showBack": true, "leadingNatural": 220, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 184.5, "leading": 192.5, "trailing": 48, "titleRoom": 128.5, "titleWidth": 100.8, "titleStart": 192.5, "centered": false, "truncated": false, "actionStarts": [329]}, "rtlLeft": { "leading": 184.5, "title": 75.7, "actions": [0]}, "titleAlign": "start" },
+    { "name": "393: a long button (220), two actions, title center", "width": 369, "showBack": true, "leadingNatural": 220, "actionSides": [40, 40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 184.5, "leading": 192.5, "trailing": 92, "titleRoom": 84.5, "titleWidth": 84.5, "titleStart": 192.5, "centered": false, "truncated": true, "actionStarts": [285, 329]}, "rtlLeft": { "leading": 184.5, "title": 92, "actions": [44, 0]} },
+    { "name": "393: a long button (220), two actions, title start", "width": 369, "showBack": true, "leadingNatural": 220, "actionSides": [40, 40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 184.5, "leading": 192.5, "trailing": 92, "titleRoom": 84.5, "titleWidth": 84.5, "titleStart": 192.5, "centered": false, "truncated": true, "actionStarts": [285, 329]}, "rtlLeft": { "leading": 184.5, "title": 92, "actions": [44, 0]}, "titleAlign": "start" },
+    { "name": "393: an icon button (40), no actions, title center", "width": 369, "showBack": true, "leadingNatural": 40, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 40, "leading": 48, "trailing": 0, "titleRoom": 321, "titleWidth": 100.8, "titleStart": 134.1, "centered": true, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 329, "title": 134.1, "actions": []} },
+    { "name": "393: an icon button (40), no actions, title start", "width": 369, "showBack": true, "leadingNatural": 40, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 40, "leading": 48, "trailing": 0, "titleRoom": 321, "titleWidth": 100.8, "titleStart": 48, "centered": false, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 329, "title": 220.2, "actions": []}, "titleAlign": "start" },
+    { "name": "393: an icon button (40), one action, title center", "width": 369, "showBack": true, "leadingNatural": 40, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 40, "leading": 48, "trailing": 48, "titleRoom": 273, "titleWidth": 100.8, "titleStart": 134.1, "centered": true, "truncated": false, "actionStarts": [329]}, "rtlLeft": { "leading": 329, "title": 134.1, "actions": [0]} },
+    { "name": "393: an icon button (40), one action, title start", "width": 369, "showBack": true, "leadingNatural": 40, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 40, "leading": 48, "trailing": 48, "titleRoom": 273, "titleWidth": 100.8, "titleStart": 48, "centered": false, "truncated": false, "actionStarts": [329]}, "rtlLeft": { "leading": 329, "title": 220.2, "actions": [0]}, "titleAlign": "start" },
+    { "name": "393: an icon button (40), two actions, title center", "width": 369, "showBack": true, "leadingNatural": 40, "actionSides": [40, 40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 40, "leading": 48, "trailing": 92, "titleRoom": 229, "titleWidth": 100.8, "titleStart": 134.1, "centered": true, "truncated": false, "actionStarts": [285, 329]}, "rtlLeft": { "leading": 329, "title": 134.1, "actions": [44, 0]} },
+    { "name": "393: an icon button (40), two actions, title start", "width": 369, "showBack": true, "leadingNatural": 40, "actionSides": [40, 40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 40, "leading": 48, "trailing": 92, "titleRoom": 229, "titleWidth": 100.8, "titleStart": 48, "centered": false, "truncated": false, "actionStarts": [285, 329]}, "rtlLeft": { "leading": 329, "title": 220.2, "actions": [44, 0]}, "titleAlign": "start" },
+    { "name": "320: a short button «‹ Exit» (76), no actions, title center", "width": 296, "showBack": true, "leadingNatural": 76, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 0, "titleRoom": 212, "titleWidth": 100.8, "titleStart": 97.6, "centered": true, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 220, "title": 97.6, "actions": []} },
+    { "name": "320: a short button «‹ Exit» (76), no actions, title start", "width": 296, "showBack": true, "leadingNatural": 76, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 0, "titleRoom": 212, "titleWidth": 100.8, "titleStart": 84, "centered": false, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 220, "title": 111.2, "actions": []}, "titleAlign": "start" },
+    { "name": "320: a short button «‹ Exit» (76), one action, title center", "width": 296, "showBack": true, "leadingNatural": 76, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 48, "titleRoom": 164, "titleWidth": 100.8, "titleStart": 97.6, "centered": true, "truncated": false, "actionStarts": [256]}, "rtlLeft": { "leading": 220, "title": 97.6, "actions": [0]} },
+    { "name": "320: a short button «‹ Exit» (76), one action, title start", "width": 296, "showBack": true, "leadingNatural": 76, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 48, "titleRoom": 164, "titleWidth": 100.8, "titleStart": 84, "centered": false, "truncated": false, "actionStarts": [256]}, "rtlLeft": { "leading": 220, "title": 111.2, "actions": [0]}, "titleAlign": "start" },
+    { "name": "320: a short button «‹ Exit» (76), two actions, title center", "width": 296, "showBack": true, "leadingNatural": 76, "actionSides": [40, 40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 92, "titleRoom": 120, "titleWidth": 100.8, "titleStart": 97.6, "centered": true, "truncated": false, "actionStarts": [212, 256]}, "rtlLeft": { "leading": 220, "title": 97.6, "actions": [44, 0]} },
+    { "name": "320: a short button «‹ Exit» (76), two actions, title start", "width": 296, "showBack": true, "leadingNatural": 76, "actionSides": [40, 40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 92, "titleRoom": 120, "titleWidth": 100.8, "titleStart": 84, "centered": false, "truncated": false, "actionStarts": [212, 256]}, "rtlLeft": { "leading": 220, "title": 111.2, "actions": [44, 0]}, "titleAlign": "start" },
+    { "name": "320: a long button (220), no actions, title center", "width": 296, "showBack": true, "leadingNatural": 220, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 148, "leading": 156, "trailing": 0, "titleRoom": 140, "titleWidth": 100.8, "titleStart": 156, "centered": false, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 148, "title": 39.2, "actions": []} },
+    { "name": "320: a long button (220), no actions, title start", "width": 296, "showBack": true, "leadingNatural": 220, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 148, "leading": 156, "trailing": 0, "titleRoom": 140, "titleWidth": 100.8, "titleStart": 156, "centered": false, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 148, "title": 39.2, "actions": []}, "titleAlign": "start" },
+    { "name": "320: a long button (220), one action, title center", "width": 296, "showBack": true, "leadingNatural": 220, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 148, "leading": 156, "trailing": 48, "titleRoom": 92, "titleWidth": 92, "titleStart": 156, "centered": false, "truncated": true, "actionStarts": [256]}, "rtlLeft": { "leading": 148, "title": 48, "actions": [0]} },
+    { "name": "320: a long button (220), one action, title start", "width": 296, "showBack": true, "leadingNatural": 220, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 148, "leading": 156, "trailing": 48, "titleRoom": 92, "titleWidth": 92, "titleStart": 156, "centered": false, "truncated": true, "actionStarts": [256]}, "rtlLeft": { "leading": 148, "title": 48, "actions": [0]}, "titleAlign": "start" },
+    { "name": "320: a long button (220), two actions, title center", "width": 296, "showBack": true, "leadingNatural": 220, "actionSides": [40, 40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 148, "leading": 156, "trailing": 92, "titleRoom": 48, "titleWidth": 48, "titleStart": 156, "centered": false, "truncated": true, "actionStarts": [212, 256]}, "rtlLeft": { "leading": 148, "title": 92, "actions": [44, 0]} },
+    { "name": "320: a long button (220), two actions, title start", "width": 296, "showBack": true, "leadingNatural": 220, "actionSides": [40, 40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 148, "leading": 156, "trailing": 92, "titleRoom": 48, "titleWidth": 48, "titleStart": 156, "centered": false, "truncated": true, "actionStarts": [212, 256]}, "rtlLeft": { "leading": 148, "title": 92, "actions": [44, 0]}, "titleAlign": "start" },
+    { "name": "320: an icon button (40), no actions, title center", "width": 296, "showBack": true, "leadingNatural": 40, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 40, "leading": 48, "trailing": 0, "titleRoom": 248, "titleWidth": 100.8, "titleStart": 97.6, "centered": true, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 256, "title": 97.6, "actions": []} },
+    { "name": "320: an icon button (40), no actions, title start", "width": 296, "showBack": true, "leadingNatural": 40, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 40, "leading": 48, "trailing": 0, "titleRoom": 248, "titleWidth": 100.8, "titleStart": 48, "centered": false, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 256, "title": 147.2, "actions": []}, "titleAlign": "start" },
+    { "name": "320: an icon button (40), one action, title center", "width": 296, "showBack": true, "leadingNatural": 40, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 40, "leading": 48, "trailing": 48, "titleRoom": 200, "titleWidth": 100.8, "titleStart": 97.6, "centered": true, "truncated": false, "actionStarts": [256]}, "rtlLeft": { "leading": 256, "title": 97.6, "actions": [0]} },
+    { "name": "320: an icon button (40), one action, title start", "width": 296, "showBack": true, "leadingNatural": 40, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 40, "leading": 48, "trailing": 48, "titleRoom": 200, "titleWidth": 100.8, "titleStart": 48, "centered": false, "truncated": false, "actionStarts": [256]}, "rtlLeft": { "leading": 256, "title": 147.2, "actions": [0]}, "titleAlign": "start" },
+    { "name": "320: an icon button (40), two actions, title center", "width": 296, "showBack": true, "leadingNatural": 40, "actionSides": [40, 40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 40, "leading": 48, "trailing": 92, "titleRoom": 156, "titleWidth": 100.8, "titleStart": 97.6, "centered": true, "truncated": false, "actionStarts": [212, 256]}, "rtlLeft": { "leading": 256, "title": 97.6, "actions": [44, 0]} },
+    { "name": "320: an icon button (40), two actions, title start", "width": 296, "showBack": true, "leadingNatural": 40, "actionSides": [40, 40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 40, "leading": 48, "trailing": 92, "titleRoom": 156, "titleWidth": 100.8, "titleStart": 48, "centered": false, "truncated": false, "actionStarts": [212, 256]}, "rtlLeft": { "leading": 256, "title": 147.2, "actions": [44, 0]}, "titleAlign": "start" },
+    { "name": "a long title after a short button, start: it takes all the room between the zones and is cut", "width": 369, "showBack": true, "leadingNatural": 76, "actionSides": [40], "titleNatural": 400, "titleAlign": "start", "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 48, "titleRoom": 237, "titleWidth": 237, "titleStart": 84, "centered": false, "truncated": true, "actionStarts": [329]}, "rtlLeft": { "leading": 293, "title": 48, "actions": [0]} },
+    { "name": "a long title after a short button, centre: the same room, the same cut — the words differ only while the title fits", "width": 369, "showBack": true, "leadingNatural": 76, "actionSides": [40], "titleNatural": 400, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 48, "titleRoom": 237, "titleWidth": 237, "titleStart": 84, "centered": false, "truncated": true, "actionStarts": [329]}, "rtlLeft": { "leading": 293, "title": 48, "actions": [0]} },
+    { "name": "320: a long button AND a long title, two actions: the button is clamped to half of the bar, the title keeps 48", "width": 296, "showBack": true, "leadingNatural": 220, "actionSides": [40, 40], "titleNatural": 400, "titleAlign": "start", "expect": { "leadingShown": "node", "leadingWidth": 148, "leading": 156, "trailing": 92, "titleRoom": 48, "titleWidth": 48, "titleStart": 156, "centered": false, "truncated": true, "actionStarts": [212, 256]}, "rtlLeft": { "leading": 148, "title": 92, "actions": [44, 0]} },
+    { "name": "a button exactly half of the bar is not clamped", "width": 369, "showBack": true, "leadingNatural": 184.5, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 184.5, "leading": 192.5, "trailing": 0, "titleRoom": 176.5, "titleWidth": 100.8, "titleStart": 192.5, "centered": false, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 184.5, "title": 75.7, "actions": []} },
+    { "name": "a button one point wider than half of the bar is clamped to the half", "width": 369, "showBack": true, "leadingNatural": 185.5, "actionSides": [], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 184.5, "leading": 192.5, "trailing": 0, "titleRoom": 176.5, "titleWidth": 100.8, "titleStart": 192.5, "centered": false, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": 184.5, "title": 75.7, "actions": []} },
+    { "name": "no leading node, back arrow, title start: right after the arrow", "width": 369, "showBack": true, "actionSides": [40], "titleNatural": 100.8, "titleAlign": "start", "expect": { "leadingShown": "back", "leadingWidth": 24, "leading": 32, "trailing": 48, "titleRoom": 289, "titleWidth": 100.8, "titleStart": 32, "centered": false, "truncated": false, "actionStarts": [329]}, "rtlLeft": { "leading": 345, "title": 236.2, "actions": [0]} },
+    { "name": "no leading node, no back arrow, title start: at the start edge of the bar", "width": 369, "showBack": false, "actionSides": [40, 40], "titleNatural": 100.8, "titleAlign": "start", "expect": { "leadingShown": "none", "leadingWidth": 0, "leading": 0, "trailing": 92, "titleRoom": 277, "titleWidth": 100.8, "titleStart": 0, "centered": false, "truncated": false, "actionStarts": [285, 329]}, "rtlLeft": { "leading": null, "title": 268.2, "actions": [44, 0]} },
+    { "name": "no leading node, no back arrow, no actions, title start: at the start edge, the whole bar is its room", "width": 369, "showBack": false, "actionSides": [], "titleNatural": 100.8, "titleAlign": "start", "expect": { "leadingShown": "none", "leadingWidth": 0, "leading": 0, "trailing": 0, "titleRoom": 369, "titleWidth": 100.8, "titleStart": 0, "centered": false, "truncated": false, "actionStarts": []}, "rtlLeft": { "leading": null, "title": 268.2, "actions": []} },
+    { "name": "a visible leading node replaces the arrow whatever showBack says: showBack false", "width": 369, "showBack": false, "leadingNatural": 76, "actionSides": [40], "titleNatural": 100.8, "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 48, "titleRoom": 237, "titleWidth": 100.8, "titleStart": 134.1, "centered": true, "truncated": false, "actionStarts": [329]}, "rtlLeft": { "leading": 293, "title": 134.1, "actions": [0]} },
+    { "name": "titleAlign of a newer minor reads as centre", "width": 369, "showBack": true, "leadingNatural": 76, "actionSides": [40], "titleNatural": 100.8, "titleAlign": "end", "expect": { "leadingShown": "node", "leadingWidth": 76, "leading": 84, "trailing": 48, "titleRoom": 237, "titleWidth": 100.8, "titleStart": 134.1, "centered": true, "truncated": false, "actionStarts": [329]}, "rtlLeft": { "leading": 293, "title": 134.1, "actions": [0]} },
+    { "name": "titleAlign of a wrong shape (a number) reads as centre", "width": 369, "showBack": true, "actionSides": [40], "titleNatural": 100.8, "titleAlign": 1, "expect": { "leadingShown": "back", "leadingWidth": 24, "leading": 32, "trailing": 48, "titleRoom": 289, "titleWidth": 100.8, "titleStart": 134.1, "centered": true, "truncated": false, "actionStarts": [329]}, "rtlLeft": { "leading": 345, "title": 134.1, "actions": [0]} },
+    { "name": "a title wider than the room with a long button, start: zero is not reached", "width": 100, "showBack": true, "leadingNatural": 220, "actionSides": [40], "titleNatural": 60, "titleAlign": "start", "expect": { "leadingShown": "node", "leadingWidth": 50, "leading": 58, "trailing": 48, "titleRoom": 0, "titleWidth": 0, "titleStart": 58, "centered": false, "truncated": true, "actionStarts": [60]}, "rtlLeft": { "leading": 50, "title": 42, "actions": [0]} }
+  ],
+  "appBarLeadingShownCases": [
+    { "name": "no leading node, showBack true: back", "nodeVisible": null, "showBack": true, "expect": "back" },
+    { "name": "no leading node, showBack false: none", "nodeVisible": null, "showBack": false, "expect": "none" },
+    { "name": "a VISIBLE leading node, showBack true: node", "nodeVisible": true, "showBack": true, "expect": "node" },
+    { "name": "a VISIBLE leading node, showBack false: node", "nodeVisible": true, "showBack": false, "expect": "node" },
+    { "name": "a leading node hidden by its condition, showBack true: back", "nodeVisible": false, "showBack": true, "expect": "back" },
+    { "name": "a leading node hidden by its condition, showBack false: none", "nodeVisible": false, "showBack": false, "expect": "none" }
+  ],
+  "appBarChildrenCases": [
+    { "name": "two actions, no field: no leading node, both are actions (a 9.15 document)", "children": [{ "type": "IconButton" }, { "type": "IconButton" }], "leading": null, "actions": [0, 1]},
+    { "name": "a button with the field after two actions: the leading node, not an action", "children": [{ "type": "IconButton" }, { "type": "IconButton" }, { "type": "Button", "zone": "leading" }], "leading": 2, "actions": [0, 1]},
+    { "name": "the leading node FIRST among the children: the order does not name the zone", "children": [{ "type": "Button", "zone": "leading" }, { "type": "IconButton" }, { "type": "IconButton" }], "leading": 0, "actions": [1, 2]},
+    { "name": "the leading node between the actions", "children": [{ "type": "IconButton" }, { "type": "IconButton", "zone": "leading" }, { "type": "IconButton" }], "leading": 1, "actions": [0, 2]},
+    { "name": "an icon button with the field is the leading node and NOT an action", "children": [{ "type": "IconButton", "zone": "leading" }, { "type": "IconButton" }], "leading": 0, "actions": [1]},
+    { "name": "two children with the field: the first in document order is the leading node, the second is neither", "children": [{ "type": "Button", "zone": "leading" }, { "type": "IconButton", "zone": "leading" }, { "type": "IconButton" }], "leading": 0, "actions": [2]},
+    { "name": "a button with a label WITHOUT the field is neither the leading node nor an action", "children": [{ "type": "Button" }, { "type": "IconButton" }], "leading": null, "actions": [1]},
+    { "name": "a word of a newer minor in the field reads as no field: the icon button is an action", "children": [{ "type": "IconButton", "zone": "trailing" }, { "type": "IconButton" }], "leading": null, "actions": [0, 1]},
+    { "name": "a widget that cannot stand in the zone (a text with the field) is not the leading node", "children": [{ "type": "Text", "zone": "leading" }, { "type": "IconButton" }], "leading": null, "actions": [1]},
+    { "name": "no children", "children": [], "leading": null, "actions": []}
+  ],
+  "appBarPlaceCases": [
+    { "name": "an icon button into an empty bar: an action", "siblings": [], "child": { "type": "IconButton" }, "expect": "action" },
+    { "name": "a third icon button: the actions are full", "siblings": [{ "type": "IconButton" }, { "type": "IconButton" }], "child": { "type": "IconButton" }, "expect": "actions-full" },
+    { "name": "a button with a label into a bar with two actions: the leading zone", "siblings": [{ "type": "IconButton" }, { "type": "IconButton" }], "child": { "type": "Button" }, "expect": "leading" },
+    { "name": "a second button with a label: the leading zone is taken", "siblings": [{ "type": "IconButton" }, { "type": "Button", "zone": "leading" }], "child": { "type": "Button" }, "expect": "leading-taken" },
+    { "name": "a copy of the leading BUTTON: the leading zone is taken", "siblings": [{ "type": "Button", "zone": "leading" }], "child": { "type": "Button", "zone": "leading" }, "expect": "leading-taken" },
+    { "name": "a copy of the leading ICON BUTTON: an ordinary action", "siblings": [{ "type": "IconButton", "zone": "leading" }], "child": { "type": "IconButton", "zone": "leading" }, "expect": "action" },
+    { "name": "a copy of the leading icon button when two actions stand already: the actions are full", "siblings": [{ "type": "IconButton", "zone": "leading" }, { "type": "IconButton" }, { "type": "IconButton" }], "child": { "type": "IconButton", "zone": "leading" }, "expect": "actions-full" },
+    { "name": "an icon button with the field into a bar with two actions and a free zone: the leading zone — it is not counted as an action", "siblings": [{ "type": "IconButton" }, { "type": "IconButton" }], "child": { "type": "IconButton", "zone": "leading" }, "expect": "leading" },
+    { "name": "a text is not a child of the bar", "siblings": [], "child": { "type": "Text" }, "expect": "type" }
+  ],
+  "appBar916DocumentCases": [
+    { "name": "a leading button and two actions: valid", "appBarChildren": [{ "type": "IconButton" }, { "type": "IconButton" }, { "type": "Button", "zone": "leading" }], "schema": true, "codes": []},
+    { "name": "a leading icon button and two actions: valid", "appBarChildren": [{ "type": "IconButton", "zone": "leading" }, { "type": "IconButton" }, { "type": "IconButton" }], "schema": true, "codes": []},
+    { "name": "a leading node and THREE actions: four children — the structure refuses", "appBarChildren": [{ "type": "Button", "zone": "leading" }, { "type": "IconButton" }, { "type": "IconButton" }, { "type": "IconButton" }], "schema": false, "codes": []},
+    { "name": "two leading nodes: the validator refuses", "appBarChildren": [{ "type": "Button", "zone": "leading" }, { "type": "IconButton", "zone": "leading" }], "schema": true, "codes": ["invalid_document"]},
+    { "name": "a button with a label without the field: not an action", "appBarChildren": [{ "type": "Button" }], "schema": true, "codes": ["child_not_allowed"]},
+    { "name": "the field on a button OUTSIDE the bar: the validator refuses", "bodyChildren": [{ "type": "Button", "zone": "leading" }], "schema": true, "codes": ["invalid_document"]},
+    { "name": "the field on a widget that has none (a text): the structure refuses", "bodyChildren": [{ "type": "Text", "zone": "leading" }], "schema": false, "codes": []},
+    { "name": "a word that is not in the list: the structure refuses", "appBarChildren": [{ "type": "IconButton", "zone": "trailing" }], "schema": false, "codes": []},
+    { "name": "titleAlign start: valid", "appBarProps": { "titleAlign": "start" }, "schema": true, "codes": []},
+    { "name": "titleAlign of a word that is not in the list: the structure refuses", "appBarProps": { "titleAlign": "end" }, "schema": false, "codes": []},
+    { "name": "glyphSize at the lower limit on an icon", "bodyChildren": [{ "type": "Icon", "glyphSize": 8}], "schema": true, "codes": []},
+    { "name": "glyphSize at the upper limit on an icon button", "bodyChildren": [{ "type": "IconButton", "glyphSize": 128}], "schema": true, "codes": []},
+    { "name": "glyphSize under the limit: the structure refuses", "bodyChildren": [{ "type": "Icon", "glyphSize": 7}], "schema": false, "codes": []},
+    { "name": "glyphSize over the limit: the structure refuses", "bodyChildren": [{ "type": "IconButton", "glyphSize": 129}], "schema": false, "codes": []},
+    { "name": "a fractional glyphSize: the structure refuses", "bodyChildren": [{ "type": "Icon", "glyphSize": 20.5}], "schema": false, "codes": []},
+    { "name": "glyphSize on a button with a label (it has no such field): the structure refuses", "bodyChildren": [{ "type": "Button", "glyphSize": 20}], "schema": false, "codes": []}
+  ],
+  "glyphCases": [
+    { "name": "icon sm, no field: the word draws — a glyph of the font size in a box «font size × line»", "widget": "Icon", "size": "sm", "typography": { "fontSize": 12, "lineHeight": 1.3333}, "padding": 0, "border": 0, "style": {}, "expect": { "glyph": 12, "content": { "inline": 12, "block": 16}, "box": { "inline": 12, "block": 16}, "own": false} },
+    { "name": "icon sm, glyphSize 32: a square of 32, the word is not read", "widget": "Icon", "size": "sm", "glyphSize": 32, "typography": { "fontSize": 12, "lineHeight": 1.3333}, "padding": 0, "border": 0, "style": {}, "expect": { "glyph": 32, "content": { "inline": 32, "block": 32}, "box": { "inline": 32, "block": 32}, "own": true} },
+    { "name": "icon md, no field: the word draws — a glyph of the font size in a box «font size × line»", "widget": "Icon", "size": "md", "typography": { "fontSize": 18, "lineHeight": 1.3333}, "padding": 0, "border": 0, "style": {}, "expect": { "glyph": 18, "content": { "inline": 18, "block": 24}, "box": { "inline": 18, "block": 24}, "own": false} },
+    { "name": "icon md, glyphSize 32: a square of 32, the word is not read", "widget": "Icon", "size": "md", "glyphSize": 32, "typography": { "fontSize": 18, "lineHeight": 1.3333}, "padding": 0, "border": 0, "style": {}, "expect": { "glyph": 32, "content": { "inline": 32, "block": 32}, "box": { "inline": 32, "block": 32}, "own": true} },
+    { "name": "icon lg, no field: the word draws — a glyph of the font size in a box «font size × line»", "widget": "Icon", "size": "lg", "typography": { "fontSize": 24, "lineHeight": 1.1667}, "padding": 0, "border": 0, "style": {}, "expect": { "glyph": 24, "content": { "inline": 24, "block": 28}, "box": { "inline": 24, "block": 28}, "own": false} },
+    { "name": "icon lg, glyphSize 32: a square of 32, the word is not read", "widget": "Icon", "size": "lg", "glyphSize": 32, "typography": { "fontSize": 24, "lineHeight": 1.1667}, "padding": 0, "border": 0, "style": {}, "expect": { "glyph": 32, "content": { "inline": 32, "block": 32}, "box": { "inline": 32, "block": 32}, "own": true} },
+    { "name": "icon button sm, no field: the side is the height of the button of that size", "widget": "IconButton", "size": "sm", "typography": { "fontSize": 14, "lineHeight": 1.4286}, "padding": 4, "border": 0, "style": {}, "expect": { "glyph": 14, "content": { "inline": 20, "block": 20}, "box": { "inline": 28, "block": 28}, "own": false} },
+    { "name": "icon button sm, glyphSize 24: the content box is a square of 24, the padding is that of the word", "widget": "IconButton", "size": "sm", "glyphSize": 24, "typography": { "fontSize": 14, "lineHeight": 1.4286}, "padding": 4, "border": 0, "style": {}, "expect": { "glyph": 24, "content": { "inline": 24, "block": 24}, "box": { "inline": 32, "block": 32}, "own": true} },
+    { "name": "icon button md, no field: the side is the height of the button of that size", "widget": "IconButton", "size": "md", "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 8, "border": 0, "style": {}, "expect": { "glyph": 16, "content": { "inline": 24, "block": 24}, "box": { "inline": 40, "block": 40}, "own": false} },
+    { "name": "icon button md, glyphSize 24: the content box is a square of 24, the padding is that of the word", "widget": "IconButton", "size": "md", "glyphSize": 24, "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 8, "border": 0, "style": {}, "expect": { "glyph": 24, "content": { "inline": 24, "block": 24}, "box": { "inline": 40, "block": 40}, "own": true} },
+    { "name": "icon button lg, no field: the side is the height of the button of that size", "widget": "IconButton", "size": "lg", "typography": { "fontSize": 18, "lineHeight": 1.3333}, "padding": 12, "border": 0, "style": {}, "expect": { "glyph": 18, "content": { "inline": 24, "block": 24}, "box": { "inline": 48, "block": 48}, "own": false} },
+    { "name": "icon button lg, glyphSize 24: the content box is a square of 24, the padding is that of the word", "widget": "IconButton", "size": "lg", "glyphSize": 24, "typography": { "fontSize": 18, "lineHeight": 1.3333}, "padding": 12, "border": 0, "style": {}, "expect": { "glyph": 24, "content": { "inline": 24, "block": 24}, "box": { "inline": 48, "block": 48}, "own": true} },
+    { "name": "icon button md, glyphSize 32: the BOX grows with the drawing — 32 + 2 × 8", "widget": "IconButton", "size": "md", "glyphSize": 32, "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 8, "border": 0, "style": {}, "expect": { "glyph": 32, "content": { "inline": 32, "block": 32}, "box": { "inline": 48, "block": 48}, "own": true} },
+    { "name": "icon button md, glyphSize 8 (the lower limit): the button is smaller than its word", "widget": "IconButton", "size": "md", "glyphSize": 8, "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 8, "border": 0, "style": {}, "expect": { "glyph": 8, "content": { "inline": 8, "block": 8}, "box": { "inline": 24, "block": 24}, "own": true} },
+    { "name": "icon button lg, glyphSize 128 (the upper limit)", "widget": "IconButton", "size": "lg", "glyphSize": 128, "typography": { "fontSize": 18, "lineHeight": 1.3333}, "padding": 12, "border": 0, "style": {}, "expect": { "glyph": 128, "content": { "inline": 128, "block": 128}, "box": { "inline": 152, "block": 152}, "own": true} },
+    { "name": "icon button md with a border of 1: the border is added to the side", "widget": "IconButton", "size": "md", "glyphSize": 24, "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 8, "border": 1, "style": {}, "expect": { "glyph": 24, "content": { "inline": 24, "block": 24}, "box": { "inline": 42, "block": 42}, "own": true} },
+    { "name": "the mock-up «?»: icon button md named 56 × 56, glyphSize 28 — the box is named, the drawing fits", "widget": "IconButton", "size": "md", "glyphSize": 28, "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 8, "border": 0, "style": { "width": 56, "height": 56}, "expect": { "glyph": 28, "content": { "inline": 40, "block": 40}, "box": { "inline": 56, "block": 56}, "own": true} },
+    { "name": "icon button md named 56 × 56, no field: the document of 9.15 — the box is named, the drawing is the font size, as before", "widget": "IconButton", "size": "md", "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 8, "border": 0, "style": { "width": 56, "height": 56}, "expect": { "glyph": 16, "content": { "inline": 40, "block": 40}, "box": { "inline": 56, "block": 56}, "own": false} },
+    { "name": "icon button md named 40 × 40, glyphSize 48: the drawing is NOT larger than the content box — 24", "widget": "IconButton", "size": "md", "glyphSize": 48, "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 8, "border": 0, "style": { "width": 40, "height": 40}, "expect": { "glyph": 24, "content": { "inline": 24, "block": 24}, "box": { "inline": 40, "block": 40}, "own": true} },
+    { "name": "icon button md, only the width is named (48), glyphSize 40: clamped on the named axis — 32; the height follows the content", "widget": "IconButton", "size": "md", "glyphSize": 40, "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 8, "border": 0, "style": { "width": 48}, "expect": { "glyph": 32, "content": { "inline": 32, "block": 40}, "box": { "inline": 48, "block": 56}, "own": true} },
+    { "name": "icon button md, only the height is named (44), glyphSize 40: clamped to 28", "widget": "IconButton", "size": "md", "glyphSize": 40, "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 8, "border": 0, "style": { "height": 44}, "expect": { "glyph": 28, "content": { "inline": 40, "block": 28}, "box": { "inline": 56, "block": 44}, "own": true} },
+    { "name": "icon button with its own padding 4 named 40 × 40, glyphSize 40: the content box is 32", "widget": "IconButton", "size": "md", "glyphSize": 40, "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 4, "border": 0, "style": { "width": 40, "height": 40}, "expect": { "glyph": 32, "content": { "inline": 32, "block": 32}, "box": { "inline": 40, "block": 40}, "own": true} },
+    { "name": "icon button named smaller than its padding (12 × 12), glyphSize 24: the content box is zero, nothing is drawn", "widget": "IconButton", "size": "md", "glyphSize": 24, "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 8, "border": 0, "style": { "width": 12, "height": 12}, "expect": { "glyph": 0, "content": { "inline": 0, "block": 0}, "box": { "inline": 12, "block": 12}, "own": true} },
+    { "name": "icon md named 48 × 48, glyphSize 32: the box is named, the drawing is 32 in its centre", "widget": "Icon", "size": "md", "glyphSize": 32, "typography": { "fontSize": 18, "lineHeight": 1.3333}, "padding": 0, "border": 0, "style": { "width": 48, "height": 48}, "expect": { "glyph": 32, "content": { "inline": 48, "block": 48}, "box": { "inline": 48, "block": 48}, "own": true} },
+    { "name": "icon md named 24 × 24, glyphSize 40: the drawing is not larger than the box — 24", "widget": "Icon", "size": "md", "glyphSize": 40, "typography": { "fontSize": 18, "lineHeight": 1.3333}, "padding": 0, "border": 0, "style": { "width": 24, "height": 24}, "expect": { "glyph": 24, "content": { "inline": 24, "block": 24}, "box": { "inline": 24, "block": 24}, "own": true} },
+    { "name": "icon md named 48 × 48, no field: the document of 9.15 — the drawing is the font size", "widget": "Icon", "size": "md", "typography": { "fontSize": 18, "lineHeight": 1.3333}, "padding": 0, "border": 0, "style": { "width": 48, "height": 48}, "expect": { "glyph": 18, "content": { "inline": 48, "block": 48}, "box": { "inline": 48, "block": 48}, "own": false} },
+    { "name": "icon md with padding 8 named 40 × 40, glyphSize 40: the content box is 24", "widget": "Icon", "size": "md", "glyphSize": 40, "typography": { "fontSize": 18, "lineHeight": 1.3333}, "padding": 8, "border": 0, "style": { "width": 40, "height": 40}, "expect": { "glyph": 24, "content": { "inline": 24, "block": 24}, "box": { "inline": 40, "block": 40}, "own": true} },
+    { "name": "glyphSize under the limit (7) is not read: the word draws", "widget": "Icon", "size": "md", "glyphSize": 7, "typography": { "fontSize": 18, "lineHeight": 1.3333}, "padding": 0, "border": 0, "style": {}, "expect": { "glyph": 18, "content": { "inline": 18, "block": 24}, "box": { "inline": 18, "block": 24}, "own": false} },
+    { "name": "glyphSize over the limit (129) is not read: the word draws", "widget": "IconButton", "size": "md", "glyphSize": 129, "typography": { "fontSize": 16, "lineHeight": 1.5}, "padding": 8, "border": 0, "style": {}, "expect": { "glyph": 16, "content": { "inline": 24, "block": 24}, "box": { "inline": 40, "block": 40}, "own": false} },
+    { "name": "a fractional glyphSize (20.5) is not read: the word draws", "widget": "Icon", "size": "lg", "glyphSize": 20.5, "typography": { "fontSize": 24, "lineHeight": 1.1667}, "padding": 0, "border": 0, "style": {}, "expect": { "glyph": 24, "content": { "inline": 24, "block": 28}, "box": { "inline": 24, "block": 28}, "own": false} },
+    { "name": "glyphSize of a wrong shape (a string) is not read: the word draws", "widget": "IconButton", "size": "sm", "glyphSize": "24", "typography": { "fontSize": 14, "lineHeight": 1.4286}, "padding": 4, "border": 0, "style": {}, "expect": { "glyph": 14, "content": { "inline": 20, "block": 20}, "box": { "inline": 28, "block": 28}, "own": false} },
+    { "name": "glyphSize null is not read: the word draws", "widget": "Icon", "size": "sm", "glyphSize": null, "typography": { "fontSize": 12, "lineHeight": 1.3333}, "padding": 0, "border": 0, "style": {}, "expect": { "glyph": 12, "content": { "inline": 12, "block": 16}, "box": { "inline": 12, "block": 16}, "own": false} }
+  ],
+  "appBar916RuleCases": [
+    { "name": "the leading node is named by a FIELD of the child", "rule": "appBarLeading.field", "expect": "zone" },
+    { "name": "the order of the children does not name the zone", "rule": "appBarLeading.order", "expect": "not-read" },
+    { "name": "the leading node is not one of the two actions", "rule": "appBarLeading.countsAsAction", "expect": false},
+    { "name": "a second child with the field is not drawn", "rule": "appBarLeading.extra", "expect": "not-drawn" },
+    { "name": "a hidden leading node gives the zone back to showBack", "rule": "appBarLeading.hidden", "expect": "show-back-applies" },
+    { "name": "the node has no built-in «back»: its own action says what it does", "rule": "appBarLeading.action", "expect": "own-action-no-built-in-back" },
+    { "name": "the node is never wider than half of the bar", "rule": "appBarLeading.maxShare", "expect": 0.5},
+    { "name": "the title shrinks first, the actions never", "rule": "appBarLeading.shrinks", "expect": "title-first-then-the-leading-node-actions-never" },
+    { "name": "the field outside an app bar is not read", "rule": "appBarLeading.elsewhere", "expect": "not-read" },
+    { "name": "what a reader of 9.15 draws", "rule": "appBarLeading.before916", "expect": "icon-button-drawn-as-an-action-button-not-drawn-back-arrow-by-show-back" },
+    { "name": "no titleAlign — centre", "rule": "appBarTitle.default", "expect": "center" },
+    { "name": "start: right after the leading zone", "rule": "appBarTitle.start.placement", "expect": "right-after-the-leading-zone" },
+    { "name": "start: the lines are aligned to the start", "rule": "appBarTitle.start.lineAlign", "expect": "start" },
+    { "name": "start and end are logical", "rule": "appBarTitle.direction", "expect": "logical" },
+    { "name": "the own size is stronger than the word and than the typography", "rule": "ownGlyphSize.overrides", "expect": ["size", "style.typography"]},
+    { "name": "a named side clamps the drawing, the box does not grow", "rule": "ownGlyphSize.namedBox", "expect": "glyph-not-larger-than-the-content-box-on-the-named-axis" },
+    { "name": "the system text scale does not multiply the number", "rule": "ownGlyphSize.textScale", "expect": "not-applied" },
+    { "name": "an unreadable number is no field", "rule": "ownGlyphSize.unreadable", "expect": "no-field" },
+    { "name": "the limits of the number", "rule": "ownGlyphSize.range", "expect": { "min": 8, "max": 128} }
+  ],
+  "screenTopNote": "Groups added by schema 9.19.0, theme 3 — the body under the app bar (`Screen.props.bodyTop`) and the top safe inset the reader adds (the rows above are untouched). Written out by hand as plain numbers; logical pixels. `bodyTopCases`: the field as it stands in a document (`value` absent in the row «no field») → the word the reader uses. `topZoneCases`: the types of the children of a screen root in document order, the width class of the screen box, the field `widePlacement` of the navigation bar where it is named and the children a condition hides now → who owns the app bar zone (`owner`) and whether the body of a screen with `bodyTop: 'screenTop'` starts at the top edge of the screen (`atScreenTop`): never under an own navigation strip. `screenTopZoneCases`: the input of `zoneCases` plus `bodyTop` (absent — no field) and `safeTop` (the top inset of the platform; absent — zero) → the zones in screen coordinates from the PHYSICAL top: `appBar` is the box of the bar WITH the inset inside it and `contentTop` is where its content starts; `body` is the area the scrolled content is clipped by; `bottom` — as in the bottom-zone table. `screenTopPressCases`: `screen` is such an input with the width of the screen, the direction of the script and the side paddings of the root (the box of the app bar stands inside them: left = start padding in LTR, end padding in RTL); `point` is in screen coordinates from the top-LEFT corner → the ZONE that takes the press. `screenTopRuleCases`: a dotted path in `x-style.layout` → its value; rows no geometry can say. `screenTopDocumentCases`: the props of a screen root (and `propsOn` where named) → accepted by the JSON Schema or not, and the validator codes (empty: publishable).",
+  "bodyTopCases": [
+    { "name": "no field — the body starts below the app bar, as before 9.19.0", "expect": null },
+    { "name": "the body from the top edge of the screen", "value": "screenTop", "expect": "screenTop" },
+    { "name": "a word of a newer minor reads as no field", "value": "statusBar", "expect": null },
+    { "name": "there is no word for «as without the field»: «belowBar» is an unknown word", "value": "belowBar", "expect": null },
+    { "name": "true is not a word", "value": true, "expect": null },
+    { "name": "null is no field", "value": null, "expect": null },
+    { "name": "the case of the word matters", "value": "ScreenTop", "expect": null }
+  ],
+  "topZoneCases": [
+    { "name": "an app bar is the first child", "children": ["AppBar", "Text"], "widthClass": "compact", "owner": "appBar", "atScreenTop": true },
+    { "name": "no app bar: nobody owns the zone, the body still starts at the top edge", "children": ["Text", "Text"], "widthClass": "compact", "owner": "none", "atScreenTop": true },
+    { "name": "an app bar hidden by a condition: no zone", "children": ["AppBar", "Text"], "hidden": [0], "widthClass": "compact", "owner": "none", "atScreenTop": true },
+    { "name": "a phone with a navigation bar: the bar is at the bottom", "children": ["AppBar", "Text", "NavBar"], "widthClass": "compact", "owner": "appBar", "atScreenTop": true },
+    { "name": "a phone, a navigation bar and no app bar", "children": ["Text", "NavBar"], "widthClass": "compact", "owner": "none", "atScreenTop": true },
+    { "name": "wide, nav items inside the app bar: it is still the app bar, over the body", "children": ["AppBar", "Text", "NavBar"], "widthClass": "medium", "owner": "appBar", "atScreenTop": true },
+    { "name": "wide without an app bar: the own navigation strip — the body never goes under it", "children": ["Text", "NavBar"], "widthClass": "medium", "owner": "navBar", "atScreenTop": false },
+    { "name": "the same on expanded", "children": ["Text", "NavBar"], "widthClass": "expanded", "owner": "navBar", "atScreenTop": false },
+    { "name": "wide, the app bar hidden by a condition: the navigation bar takes the zone as its own strip", "children": ["AppBar", "Text", "NavBar"], "hidden": [0], "widthClass": "expanded", "owner": "navBar", "atScreenTop": false },
+    { "name": "wide, the navigation bar asked to stay at the bottom: the zone is free", "children": ["Text", "NavBar"], "widePlacement": "bottom", "widthClass": "expanded", "owner": "none", "atScreenTop": true },
+    { "name": "wide, the navigation bar at the bottom, an app bar", "children": ["AppBar", "Text", "NavBar"], "widePlacement": "bottom", "widthClass": "medium", "owner": "appBar", "atScreenTop": true }
+  ],
+  "screenTopZoneCases": [
+    { "name": "no field, no inset: exactly the numbers of 9.9.0", "height": 568, "appBarHeight": 48, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 400, "expect": { "height": 568, "appBar": { "top": 16, "height": 48, "contentTop": 16 }, "body": { "top": 64, "height": 504 }, "contentTop": 76, "contentHeight": 428, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": null, "bodyAtScreenTop": false, "safeTop": 0 } },
+    { "name": "no field, inset 47: the inset is inside the bar box, above its content — the box is taller by it", "height": 844, "safeTop": 47, "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 900, "expect": { "height": 844, "appBar": { "top": 0, "height": 95, "contentTop": 47 }, "body": { "top": 95, "height": 749 }, "contentTop": 107, "contentHeight": 912, "maxScroll": 163, "scrollTop": 0, "scrolls": true, "bottom": null, "bodyAtScreenTop": false, "safeTop": 47 } },
+    { "name": "no field, inset 59, root top padding 16: the padding stays ABOVE the bar box", "height": 852, "safeTop": 59, "appBarHeight": 48, "padding": { "top": 16, "bottom": 24 }, "gap": 12, "bodyContentHeight": 300, "expect": { "height": 852, "appBar": { "top": 16, "height": 107, "contentTop": 75 }, "body": { "top": 123, "height": 729 }, "contentTop": 135, "contentHeight": 336, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": null, "bodyAtScreenTop": false, "safeTop": 59 } },
+    { "name": "no field, no app bar, inset 59: the body area starts below the inset and is clipped by it", "height": 852, "safeTop": 59, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "expect": { "height": 852, "appBar": null, "body": { "top": 59, "height": 793 }, "contentTop": 75, "contentHeight": 1032, "maxScroll": 239, "scrollTop": 0, "scrolls": true, "bottom": null, "bodyAtScreenTop": false, "safeTop": 59 } },
+    { "name": "the same scrolled by 100: the area stays, the content rides", "height": 852, "safeTop": 59, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "scrollTop": 100, "expect": { "height": 852, "appBar": null, "body": { "top": 59, "height": 793 }, "contentTop": -25, "contentHeight": 1032, "maxScroll": 239, "scrollTop": 100, "scrolls": true, "bottom": null, "bodyAtScreenTop": false, "safeTop": 59 } },
+    { "name": "no field, no app bar, inset 20 on 320 × 568, everything fits", "height": 568, "safeTop": 20, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 400, "expect": { "height": 568, "appBar": null, "body": { "top": 20, "height": 548 }, "contentTop": 36, "contentHeight": 432, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": null, "bodyAtScreenTop": false, "safeTop": 20 } },
+    { "name": "screenTop, 393 × 852, inset 59: the body is the whole screen from the physical top, the bar stands below the inset over it", "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200, "expect": { "height": 852, "appBar": { "top": 0, "height": 107, "contentTop": 59 }, "body": { "top": 0, "height": 852 }, "contentTop": 0, "contentHeight": 1200, "maxScroll": 348, "scrollTop": 0, "scrolls": true, "bottom": null, "bodyAtScreenTop": true, "safeTop": 59 } },
+    { "name": "the same scrolled by 200: the bar does not move, the content rides under it", "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200, "scrollTop": 200, "expect": { "height": 852, "appBar": { "top": 0, "height": 107, "contentTop": 59 }, "body": { "top": 0, "height": 852 }, "contentTop": -200, "contentHeight": 1200, "maxScroll": 348, "scrollTop": 200, "scrolls": true, "bottom": null, "bodyAtScreenTop": true, "safeTop": 59 } },
+    { "name": "the same scrolled past the end: clamped", "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200, "scrollTop": 999, "expect": { "height": 852, "appBar": { "top": 0, "height": 107, "contentTop": 59 }, "body": { "top": 0, "height": 852 }, "contentTop": -348, "contentHeight": 1200, "maxScroll": 348, "scrollTop": 348, "scrolls": true, "bottom": null, "bodyAtScreenTop": true, "safeTop": 59 } },
+    { "name": "screenTop, inset 47 on 390 × 844", "height": 844, "safeTop": 47, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 600, "expect": { "height": 844, "appBar": { "top": 0, "height": 95, "contentTop": 47 }, "body": { "top": 0, "height": 844 }, "contentTop": 0, "contentHeight": 600, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": null, "bodyAtScreenTop": true, "safeTop": 47 } },
+    { "name": "screenTop, root padding 16 / 24: the bar stays inside the top padding, the first child stands at the very top — no screen gap, no top padding", "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 24 }, "gap": 12, "bodyContentHeight": 500, "expect": { "height": 852, "appBar": { "top": 16, "height": 107, "contentTop": 75 }, "body": { "top": 0, "height": 852 }, "contentTop": 0, "contentHeight": 524, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": null, "bodyAtScreenTop": true, "safeTop": 59 } },
+    { "name": "screenTop without an app bar: the root top padding stays above the first child, the inset is NOT added", "height": 852, "safeTop": 59, "bodyTop": "screenTop", "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 900, "expect": { "height": 852, "appBar": null, "body": { "top": 0, "height": 852 }, "contentTop": 16, "contentHeight": 932, "maxScroll": 80, "scrollTop": 0, "scrolls": true, "bottom": null, "bodyAtScreenTop": true, "safeTop": 59 } },
+    { "name": "screenTop in a browser window 768 × 1024: no inset — the bar box is the bar", "height": 1024, "bodyTop": "screenTop", "appBarHeight": 56, "padding": { "top": 0, "bottom": 0 }, "gap": 16, "bodyContentHeight": 1500, "expect": { "height": 1024, "appBar": { "top": 0, "height": 56, "contentTop": 0 }, "body": { "top": 0, "height": 1024 }, "contentTop": 0, "contentHeight": 1500, "maxScroll": 476, "scrollTop": 0, "scrolls": true, "bottom": null, "bodyAtScreenTop": true, "safeTop": 0 } },
+    { "name": "screenTop on 320 × 568 with a pinned block: the body ends at the bottom zone and its content ends with the screen gap", "height": 568, "safeTop": 20, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 0, "bottom": 16 }, "gap": 12, "bodyContentHeight": 700, "bottom": { "pinnedHeight": 48 }, "expect": { "height": 568, "appBar": { "top": 0, "height": 68, "contentTop": 20 }, "body": { "top": 0, "height": 504 }, "contentTop": 0, "contentHeight": 712, "maxScroll": 208, "scrollTop": 0, "scrolls": true, "bottom": { "top": 504, "height": 64, "pinned": { "top": 504, "height": 48 }, "navBar": null, "safeBottom": 0 }, "bodyAtScreenTop": true, "safeTop": 20 } },
+    { "name": "screenTop with a navigation bar, insets 59 and 34: both edges of the screen are taken care of by the reader", "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 600, "bottom": { "navBarHeight": 57, "safeBottom": 34 }, "expect": { "height": 852, "appBar": { "top": 0, "height": 107, "contentTop": 59 }, "body": { "top": 0, "height": 761 }, "contentTop": 0, "contentHeight": 600, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": { "top": 761, "height": 91, "pinned": null, "navBar": { "top": 761, "height": 91, "contentHeight": 57 }, "safeBottom": 34 }, "bodyAtScreenTop": true, "safeTop": 59 } },
+    { "name": "screenTop with a pinned block AND a navigation bar", "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 0, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "bottom": { "pinnedHeight": 48, "navBarHeight": 57, "safeBottom": 34 }, "expect": { "height": 852, "appBar": { "top": 0, "height": 107, "contentTop": 59 }, "body": { "top": 0, "height": 697 }, "contentTop": 0, "contentHeight": 1012, "maxScroll": 315, "scrollTop": 0, "scrolls": true, "bottom": { "top": 697, "height": 155, "pinned": { "top": 697, "height": 48 }, "navBar": { "top": 761, "height": 91, "contentHeight": 57 }, "safeBottom": 34 }, "bodyAtScreenTop": true, "safeTop": 59 } },
+    { "name": "no field, with a pinned block and inset 59 — for comparison: the body starts under the bar", "height": 852, "safeTop": 59, "appBarHeight": 48, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000, "bottom": { "pinnedHeight": 48 }, "expect": { "height": 852, "appBar": { "top": 16, "height": 107, "contentTop": 75 }, "body": { "top": 123, "height": 665 }, "contentTop": 135, "contentHeight": 1024, "maxScroll": 359, "scrollTop": 0, "scrolls": true, "bottom": { "top": 788, "height": 64, "pinned": { "top": 788, "height": 48 }, "navBar": null, "safeBottom": 0 }, "bodyAtScreenTop": false, "safeTop": 59 } },
+    { "name": "screenTop: the pull of the first child raises nothing — it rides above the top edge, as without an app bar", "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 400, "firstPull": 40, "expect": { "height": 852, "appBar": { "top": 0, "height": 107, "contentTop": 59 }, "body": { "top": 0, "height": 852 }, "contentTop": -40, "contentHeight": 360, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": null, "bodyAtScreenTop": true, "safeTop": 59 } },
+    { "name": "no field: the pull of the first child raises the body area on the bar box that holds the inset", "height": 852, "safeTop": 59, "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 400, "firstPull": 40, "expect": { "height": 852, "appBar": { "top": 0, "height": 107, "contentTop": 59 }, "body": { "top": 79, "height": 773 }, "contentTop": 79, "contentHeight": 400, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": null, "bodyAtScreenTop": false, "safeTop": 59 } },
+    { "name": "screenTop, an empty body: nothing scrolls, the bar stands", "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "expect": { "height": 852, "appBar": { "top": 0, "height": 107, "contentTop": 59 }, "body": { "top": 0, "height": 852 }, "contentTop": 0, "contentHeight": 0, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": null, "bodyAtScreenTop": true, "safeTop": 59 } },
+    { "name": "a modal layer with screenTop, short content: the layer is as tall as its content but not lower than the bar that lies over it", "height": 600, "shrink": true, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 12, "bottom": 12 }, "gap": 12, "bodyContentHeight": 20, "expect": { "height": 60, "appBar": { "top": 12, "height": 48, "contentTop": 12 }, "body": { "top": 0, "height": 60 }, "contentTop": 0, "contentHeight": 32, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": null, "bodyAtScreenTop": true, "safeTop": 0 } },
+    { "name": "a modal layer with screenTop, tall content: the body of the layer scrolls under its bar", "height": 600, "shrink": true, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 900, "expect": { "height": 600, "appBar": { "top": 0, "height": 48, "contentTop": 0 }, "body": { "top": 0, "height": 600 }, "contentTop": 0, "contentHeight": 900, "maxScroll": 300, "scrollTop": 0, "scrolls": true, "bottom": null, "bodyAtScreenTop": true, "safeTop": 0 } }
+  ],
+  "screenTopPressCases": [
+    { "name": "393 LTR, screenTop: the root top padding above the bar box belongs to the body under it", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 200, "y": 5 }, "expect": "body" },
+    { "name": "393 LTR, screenTop: the inset room is inside the bar box — the bar takes the press under the status bar", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 200, "y": 20 }, "expect": "appBar" },
+    { "name": "393 LTR, screenTop: an empty place of the bar box — still the bar, not the hero under it", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 200, "y": 100 }, "expect": "appBar" },
+    { "name": "393 LTR, screenTop: beside the box, in the start padding of the root — the body", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 8, "y": 100 }, "expect": "body" },
+    { "name": "393 LTR, screenTop: x 20 is inside the box (it starts at 16)", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 20, "y": 100 }, "expect": "appBar" },
+    { "name": "393 LTR, screenTop: x 372 is in the end padding (the box ends at 369) — the body", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 372, "y": 100 }, "expect": "body" },
+    { "name": "393 RTL, the same point: the box runs from 24 to 377 — the bar", "screen": { "width": 393, "direction": "rtl", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 372, "y": 100 }, "expect": "appBar" },
+    { "name": "393 RTL: x 20 is in the END padding now — the body", "screen": { "width": 393, "direction": "rtl", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 20, "y": 100 }, "expect": "body" },
+    { "name": "393 LTR, screenTop: the last half pixel of the bar box", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 200, "y": 122.5 }, "expect": "appBar" },
+    { "name": "393 LTR, screenTop: the first pixel under the bar box — the body", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 200, "y": 123 }, "expect": "body" },
+    { "name": "393 LTR, screenTop, scrolled by 300: the answer does not depend on scroll — the bar stands", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200, "scrollTop": 300 }, "point": { "x": 200, "y": 100 }, "expect": "appBar" },
+    { "name": "393 LTR, screenTop with a pinned block: the bottom zone takes its own", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1200, "bottom": { "pinnedHeight": 48 } }, "point": { "x": 200, "y": 800 }, "expect": "bottom" },
+    { "name": "393 LTR, screenTop with a pinned block: just above the bottom zone — the body", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1200, "bottom": { "pinnedHeight": 48 } }, "point": { "x": 200, "y": 787 }, "expect": "body" },
+    { "name": "outside the screen: nobody", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 200, "y": 852 }, "expect": "none" },
+    { "name": "320 LTR, screenTop, inset 20, no root padding: the status bar strip is the bar", "screen": { "width": 320, "direction": "ltr", "sidePadding": { "start": 0, "end": 0 }, "height": 568, "safeTop": 20, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 900 }, "point": { "x": 160, "y": 10 }, "expect": "appBar" },
+    { "name": "320 LTR, screenTop: right under the bar box (68) — the body", "screen": { "width": 320, "direction": "ltr", "sidePadding": { "start": 0, "end": 0 }, "height": 568, "safeTop": 20, "bodyTop": "screenTop", "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 900 }, "point": { "x": 160, "y": 68 }, "expect": "body" },
+    { "name": "768 RTL, a browser window, screenTop: the bar", "screen": { "width": 768, "direction": "rtl", "sidePadding": { "start": 0, "end": 0 }, "height": 1024, "bodyTop": "screenTop", "appBarHeight": 56, "padding": { "top": 0, "bottom": 0 }, "gap": 16, "bodyContentHeight": 1500 }, "point": { "x": 700, "y": 30 }, "expect": "appBar" },
+    { "name": "768 RTL, a browser window, screenTop: under the bar — the body", "screen": { "width": 768, "direction": "rtl", "sidePadding": { "start": 0, "end": 0 }, "height": 1024, "bodyTop": "screenTop", "appBarHeight": 56, "padding": { "top": 0, "bottom": 0 }, "gap": 16, "bodyContentHeight": 1500 }, "point": { "x": 700, "y": 56 }, "expect": "body" },
+    { "name": "screenTop without an app bar: the body takes the press under the status bar", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 0, "end": 0 }, "height": 852, "safeTop": 59, "bodyTop": "screenTop", "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 900 }, "point": { "x": 200, "y": 30 }, "expect": "body" },
+    { "name": "no field, inset 59: the bar box", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 200, "y": 100 }, "expect": "appBar" },
+    { "name": "no field: beside the bar box there is nothing but the background of the screen", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 8, "y": 100 }, "expect": "none" },
+    { "name": "no field: under the bar box — the body", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 16, "end": 24 }, "height": 852, "safeTop": 59, "appBarHeight": 48, "padding": { "top": 16, "bottom": 0 }, "gap": 12, "bodyContentHeight": 1200 }, "point": { "x": 200, "y": 130 }, "expect": "body" },
+    { "name": "no field, no app bar, inset 59: the status bar strip belongs to nobody", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 0, "end": 0 }, "height": 852, "safeTop": 59, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1000 }, "point": { "x": 200, "y": 30 }, "expect": "none" },
+    { "name": "no field, a pulled first child (9.10.0): in the overlap strip the body lies over the bar, as before", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 0, "end": 0 }, "height": 852, "safeTop": 59, "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 400, "firstPull": 40 }, "point": { "x": 200, "y": 90 }, "expect": "body" },
+    { "name": "no field, a pulled first child: above the overlap strip — the bar", "screen": { "width": 393, "direction": "ltr", "sidePadding": { "start": 0, "end": 0 }, "height": 852, "safeTop": 59, "appBarHeight": 48, "padding": { "top": 0, "bottom": 0 }, "gap": 12, "bodyContentHeight": 400, "firstPull": 40 }, "point": { "x": 200, "y": 70 }, "expect": "appBar" }
+  ],
+  "screenTopRuleCases": [
+    { "name": "the field and where it stands", "rule": "bodyTop.on", "expect": "Screen.props" },
+    { "name": "no field — the screen as it is", "rule": "bodyTop.withoutField", "expect": "x-style.layout.screen-as-it-is" },
+    { "name": "the list of words carries no word for «as without the field»", "rule": "bodyTop.values", "expect": ["screenTop"] },
+    { "name": "an unknown word reads as no field", "rule": "bodyTop.unknown", "expect": "as-without-the-field" },
+    { "name": "the app bar is painted over the body", "rule": "bodyTop.screenTop.paintOrder", "expect": "app-bar-over-body" },
+    { "name": "the whole box of the bar takes presses", "rule": "bodyTop.screenTop.press", "expect": "the-app-bar-box-takes-presses-the-body-under-it-does-not" },
+    { "name": "beside the box the body is pressed", "rule": "bodyTop.screenTop.pressBesideTheBox", "expect": "body" },
+    { "name": "scrolled content shows under the bar — the clip of 9.9.0 does not apply", "rule": "bodyTop.screenTop.clip", "expect": "top-edge-of-the-screen-scrolled-content-shows-under-the-app-bar" },
+    { "name": "no screen gap above the first child", "rule": "bodyTop.screenTop.bodyLead.withAppBar", "expect": "none-the-first-child-starts-at-the-top-edge" },
+    { "name": "the pull of the first child raises nothing", "rule": "bodyTop.screenTop.pulledFirstChild", "expect": "as-without-an-app-bar-nothing-is-raised" },
+    { "name": "an own navigation strip is never over the body", "rule": "bodyTop.wide.ownNavBar", "expect": "never-over-the-body-the-field-is-not-read" },
+    { "name": "nav items inside the app bar ride with it", "rule": "bodyTop.wide.navItemsInAppBar", "expect": "the-app-bar-with-its-nav-items-lies-over-the-body" },
+    { "name": "the field is not overridden by width class", "rule": "bodyTop.widthOverride", "expect": "none-the-field-is-not-in-propsOn" },
+    { "name": "a stuck app bar lays no backdrop in this mode", "rule": "bodyTop.withoutOwnHeight.stuckBackdrop", "expect": "none-the-content-shows-through" },
+    { "name": "no «scrolled» look in 9.19", "rule": "bodyTop.scrolledState", "expect": "none-in-9.19-the-look-of-the-app-bar-does-not-depend-on-scroll" },
+    { "name": "what an older reader draws", "rule": "bodyTop.olderReader", "expect": "field-skipped-the-app-bar-is-a-strip-above-the-body" },
+    { "name": "the reader adds the top inset", "rule": "safeTop.adds", "expect": "reader" },
+    { "name": "a host that accounted for it gives zero", "rule": "safeTop.host", "expect": "may-give-zero-when-it-accounted-for-the-inset-itself" },
+    { "name": "with an app bar the inset is inside its box", "rule": "safeTop.withAppBar.where", "expect": "inside-the-app-bar-box-above-its-content" },
+    { "name": "so a named background of the bar covers the status bar", "rule": "safeTop.withAppBar.background", "expect": "named-app-bar-background-covers-the-inset" },
+    { "name": "without an app bar it stands above the body area", "rule": "safeTop.withoutAppBar.where", "expect": "above-the-body-area" },
+    { "name": "a hidden app bar is no app bar", "rule": "safeTop.hiddenAppBar", "expect": "as-without-an-app-bar" },
+    { "name": "the body from the top edge gets no inset", "rule": "safeTop.bodyAtScreenTop.bodyContent", "expect": "reader-adds-nothing-the-first-child-lies-under-the-status-bar" },
+    { "name": "where the document keeps what must stay clear", "rule": "safeTop.bodyAtScreenTop.safeContent", "expect": "lives-in-the-app-bar-or-below-its-bottom-edge" },
+    { "name": "no node field for the inset in 9.19", "rule": "safeTop.bodyAtScreenTop.nodeField", "expect": "none-in-9.19" },
+    { "name": "no inset inside a modal layer", "rule": "safeTop.modal.inside", "expect": "no-inset-inside-the-layer" },
+    { "name": "the builder takes the inset from the device frame", "rule": "safeTop.builder", "expect": "inset-of-the-device-frame-zero-in-a-browser-window" }
+  ],
+  "screenTopDocumentCases": [
+    { "name": "the body from the top edge of the screen", "props": { "bodyTop": "screenTop" }, "schema": true, "codes": [] },
+    { "name": "«belowBar» is not a word of the field: the schema rejects it", "props": { "bodyTop": "belowBar" }, "schema": false, "codes": [] },
+    { "name": "no field", "props": {}, "schema": true, "codes": [] },
+    { "name": "true is not a word", "props": { "bodyTop": true }, "schema": false, "codes": [] },
+    { "name": "an unknown word", "props": { "bodyTop": "top" }, "schema": false, "codes": [] },
+    { "name": "the field is not overridden by width class", "props": {}, "propsOn": { "medium": { "bodyTop": "screenTop" } }, "schema": false, "codes": [] },
+    { "name": "screenTop on a screen without an app bar is not an error", "props": { "bodyTop": "screenTop" }, "appBar": false, "schema": true, "codes": [] }
+  ],
+  "safeTopValueNote": "The inset comes from the host, so it is input from outside (`x-style.layout.safeTop.value`). `safeTop` is what the host gave, `height` the screen height, `effective` the inset the reader accounts for. JSON cannot carry NaN and Infinity: both read as zero, like any value that is not a number.",
+  "safeTopValueCases": [
+    { "name": "an ordinary inset", "safeTop": 59, "height": 852, "effective": 59 },
+    { "name": "zero", "safeTop": 0, "height": 852, "effective": 0 },
+    { "name": "a fraction is kept", "safeTop": 47.5, "height": 844, "effective": 47.5 },
+    { "name": "a negative inset is zero", "safeTop": -50, "height": 600, "effective": 0 },
+    { "name": "an inset greater than the screen is clamped to its height", "safeTop": 1000, "height": 600, "effective": 600 },
+    { "name": "an inset equal to the screen height", "safeTop": 600, "height": 600, "effective": 600 },
+    { "name": "a string is not a number: zero", "safeTop": "59", "height": 852, "effective": 0 },
+    { "name": "null: zero", "safeTop": null, "height": 852, "effective": 0 },
+    { "name": "true: zero", "safeTop": true, "height": 852, "effective": 0 },
+    { "name": "a screen of zero height: zero", "safeTop": 59, "height": 0, "effective": 0 }
+  ],
+  "scrolledNote": "Schema 9.21.0 — the app bar after scrolling: «styleScrolled» of the app bar node and «titleShown: scrolled» (rules: x-style.layout.appBarScrolled). «scrolledThresholdCases» — whether the bar is scrolled: scrolled <=> scrollTop > max(0, barBottom − bodyTop), logical pixels from the top of the screen. «scrolledLayerCases» — the style of the bar while scrolled: the layer lies last, over the base and the state. «scrolledDocumentCases» — documents the schema accepts or refuses.",
+  "scrolledThresholdCases": [
+    {
+      "name": "at rest under the app bar — not scrolled",
+      "scrollTop": 0,
+      "barBottom": 56,
+      "bodyTop": 56,
+      "threshold": 0,
+      "expected": false
+    },
+    {
+      "name": "one point of the body under the app bar — scrolled (Material 3)",
+      "scrollTop": 1,
+      "barBottom": 56,
+      "bodyTop": 56,
+      "threshold": 0,
+      "expected": true
+    },
+    {
+      "name": "the body from the top of the screen at rest — not scrolled",
+      "scrollTop": 0,
+      "barBottom": 103,
+      "bodyTop": 0,
+      "threshold": 103,
+      "expected": false
+    },
+    {
+      "name": "the body from the top: half of the bar zone is not enough",
+      "scrollTop": 50,
+      "barBottom": 103,
+      "bodyTop": 0,
+      "threshold": 103,
+      "expected": false
+    },
+    {
+      "name": "the body from the top: exactly the bar zone is not yet scrolled (strict)",
+      "scrollTop": 103,
+      "barBottom": 103,
+      "bodyTop": 0,
+      "threshold": 103,
+      "expected": false
+    },
+    {
+      "name": "the body from the top: one point past the bar zone — scrolled",
+      "scrollTop": 104,
+      "barBottom": 103,
+      "bodyTop": 0,
+      "threshold": 103,
+      "expected": true
+    },
+    {
+      "name": "a body lifted by a pulled first child: the overlap is the threshold",
+      "scrollTop": 16,
+      "barBottom": 56,
+      "bodyTop": 40,
+      "threshold": 16,
+      "expected": false
+    },
+    {
+      "name": "a body lifted by a pulled first child: one point past the overlap",
+      "scrollTop": 17,
+      "barBottom": 56,
+      "bodyTop": 40,
+      "threshold": 16,
+      "expected": true
+    },
+    {
+      "name": "a body below the bar edge: the threshold is never below zero",
+      "scrollTop": 1,
+      "barBottom": 56,
+      "bodyTop": 70,
+      "threshold": 0,
+      "expected": true
+    }
+  ],
+  "scrolledLayerCases": [
+    {
+      "name": "the scrolled layer lies over the base",
+      "base": {
+        "background": {
+          "kind": "color",
+          "color": "transparent"
+        }
+      },
+      "scrolled": {
+        "background": {
+          "kind": "color",
+          "color": "surface"
+        }
+      },
+      "expected": {
+        "background": {
+          "kind": "color",
+          "color": "surface"
+        }
+      }
+    },
+    {
+      "name": "the scrolled layer lies over the state of styleWhen",
+      "base": {
+        "color": "onSurface"
+      },
+      "state": {
+        "color": "primary"
+      },
+      "scrolled": {
+        "color": "onPrimary"
+      },
+      "expected": {
+        "color": "onPrimary"
+      }
+    },
+    {
+      "name": "fields the layer does not name stay",
+      "base": {
+        "padding": "md",
+        "color": "onSurface"
+      },
+      "scrolled": {
+        "shadow": "low"
+      },
+      "expected": {
+        "padding": "md",
+        "color": "onSurface",
+        "shadow": "low"
+      }
+    },
+    {
+      "name": "glass after scrolling",
+      "base": {
+        "color": "onSurface"
+      },
+      "scrolled": {
+        "backdropBlur": 20,
+        "background": {
+          "kind": "color",
+          "color": {
+            "token": "surface",
+            "opacity": 0.7
+          }
+        }
+      },
+      "expected": {
+        "color": "onSurface",
+        "backdropBlur": 20,
+        "background": {
+          "kind": "color",
+          "color": {
+            "token": "surface",
+            "opacity": 0.7
+          }
+        }
+      }
+    }
+  ],
+  "scrolledDocumentCases": [
+    {
+      "name": "a scrolled style on the app bar",
+      "node": {
+        "id": "bar",
+        "type": "AppBar",
+        "props": {
+          "title": {
+            "kind": "literal",
+            "value": "Mission"
+          },
+          "showBack": true
+        },
+        "styleScrolled": {
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "shadow": "low"
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "the title only after scrolling",
+      "node": {
+        "id": "bar",
+        "type": "AppBar",
+        "props": {
+          "title": {
+            "kind": "literal",
+            "value": "Mission"
+          },
+          "showBack": true,
+          "titleShown": "scrolled"
+        }
+      },
+      "valid": true
+    },
+    {
+      "name": "a word the schema does not know for the title",
+      "node": {
+        "id": "bar",
+        "type": "AppBar",
+        "props": {
+          "title": {
+            "kind": "literal",
+            "value": "Mission"
+          },
+          "showBack": true,
+          "titleShown": "rest"
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "a box field in the scrolled style is refused by the structure",
+      "node": {
+        "id": "bar",
+        "type": "AppBar",
+        "props": {
+          "title": {
+            "kind": "literal",
+            "value": "Mission"
+          },
+          "showBack": true
+        },
+        "styleScrolled": {
+          "padding": "md"
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "a size in the scrolled style is refused by the structure",
+      "node": {
+        "id": "bar",
+        "type": "AppBar",
+        "props": {
+          "title": {
+            "kind": "literal",
+            "value": "Mission"
+          },
+          "showBack": true
+        },
+        "styleScrolled": {
+          "height": 80
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "an empty scrolled style is refused",
+      "node": {
+        "id": "bar",
+        "type": "AppBar",
+        "props": {
+          "title": {
+            "kind": "literal",
+            "value": "Mission"
+          },
+          "showBack": true
+        },
+        "styleScrolled": {}
+      },
+      "valid": false
+    },
+    {
+      "name": "no other node has the field",
+      "node": {
+        "id": "box",
+        "type": "Container",
+        "props": {},
+        "styleScrolled": {
+          "shadow": "low"
+        }
+      },
+      "valid": false
+    }
+  ]
+}

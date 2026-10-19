@@ -1,0 +1,94 @@
+{
+  "description": "Schema 9.26.0 — the long press of a pressable container and of ListTile (rules: x-longPress). «gestureCases»: how long the finger stayed down, how far it moved before the threshold (logical pixels), whether the platform cancelled the press, and whether the node carries a long press and an action that do something; «expect» — «longPress», «press» or «none». «keyCases»: which keys on a focused node perform the long press. «nodeCases»: whether a widget accepts the field, whether the long press does something, and whether the node is then a control that performs a press. «receiverCases»: the chain of nodes under the finger from the root to the innermost; «expect» — the id of the node whose long press runs, or null. «documentCases»: whether the document is published; «expect» — the validation codes. «ruleCases»: data of the block. «keyRepeatCases», «clickAfterFireCases», «onceRuleCases» (rules: x-longPressOnce, clarified before release): «keyRepeatCases» — a key event on a focused node with «repeat» (an auto-repeated key held down); «expect» — whether it performs the long press. «clickAfterFireCases» — whether the long press fired in the last pointer gesture on the node, whether that pointer was released, the milliseconds from that release to the click and whether a new pointer down came in between; «expect» — whether the click is swallowed (the press of «action» does not run). «onceRuleCases»: data of x-longPressOnce. Written by hand.",
+  "gestureCases": [
+    {"name": "released before the threshold — the press", "heldMs": 200, "moved": 0, "cancelled": false, "hasLongPress": true, "hasAction": true, "expect": "press"},
+    {"name": "held exactly the threshold — the long press", "heldMs": 450, "moved": 0, "cancelled": false, "hasLongPress": true, "hasAction": true, "expect": "longPress"},
+    {"name": "one millisecond short — still the press", "heldMs": 449, "moved": 0, "cancelled": false, "hasLongPress": true, "hasAction": true, "expect": "press"},
+    {"name": "held long, moved within the slop — the long press", "heldMs": 800, "moved": 10, "cancelled": false, "hasLongPress": true, "hasAction": true, "expect": "longPress"},
+    {"name": "moved past the slop before the threshold — nothing", "heldMs": 300, "moved": 10.5, "cancelled": false, "hasLongPress": true, "hasAction": true, "expect": "none"},
+    {"name": "moved past the slop, held long — nothing", "heldMs": 900, "moved": 24, "cancelled": false, "hasLongPress": true, "hasAction": true, "expect": "none"},
+    {"name": "cancelled by the platform — nothing", "heldMs": 100, "moved": 0, "cancelled": true, "hasLongPress": true, "hasAction": true, "expect": "none"},
+    {"name": "no long press: a long hold released in place is a press", "heldMs": 2000, "moved": 0, "cancelled": false, "hasLongPress": false, "hasAction": true, "expect": "press"},
+    {"name": "only a long press: a short tap does nothing", "heldMs": 120, "moved": 0, "cancelled": false, "hasLongPress": true, "hasAction": false, "expect": "none"},
+    {"name": "only a long press: a hold fires it", "heldMs": 450, "moved": 2, "cancelled": false, "hasLongPress": true, "hasAction": false, "expect": "longPress"},
+    {"name": "neither — nothing", "heldMs": 600, "moved": 0, "cancelled": false, "hasLongPress": false, "hasAction": false, "expect": "none"}
+  ],
+  "keyCases": [
+    {"name": "the context menu key", "key": "ContextMenu", "shiftKey": false, "expect": true},
+    {"name": "the context menu key with Shift", "key": "ContextMenu", "shiftKey": true, "expect": true},
+    {"name": "Shift+F10", "key": "F10", "shiftKey": true, "expect": true},
+    {"name": "F10 alone", "key": "F10", "shiftKey": false, "expect": false},
+    {"name": "Enter is the press", "key": "Enter", "shiftKey": false, "expect": false},
+    {"name": "Space is the press", "key": " ", "shiftKey": false, "expect": false}
+  ],
+  "nodeCases": [
+    {"name": "a card with an action and a long press", "node": {"id": "card", "type": "Container", "props": {"direction": "column", "gap": "none", "action": {"type": "navigate", "params": {"screenId": "mission"}}, "longPress": {"type": "navigate", "params": {"screenId": "peek"}}, "longPressLabel": {"kind": "literal", "value": "Mission options"}}}, "expect": {"accepts": true, "longPress": true, "acts": true}},
+    {"name": "a card with only a long press is a control", "node": {"id": "card", "type": "Column", "props": {"gap": "sm", "align": "start", "longPress": {"type": "navigate", "params": {"screenId": "peek"}}, "longPressLabel": {"kind": "literal", "value": "Options"}}}, "expect": {"accepts": true, "longPress": true, "acts": true}},
+    {"name": "a list row with only a long press is a control", "node": {"id": "row", "type": "ListTile", "props": {"leading": {"kind": "icon", "icon": "chevron"}, "trailing": {"kind": "chevron"}, "title": {"kind": "literal", "value": "Coffee"}, "longPress": {"type": "share"}, "longPressLabel": {"kind": "literal", "value": "Share"}}}, "expect": {"accepts": true, "longPress": true, "acts": true}},
+    {"name": "a long press of type «none» without track does nothing", "node": {"id": "card", "type": "Stack", "props": {"alignHorizontal": "center", "alignVertical": "center", "longPress": {"type": "none"}}}, "expect": {"accepts": true, "longPress": false, "acts": false}},
+    {"name": "«none» with track is an analytics event — it does something", "node": {"id": "card", "type": "Row", "props": {"gap": "sm", "align": "center", "justify": "start", "wrap": false, "longPress": {"type": "none", "track": {"event": "held"}}, "longPressLabel": {"kind": "literal", "value": "More"}}}, "expect": {"accepts": true, "longPress": true, "acts": true}},
+    {"name": "a button never carries a long press", "type": "Button", "expect": {"accepts": false}},
+    {"name": "an icon button never carries a long press", "type": "IconButton", "expect": {"accepts": false}},
+    {"name": "a navigation item never carries a long press", "type": "NavItem", "expect": {"accepts": false}},
+    {"name": "a text never carries a long press", "type": "Text", "expect": {"accepts": false}}
+  ],
+  "receiverCases": [
+    {"name": "the card itself under the finger", "chain": [
+      {"id": "card", "type": "Container", "props": {"direction": "column", "gap": "none", "action": {"type": "navigate", "params": {"screenId": "mission"}}, "longPress": {"type": "navigate", "params": {"screenId": "peek"}}, "longPressLabel": {"kind": "literal", "value": "Options"}}}
+    ], "expect": "card"},
+    {"name": "a text inside the card — the card", "chain": [
+      {"id": "card", "type": "Container", "props": {"direction": "column", "gap": "none", "longPress": {"type": "navigate", "params": {"screenId": "peek"}}, "longPressLabel": {"kind": "literal", "value": "Options"}}},
+      {"id": "title", "type": "Text", "props": {"content": {"kind": "literal", "value": "Coffee week"}}}
+    ], "expect": "card"},
+    {"name": "a button inside the card keeps its press — no long press", "chain": [
+      {"id": "card", "type": "Container", "props": {"direction": "column", "gap": "none", "longPress": {"type": "navigate", "params": {"screenId": "peek"}}, "longPressLabel": {"kind": "literal", "value": "Options"}}},
+      {"id": "more", "type": "IconButton", "props": {"icon": "ellipsis", "label": {"kind": "literal", "value": "More"}, "variant": "ghost", "action": {"type": "navigate", "params": {"screenId": "peek"}}}}
+    ], "expect": null},
+    {"name": "a row with its own long press inside a card — the row", "chain": [
+      {"id": "card", "type": "Container", "props": {"direction": "column", "gap": "none", "longPress": {"type": "navigate", "params": {"screenId": "peek"}}, "longPressLabel": {"kind": "literal", "value": "Options"}}},
+      {"id": "row", "type": "ListTile", "props": {"leading": {"kind": "icon", "icon": "chevron"}, "trailing": {"kind": "chevron"}, "title": {"kind": "literal", "value": "Coffee"}, "longPress": {"type": "share"}, "longPressLabel": {"kind": "literal", "value": "Share"}}}
+    ], "expect": "row"},
+    {"name": "no long press anywhere — nothing", "chain": [
+      {"id": "card", "type": "Container", "props": {"direction": "column", "gap": "none", "action": {"type": "navigate", "params": {"screenId": "mission"}}}}
+    ], "expect": null}
+  ],
+  "documentCases": [
+    {"name": "a long press with a heard name — published", "node": {"id": "card", "type": "Container", "props": {"direction": "column", "gap": "none", "longPress": {"type": "navigate", "params": {"screenId": "home"}}, "longPressLabel": {"kind": "literal", "value": "Mission options"}}, "children": [{"id": "t", "type": "Text", "props": {"content": {"kind": "literal", "value": "Coffee week"}}}]}, "expect": []},
+    {"name": "no name — not published", "node": {"id": "card", "type": "Container", "props": {"direction": "column", "gap": "none", "longPress": {"type": "navigate", "params": {"screenId": "home"}}}, "children": [{"id": "t", "type": "Text", "props": {"content": {"kind": "literal", "value": "Coffee week"}}}]}, "expect": ["long_press_label_required"]},
+    {"name": "a name of spaces only — not published", "node": {"id": "row", "type": "ListTile", "props": {"leading": {"kind": "icon", "icon": "chevron"}, "trailing": {"kind": "chevron"}, "title": {"kind": "literal", "value": "Coffee"}, "longPress": {"type": "share"}, "longPressLabel": {"kind": "literal", "value": "   "}}}, "expect": ["long_press_label_required"]},
+    {"name": "a write action on a long press — not published", "node": {"id": "row", "type": "ListTile", "props": {"leading": {"kind": "icon", "icon": "chevron"}, "trailing": {"kind": "chevron"}, "title": {"kind": "literal", "value": "Coffee"}, "longPress": {"type": "toggleValue", "params": {"path": "account.balanceHidden"}}, "longPressLabel": {"kind": "literal", "value": "Hide"}}}, "expect": ["long_press_write_action"]},
+    {"name": "a long press to a screen that does not exist", "node": {"id": "row", "type": "ListTile", "props": {"leading": {"kind": "icon", "icon": "chevron"}, "trailing": {"kind": "chevron"}, "title": {"kind": "literal", "value": "Coffee"}, "longPress": {"type": "navigate", "params": {"screenId": "nowhere"}}, "longPressLabel": {"kind": "literal", "value": "Open"}}}, "expect": ["unknown_screen_ref"]},
+    {"name": "an «openUrl» long press without an address", "node": {"id": "row", "type": "ListTile", "props": {"leading": {"kind": "icon", "icon": "chevron"}, "trailing": {"kind": "chevron"}, "title": {"kind": "literal", "value": "Coffee"}, "longPress": {"type": "openUrl"}, "longPressLabel": {"kind": "literal", "value": "Open"}}}, "expect": ["invalid_action_param"]},
+    {"name": "«none» without track needs no name", "node": {"id": "row", "type": "ListTile", "props": {"leading": {"kind": "icon", "icon": "chevron"}, "trailing": {"kind": "chevron"}, "title": {"kind": "literal", "value": "Coffee"}, "longPress": {"type": "none"}}}, "expect": []}
+  ],
+  "ruleCases": [
+    {"name": "the threshold", "rule": "thresholdMs", "expect": 450},
+    {"name": "the touch slop", "rule": "touchSlop", "expect": 10},
+    {"name": "the fields", "rule": "props", "expect": {"action": "longPress", "label": "longPressLabel"}},
+    {"name": "the order of the requests", "rule": "order", "expect": ["haptic", "track", "action"]},
+    {"name": "the keys", "rule": "accessibility.keys", "expect": [{"key": "ContextMenu"}, {"key": "F10", "shift": true}]}
+  ],
+  "keyRepeatCases": [
+    {"name": "the context menu key, first key down", "key": "ContextMenu", "shiftKey": false, "repeat": false, "expect": true},
+    {"name": "the context menu key held — a repeat does nothing", "key": "ContextMenu", "shiftKey": false, "repeat": true, "expect": false},
+    {"name": "Shift+F10, first key down", "key": "F10", "shiftKey": true, "repeat": false, "expect": true},
+    {"name": "Shift+F10 held — a repeat does nothing", "key": "F10", "shiftKey": true, "repeat": true, "expect": false},
+    {"name": "F10 alone, first key down", "key": "F10", "shiftKey": false, "repeat": false, "expect": false},
+    {"name": "Enter held is not a long press", "key": "Enter", "shiftKey": false, "repeat": true, "expect": false}
+  ],
+  "clickAfterFireCases": [
+    {"name": "the click right after the release of the gesture that fired", "fired": true, "released": true, "sinceReleaseMs": 0, "newPointerDown": false, "expect": true},
+    {"name": "a delayed click of that release, inside the window", "fired": true, "released": true, "sinceReleaseMs": 300, "newPointerDown": false, "expect": true},
+    {"name": "at the edge of the window", "fired": true, "released": true, "sinceReleaseMs": 400, "newPointerDown": false, "expect": true},
+    {"name": "past the window — a screen reader activated the node later", "fired": true, "released": true, "sinceReleaseMs": 401, "newPointerDown": false, "expect": false},
+    {"name": "long after a long press that ended with no click", "fired": true, "released": true, "sinceReleaseMs": 20000, "newPointerDown": false, "expect": false},
+    {"name": "no release of that gesture: the click comes from a screen reader or the keyboard", "fired": true, "released": false, "sinceReleaseMs": 0, "newPointerDown": false, "expect": false},
+    {"name": "a new pointer down came first", "fired": true, "released": true, "sinceReleaseMs": 100, "newPointerDown": true, "expect": false},
+    {"name": "the long press did not fire — the click is the press", "fired": false, "released": true, "sinceReleaseMs": 0, "newPointerDown": false, "expect": false}
+  ],
+  "onceRuleCases": [
+    {"name": "the click window", "rule": "clickAfterFire.windowMs", "expect": 400},
+    {"name": "the same rule as Enter and Space", "rule": "keyRepeat.same", "expect": "x-compatibility.policy.keyAutoRepeat"},
+    {"name": "what it refines", "rule": "refines", "expect": ["x-longPress.afterFire", "x-longPress.accessibility.keysAct"]}
+  ]
+}

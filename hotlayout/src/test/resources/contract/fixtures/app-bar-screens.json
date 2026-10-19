@@ -1,0 +1,803 @@
+{
+  "schemaVersion": "9.16.0",
+  "documentId": "app-bar",
+  "name": "App bar from the mock-up and own drawing sizes",
+  "initialScreenId": "challenges",
+  "screens": [
+    {
+      "screenId": "challenges",
+      "name": "Challenges — the mock-up",
+      "root": {
+        "id": "challenges-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "border"
+          }
+        },
+        "children": [
+          {
+            "id": "ch-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Challenges"
+              },
+              "showBack": true,
+              "titleAlign": "start"
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            },
+            "children": [
+              {
+                "id": "ch-help",
+                "type": "IconButton",
+                "props": {
+                  "icon": "circle-help",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Help"
+                  },
+                  "variant": "secondary",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  },
+                  "glyphSize": 28
+                },
+                "style": {
+                  "width": 48,
+                  "height": 48
+                }
+              },
+              {
+                "id": "ch-exit",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Exit"
+                  },
+                  "variant": "ghost",
+                  "action": {
+                    "type": "navigate.back"
+                  },
+                  "fullWidth": false,
+                  "icon": "chevron-left",
+                  "iconPosition": "start",
+                  "size": "sm"
+                },
+                "zone": "leading",
+                "style": {
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "radius": "pill",
+                  "shadow": "low",
+                  "color": "onSurface"
+                }
+              }
+            ]
+          },
+          {
+            "id": "ch-lead",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "The bar above is assembled from the mock-up: an own button in the leading zone, the title right after it, a round action with a drawing of 28."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted"
+            }
+          },
+          {
+            "id": "ch-next",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Centred title, two actions"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "details"
+                }
+              },
+              "fullWidth": false
+            }
+          },
+          {
+            "id": "ch-icons",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Drawing sizes"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "icons"
+                }
+              },
+              "fullWidth": false
+            }
+          },
+          {
+            "id": "ch-long",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "A long button on the left"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "long"
+                }
+              },
+              "fullWidth": false
+            }
+          },
+          {
+            "id": "ch-hidden",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "A hidden button on the left"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "hidden"
+                }
+              },
+              "fullWidth": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "details",
+      "name": "Details — centre, two actions",
+      "root": {
+        "id": "details-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "de-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Order details"
+              },
+              "showBack": true,
+              "subtitle": {
+                "kind": "literal",
+                "value": "Step 2 of 3"
+              }
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            },
+            "children": [
+              {
+                "id": "de-share",
+                "type": "IconButton",
+                "props": {
+                  "icon": "share-2",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Share"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  }
+                }
+              },
+              {
+                "id": "de-more",
+                "type": "IconButton",
+                "props": {
+                  "icon": "ellipsis",
+                  "label": {
+                    "kind": "literal",
+                    "value": "More"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  }
+                }
+              },
+              {
+                "id": "de-close",
+                "type": "IconButton",
+                "props": {
+                  "icon": "x",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Close"
+                  },
+                  "variant": "secondary",
+                  "size": "md",
+                  "action": {
+                    "type": "navigate.back"
+                  }
+                },
+                "zone": "leading"
+              }
+            ]
+          },
+          {
+            "id": "de-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "The leading node is an icon button with its own action; it is not one of the two actions on the right. The title stays in the centre of the bar."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "long",
+      "name": "Long — the button is clamped",
+      "root": {
+        "id": "long-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "lo-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "A title that does not fit beside such a button"
+              },
+              "showBack": true,
+              "titleAlign": "start"
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            },
+            "children": [
+              {
+                "id": "lo-info",
+                "type": "IconButton",
+                "props": {
+                  "icon": "info",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Info"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  }
+                }
+              },
+              {
+                "id": "lo-exit",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Leave this challenge and go back"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "navigate.back"
+                  },
+                  "fullWidth": false,
+                  "icon": "chevron-left",
+                  "iconPosition": "start",
+                  "size": "sm"
+                },
+                "zone": "leading"
+              }
+            ]
+          },
+          {
+            "id": "lo-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "The button is wider than half of the bar: it is clamped to the half and wraps its label; the title takes what is left and is cut with an ellipsis."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "hidden",
+      "name": "Hidden — the arrow comes back",
+      "root": {
+        "id": "hidden-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "hi-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Premium only"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            },
+            "children": [
+              {
+                "id": "hi-exit",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Exit"
+                  },
+                  "variant": "ghost",
+                  "action": {
+                    "type": "navigate.back"
+                  },
+                  "fullWidth": false,
+                  "icon": "chevron-left",
+                  "iconPosition": "start",
+                  "size": "sm"
+                },
+                "zone": "leading",
+                "visibleIf": {
+                  "path": "user.isPremium",
+                  "op": "isTrue"
+                }
+              }
+            ]
+          },
+          {
+            "id": "hi-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "The own button is shown only to premium users. Hidden by its condition, it gives the leading zone back to the built-in arrow (showBack)."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "icons",
+      "name": "Drawing sizes",
+      "root": {
+        "id": "icons-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "ic-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Drawing sizes"
+              },
+              "showBack": true,
+              "titleAlign": "start"
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "ic-t1",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Icon: sm, md, lg — then 32, 48, 64"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "ic-r1",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "start",
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "ic-sm",
+                "type": "Icon",
+                "props": {
+                  "name": "star",
+                  "size": "sm"
+                }
+              },
+              {
+                "id": "ic-md",
+                "type": "Icon",
+                "props": {
+                  "name": "star",
+                  "size": "md"
+                }
+              },
+              {
+                "id": "ic-lg",
+                "type": "Icon",
+                "props": {
+                  "name": "star",
+                  "size": "lg"
+                }
+              },
+              {
+                "id": "ic-32",
+                "type": "Icon",
+                "props": {
+                  "name": "star",
+                  "size": "md",
+                  "glyphSize": 32
+                }
+              },
+              {
+                "id": "ic-48",
+                "type": "Icon",
+                "props": {
+                  "name": "star",
+                  "size": "md",
+                  "glyphSize": 48
+                }
+              },
+              {
+                "id": "ic-64",
+                "type": "Icon",
+                "props": {
+                  "name": "star",
+                  "size": "md",
+                  "glyphSize": 64
+                }
+              }
+            ]
+          },
+          {
+            "id": "ic-t2",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Icon button md: the word, then 24 and 32 — the box grows with the drawing"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "ic-r2",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "start",
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "ib-md",
+                "type": "IconButton",
+                "props": {
+                  "icon": "circle-help",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Help"
+                  },
+                  "variant": "secondary",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  }
+                }
+              },
+              {
+                "id": "ib-24",
+                "type": "IconButton",
+                "props": {
+                  "icon": "circle-help",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Help"
+                  },
+                  "variant": "secondary",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  },
+                  "glyphSize": 24
+                }
+              },
+              {
+                "id": "ib-32",
+                "type": "IconButton",
+                "props": {
+                  "icon": "circle-help",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Help"
+                  },
+                  "variant": "secondary",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  },
+                  "glyphSize": 32
+                }
+              }
+            ]
+          },
+          {
+            "id": "ic-t3",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Icon button named 56 × 56: the word (as before 9.16), then 28 and 48 — the drawing is not larger than the content box (40)"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "ic-r3",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "start",
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "ib-56",
+                "type": "IconButton",
+                "props": {
+                  "icon": "circle-help",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Help"
+                  },
+                  "variant": "secondary",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  }
+                },
+                "style": {
+                  "width": 56,
+                  "height": 56
+                }
+              },
+              {
+                "id": "ib-56-28",
+                "type": "IconButton",
+                "props": {
+                  "icon": "circle-help",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Help"
+                  },
+                  "variant": "secondary",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  },
+                  "glyphSize": 28
+                },
+                "style": {
+                  "width": 56,
+                  "height": 56
+                }
+              },
+              {
+                "id": "ib-56-48",
+                "type": "IconButton",
+                "props": {
+                  "icon": "circle-help",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Help"
+                  },
+                  "variant": "secondary",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  },
+                  "glyphSize": 48
+                },
+                "style": {
+                  "width": 56,
+                  "height": 56
+                }
+              }
+            ]
+          },
+          {
+            "id": "ic-t4",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Icon named 48 × 48 with a background: 32 in the centre, then 64 clamped to 48"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "ic-r4",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "start",
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "in-32",
+                "type": "Icon",
+                "props": {
+                  "name": "gift",
+                  "size": "md",
+                  "glyphSize": 32
+                },
+                "style": {
+                  "width": 48,
+                  "height": 48,
+                  "background": {
+                    "kind": "color",
+                    "color": "border"
+                  },
+                  "radius": "md"
+                }
+              },
+              {
+                "id": "in-64",
+                "type": "Icon",
+                "props": {
+                  "name": "gift",
+                  "size": "md",
+                  "glyphSize": 64
+                },
+                "style": {
+                  "width": 48,
+                  "height": 48,
+                  "background": {
+                    "kind": "color",
+                    "color": "border"
+                  },
+                  "radius": "md"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

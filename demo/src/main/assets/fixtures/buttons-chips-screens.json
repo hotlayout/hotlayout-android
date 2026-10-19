@@ -1,0 +1,810 @@
+{
+  "schemaVersion": "9.5.0",
+  "documentId": "buttons-and-chips",
+  "name": "Buttons, icon buttons and chips",
+  "initialScreenId": "gallery",
+  "screens": [
+    {
+      "screenId": "gallery",
+      "name": "Gallery",
+      "root": {
+        "id": "gallery-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Buttons and chips"
+              },
+              "showBack": false
+            }
+          },
+          {
+            "id": "h-icon-buttons",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Icon buttons"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "icon-buttons-sizes",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "ib-back-sm",
+                "type": "IconButton",
+                "props": {
+                  "icon": "arrow-left",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back"
+                  },
+                  "variant": "secondary",
+                  "size": "sm",
+                  "action": {
+                    "type": "navigate.back"
+                  }
+                }
+              },
+              {
+                "id": "ib-back-md",
+                "type": "IconButton",
+                "props": {
+                  "icon": "arrow-left",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back"
+                  },
+                  "variant": "secondary",
+                  "size": "md",
+                  "action": {
+                    "type": "navigate.back"
+                  }
+                }
+              },
+              {
+                "id": "ib-back-lg",
+                "type": "IconButton",
+                "props": {
+                  "icon": "arrow-left",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back"
+                  },
+                  "variant": "secondary",
+                  "size": "lg",
+                  "action": {
+                    "type": "navigate.back"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "icon-buttons-variants",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "ib-info",
+                "type": "IconButton",
+                "props": {
+                  "icon": "info",
+                  "label": {
+                    "kind": "literal",
+                    "value": "About this reward"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "details"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "ib-share",
+                "type": "IconButton",
+                "props": {
+                  "icon": "share-2",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Share"
+                  },
+                  "variant": "secondary",
+                  "size": "md",
+                  "action": {
+                    "type": "share"
+                  }
+                }
+              },
+              {
+                "id": "ib-close",
+                "type": "IconButton",
+                "props": {
+                  "icon": "x",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Close"
+                  },
+                  "variant": "primary",
+                  "size": "md",
+                  "action": {
+                    "type": "navigate.back"
+                  }
+                }
+              },
+              {
+                "id": "ib-like",
+                "type": "IconButton",
+                "props": {
+                  "icon": "heart",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Add to favourites"
+                  },
+                  "variant": "secondary",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  }
+                },
+                "style": {
+                  "color": "danger",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "danger",
+                      "opacity": 0.12
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "h-button-sizes",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Button sizes"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "button-sizes",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "btn-sm",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "See all"
+                  },
+                  "variant": "ghost",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "details"
+                    }
+                  },
+                  "fullWidth": false,
+                  "icon": "chevron-right",
+                  "iconPosition": "end",
+                  "size": "sm"
+                }
+              },
+              {
+                "id": "btn-md",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Redeem"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "submit"
+                  },
+                  "fullWidth": false,
+                  "icon": "gift",
+                  "iconPosition": "start",
+                  "size": "md"
+                }
+              },
+              {
+                "id": "btn-lg",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Continue"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "details"
+                    }
+                  },
+                  "fullWidth": false,
+                  "icon": "arrow-right",
+                  "iconPosition": "end",
+                  "size": "lg"
+                }
+              }
+            ]
+          },
+          {
+            "id": "h-button-icons",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Icon before and after the label"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "button-positions",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "btn-start",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Invite"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "share"
+                  },
+                  "fullWidth": false,
+                  "icon": "plus",
+                  "iconPosition": "start"
+                }
+              },
+              {
+                "id": "btn-end",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Next"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "details"
+                    }
+                  },
+                  "fullWidth": false,
+                  "icon": "arrow-right",
+                  "iconPosition": "end"
+                }
+              }
+            ]
+          },
+          {
+            "id": "btn-full",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Claim reward"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "submit"
+              },
+              "fullWidth": true,
+              "icon": "sparkles",
+              "iconPosition": "start",
+              "size": "lg"
+            }
+          },
+          {
+            "id": "btn-own",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Boost"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "submit"
+              },
+              "fullWidth": false,
+              "icon": "zap",
+              "iconPosition": "start"
+            },
+            "style": {
+              "color": "onSurface",
+              "typography": "titleM",
+              "radius": "pill",
+              "background": {
+                "kind": "color",
+                "color": "warning"
+              }
+            }
+          },
+          {
+            "id": "h-chips",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Chips"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "chips",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "start",
+              "wrap": true,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "chip-days",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "template",
+                    "template": "{days} {unit} left",
+                    "values": {
+                      "days": {
+                        "kind": "binding",
+                        "path": "campaign.endsAt",
+                        "fallback": "—",
+                        "format": "daysUntil"
+                      },
+                      "unit": {
+                        "kind": "plural",
+                        "of": "days",
+                        "forms": {
+                          "one": "day",
+                          "other": "days"
+                        }
+                      }
+                    }
+                  },
+                  "tone": "warning",
+                  "icon": "clock",
+                  "iconPosition": "start"
+                }
+              },
+              {
+                "id": "chip-limited",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "LIMITED"
+                  },
+                  "tone": "danger"
+                }
+              },
+              {
+                "id": "chip-level",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Medium"
+                  },
+                  "tone": "neutral",
+                  "icon": "circle",
+                  "iconPosition": "end"
+                },
+                "style": {
+                  "color": "accent",
+                  "border": {
+                    "width": 1,
+                    "color": "accent"
+                  },
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "accent",
+                      "opacity": 0.12
+                    }
+                  }
+                }
+              },
+              {
+                "id": "chip-points",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "+300 Points"
+                  },
+                  "tone": "accent",
+                  "icon": "star",
+                  "iconPosition": "start"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "padding": {
+                    "top": "xs",
+                    "end": "md",
+                    "bottom": "xs",
+                    "start": "sm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "h-slot",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Icon beside the text of a list row"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "tile-points",
+            "type": "ListTile",
+            "props": {
+              "leading": {
+                "kind": "icon",
+                "icon": "gift"
+              },
+              "title": {
+                "kind": "literal",
+                "value": "Coffee voucher"
+              },
+              "subtitle": {
+                "kind": "literal",
+                "value": "Any drink, any size"
+              },
+              "trailing": {
+                "kind": "text",
+                "text": {
+                  "kind": "binding",
+                  "path": "offer.price",
+                  "fallback": "1 850",
+                  "format": "number"
+                },
+                "icon": "coins"
+              },
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "details"
+                }
+              }
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "details",
+      "name": "Details",
+      "root": {
+        "id": "details-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "details-head",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "details-back",
+                "type": "IconButton",
+                "props": {
+                  "icon": "arrow-left",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "navigate.back"
+                  }
+                }
+              },
+              {
+                "id": "details-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Coffee voucher"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                },
+                "weight": 1
+              },
+              {
+                "id": "details-info",
+                "type": "IconButton",
+                "props": {
+                  "icon": "info",
+                  "label": {
+                    "kind": "literal",
+                    "value": "How it works"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "details-chips",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "details-limited",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "LIMITED"
+                  },
+                  "tone": "danger",
+                  "icon": "flame",
+                  "iconPosition": "start"
+                }
+              },
+              {
+                "id": "details-new",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "New"
+                  },
+                  "tone": "success"
+                }
+              }
+            ]
+          },
+          {
+            "id": "details-body",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Any drink, any size. Show the code at the counter."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          },
+          {
+            "id": "details-redeem",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Redeem"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "submit"
+              },
+              "fullWidth": true,
+              "icon": "chevron-right",
+              "iconPosition": "end",
+              "size": "lg"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "gallery/bar/title": "Кнопки й плашки",
+        "gallery/h-icon-buttons/content": "Кнопки-іконки",
+        "gallery/ib-back-sm/label": "Назад",
+        "gallery/ib-back-md/label": "Назад",
+        "gallery/ib-back-lg/label": "Назад",
+        "gallery/ib-info/label": "Про цю нагороду",
+        "gallery/ib-share/label": "Поділитися",
+        "gallery/ib-close/label": "Закрити",
+        "gallery/ib-like/label": "Додати в обране",
+        "gallery/h-button-sizes/content": "Розміри кнопки",
+        "gallery/btn-sm/label": "Усі",
+        "gallery/btn-md/label": "Отримати",
+        "gallery/btn-lg/label": "Далі",
+        "gallery/h-button-icons/content": "Іконка перед написом і після нього",
+        "gallery/btn-start/label": "Запросити",
+        "gallery/btn-end/label": "Далі",
+        "gallery/btn-full/label": "Забрати нагороду",
+        "gallery/btn-own/label": "Прискорити",
+        "gallery/h-chips/content": "Плашки",
+        "gallery/chip-days/label.template": "Лишилося {days} {unit}",
+        "gallery/chip-days/label.values.unit.forms.one": "день",
+        "gallery/chip-days/label.values.unit.forms.few": "дні",
+        "gallery/chip-days/label.values.unit.forms.many": "днів",
+        "gallery/chip-days/label.values.unit.forms.other": "дня",
+        "gallery/chip-limited/label": "ОБМЕЖЕНО",
+        "gallery/chip-level/label": "Середній",
+        "gallery/chip-points/label": "+300 балів",
+        "gallery/h-slot/content": "Іконка поруч із текстом у рядку списку",
+        "gallery/tile-points/title": "Ваучер на каву",
+        "gallery/tile-points/subtitle": "Будь-який напій, будь-який розмір",
+        "details/details-back/label": "Назад",
+        "details/details-title/content": "Ваучер на каву",
+        "details/details-info/label": "Як це працює",
+        "details/details-limited/label": "ОБМЕЖЕНО",
+        "details/details-new/label": "Нове",
+        "details/details-body/content": "Будь-який напій, будь-який розмір. Покажіть код на касі.",
+        "details/details-redeem/label": "Отримати"
+      },
+      "ar": {
+        "gallery/bar/title": "الأزرار والشارات",
+        "gallery/h-icon-buttons/content": "أزرار الأيقونات",
+        "gallery/ib-back-sm/label": "رجوع",
+        "gallery/ib-back-md/label": "رجوع",
+        "gallery/ib-back-lg/label": "رجوع",
+        "gallery/ib-info/label": "عن هذه المكافأة",
+        "gallery/ib-share/label": "مشاركة",
+        "gallery/ib-close/label": "إغلاق",
+        "gallery/ib-like/label": "أضف إلى المفضلة",
+        "gallery/h-button-sizes/content": "أحجام الأزرار",
+        "gallery/btn-sm/label": "عرض الكل",
+        "gallery/btn-md/label": "استبدال",
+        "gallery/btn-lg/label": "متابعة",
+        "gallery/h-button-icons/content": "الأيقونة قبل النص وبعده",
+        "gallery/btn-start/label": "دعوة",
+        "gallery/btn-end/label": "التالي",
+        "gallery/btn-full/label": "احصل على المكافأة",
+        "gallery/btn-own/label": "تعزيز",
+        "gallery/h-chips/content": "الشارات",
+        "gallery/chip-days/label.template": "باقي {days} {unit}",
+        "gallery/chip-days/label.values.unit.forms.zero": "يوم",
+        "gallery/chip-days/label.values.unit.forms.one": "يوم",
+        "gallery/chip-days/label.values.unit.forms.two": "يومان",
+        "gallery/chip-days/label.values.unit.forms.few": "أيام",
+        "gallery/chip-days/label.values.unit.forms.many": "يومًا",
+        "gallery/chip-days/label.values.unit.forms.other": "يوم",
+        "gallery/chip-limited/label": "محدود",
+        "gallery/chip-level/label": "متوسط",
+        "gallery/chip-points/label": "+300 نقطة",
+        "gallery/h-slot/content": "الأيقونة بجانب النص في صف القائمة",
+        "gallery/tile-points/title": "قسيمة قهوة",
+        "gallery/tile-points/subtitle": "أي مشروب، أي حجم",
+        "details/details-back/label": "رجوع",
+        "details/details-title/content": "قسيمة قهوة",
+        "details/details-info/label": "كيف يعمل",
+        "details/details-limited/label": "محدود",
+        "details/details-new/label": "جديد",
+        "details/details-body/content": "أي مشروب، أي حجم. أظهر الرمز عند الدفع.",
+        "details/details-redeem/label": "استبدال"
+      }
+    }
+  }
+}

@@ -1,0 +1,426 @@
+{
+  "schemaVersion": "9.6.0",
+  "documentId": "rich-text",
+  "name": "Rich text: parts of a line in their own style",
+  "initialScreenId": "balance",
+  "screens": [
+    {
+      "screenId": "balance",
+      "name": "Balance",
+      "root": {
+        "id": "balance-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Rewards"
+              },
+              "subtitle": {
+                "kind": "literal",
+                "value": "Rich text: parts of one line in their own style"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "balance-card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "balance-label",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Your balance"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              },
+              {
+                "id": "balance",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "template",
+                    "template": "{amount} {unit}",
+                    "values": {
+                      "amount": {
+                        "kind": "binding",
+                        "path": "user.points",
+                        "fallback": "0",
+                        "format": "number"
+                      },
+                      "unit": {
+                        "kind": "plural",
+                        "of": "amount",
+                        "forms": {
+                          "one": "Point",
+                          "other": "Points"
+                        }
+                      }
+                    }
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "spans": {
+                    "amount": {
+                      "typography": {
+                        "token": "displayL",
+                        "fontSize": 40
+                      }
+                    },
+                    "unit": {
+                      "color": "muted",
+                      "typography": "bodyS"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "offer-card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "offer",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "template",
+                    "template": "Earn {word} points this weekend",
+                    "values": {
+                      "word": {
+                        "kind": "text",
+                        "text": "double"
+                      }
+                    }
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "spans": {
+                    "word": {
+                      "color": "primary",
+                      "typography": {
+                        "token": "titleS",
+                        "fontWeight": 700
+                      }
+                    }
+                  }
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "price",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "template",
+                    "template": "Only {price} today",
+                    "values": {
+                      "price": {
+                        "kind": "binding",
+                        "path": "offer.price",
+                        "fallback": "—",
+                        "format": "currency",
+                        "currency": "JOD"
+                      }
+                    }
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "spans": {
+                    "price": {
+                      "color": "accent",
+                      "typography": "titleM"
+                    }
+                  }
+                },
+                "style": {
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "ends",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "template",
+                    "template": "{days} {unit} left",
+                    "values": {
+                      "days": {
+                        "kind": "binding",
+                        "path": "offer.endsAt",
+                        "fallback": "0",
+                        "format": "daysUntil"
+                      },
+                      "unit": {
+                        "kind": "plural",
+                        "of": "days",
+                        "forms": {
+                          "one": "day",
+                          "other": "days"
+                        }
+                      }
+                    }
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "spans": {
+                    "days": {
+                      "color": "onSurface",
+                      "typography": "numericL"
+                    }
+                  }
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              }
+            ]
+          },
+          {
+            "id": "next-level",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "You are {left} {unit} away from level {next}. Keep paying with your card and the reward is yours.",
+                "values": {
+                  "left": {
+                    "kind": "binding",
+                    "path": "task.rewardPoints",
+                    "fallback": "0",
+                    "format": "number"
+                  },
+                  "unit": {
+                    "kind": "plural",
+                    "of": "left",
+                    "forms": {
+                      "one": "point",
+                      "other": "points"
+                    }
+                  },
+                  "next": {
+                    "kind": "binding",
+                    "path": "user.level",
+                    "fallback": "1"
+                  }
+                }
+              },
+              "align": "start",
+              "overflow": "ellipsis",
+              "spans": {
+                "left": {
+                  "color": "primary",
+                  "typography": "displayL"
+                },
+                "next": {
+                  "typography": {
+                    "token": "bodyM",
+                    "fontWeight": 700
+                  }
+                }
+              }
+            }
+          },
+          {
+            "id": "centered",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "{done} / {total} steps",
+                "values": {
+                  "done": {
+                    "kind": "binding",
+                    "path": "task.progress",
+                    "fallback": "—"
+                  },
+                  "total": {
+                    "kind": "binding",
+                    "path": "task.target",
+                    "fallback": "—"
+                  }
+                }
+              },
+              "align": "center",
+              "overflow": "ellipsis",
+              "spans": {
+                "done": {
+                  "color": "success",
+                  "typography": "displayL"
+                }
+              }
+            },
+            "style": {
+              "color": "muted"
+            }
+          },
+          {
+            "id": "one-line",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "{name}, {amount} points are waiting for you in the rewards catalog",
+                "values": {
+                  "name": {
+                    "kind": "binding",
+                    "path": "user.firstName",
+                    "fallback": "Guest"
+                  },
+                  "amount": {
+                    "kind": "binding",
+                    "path": "user.points",
+                    "fallback": "0",
+                    "format": "number"
+                  }
+                }
+              },
+              "align": "start",
+              "maxLines": 1,
+              "overflow": "ellipsis",
+              "spans": {
+                "name": {
+                  "typography": {
+                    "token": "bodyM",
+                    "fontWeight": 700
+                  }
+                },
+                "amount": {
+                  "color": "primary",
+                  "typography": {
+                    "token": "bodyM",
+                    "fontWeight": 700
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "balance/bar/title": "Винагороди",
+        "balance/bar/subtitle": "Складений текст: частини одного рядка власним стилем",
+        "balance/balance-label/content": "Ваш баланс",
+        "balance/balance/content.template": "{unit}: {amount}",
+        "balance/balance/content.values.unit.forms.one": "Бал",
+        "balance/balance/content.values.unit.forms.few": "Бали",
+        "balance/balance/content.values.unit.forms.many": "Балів",
+        "balance/balance/content.values.unit.forms.other": "Бала",
+        "balance/offer/content.template": "У ці вихідні бали {word}",
+        "balance/offer/content.values.word.text": "подвійні",
+        "balance/price/content.template": "Сьогодні лише {price}",
+        "balance/ends/content.template": "Лишилося {days} {unit}",
+        "balance/ends/content.values.unit.forms.one": "день",
+        "balance/ends/content.values.unit.forms.few": "дні",
+        "balance/ends/content.values.unit.forms.many": "днів",
+        "balance/ends/content.values.unit.forms.other": "дня",
+        "balance/next-level/content.template": "До рівня {next} вам бракує {left} {unit}. Платіть карткою й далі — і винагорода ваша.",
+        "balance/next-level/content.values.unit.forms.one": "бала",
+        "balance/next-level/content.values.unit.forms.few": "балів",
+        "balance/next-level/content.values.unit.forms.many": "балів",
+        "balance/next-level/content.values.unit.forms.other": "бала",
+        "balance/centered/content.template": "Кроків: {done} з {total}",
+        "balance/one-line/content.template": "{name}, на вас чекає {amount} балів у каталозі винагород"
+      },
+      "ar": {
+        "balance/bar/title": "المكافآت",
+        "balance/bar/subtitle": "نص مركّب: أجزاء من سطر واحد بنمطها الخاص",
+        "balance/balance-label/content": "رصيدك",
+        "balance/balance/content.template": "{amount} {unit}",
+        "balance/balance/content.values.unit.forms.zero": "نقطة",
+        "balance/balance/content.values.unit.forms.one": "نقطة",
+        "balance/balance/content.values.unit.forms.two": "نقطتان",
+        "balance/balance/content.values.unit.forms.few": "نقاط",
+        "balance/balance/content.values.unit.forms.many": "نقطة",
+        "balance/balance/content.values.unit.forms.other": "نقطة",
+        "balance/offer/content.template": "اكسب نقاطًا {word} في عطلة نهاية الأسبوع",
+        "balance/offer/content.values.word.text": "مضاعفة",
+        "balance/price/content.template": "فقط {price} اليوم",
+        "balance/ends/content.template": "بقي {days} {unit}",
+        "balance/ends/content.values.unit.forms.zero": "يوم",
+        "balance/ends/content.values.unit.forms.one": "يوم",
+        "balance/ends/content.values.unit.forms.two": "يومان",
+        "balance/ends/content.values.unit.forms.few": "أيام",
+        "balance/ends/content.values.unit.forms.many": "يومًا",
+        "balance/ends/content.values.unit.forms.other": "يوم",
+        "balance/next-level/content.template": "تفصلك {left} {unit} عن المستوى {next}. واصل الدفع ببطاقتك والمكافأة لك.",
+        "balance/next-level/content.values.unit.forms.zero": "نقطة",
+        "balance/next-level/content.values.unit.forms.one": "نقطة",
+        "balance/next-level/content.values.unit.forms.two": "نقطتان",
+        "balance/next-level/content.values.unit.forms.few": "نقاط",
+        "balance/next-level/content.values.unit.forms.many": "نقطة",
+        "balance/next-level/content.values.unit.forms.other": "نقطة",
+        "balance/centered/content.template": "{done} / {total} خطوات",
+        "balance/one-line/content.template": "{name}، {amount} نقطة بانتظارك في كتالوج المكافآت"
+      }
+    }
+  }
+}

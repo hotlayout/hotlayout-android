@@ -1,0 +1,815 @@
+{
+  "schemaVersion": "9.8.0",
+  "documentId": "actions",
+  "name": "Actions",
+  "initialScreenId": "offer",
+  "entryPoints": {
+    "promo": "offer"
+  },
+  "screens": [
+    {
+      "screenId": "offer",
+      "name": "Offer",
+      "root": {
+        "id": "offer-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "offer-app-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Actions"
+              },
+              "showBack": true
+            }
+          },
+          {
+            "id": "offer-column",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "style": {
+              "padding": "md"
+            },
+            "children": [
+              {
+                "id": "standard-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "standard-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Standard actions"
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "standard-hint",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "The renderer opens nothing by itself: the app gets the checked action."
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "bodyS"
+                    }
+                  },
+                  {
+                    "id": "open-terms",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Open the terms"
+                      },
+                      "variant": "primary",
+                      "action": {
+                        "type": "openUrl",
+                        "params": {
+                          "url": "https://example.com/terms?utm_source=app"
+                        },
+                        "track": {
+                          "event": "terms_open",
+                          "params": {
+                            "placement": "offer"
+                          }
+                        }
+                      },
+                      "fullWidth": true
+                    }
+                  },
+                  {
+                    "id": "open-in-app",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Open in the app"
+                      },
+                      "variant": "secondary",
+                      "action": {
+                        "type": "deeplink",
+                        "params": {
+                          "url": "myapp://offers/weekend"
+                        }
+                      },
+                      "fullWidth": true
+                    }
+                  },
+                  {
+                    "id": "close-flow",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Close"
+                      },
+                      "variant": "ghost",
+                      "action": {
+                        "type": "close"
+                      },
+                      "fullWidth": true
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "data-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "data-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "A parameter from data"
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "data-hint",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Read from data when pressed. Not an https address where one is expected: handed over as invalid, never opened."
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "bodyS"
+                    }
+                  },
+                  {
+                    "id": "share-code",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Share the code"
+                      },
+                      "variant": "secondary",
+                      "action": {
+                        "type": "share",
+                        "params": {
+                          "text": "Promo"
+                        },
+                        "paramBindings": {
+                          "text": "offer.code"
+                        }
+                      },
+                      "fullWidth": true
+                    }
+                  },
+                  {
+                    "id": "open-partner",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Partner page"
+                      },
+                      "variant": "secondary",
+                      "action": {
+                        "type": "openUrl",
+                        "params": {
+                          "url": "https://example.com/partners"
+                        },
+                        "paramBindings": {
+                          "url": "offer.code"
+                        }
+                      },
+                      "fullWidth": true
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "track-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "track-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Analytics"
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "track-hint",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "A button may only measure: no action, one event per press."
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "bodyS"
+                    }
+                  },
+                  {
+                    "id": "just-measured",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Only an event"
+                      },
+                      "variant": "ghost",
+                      "action": {
+                        "type": "none",
+                        "track": {
+                          "event": "banner_tap"
+                        }
+                      },
+                      "fullWidth": true
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "list-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "list-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Rewards"
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "reward-list",
+                    "type": "Repeater",
+                    "props": {
+                      "source": "items",
+                      "item": "item",
+                      "direction": "column",
+                      "gap": "none"
+                    },
+                    "children": [
+                      {
+                        "id": "reward-row",
+                        "type": "ListTile",
+                        "props": {
+                          "leading": {
+                            "kind": "icon",
+                            "icon": "star"
+                          },
+                          "title": {
+                            "kind": "binding",
+                            "path": "item.name",
+                            "fallback": "Reward"
+                          },
+                          "trailing": {
+                            "kind": "text",
+                            "text": {
+                              "kind": "binding",
+                              "path": "item.price",
+                              "fallback": "—"
+                            }
+                          },
+                          "action": {
+                            "type": "navigate",
+                            "params": {
+                              "screenId": "details"
+                            },
+                            "track": {
+                              "event": "reward_open"
+                            }
+                          }
+                        },
+                        "style": {
+                          "padding": {
+                            "top": "sm",
+                            "bottom": "sm"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "details",
+      "name": "Reward details",
+      "root": {
+        "id": "details-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "details-app-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Reward"
+              },
+              "showBack": true
+            }
+          },
+          {
+            "id": "details-column",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "style": {
+              "padding": "md"
+            },
+            "children": [
+              {
+                "id": "details-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "details-name",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "item.name",
+                        "fallback": "No record"
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "details-hint",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Both buttons open the same page. Only the first says «carry the record»."
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "bodyS"
+                    }
+                  },
+                  {
+                    "id": "choose-delivery",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Choose delivery"
+                      },
+                      "variant": "primary",
+                      "action": {
+                        "type": "navigate",
+                        "params": {
+                          "screenId": "delivery"
+                        },
+                        "carryRecord": true
+                      },
+                      "fullWidth": true
+                    }
+                  },
+                  {
+                    "id": "delivery-plain",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Delivery, no record"
+                      },
+                      "variant": "secondary",
+                      "action": {
+                        "type": "navigate",
+                        "params": {
+                          "screenId": "delivery"
+                        }
+                      },
+                      "fullWidth": true
+                    }
+                  },
+                  {
+                    "id": "details-confirm",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Confirm"
+                      },
+                      "variant": "secondary",
+                      "action": {
+                        "type": "navigate",
+                        "params": {
+                          "screenId": "confirm"
+                        }
+                      },
+                      "fullWidth": true
+                    }
+                  },
+                  {
+                    "id": "details-back",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Back"
+                      },
+                      "variant": "ghost",
+                      "action": {
+                        "type": "navigate.back"
+                      },
+                      "fullWidth": true
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "delivery",
+      "name": "Delivery",
+      "root": {
+        "id": "delivery-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "delivery-app-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Delivery"
+              },
+              "showBack": true
+            }
+          },
+          {
+            "id": "delivery-column",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "style": {
+              "padding": "md"
+            },
+            "children": [
+              {
+                "id": "delivery-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "delivery-for",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Delivery for"
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "bodyS"
+                    }
+                  },
+                  {
+                    "id": "delivery-name",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "item.name",
+                        "fallback": "No record: the page was opened without one"
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "delivery-submit",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Order"
+                      },
+                      "variant": "primary",
+                      "action": {
+                        "type": "submit",
+                        "track": {
+                          "event": "delivery_order"
+                        }
+                      },
+                      "fullWidth": true
+                    }
+                  },
+                  {
+                    "id": "delivery-back",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Back"
+                      },
+                      "variant": "ghost",
+                      "action": {
+                        "type": "navigate.back"
+                      },
+                      "fullWidth": true
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "confirm",
+      "name": "Confirm",
+      "presentation": "modal",
+      "root": {
+        "id": "confirm-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "confirm-app-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Confirm"
+              },
+              "showBack": true
+            }
+          },
+          {
+            "id": "confirm-column",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "style": {
+              "padding": "md"
+            },
+            "children": [
+              {
+                "id": "confirm-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "confirm-name",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "item.name",
+                        "fallback": "No record"
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "confirm-close",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Done"
+                      },
+                      "variant": "primary",
+                      "action": {
+                        "type": "close",
+                        "params": {
+                          "result": "done"
+                        }
+                      },
+                      "fullWidth": true
+                    }
+                  },
+                  {
+                    "id": "confirm-back",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Not now"
+                      },
+                      "variant": "ghost",
+                      "action": {
+                        "type": "navigate.back"
+                      },
+                      "fullWidth": true
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en"
+    ],
+    "strings": {}
+  }
+}

@@ -1,0 +1,255 @@
+{
+  "schemaVersion": "9.0.0",
+  "documentId": "task-progress",
+  "name": "Task progress",
+  "initialScreenId": "task-progress",
+  "screens": [
+    {
+      "screenId": "task-progress",
+      "name": "Task progress",
+      "root": {
+        "id": "screen-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "app-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Task of the month"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              },
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            }
+          },
+          {
+            "id": "main-column",
+            "type": "Column",
+            "props": {
+              "gap": "md",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "header-row",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "between",
+                  "wrap": false
+                },
+                "children": [
+                  {
+                    "id": "task-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "task.title",
+                        "fallback": "Task of the month"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleM"
+                    }
+                  },
+                  {
+                    "id": "status-badge",
+                    "type": "Badge",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Active"
+                      },
+                      "tone": "success"
+                    },
+                    "visibleIf": {
+                      "path": "task.completed",
+                      "op": "isFalse"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "progress",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "binding",
+                    "path": "task.progress",
+                    "fallback": 0
+                  },
+                  "max": {
+                    "kind": "binding",
+                    "path": "task.target",
+                    "fallback": 5
+                  },
+                  "color": "primary",
+                  "labelFormat": "valueOfMax"
+                }
+              },
+              {
+                "id": "completed-at",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "task.completedAt",
+                    "fallback": "—"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "caption"
+                },
+                "visibleIf": {
+                  "path": "task.completed",
+                  "op": "isTrue"
+                }
+              },
+              {
+                "id": "reward-card",
+                "type": "Container",
+                "props": {
+                  "gap": "none"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "reward-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Your reward"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "sep-1",
+                    "type": "Divider",
+                    "props": {
+                      "color": "muted",
+                      "spacing": "sm",
+                      "orientation": "horizontal"
+                    }
+                  },
+                  {
+                    "id": "reward-tile",
+                    "type": "ListTile",
+                    "props": {
+                      "leading": {
+                        "kind": "icon",
+                        "icon": "gift"
+                      },
+                      "title": {
+                        "kind": "binding",
+                        "path": "task.rewardPoints",
+                        "fallback": "100"
+                      },
+                      "subtitle": {
+                        "kind": "binding",
+                        "path": "campaign.title",
+                        "fallback": "—"
+                      },
+                      "trailing": {
+                        "kind": "chevron"
+                      }
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "sm",
+                        "bottom": "sm"
+                      }
+                    }
+                  },
+                  {
+                    "id": "deadline-tile",
+                    "type": "ListTile",
+                    "props": {
+                      "leading": {
+                        "kind": "icon",
+                        "icon": "clock"
+                      },
+                      "title": {
+                        "kind": "literal",
+                        "value": "Ends"
+                      },
+                      "subtitle": {
+                        "kind": "binding",
+                        "path": "campaign.endsAt",
+                        "fallback": "—"
+                      },
+                      "trailing": {
+                        "kind": "none"
+                      }
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "sm",
+                        "bottom": "sm"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "cta",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Start task"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "submit"
+                  },
+                  "fullWidth": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

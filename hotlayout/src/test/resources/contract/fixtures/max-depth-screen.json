@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "9.0.0",
+  "documentId": "max-depth",
+  "name": "Гранична легальна глибина",
+  "initialScreenId": "max-depth",
+  "screens": [
+    {
+      "screenId": "max-depth",
+      "name": "Гранична легальна глибина",
+      "root": {
+        "id": "level-0-screen",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "level-1-column",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "level-2-row",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false
+                },
+                "children": [
+                  {
+                    "id": "level-3-column",
+                    "type": "Column",
+                    "props": {
+                      "gap": "sm",
+                      "align": "start"
+                    },
+                    "children": [
+                      {
+                        "id": "level-4-container",
+                        "type": "Container",
+                        "props": {
+                          "gap": "none"
+                        },
+                        "style": {
+                          "padding": "md",
+                          "radius": "md",
+                          "background": {
+                            "kind": "color",
+                            "color": "surface"
+                          },
+                          "shadow": "low"
+                        },
+                        "children": [
+                          {
+                            "id": "level-5-text",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "Рівень 5 — межа MAX_DEPTH"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "color": "muted",
+                              "typography": "bodyS"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

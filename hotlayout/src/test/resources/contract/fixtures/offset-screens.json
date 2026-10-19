@@ -1,0 +1,889 @@
+{
+  "schemaVersion": "9.10.0",
+  "documentId": "offset",
+  "name": "Overlays with an offset and pulled blocks",
+  "initialScreenId": "overlap",
+  "screens": [
+    {
+      "screenId": "overlap",
+      "name": "Overlap",
+      "statusBarIcons": "light",
+      "root": {
+        "id": "overlap-root",
+        "type": "Screen",
+        "props": {
+          "gap": "none"
+        },
+        "children": [
+          {
+            "id": "hero",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs"
+            },
+            "style": {
+              "padding": {
+                "top": "xl",
+                "end": "lg",
+                "bottom": 48,
+                "start": "lg"
+              },
+              "background": {
+                "kind": "gradient",
+                "gradient": {
+                  "angle": 135,
+                  "stops": [
+                    {
+                      "color": "primary",
+                      "position": 0
+                    },
+                    {
+                      "color": "accent",
+                      "position": 1
+                    }
+                  ]
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "hero-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Weekly quest"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "onPrimary",
+                  "typography": "displayL"
+                }
+              },
+              {
+                "id": "hero-subtitle",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Three days left to double the points"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "onPrimary",
+                  "typography": "bodyM"
+                }
+              }
+            ]
+          },
+          {
+            "id": "sheet",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "lg"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": {
+                "topStart": "lg",
+                "topEnd": "lg"
+              },
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "pull": "xl",
+            "children": [
+              {
+                "id": "corner-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "A badge on the corner, chips on the edge"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "corner-row",
+                "type": "Row",
+                "props": {
+                  "gap": "xl",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "md",
+                    "start": "sm"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "icon-stack",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "children": [
+                      {
+                        "id": "icon-tile",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "none"
+                        },
+                        "style": {
+                          "padding": "md",
+                          "radius": "md",
+                          "background": {
+                            "kind": "color",
+                            "color": "secondary"
+                          }
+                        },
+                        "children": [
+                          {
+                            "id": "icon-flame",
+                            "type": "Icon",
+                            "props": {
+                              "name": "flame",
+                              "size": "lg"
+                            },
+                            "style": {
+                              "color": "warning"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "id": "badge-x2",
+                        "type": "Badge",
+                        "props": {
+                          "label": {
+                            "kind": "literal",
+                            "value": "×2"
+                          },
+                          "tone": "danger"
+                        },
+                        "layer": {
+                          "alignHorizontal": "end",
+                          "alignVertical": "start",
+                          "offset": {
+                            "x": {
+                              "toward": "end",
+                              "by": "sm"
+                            },
+                            "y": {
+                              "toward": "top",
+                              "by": "sm"
+                            }
+                          },
+                          "rotate": 12
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "ring-stack",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "children": [
+                      {
+                        "id": "ring",
+                        "type": "CircularProgress",
+                        "props": {
+                          "value": {
+                            "kind": "literal",
+                            "value": 72
+                          },
+                          "max": {
+                            "kind": "literal",
+                            "value": 100
+                          },
+                          "color": "primary",
+                          "size": "md",
+                          "labelFormat": "percent"
+                        },
+                        "style": {
+                          "width": 96,
+                          "height": 96
+                        }
+                      },
+                      {
+                        "id": "ring-level",
+                        "type": "Badge",
+                        "props": {
+                          "label": {
+                            "kind": "literal",
+                            "value": "Level 3"
+                          },
+                          "tone": "success"
+                        },
+                        "layer": {
+                          "alignVertical": "end",
+                          "offset": {
+                            "y": {
+                              "toward": "bottom",
+                              "by": "sm"
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "id": "ring-bonus",
+                        "type": "Badge",
+                        "props": {
+                          "label": {
+                            "kind": "literal",
+                            "value": "+50"
+                          },
+                          "tone": "warning",
+                          "icon": "star",
+                          "iconPosition": "start"
+                        },
+                        "layer": {
+                          "alignHorizontal": "end",
+                          "alignVertical": "start",
+                          "offset": {
+                            "x": {
+                              "toward": "end",
+                              "by": "md"
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "ribbon-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "A ribbon across the corner"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "claim-card",
+                "type": "Stack",
+                "props": {
+                  "alignHorizontal": "start",
+                  "alignVertical": "start"
+                },
+                "style": {
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "secondary"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "claim-body",
+                    "type": "Container",
+                    "props": {
+                      "direction": "column",
+                      "gap": "sm"
+                    },
+                    "style": {
+                      "padding": "lg"
+                    },
+                    "children": [
+                      {
+                        "id": "claim-title",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "Daily reward"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "typography": "titleM"
+                        }
+                      },
+                      {
+                        "id": "claim-text",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "Open the app five days in a row."
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "muted",
+                          "typography": "bodyM"
+                        }
+                      },
+                      {
+                        "id": "claim-button",
+                        "type": "Button",
+                        "props": {
+                          "label": {
+                            "kind": "literal",
+                            "value": "Claim 100 points"
+                          },
+                          "variant": "primary",
+                          "action": {
+                            "type": "navigate",
+                            "params": {
+                              "screenId": "details"
+                            }
+                          },
+                          "fullWidth": false
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "claim-ribbon",
+                    "type": "Container",
+                    "props": {
+                      "direction": "column",
+                      "gap": "none"
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "xs",
+                        "bottom": "xs"
+                      },
+                      "width": 140,
+                      "background": {
+                        "kind": "color",
+                        "color": "danger"
+                      }
+                    },
+                    "layer": {
+                      "alignHorizontal": "end",
+                      "alignVertical": "start",
+                      "offset": {
+                        "x": {
+                          "toward": "end",
+                          "by": 34
+                        },
+                        "y": {
+                          "toward": "bottom",
+                          "by": 26
+                        }
+                      },
+                      "rotate": 45
+                    },
+                    "children": [
+                      {
+                        "id": "ribbon-text",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "CLAIM"
+                          },
+                          "align": "center",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "onPrimary",
+                          "typography": "caption"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "claim-info",
+                    "type": "IconButton",
+                    "props": {
+                      "icon": "info",
+                      "label": {
+                        "kind": "literal",
+                        "value": "How rewards work"
+                      },
+                      "variant": "secondary",
+                      "size": "sm",
+                      "action": {
+                        "type": "navigate",
+                        "params": {
+                          "screenId": "details"
+                        }
+                      }
+                    },
+                    "layer": {
+                      "alignHorizontal": "end",
+                      "alignVertical": "end",
+                      "offset": {
+                        "x": {
+                          "toward": "start",
+                          "by": "md"
+                        },
+                        "y": {
+                          "toward": "top",
+                          "by": "md"
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "avatars-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Friends on this quest"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "avatars",
+                "type": "Row",
+                "props": {
+                  "gap": "none",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "avatar-a",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "style": {
+                      "width": 40,
+                      "height": 40,
+                      "radius": "pill",
+                      "border": {
+                        "width": 2,
+                        "color": "surface"
+                      },
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      }
+                    },
+                    "children": [
+                      {
+                        "id": "avatar-a-letter",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "A"
+                          },
+                          "align": "center",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "onPrimary",
+                          "typography": "titleS"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "avatar-b",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "style": {
+                      "width": 40,
+                      "height": 40,
+                      "radius": "pill",
+                      "border": {
+                        "width": 2,
+                        "color": "surface"
+                      },
+                      "background": {
+                        "kind": "color",
+                        "color": "accent"
+                      }
+                    },
+                    "pull": "md",
+                    "children": [
+                      {
+                        "id": "avatar-b-letter",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "B"
+                          },
+                          "align": "center",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "onPrimary",
+                          "typography": "titleS"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "avatar-c",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "style": {
+                      "width": 40,
+                      "height": 40,
+                      "radius": "pill",
+                      "border": {
+                        "width": 2,
+                        "color": "surface"
+                      },
+                      "background": {
+                        "kind": "color",
+                        "color": "success"
+                      }
+                    },
+                    "pull": "md",
+                    "children": [
+                      {
+                        "id": "avatar-c-letter",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "C"
+                          },
+                          "align": "center",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "onPrimary",
+                          "typography": "titleS"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "avatar-d",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "style": {
+                      "width": 40,
+                      "height": 40,
+                      "radius": "pill",
+                      "border": {
+                        "width": 2,
+                        "color": "surface"
+                      },
+                      "background": {
+                        "kind": "color",
+                        "color": "warning"
+                      }
+                    },
+                    "pull": "md",
+                    "children": [
+                      {
+                        "id": "avatar-d-letter",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "D"
+                          },
+                          "align": "center",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "onPrimary",
+                          "typography": "titleS"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "avatars-more",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "and 12 more friends"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "bodyS",
+                      "margin": {
+                        "start": "sm"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "details",
+      "name": "Details",
+      "root": {
+        "id": "details-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg"
+        },
+        "children": [
+          {
+            "id": "details-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "How rewards work"
+              },
+              "showBack": true
+            }
+          },
+          {
+            "id": "details-text",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "A reward is added once a day. A ribbon in the start corner leans the other way."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            }
+          },
+          {
+            "id": "new-card",
+            "type": "Stack",
+            "props": {
+              "alignHorizontal": "start",
+              "alignVertical": "start"
+            },
+            "style": {
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "secondary"
+              }
+            },
+            "children": [
+              {
+                "id": "new-body",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": {
+                    "top": "xl",
+                    "end": "lg",
+                    "bottom": "xl",
+                    "start": "lg"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "new-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Streak bonus"
+                      },
+                      "align": "end",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleM"
+                    }
+                  },
+                  {
+                    "id": "new-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Seven days in a row give 500 points."
+                      },
+                      "align": "end",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "bodyM"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "new-ribbon",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "padding": {
+                    "top": "xs",
+                    "bottom": "xs"
+                  },
+                  "width": 120,
+                  "background": {
+                    "kind": "color",
+                    "color": "success"
+                  }
+                },
+                "layer": {
+                  "alignHorizontal": "start",
+                  "alignVertical": "start",
+                  "offset": {
+                    "x": {
+                      "toward": "start",
+                      "by": 30
+                    },
+                    "y": {
+                      "toward": "bottom",
+                      "by": 22
+                    }
+                  },
+                  "rotate": -45
+                },
+                "children": [
+                  {
+                    "id": "new-ribbon-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "NEW"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "onPrimary",
+                      "typography": "caption"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "overlap/hero-title/content": "Тижневий квест",
+        "overlap/hero-subtitle/content": "Лишилося три дні, щоб подвоїти бали",
+        "overlap/badge-x2/label": "×2",
+        "overlap/ring-level/label": "Рівень 3",
+        "overlap/ring-bonus/label": "+50",
+        "overlap/claim-title/content": "Щоденна нагорода",
+        "overlap/claim-text/content": "Відкрийте застосунок п’ять днів поспіль.",
+        "overlap/claim-button/label": "Забрати 100 балів",
+        "overlap/ribbon-text/content": "ЗАБРАТИ",
+        "overlap/claim-info/label": "Як працюють нагороди",
+        "overlap/avatar-a-letter/content": "А",
+        "overlap/avatar-b-letter/content": "Б",
+        "overlap/avatar-c-letter/content": "В",
+        "overlap/avatar-d-letter/content": "Г",
+        "overlap/avatars-more/content": "і ще 12 друзів",
+        "overlap/corner-title/content": "Бейдж на куті, плашки на краю",
+        "overlap/ribbon-title/content": "Стрічка через кут",
+        "overlap/avatars-title/content": "Друзі в цьому квесті",
+        "details/details-bar/title": "Як працюють нагороди",
+        "details/details-text/content": "Нагорода додається раз на день. Стрічка в початковому куті нахилена в інший бік.",
+        "details/new-title/content": "Бонус за серію",
+        "details/new-text/content": "Сім днів поспіль дають 500 балів.",
+        "details/new-ribbon-text/content": "НОВЕ"
+      },
+      "ar": {
+        "overlap/hero-title/content": "مهمة الأسبوع",
+        "overlap/hero-subtitle/content": "بقيت ثلاثة أيام لمضاعفة النقاط",
+        "overlap/badge-x2/label": "×2",
+        "overlap/ring-level/label": "المستوى 3",
+        "overlap/ring-bonus/label": "+50",
+        "overlap/claim-title/content": "المكافأة اليومية",
+        "overlap/claim-text/content": "افتح التطبيق خمسة أيام متتالية.",
+        "overlap/claim-button/label": "احصل على 100 نقطة",
+        "overlap/ribbon-text/content": "استلم",
+        "overlap/claim-info/label": "كيف تعمل المكافآت",
+        "overlap/avatar-a-letter/content": "أ",
+        "overlap/avatar-b-letter/content": "ب",
+        "overlap/avatar-c-letter/content": "ت",
+        "overlap/avatar-d-letter/content": "ث",
+        "overlap/avatars-more/content": "و12 صديقًا آخر",
+        "overlap/corner-title/content": "شارة على الزاوية ورقائق على الحافة",
+        "overlap/ribbon-title/content": "شريط عبر الزاوية",
+        "overlap/avatars-title/content": "أصدقاء في هذه المهمة",
+        "details/details-bar/title": "كيف تعمل المكافآت",
+        "details/details-text/content": "تُضاف المكافأة مرة في اليوم. الشريط في زاوية البداية يميل إلى الجهة الأخرى.",
+        "details/new-title/content": "مكافأة السلسلة",
+        "details/new-text/content": "سبعة أيام متتالية تمنح 500 نقطة.",
+        "details/new-ribbon-text/content": "جديد"
+      }
+    }
+  }
+}

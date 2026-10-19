@@ -1,0 +1,1067 @@
+{
+  "schemaVersion": "9.11.0",
+  "documentId": "carousel-steps",
+  "name": "Carousel and stepped progress",
+  "initialScreenId": "streak",
+  "screens": [
+    {
+      "screenId": "streak",
+      "name": "Streak",
+      "root": {
+        "id": "streak-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": {
+            "top": "lg",
+            "bottom": "xl"
+          },
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "challenges-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Your challenges"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM",
+              "margin": {
+                "end": "lg",
+                "start": "lg"
+              }
+            }
+          },
+          {
+            "id": "challenges",
+            "type": "Repeater",
+            "props": {
+              "source": "tasks",
+              "item": "task",
+              "direction": "row",
+              "gap": "md",
+              "carousel": {
+                "perView": 1,
+                "peek": "xl"
+              }
+            },
+            "style": {
+              "padding": {
+                "end": "lg",
+                "start": "lg"
+              }
+            },
+            "children": [
+              {
+                "id": "challenge-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "padding": "lg",
+                  "minHeight": 148,
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "challenge-reward",
+                    "type": "Badge",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Reward"
+                      },
+                      "tone": "accent",
+                      "icon": "gift"
+                    }
+                  },
+                  {
+                    "id": "challenge-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "task.title",
+                        "fallback": ""
+                      },
+                      "align": "start",
+                      "maxLines": 2,
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleM"
+                    }
+                  },
+                  {
+                    "id": "challenge-bar",
+                    "type": "ProgressBar",
+                    "props": {
+                      "value": {
+                        "kind": "binding",
+                        "path": "task.progress",
+                        "fallback": 0
+                      },
+                      "max": {
+                        "kind": "binding",
+                        "path": "task.target",
+                        "fallback": 5
+                      },
+                      "color": "primary",
+                      "labelFormat": "valueOfMax"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "badges-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Badges"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM",
+              "margin": {
+                "end": "lg",
+                "start": "lg"
+              }
+            }
+          },
+          {
+            "id": "badges",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "start",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": true,
+              "carousel": {
+                "perView": 3,
+                "peek": "xl",
+                "indicator": "none"
+              }
+            },
+            "style": {
+              "padding": {
+                "end": "lg",
+                "start": "lg"
+              }
+            },
+            "children": [
+              {
+                "id": "badge-first",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "badge-first-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "flame",
+                      "size": "lg"
+                    },
+                    "style": {
+                      "color": "accent"
+                    }
+                  },
+                  {
+                    "id": "badge-first-name",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "First week"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "badge-saver",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "badge-saver-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "star",
+                      "size": "lg"
+                    },
+                    "style": {
+                      "color": "accent"
+                    }
+                  },
+                  {
+                    "id": "badge-saver-name",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Saver"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "badge-explorer",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "badge-explorer-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "gift",
+                      "size": "lg"
+                    },
+                    "style": {
+                      "color": "accent"
+                    }
+                  },
+                  {
+                    "id": "badge-explorer-name",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Explorer"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "badge-friend",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "badge-friend-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "star",
+                      "size": "lg"
+                    },
+                    "style": {
+                      "color": "accent"
+                    }
+                  },
+                  {
+                    "id": "badge-friend-name",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Good friend"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "badge-marathon",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "badge-marathon-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "flame",
+                      "size": "lg"
+                    },
+                    "style": {
+                      "color": "accent"
+                    }
+                  },
+                  {
+                    "id": "badge-marathon-name",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Marathon"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "badge-legend",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "badge-legend-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "gift",
+                      "size": "lg"
+                    },
+                    "style": {
+                      "color": "accent"
+                    }
+                  },
+                  {
+                    "id": "badge-legend-name",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Legend"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "steps-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Streak milestones"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM",
+              "margin": {
+                "end": "lg",
+                "start": "lg"
+              }
+            }
+          },
+          {
+            "id": "steps-start",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs"
+            },
+            "style": {
+              "padding": "lg",
+              "margin": {
+                "end": "lg",
+                "start": "lg"
+              },
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "steps-start-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Just started"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "steps-start-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 0
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 6
+                  },
+                  "color": "primary",
+                  "labelFormat": "none",
+                  "segments": 6,
+                  "currentColor": {
+                    "token": "primary",
+                    "opacity": 0.35
+                  }
+                }
+              },
+              {
+                "id": "steps-start-labels",
+                "type": "Row",
+                "props": {
+                  "gap": "xs",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "steps-start-w1",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W1"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-start-w2",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W2"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-start-w3",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W3"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-start-w4",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W4"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-start-w5",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W5"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-start-w6",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W6"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "steps-middle",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs"
+            },
+            "style": {
+              "padding": "lg",
+              "margin": {
+                "end": "lg",
+                "start": "lg"
+              },
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "steps-middle-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Week four is on"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "steps-middle-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "binding",
+                    "path": "task.progress",
+                    "fallback": 3
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 6
+                  },
+                  "color": "primary",
+                  "labelFormat": "none",
+                  "thickness": "md",
+                  "segments": 6,
+                  "currentColor": "accent"
+                }
+              },
+              {
+                "id": "steps-middle-labels",
+                "type": "Row",
+                "props": {
+                  "gap": "xs",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "steps-middle-w1",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W1"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-middle-w2",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W2"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-middle-w3",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W3"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-middle-w4",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W4"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-middle-w5",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W5"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-middle-w6",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W6"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "steps-done",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs"
+            },
+            "style": {
+              "padding": "lg",
+              "margin": {
+                "end": "lg",
+                "start": "lg"
+              },
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "steps-done-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "All six weeks done"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "steps-done-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 6
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 6
+                  },
+                  "color": "primary",
+                  "labelFormat": "none",
+                  "gradient": {
+                    "angle": 90,
+                    "stops": [
+                      {
+                        "color": "primary",
+                        "position": 0
+                      },
+                      {
+                        "color": "accent",
+                        "position": 1
+                      }
+                    ]
+                  },
+                  "segments": 6
+                }
+              },
+              {
+                "id": "steps-done-labels",
+                "type": "Row",
+                "props": {
+                  "gap": "xs",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "steps-done-w1",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W1"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-done-w2",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W2"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-done-w3",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W3"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-done-w4",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W4"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-done-w5",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W5"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "steps-done-w6",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "W6"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "caption"
+                    },
+                    "weight": 1
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "streak/challenge-reward/label": "Нагорода",
+        "streak/badge-first-name/content": "Перший тиждень",
+        "streak/badge-saver-name/content": "Ощадливий",
+        "streak/badge-explorer-name/content": "Дослідник",
+        "streak/badge-friend-name/content": "Добрий друг",
+        "streak/badge-marathon-name/content": "Марафон",
+        "streak/badge-legend-name/content": "Легенда",
+        "streak/challenges-title/content": "Ваші челенджі",
+        "streak/badges-title/content": "Значки",
+        "streak/steps-title/content": "Віхи серії",
+        "streak/steps-start-title/content": "Щойно почали",
+        "streak/steps-start-w1/content": "Т1",
+        "streak/steps-start-w2/content": "Т2",
+        "streak/steps-start-w3/content": "Т3",
+        "streak/steps-start-w4/content": "Т4",
+        "streak/steps-start-w5/content": "Т5",
+        "streak/steps-start-w6/content": "Т6",
+        "streak/steps-middle-title/content": "Триває четвертий тиждень",
+        "streak/steps-middle-w1/content": "Т1",
+        "streak/steps-middle-w2/content": "Т2",
+        "streak/steps-middle-w3/content": "Т3",
+        "streak/steps-middle-w4/content": "Т4",
+        "streak/steps-middle-w5/content": "Т5",
+        "streak/steps-middle-w6/content": "Т6",
+        "streak/steps-done-title/content": "Усі шість тижнів пройдено",
+        "streak/steps-done-w1/content": "Т1",
+        "streak/steps-done-w2/content": "Т2",
+        "streak/steps-done-w3/content": "Т3",
+        "streak/steps-done-w4/content": "Т4",
+        "streak/steps-done-w5/content": "Т5",
+        "streak/steps-done-w6/content": "Т6"
+      },
+      "ar": {
+        "streak/challenge-reward/label": "مكافأة",
+        "streak/badge-first-name/content": "الأسبوع الأول",
+        "streak/badge-saver-name/content": "المدّخر",
+        "streak/badge-explorer-name/content": "المستكشف",
+        "streak/badge-friend-name/content": "صديق جيد",
+        "streak/badge-marathon-name/content": "ماراثون",
+        "streak/badge-legend-name/content": "أسطورة",
+        "streak/challenges-title/content": "تحدياتك",
+        "streak/badges-title/content": "الشارات",
+        "streak/steps-title/content": "محطات السلسلة",
+        "streak/steps-start-title/content": "بداية جديدة",
+        "streak/steps-start-w1/content": "أ1",
+        "streak/steps-start-w2/content": "أ2",
+        "streak/steps-start-w3/content": "أ3",
+        "streak/steps-start-w4/content": "أ4",
+        "streak/steps-start-w5/content": "أ5",
+        "streak/steps-start-w6/content": "أ6",
+        "streak/steps-middle-title/content": "الأسبوع الرابع جارٍ",
+        "streak/steps-middle-w1/content": "أ1",
+        "streak/steps-middle-w2/content": "أ2",
+        "streak/steps-middle-w3/content": "أ3",
+        "streak/steps-middle-w4/content": "أ4",
+        "streak/steps-middle-w5/content": "أ5",
+        "streak/steps-middle-w6/content": "أ6",
+        "streak/steps-done-title/content": "اكتملت الأسابيع الستة",
+        "streak/steps-done-w1/content": "أ1",
+        "streak/steps-done-w2/content": "أ2",
+        "streak/steps-done-w3/content": "أ3",
+        "streak/steps-done-w4/content": "أ4",
+        "streak/steps-done-w5/content": "أ5",
+        "streak/steps-done-w6/content": "أ6"
+      }
+    }
+  }
+}

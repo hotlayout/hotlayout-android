@@ -1,0 +1,1136 @@
+{
+  "about": "Input fields (schema 9.13.0): TextField, Switch, Checkbox. One table for every reader; written by hand. Geometry numbers are for the built-in theme (bodyS 12 × 1.3333 = 16, bodyM 14 × 1.4286 = 20, xs 4, sm 8, md 12, lg 16).",
+  "pathCases": [
+    { "name": "schema shape", "value": { "kind": "binding", "path": "form.email" }, "path": "form.email" },
+    { "name": "an extra key of a newer minor does no harm", "value": { "kind": "binding", "path": "form.email", "debounce": 300 }, "path": "form.email" },
+    { "name": "no field", "path": null },
+    { "name": "null", "value": null, "path": null },
+    { "name": "a string instead of an object", "value": "form.email", "path": null },
+    { "name": "a literal — the field has none", "value": { "kind": "literal", "value": "Alex" }, "path": null },
+    { "name": "the path is not a string", "value": { "kind": "binding", "path": 42 }, "path": null },
+    { "name": "empty path", "value": { "kind": "binding", "path": "" }, "path": null },
+    { "name": "no kind", "value": { "path": "form.email" }, "path": null },
+    { "name": "array", "value": [{ "kind": "binding", "path": "form.email" }], "path": null }
+  ],
+  "readCases": [
+    { "name": "text from data", "type": "string", "path": "form.email", "layers": { "data": { "form.email": "alex@example.com" } }, "text": "alex@example.com" },
+    { "name": "session beats data", "type": "string", "path": "form.email", "layers": { "session": { "form.email": "typed@example.com" }, "data": { "form.email": "alex@example.com" } }, "text": "typed@example.com" },
+    { "name": "host scope beats data", "type": "string", "path": "form.email", "layers": { "host": { "form.email": "host@example.com" }, "data": { "form.email": "alex@example.com" } }, "text": "host@example.com" },
+    { "name": "session beats host scope", "type": "string", "path": "form.email", "layers": { "session": { "form.email": "typed@example.com" }, "host": { "form.email": "host@example.com" } }, "text": "typed@example.com" },
+    { "name": "screen record beats session", "type": "string", "path": "item.name", "layers": { "record": { "item.name": "Backpack" }, "session": { "item.name": "typed" } }, "text": "Backpack" },
+    { "name": "erased in the session — an empty string, the layer is NOT skipped", "type": "string", "path": "form.email", "layers": { "session": { "form.email": "" }, "data": { "form.email": "alex@example.com" } }, "text": "" },
+    { "name": "null in the session — no value, the next layer is read", "type": "string", "path": "form.email", "layers": { "session": { "form.email": null }, "data": { "form.email": "alex@example.com" } }, "text": "alex@example.com" },
+    { "name": "no value anywhere — an empty field", "type": "string", "path": "form.email", "layers": {}, "text": "" },
+    { "name": "empty string in the data — an empty field, there is no fallback text", "type": "string", "path": "form.email", "layers": { "data": { "form.email": "" } }, "text": "" },
+    { "name": "a number under a text path — an empty field", "type": "string", "path": "form.email", "layers": { "data": { "form.email": 42 } }, "text": "" },
+    { "name": "a flag under a text path — an empty field", "type": "string", "path": "form.email", "layers": { "data": { "form.email": true } }, "text": "" },
+    { "name": "an object under a text path — an empty field", "type": "string", "path": "form.email", "layers": { "data": { "form.email": { "value": "x" } } }, "text": "" },
+    { "name": "spaces are text: the field shows them as they are", "type": "string", "path": "form.email", "layers": { "data": { "form.email": "  " } }, "text": "  " },
+    { "name": "flag true", "type": "boolean", "path": "form.agreed", "layers": { "data": { "form.agreed": true } }, "on": true },
+    { "name": "flag false", "type": "boolean", "path": "form.agreed", "layers": { "data": { "form.agreed": false } }, "on": false },
+    { "name": "no value — off", "type": "boolean", "path": "form.agreed", "layers": {}, "on": false },
+    { "name": "session false beats data true", "type": "boolean", "path": "form.agreed", "layers": { "session": { "form.agreed": false }, "data": { "form.agreed": true } }, "on": false },
+    { "name": "the string \"true\" is not true", "type": "boolean", "path": "form.agreed", "layers": { "data": { "form.agreed": "true" } }, "on": false },
+    { "name": "one is not true", "type": "boolean", "path": "form.agreed", "layers": { "data": { "form.agreed": 1 } }, "on": false },
+    { "name": "null in the data — off", "type": "boolean", "path": "form.agreed", "layers": { "data": { "form.agreed": null } }, "on": false }
+  ],
+  "textCases": [
+    { "name": "typing letter by letter: a write on every change", "bound": "", "steps": [{ "type": "focus" }, { "type": "input", "text": "A" }, { "type": "input", "text": "Al" }, { "type": "input", "text": "Ale" }], "writes": ["A", "Al", "Ale"], "shown": "Ale" },
+    { "name": "focus alone writes nothing", "bound": "Alex", "steps": [{ "type": "focus" }, { "type": "blur" }], "writes": [], "shown": "Alex" },
+    { "name": "losing focus adds no write: everything is already written", "bound": "", "steps": [{ "type": "focus" }, { "type": "input", "text": "Al" }, { "type": "blur" }], "writes": ["Al"], "shown": "Al" },
+    { "name": "everything erased — an empty string is written", "bound": "Alex", "steps": [{ "type": "focus" }, { "type": "input", "text": "" }], "writes": [""], "shown": "" },
+    { "name": "the same text is not written twice", "bound": "", "steps": [{ "type": "focus" }, { "type": "input", "text": "Al" }, { "type": "input", "text": "Al" }], "writes": ["Al"], "shown": "Al" },
+    { "name": "returned to what the data held — it is written: the last write must be the truth", "bound": "Alex", "steps": [{ "type": "focus" }, { "type": "input", "text": "Ale" }, { "type": "input", "text": "Alex" }], "writes": ["Ale", "Alex"], "shown": "Alex" },
+    { "name": "typed what the data already holds — not written", "bound": "Alex", "steps": [{ "type": "focus" }, { "type": "input", "text": "Alex" }], "writes": [], "shown": "Alex" },
+    { "name": "the write arrived (the data became what was typed) — the field shows the same", "bound": "", "steps": [{ "type": "focus" }, { "type": "input", "text": "Al" }, { "type": "data", "bound": "Al" }, { "type": "blur" }], "writes": ["Al"], "shown": "Al" },
+    { "name": "the host changed the data while typing — the typed text stays in focus", "bound": "Alex", "steps": [{ "type": "focus" }, { "type": "input", "text": "Alexa" }, { "type": "data", "bound": "ALEX FROM HOST" }], "writes": ["Alexa"], "shown": "Alexa" },
+    { "name": "…and after focus is lost — the value of the layers: it changed to another one", "bound": "Alex", "steps": [{ "type": "focus" }, { "type": "input", "text": "Alexa" }, { "type": "data", "bound": "ALEX FROM HOST" }, { "type": "blur" }], "writes": ["Alexa"], "shown": "ALEX FROM HOST" },
+    { "name": "the host changed the data while the field is focused with no typing — what was there stays in focus", "bound": "Alex", "steps": [{ "type": "focus" }, { "type": "data", "bound": "Olena" }], "writes": [], "shown": "Alex" },
+    { "name": "…and the new value after focus is lost", "bound": "Alex", "steps": [{ "type": "focus" }, { "type": "data", "bound": "Olena" }, { "type": "blur" }], "writes": [], "shown": "Olena" },
+    { "name": "screen record beats session: the value of the layers did not change — the typed text stays in the unfocused field", "bound": "Backpack", "steps": [{ "type": "focus" }, { "type": "input", "text": "My pack" }, { "type": "blur" }], "writes": ["My pack"], "shown": "My pack" },
+    { "name": "an unfocused field with no typing follows the data", "bound": "Alex", "steps": [{ "type": "data", "bound": "Olena" }], "writes": [], "shown": "Olena" },
+    { "name": "composing a character: the intermediate text is not written, the result is", "bound": "", "steps": [{ "type": "focus" }, { "type": "compositionStart" }, { "type": "input", "text": "k" }, { "type": "input", "text": "ka" }, { "type": "compositionEnd", "text": "か" }], "writes": ["か"], "shown": "か" },
+    { "name": "composing: the field shows the intermediate text", "bound": "", "steps": [{ "type": "focus" }, { "type": "compositionStart" }, { "type": "input", "text": "ka" }], "writes": [], "shown": "ka" },
+    { "name": "composing cancelled by losing focus — the intermediate text is not written", "bound": "", "steps": [{ "type": "focus" }, { "type": "compositionStart" }, { "type": "input", "text": "ka" }, { "type": "blur" }], "writes": [], "shown": "ka" },
+    { "name": "length limit: the excess is cut, the cut text is written", "bound": "", "maxLength": 3, "steps": [{ "type": "focus" }, { "type": "input", "text": "Alex" }], "writes": ["Ale"], "shown": "Ale" },
+    { "name": "limit: pasting over the limit does not change the cut text — there is no second write", "bound": "", "maxLength": 3, "steps": [{ "type": "focus" }, { "type": "input", "text": "Ale" }, { "type": "input", "text": "Alex" }], "writes": ["Ale"], "shown": "Ale" },
+    { "name": "the limit counts code points: two emoji are two", "bound": "", "maxLength": 2, "steps": [{ "type": "focus" }, { "type": "input", "text": "😀😀😀" }], "writes": ["😀😀"], "shown": "😀😀" },
+    { "name": "a value from the data longer than the limit is shown as it is: only typed text is cut", "bound": "Alexander", "maxLength": 3, "steps": [], "writes": [], "shown": "Alexander" },
+    { "name": "a disabled field writes nothing and takes no focus", "bound": "Alex", "disabled": true, "steps": [{ "type": "focus" }, { "type": "input", "text": "X" }], "writes": [], "shown": "Alex" },
+    { "name": "a field without a path: it takes input, writes nothing", "bound": "", "hasPath": false, "steps": [{ "type": "focus" }, { "type": "input", "text": "Al" }, { "type": "blur" }], "writes": [], "shown": "Al" },
+    { "name": "the platform filled a value BEFORE the first touch — it does not stay and is not written", "bound": "", "steps": [{ "type": "platformFill", "text": "saved@example.com" }], "writes": [], "shown": "" },
+    { "name": "filled by the platform after the person touched the field — it is their choice: it stays and is written", "bound": "", "steps": [{ "type": "focus" }, { "type": "platformFill", "text": "saved@example.com" }], "writes": ["saved@example.com"], "shown": "saved@example.com" },
+    { "name": "multi-line: a new line is part of the text", "bound": "", "steps": [{ "type": "focus" }, { "type": "input", "text": "one\ntwo" }], "writes": ["one\ntwo"], "shown": "one\ntwo" },
+    { "name": "spaces at the edges are not trimmed: the field writes what was typed", "bound": "", "steps": [{ "type": "focus" }, { "type": "input", "text": " Al " }], "writes": [" Al "], "shown": " Al " }
+  ],
+  "toggleCases": [
+    { "name": "pressed while off — on, true is written", "bound": false, "steps": ["press"], "writes": [true], "shown": true },
+    { "name": "pressed while on — off, false is written", "bound": true, "steps": ["press"], "writes": [false], "shown": false },
+    { "name": "twice — every press is written", "bound": false, "steps": ["press", "press"], "writes": [true, false], "shown": false },
+    { "name": "the write arrived — the next press starts from the new value", "bound": false, "steps": ["press", { "data": true }, "press"], "writes": [true, false], "shown": false },
+    { "name": "screen record beats session: the value of the layers is the same — what the person set is shown", "bound": false, "steps": ["press", { "data": false }], "writes": [true], "shown": true },
+    { "name": "the host returned another value — the value of the layers is shown", "bound": true, "steps": ["press", { "data": false }, { "data": true }], "writes": [false], "shown": true },
+    { "name": "with no presses it follows the data", "bound": false, "steps": [{ "data": true }], "writes": [], "shown": true },
+    { "name": "a disabled one does not toggle and writes nothing", "bound": false, "disabled": true, "steps": ["press"], "writes": [], "shown": false },
+    { "name": "without a path: it toggles, writes nothing", "bound": false, "hasPath": false, "steps": ["press"], "writes": [], "shown": true }
+  ],
+  "clampCases": [
+    { "text": "Alex", "maxLength": 10, "expect": "Alex" },
+    { "text": "Alex", "maxLength": 4, "expect": "Alex" },
+    { "text": "Alex", "maxLength": 2, "expect": "Al" },
+    { "text": "😀a😀", "maxLength": 2, "expect": "😀a" },
+    { "text": "🇺🇦", "maxLength": 1, "expect": "🇺", "note": "a flag is two code points: a composed character may be cut, a surrogate pair never" },
+    { "text": "\u00e9", "maxLength": 1, "expect": "\u00e9", "note": "one code point U+00E9" },
+    { "text": "e\u0301", "maxLength": 1, "expect": "e", "note": "e + U+0301 is two code points: the reader does not normalize text" },
+    { "text": "Alex", "expect": "Alex", "note": "no limit" },
+    { "text": "Alex", "maxLength": 0, "expect": "Alex", "note": "zero is not a limit (the schema rejects it)" },
+    { "text": "Alex", "maxLength": -3, "expect": "Alex" },
+    { "text": "Alex", "maxLength": 2.5, "expect": "Alex", "note": "a fraction is not a limit" },
+    { "text": "Alex", "maxLength": "2", "expect": "Alex", "note": "a string is not a limit" },
+    { "text": "", "maxLength": 3, "expect": "" }
+  ],
+  "linesCases": [
+    { "expect": 1 },
+    { "lines": 1, "expect": 1 },
+    { "lines": 3, "expect": 3 },
+    { "lines": 8, "expect": 8 },
+    { "lines": 9, "expect": 1, "note": "out of range — one line, not the nearest limit" },
+    { "lines": 0, "expect": 1 },
+    { "lines": 2.5, "expect": 1 },
+    { "lines": "3", "expect": 1 },
+    { "lines": null, "expect": 1 }
+  ],
+  "keyboardCases": [
+    { "expect": "text", "web": { "type": "text", "inputmode": "text", "autocomplete": "off" }, "flutter": { "keyboardType": "text", "autofillHints": [] } },
+    { "keyboard": "text", "expect": "text", "web": { "type": "text", "inputmode": "text", "autocomplete": "off" }, "flutter": { "keyboardType": "text", "autofillHints": [] } },
+    { "keyboard": "email", "expect": "email", "web": { "type": "email", "inputmode": "email", "autocomplete": "email" }, "flutter": { "keyboardType": "emailAddress", "autofillHints": ["email"] } },
+    { "keyboard": "number", "expect": "number", "web": { "type": "text", "inputmode": "decimal", "autocomplete": "off" }, "flutter": { "keyboardType": "numberWithOptions(decimal: true)", "autofillHints": [] } },
+    { "keyboard": "phone", "expect": "phone", "web": { "type": "tel", "inputmode": "tel", "autocomplete": "tel" }, "flutter": { "keyboardType": "phone", "autofillHints": ["telephoneNumber"] } },
+    { "keyboard": "url", "expect": "url", "web": { "type": "url", "inputmode": "url", "autocomplete": "url" }, "flutter": { "keyboardType": "url", "autofillHints": ["url"] } },
+    { "keyboard": "password", "expect": "text", "note": "there is no password in the list: an unknown word is text, and it is NOT a password field" },
+    { "keyboard": "search", "expect": "text", "note": "a word of a newer minor" },
+    { "keyboard": 7, "expect": "text" },
+    { "keyboard": "email", "lines": 3, "expect": "multiline", "note": "a multi-line field does not read the intent" },
+    { "lines": 2, "expect": "multiline" },
+    { "keyboard": "phone", "lines": 1, "expect": "phone" },
+    { "keyboard": "phone", "lines": 9, "expect": "phone", "note": "lines out of range — one line, so the intent is read" }
+  ],
+  "keyActionCases": [
+    { "name": "one field", "fields": [{ "multiline": false, "reachable": true }], "index": 0, "expect": "done", "next": null },
+    { "name": "the first of two", "fields": [{ "multiline": false, "reachable": true }, { "multiline": false, "reachable": true }], "index": 0, "expect": "next", "next": 1 },
+    { "name": "the last of two", "fields": [{ "multiline": false, "reachable": true }, { "multiline": false, "reachable": true }], "index": 1, "expect": "done", "next": null },
+    { "name": "the next one is disabled or hidden — skipped", "fields": [{ "multiline": false, "reachable": true }, { "multiline": false, "reachable": false }, { "multiline": false, "reachable": true }], "index": 0, "expect": "next", "next": 2 },
+    { "name": "only unreachable ones follow — done", "fields": [{ "multiline": false, "reachable": true }, { "multiline": false, "reachable": false }], "index": 0, "expect": "done", "next": null },
+    { "name": "multi-line — a new line, although another field follows", "fields": [{ "multiline": true, "reachable": true }, { "multiline": false, "reachable": true }], "index": 0, "expect": "newline", "next": 1 },
+    { "name": "the next one is multi-line — still «next»", "fields": [{ "multiline": false, "reachable": true }, { "multiline": true, "reachable": true }], "index": 0, "expect": "next", "next": 1 },
+    { "name": "it does not go back: the field before is not counted", "fields": [{ "multiline": false, "reachable": true }, { "multiline": false, "reachable": true }], "index": 1, "expect": "done", "next": null }
+  ],
+  "errorCases": [
+    { "name": "no text", "expect": null },
+    { "name": "empty string", "error": "", "expect": null },
+    { "name": "spaces only", "error": "   ", "expect": null },
+    { "name": "invisible character U+200B", "error": "\u200b", "expect": null },
+    { "name": "there is something to hear", "error": "Enter a valid email", "expect": "Enter a valid email" },
+    { "name": "spaces around are reduced by the shown-text rule (9.18.0): «Required» is shown", "error": " Required ", "expect": "Required" },
+    { "name": "a double space inside becomes one too", "error": "Too  short", "expect": "Too short" },
+    { "name": "a no-break space stays itself", "error": "Min\u00a08", "expect": "Min\u00a08" }
+  ],
+  "geometryCases": [
+    { "name": "text field, one line, no line under the field", "widget": "TextField", "lines": 1, "labelLines": 1, "noteLines": 0, "box": 46, "height": 66 },
+    { "name": "…with a hint or an error in one line", "widget": "TextField", "lines": 1, "labelLines": 1, "noteLines": 1, "box": 46, "height": 86 },
+    { "name": "…hint in two lines (narrow screen)", "widget": "TextField", "lines": 1, "labelLines": 1, "noteLines": 2, "box": 46, "height": 102 },
+    { "name": "…label in two lines", "widget": "TextField", "lines": 1, "labelLines": 2, "noteLines": 0, "box": 46, "height": 82 },
+    { "name": "three lines", "widget": "TextField", "lines": 3, "labelLines": 1, "noteLines": 1, "box": 86, "height": 126 },
+    { "name": "eight lines", "widget": "TextField", "lines": 8, "labelLines": 1, "noteLines": 0, "box": 186, "height": 206 },
+    { "name": "lines out of range — one line", "widget": "TextField", "lines": 12, "labelLines": 1, "noteLines": 0, "box": 46, "height": 66 },
+    { "name": "switch at 320 (root padding lg): the label takes the rest of the row", "widget": "Switch", "rowWidth": 288, "labelWidth": 224, "labelLines": 1, "height": 32 },
+    { "name": "switch at 393", "widget": "Switch", "rowWidth": 361, "labelWidth": 297, "labelLines": 1, "height": 32 },
+    { "name": "switch, label in two lines: the row is taller than the track", "widget": "Switch", "rowWidth": 288, "labelWidth": 224, "labelLines": 2, "height": 40 },
+    { "name": "switch in a narrow place: the label is not negative", "widget": "Switch", "rowWidth": 40, "labelWidth": 0, "labelLines": 1, "height": 32 },
+    { "name": "thumb of an off switch — at the start of the track", "widget": "Switch", "on": false, "thumbOffset": 4 },
+    { "name": "thumb of an on switch — at the end of the track", "widget": "Switch", "on": true, "thumbOffset": 24 },
+    { "name": "checkbox at 320", "widget": "Checkbox", "rowWidth": 288, "labelWidth": 260, "labelLines": 1, "height": 20, "boxOffset": 0 },
+    { "name": "checkbox at 393, label in three lines", "widget": "Checkbox", "rowWidth": 361, "labelWidth": 333, "labelLines": 3, "height": 60, "boxOffset": 0 },
+    { "name": "checkbox with a taller line (24): the square is centred on the first line", "widget": "Checkbox", "rowWidth": 288, "labelWidth": 260, "labelLine": 24, "labelLines": 2, "height": 48, "boxOffset": 2 },
+    { "name": "checkbox with a shorter line (16): the square starts at the top, the row is not shorter than the square", "widget": "Checkbox", "rowWidth": 288, "labelWidth": 260, "labelLine": 16, "labelLines": 1, "height": 20, "boxOffset": 0 }
+  ],
+  "directionCases": [
+    { "name": "switch, LTR: the control is on the right, the thumb of an on switch is on the right of the track", "widget": "Switch", "direction": "ltr", "controlSide": "right", "thumbOnSide": "right" },
+    { "name": "switch, RTL: the control is on the left, the thumb of an on switch is on the left of the track", "widget": "Switch", "direction": "rtl", "controlSide": "left", "thumbOnSide": "left" },
+    { "name": "checkbox, LTR: the square is on the left", "widget": "Checkbox", "direction": "ltr", "controlSide": "left" },
+    { "name": "checkbox, RTL: the square is on the right; the check mark is NOT mirrored", "widget": "Checkbox", "direction": "rtl", "controlSide": "right" },
+    { "name": "text field, RTL: text and placeholder from the right edge, label and hint too", "widget": "TextField", "direction": "rtl", "textAlign": "right", "content": "screen" },
+    { "name": "text field, LTR", "widget": "TextField", "direction": "ltr", "textAlign": "left", "content": "screen" },
+    { "name": "phone, RTL: digits left to right, and the field is aligned from the RIGHT edge", "widget": "TextField", "keyboard": "phone", "direction": "rtl", "textAlign": "right", "content": "left-to-right" },
+    { "name": "email, RTL: content left to right, aligned from the right edge", "widget": "TextField", "keyboard": "email", "direction": "rtl", "textAlign": "right", "content": "left-to-right" },
+    { "name": "web address, RTL", "widget": "TextField", "keyboard": "url", "direction": "rtl", "textAlign": "right", "content": "left-to-right" },
+    { "name": "number, RTL", "widget": "TextField", "keyboard": "number", "direction": "rtl", "textAlign": "right", "content": "left-to-right" },
+    { "name": "multi-line with an email intent, RTL: the intent is not read — the content follows the screen", "widget": "TextField", "keyboard": "email", "lines": 3, "direction": "rtl", "textAlign": "right", "content": "screen" },
+    { "name": "unknown intent, RTL: text — the content follows the screen", "widget": "TextField", "keyboard": "password", "direction": "rtl", "textAlign": "right", "content": "screen" }
+  ],
+  "documentCases": [
+    { "name": "text field with all fields", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Email" }, "value": { "kind": "binding", "path": "form.email" }, "placeholder": { "kind": "literal", "value": "you@example.com" }, "helper": { "kind": "literal", "value": "We send the receipt here" }, "error": { "kind": "binding", "path": "form.phoneError", "fallback": "" }, "keyboard": "email", "maxLength": 80, "lines": 1, "disabledIf": { "path": "form.agreed", "op": "isFalse" } } }, "valid": true },
+    { "name": "smallest text field", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" }, "value": { "kind": "binding", "path": "form.fullName" } } }, "valid": true },
+    { "name": "switch", "node": { "id": "n", "type": "Switch", "props": { "label": { "kind": "literal", "value": "Push" }, "value": { "kind": "binding", "path": "settings.notifications" } } }, "valid": true },
+    { "name": "checkbox with a template label", "node": { "id": "n", "type": "Checkbox", "props": { "label": { "kind": "template", "template": "I agree, {name}", "values": { "name": { "kind": "binding", "path": "user.firstName", "fallback": "friend" } } }, "value": { "kind": "binding", "path": "form.agreed" } } }, "valid": true },
+    { "name": "no value — an error: the field writes nowhere", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" } } }, "valid": false, "code": "input_value_required" },
+    { "name": "switch without value", "node": { "id": "n", "type": "Switch", "props": { "label": { "kind": "literal", "value": "Push" } } }, "valid": false, "code": "input_value_required" },
+    { "name": "the path is not in the dictionary", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" }, "value": { "kind": "binding", "path": "form.unknown" } } }, "valid": false, "code": "unknown_binding_path" },
+    { "name": "text field on a number path: the field would write a string in place of a number", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Points" }, "value": { "kind": "binding", "path": "user.points" } } }, "valid": false, "code": "binding_type_mismatch" },
+    { "name": "text field on a date path", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Since" }, "value": { "kind": "binding", "path": "user.memberSince" } } }, "valid": false, "code": "binding_type_mismatch" },
+    { "name": "switch on a string path", "node": { "id": "n", "type": "Switch", "props": { "label": { "kind": "literal", "value": "Push" }, "value": { "kind": "binding", "path": "form.email" } } }, "valid": false, "code": "binding_type_mismatch" },
+    { "name": "checkbox on a text path", "node": { "id": "n", "type": "Checkbox", "props": { "label": { "kind": "literal", "value": "Agree" }, "value": { "kind": "binding", "path": "form.fullName" } } }, "valid": false, "code": "binding_type_mismatch" },
+    { "name": "a literal in value — there is no such form", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" }, "value": { "kind": "literal", "value": "Alex" } } }, "valid": false },
+    { "name": "value with fallback text — there is no such form", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" }, "value": { "kind": "binding", "path": "form.fullName", "fallback": "Alex" } } }, "valid": false },
+    { "name": "empty label — a field without a name", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "" }, "value": { "kind": "binding", "path": "form.fullName" } } }, "valid": false, "code": "accessible_name_required" },
+    { "name": "label of spaces — a switch without a name", "node": { "id": "n", "type": "Switch", "props": { "label": { "kind": "literal", "value": "   " }, "value": { "kind": "binding", "path": "settings.notifications" } } }, "valid": false, "code": "accessible_name_required" },
+    { "name": "a binding label with empty fallback text — without data the checkbox is silent", "node": { "id": "n", "type": "Checkbox", "props": { "label": { "kind": "binding", "path": "campaign.title", "fallback": "" }, "value": { "kind": "binding", "path": "form.agreed" } } }, "valid": false, "code": "accessible_name_required" },
+    { "name": "there is no password in the keyboard list", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Password" }, "value": { "kind": "binding", "path": "form.fullName" }, "keyboard": "password" } }, "valid": false },
+    { "name": "maxLength zero", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" }, "value": { "kind": "binding", "path": "form.fullName" }, "maxLength": 0 } }, "valid": false },
+    { "name": "lines nine", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" }, "value": { "kind": "binding", "path": "form.fullName" }, "lines": 9 } }, "valid": false },
+    { "name": "lines as a fraction", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" }, "value": { "kind": "binding", "path": "form.fullName" }, "lines": 2.5 } }, "valid": false },
+    { "name": "disabledIf on an unknown path", "node": { "id": "n", "type": "Switch", "props": { "label": { "kind": "literal", "value": "Push" }, "value": { "kind": "binding", "path": "settings.notifications" }, "disabledIf": { "path": "settings.unknown", "op": "isTrue" } } }, "valid": false, "code": "unknown_binding_path" },
+    { "name": "disabledIf on its own value — legal (a field that disables itself is the author's business)", "node": { "id": "n", "type": "Switch", "props": { "label": { "kind": "literal", "value": "Push" }, "value": { "kind": "binding", "path": "settings.notifications" }, "disabledIf": { "path": "settings.notifications", "op": "isTrue" } } }, "valid": true },
+    { "name": "extra prop", "node": { "id": "n", "type": "Checkbox", "props": { "label": { "kind": "literal", "value": "Agree" }, "value": { "kind": "binding", "path": "form.agreed" }, "indeterminate": true } }, "valid": false },
+    { "name": "a switch has no action: a change is a write, not an action", "node": { "id": "n", "type": "Switch", "props": { "label": { "kind": "literal", "value": "Push" }, "value": { "kind": "binding", "path": "settings.notifications" }, "action": { "type": "none" } } }, "valid": false },
+    { "name": "field in a list from data", "inRepeater": true, "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Note" }, "value": { "kind": "binding", "path": "form.comment" } } }, "valid": false, "code": "input_inside_repeater" },
+    { "name": "field pinned to the bottom — legal (a message field above the keyboard)", "pin": "bottom", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Message" }, "value": { "kind": "binding", "path": "form.comment" } } }, "valid": true },
+    { "name": "node style on a field — the box of the whole widget", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" }, "value": { "kind": "binding", "path": "form.fullName" } }, "style": { "margin": { "top": "md" }, "width": 240 } }, "valid": true },
+    { "name": "visibleIf on a field", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" }, "value": { "kind": "binding", "path": "form.fullName" } }, "visibleIf": { "path": "form.agreed", "op": "isTrue" } }, "valid": true }
+  ],
+  "placementCases": [
+    { "parent": "Screen", "accepts": true },
+    { "parent": "Column", "accepts": true },
+    { "parent": "Row", "accepts": true },
+    { "parent": "Container", "accepts": true },
+    { "parent": "Tab", "accepts": true },
+    { "parent": "Repeater", "accepts": false },
+    { "parent": "Grid", "accepts": false },
+    { "parent": "Stack", "accepts": false },
+    { "parent": "Accordion", "accepts": false },
+    { "parent": "ChoiceGroup", "accepts": false },
+    { "parent": "AppBar", "accepts": false },
+    { "parent": "NavBar", "accepts": false }
+  ],
+  "ruleCases": [
+    { "at": "rules.value.is", "expect": "binding-to-a-path-of-the-data-contract" },
+    { "at": "rules.value.pathType.string", "expect": ["string"] },
+    { "at": "rules.value.pathType.boolean", "expect": ["boolean"] },
+    { "at": "rules.value.absent", "expect": "works-locally-writes-nothing" },
+    { "at": "rules.write.to", "expect": "session-of-the-reader-and-the-host-at-the-same-moment" },
+    { "at": "rules.write.text", "expect": "on-every-change-made-by-the-person" },
+    { "at": "rules.write.toggle", "expect": "on-every-press" },
+    { "at": "rules.write.throttle", "expect": "none-in-the-reader-the-host-decides" },
+    { "at": "rules.write.composing", "expect": "not-written-until-the-composition-ends" },
+    { "at": "rules.write.cleared", "expect": "writes-the-empty-string" },
+    { "at": "rules.write.beforeAction", "expect": "the-action-pressed-after-the-change-sees-the-written-value" },
+    { "at": "rules.write.hostValue", "expect": "string-for-a-text-field-boolean-for-a-toggle" },
+    { "at": "rules.disabled.field", "expect": "disabledIf" },
+    { "at": "rules.disabled.look.opacity", "expect": 0.5 },
+    { "at": "rules.focus.tapOutside", "expect": "removes-focus" },
+    { "at": "rules.focus.pinned", "expect": "bottomZone.keyboard" },
+    { "at": "rules.keyAction.action", "expect": "never-performs-an-action" },
+    { "at": "rules.autofill.never", "expect": ["credentials", "payment", "postal-address", "one-time-code"] },
+    { "at": "rules.password", "expect": "none-in-9.13" },
+    { "at": "textField.gap", "expect": "xs" },
+    { "at": "textField.label.typography", "expect": "bodyS" },
+    { "at": "textField.label.color", "expect": "muted" },
+    { "at": "textField.box.paddingBlock", "expect": "md" },
+    { "at": "textField.box.paddingInline", "expect": "md" },
+    { "at": "textField.box.radius", "expect": "sm" },
+    { "at": "textField.box.border", "expect": { "width": 1, "color": "border" } },
+    { "at": "textField.box.background", "expect": "surface" },
+    { "at": "textField.box.typography", "expect": "bodyM" },
+    { "at": "textField.box.color", "expect": "onSurface" },
+    { "at": "textField.box.align", "expect": "start" },
+    { "at": "textField.box.alignBy", "expect": "direction-of-the-screen-not-of-the-content" },
+    { "at": "textField.box.contentDirection.phone", "expect": "left-to-right" },
+    { "at": "textField.box.contentDirection.text", "expect": "screen" },
+    { "at": "textField.placeholder.color", "expect": "muted" },
+    { "at": "textField.note.errorColor", "expect": "danger" },
+    { "at": "textField.note.order", "expect": "error-replaces-helper" },
+    { "at": "textField.states.focused.borderColor", "expect": "primary" },
+    { "at": "textField.states.focused.geometry", "expect": "unchanged" },
+    { "at": "textField.states.error.borderColor", "expect": "danger" },
+    { "at": "textField.states.error.strongerThan", "expect": "focused" },
+    { "at": "textField.lines.max", "expect": 8 },
+    { "at": "textField.maxLength.unit", "expect": "unicode-code-points" },
+    { "at": "textField.maxLength.counter", "expect": "none" },
+    { "at": "textField.defaultKeyboard", "expect": "text" },
+    { "at": "textField.style.color", "expect": "not-read" },
+    { "at": "textField.semantics.name", "expect": "label" },
+    { "at": "switch.control", "expect": "inline-end" },
+    { "at": "switch.gap", "expect": "md" },
+    { "at": "switch.track", "expect": { "width": 52, "height": 32, "radius": "pill" } },
+    { "at": "switch.thumb.size", "expect": 24 },
+    { "at": "switch.thumb.inset", "expect": 4 },
+    { "at": "switch.color.on", "expect": { "track": "primary", "thumb": "onPrimary" } },
+    { "at": "switch.color.off", "expect": { "track": "muted", "thumb": "surface" } },
+    { "at": "switch.press.area", "expect": "the-whole-row" },
+    { "at": "switch.semantics.role", "expect": "switch" },
+    { "at": "checkbox.control", "expect": "inline-start" },
+    { "at": "checkbox.gap", "expect": "sm" },
+    { "at": "checkbox.box", "expect": { "size": 20, "radius": 4, "border": { "width": 2 } } },
+    { "at": "checkbox.mark", "expect": { "icon": "check", "size": 16, "shown": "when-on" } },
+    { "at": "checkbox.color.on", "expect": { "background": "primary", "border": "primary", "mark": "onPrimary" } },
+    { "at": "checkbox.color.off", "expect": { "background": "none", "border": "muted" } },
+    { "at": "checkbox.indeterminate", "expect": "none" },
+    { "at": "checkbox.align", "expect": "control-centred-on-the-first-line-of-the-label" },
+    { "at": "checkbox.semantics.role", "expect": "checkbox" }
+  ],
+  "formAbout": "A survey form (schema 9.14.0): «required», a disabled button, a number field, a write for the choice of a group. The groups below are added to the same table; the data is x-style.layout.form. In formCases every state is the data layers of the screen (record, session, host, data) and the answer: whether the form of each screen is filled and whether the named node is disabled. In pressCases, disabledLookCases and choiceSessionCases there is no host data at all: the screen holds only what the person typed. The numbers 12.0, -0.0, 1e2, 1e-7 are written so on purpose: JSON.stringify would erase the trap for Dart.",
+  "numberParseCases": [
+    { "text": "12", "number": 12 },
+    { "text": "0", "number": 0 },
+    { "text": "007", "number": 7, "note": "leading zeros — the same number" },
+    { "text": " 12 ", "number": 12, "note": "spaces at the edges are trimmed" },
+    { "text": " 12 ", "number": 12, "note": "a no-break space and a narrow no-break space at the edges" },
+    { "text": "\t12", "number": 12, "note": "a tab at the edge" },
+    { "text": "12\n", "number": null, "note": "a line break is not among the trimmed characters" },
+    { "text": "‏12", "number": null, "note": "an invisible direction mark is not trimmed and is not a digit" },
+    { "text": "1 200", "number": null, "note": "there are no digit groups: a space inside is not a number" },
+    { "text": "1 200", "number": null, "note": "a no-break space inside — also not" },
+    { "text": "1,5", "number": 1.5, "note": "a comma is the decimal separator" },
+    { "text": "1.5", "number": 1.5 },
+    { "text": "1٫5", "number": 1.5, "note": "Arabic decimal separator U+066B" },
+    { "text": "1,5,0", "number": null, "note": "two separators" },
+    { "text": "1.5.0", "number": null },
+    { "text": "1.5,0", "number": null, "note": "a dot and a comma together are not «group and fraction»" },
+    { "text": "1,200", "number": 1.2, "note": "the comma is decimal: this is one and two tenths, not one thousand two hundred" },
+    { "text": "1.200", "number": 1.2 },
+    { "text": "12.50", "number": 12.5 },
+    { "text": ".5", "number": 0.5, "note": "the iOS keyboard starts with the separator" },
+    { "text": ",5", "number": 0.5 },
+    { "text": "5.", "number": 5, "note": "the person is still typing a fraction: this is already the number five" },
+    { "text": "5,", "number": 5 },
+    { "text": ".", "number": null, "note": "no digit at all" },
+    { "text": ",", "number": null },
+    { "text": "", "number": null, "note": "an empty string is not zero" },
+    { "text": "   ", "number": null },
+    { "text": "-", "number": null, "note": "a lone minus is not a number yet" },
+    { "text": "-5", "number": -5 },
+    { "text": "−5", "number": -5, "note": "typographic minus U+2212" },
+    { "text": "- 5", "number": null, "note": "a space between the minus and the digits" },
+    { "text": "--5", "number": null },
+    { "text": "+5", "number": null, "note": "there is no leading plus" },
+    { "text": "5-", "number": null },
+    { "text": "-0", "number": 0, "note": "minus zero is zero" },
+    { "text": "-0.0", "number": 0 },
+    { "text": "-.5", "number": -0.5 },
+    { "text": "١٢", "number": 12, "note": "Arabic-Indic digits" },
+    { "text": "۱۲", "number": 12, "note": "extended Arabic-Indic (Persian, Urdu)" },
+    { "text": "١٢٫٥", "number": 12.5 },
+    { "text": "1٢", "number": 12, "note": "digits of two scripts in one number" },
+    { "text": "٠", "number": 0 },
+    { "text": "１２", "number": null, "note": "full-width digits are not in the list" },
+    { "text": "²", "number": null, "note": "a superscript two is not a digit of a number" },
+    { "text": "½", "number": null },
+    { "text": "1e5", "number": null, "note": "there is no exponent" },
+    { "text": "1E5", "number": null },
+    { "text": "Infinity", "number": null },
+    { "text": "NaN", "number": null },
+    { "text": "0x10", "number": null },
+    { "text": "12a", "number": null },
+    { "text": "a12", "number": null },
+    { "text": "12 кг", "number": null },
+    { "text": "1_000", "number": null },
+    { "text": "1'000", "number": null },
+    { "text": "0.1", "number": 0.1 },
+    { "text": "123456789012345", "number": 123456789012345, "note": "fifteen digits is the limit" },
+    { "text": "1234567890123456", "number": null, "note": "sixteen digits" },
+    { "text": "12345678901234567", "number": null, "note": "seventeen digits" },
+    { "text": "9007199254740993", "number": null, "note": "beyond the safe integer — and beyond the digit limit" },
+    { "text": "0.12345678901234", "number": 0.12345678901234, "note": "fifteen digits including the zero before the separator" },
+    { "text": "0.123456789012345", "number": null, "note": "sixteen digits in total" },
+    { "text": "000000000000001", "number": 1, "note": "fifteen digits, counting leading zeros" },
+    { "text": "0000000000000001", "number": null, "note": "sixteen: every digit counts" },
+    { "text": "0.30000000000000004", "number": null }
+  ],
+  "numberReadCases": [
+    { "name": "integer", "value": 12, "number": 12, "text": "12" },
+    { "name": "integer written as a fraction (12.0): shown without a fractional part", "value": 12.0, "number": 12, "text": "12" },
+    { "name": "fraction", "value": 12.5, "number": 12.5, "text": "12.5" },
+    { "name": "a dot, not the separator of the language; no digit groups", "value": 1850.5, "number": 1850.5, "text": "1850.5" },
+    { "name": "zero", "value": 0, "number": 0, "text": "0" },
+    { "name": "minus zero (-0.0) is zero", "value": -0.0, "number": 0, "text": "0" },
+    { "name": "negative", "value": -3.75, "number": -3.75, "text": "-3.75" },
+    { "name": "one tenth", "value": 0.1, "number": 0.1, "text": "0.1" },
+    { "name": "an exponent written in the file (1e2) — an ordinary number", "value": 1e2, "number": 100, "text": "100" },
+    { "name": "the smallest that is shown without an exponent", "value": 0.000001, "number": 0.000001, "text": "0.000001" },
+    { "name": "a number that needs an exponent: the number exists, the field is empty", "value": 1e-7, "number": 1e-7, "text": "" },
+    { "name": "largest safe integer", "value": 9007199254740991, "number": 9007199254740991, "text": "9007199254740991" },
+    { "name": "beyond the safe integer — there is no number", "value": 9007199254740992, "number": null, "text": "" },
+    { "name": "very large", "value": 1e21, "number": null, "text": "" },
+    { "name": "a string of digits is not a number: the string is not converted", "value": "12", "number": null, "text": "" },
+    { "name": "empty string — «erased»", "value": "", "number": null, "text": "" },
+    { "name": "flag", "value": true, "number": null, "text": "" },
+    { "name": "null", "value": null, "number": null, "text": "" },
+    { "name": "no value", "number": null, "text": "" },
+    { "name": "array", "value": [12], "number": null, "text": "" },
+    { "name": "object", "value": { "value": 12 }, "number": null, "text": "" }
+  ],
+  "numberFieldCases": [
+    { "name": "typing digit by digit: every change of the number is a write", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "1" }, { "type": "input", "text": "12" }], "writes": [1, 12], "shown": "12" },
+    { "name": "«12a» is not a number: an empty string is written, the field keeps what was typed", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "12" }, { "type": "input", "text": "12a" }], "writes": [12, ""], "shown": "12a" },
+    { "name": "non-numeric text in an empty field: there was no number and there is none — no write", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "abc" }], "writes": [], "shown": "abc" },
+    { "name": "erased a number from the data — an empty string", "bound": 34, "steps": [{ "type": "focus" }, { "type": "input", "text": "" }], "writes": [""], "shown": "" },
+    { "name": "erased and typed the same number — two writes", "bound": 34, "steps": [{ "type": "focus" }, { "type": "input", "text": "" }, { "type": "input", "text": "34" }], "writes": ["", 34], "shown": "34" },
+    { "name": "«5» → «5.» → «5.0»: the same number — one write", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "5" }, { "type": "input", "text": "5." }, { "type": "input", "text": "5.0" }], "writes": [5], "shown": "5.0" },
+    { "name": "a number from the data typed as other text is not written: 34 → «34.0»", "bound": 34, "steps": [{ "type": "focus" }, { "type": "input", "text": "34.0" }], "writes": [], "shown": "34.0" },
+    { "name": "comma: «36,6» writes 36.6", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "36,6" }], "writes": [36.6], "shown": "36,6" },
+    { "name": "unfocused, the typed text stays while the number of the layers is the same: the comma does not turn into a dot", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "36,6" }, { "type": "data", "bound": 36.6 }, { "type": "blur" }], "writes": [36.6], "shown": "36,6" },
+    { "name": "the host changed the number while typing — the typed text stays in focus", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "12" }, { "type": "data", "bound": 40 }], "writes": [12], "shown": "12" },
+    { "name": "…and after focus is lost the field shows the number of the layers", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "12" }, { "type": "data", "bound": 40 }, { "type": "blur" }], "writes": [12], "shown": "40" },
+    { "name": "A → B → A unfocused: the same number — the typed text comes back", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "012" }, { "type": "data", "bound": 12 }, { "type": "blur" }, { "type": "data", "bound": 40 }, { "type": "data", "bound": 12 }], "writes": [12], "shown": "012" },
+    { "name": "«12a» stays unfocused while there is no number under the path", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "12" }, { "type": "data", "bound": 12 }, { "type": "input", "text": "12a" }, { "type": "data", "bound": "" }, { "type": "blur" }], "writes": [12, ""], "shown": "12a" },
+    { "name": "«-» is not a number yet, «-5» is", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "-" }, { "type": "input", "text": "-5" }], "writes": [-5], "shown": "-5" },
+    { "name": "minus zero is written as zero", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "-0" }], "writes": [0], "shown": "-0" },
+    { "name": "Arabic-Indic digits: the number is written, the field keeps what was typed", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "١٢" }], "writes": [12], "shown": "١٢" },
+    { "name": "the sixteenth digit: the number stopped being a number", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "123456789012345" }, { "type": "input", "text": "1234567890123456" }], "writes": [123456789012345, ""], "shown": "1234567890123456" },
+    { "name": "a number from the data is shown in its canonical form", "bound": 1850.5, "steps": [], "writes": [], "shown": "1850.5" },
+    { "name": "integer from the data (12.0) — without a fractional part", "bound": 12.0, "steps": [], "writes": [], "shown": "12" },
+    { "name": "a string under a number path — an empty field", "bound": "12", "steps": [], "writes": [], "shown": "" },
+    { "name": "the length limit concerns the typed text", "bound": null, "maxLength": 3, "steps": [{ "type": "focus" }, { "type": "input", "text": "1234" }], "writes": [123], "shown": "123" },
+    { "name": "composing a character is not written until it ends", "bound": null, "steps": [{ "type": "focus" }, { "type": "compositionStart" }, { "type": "input", "text": "1" }, { "type": "compositionEnd", "text": "12" }], "writes": [12], "shown": "12" },
+    { "name": "filled by the platform before the first touch does not stay and is not written", "bound": null, "steps": [{ "type": "platformFill", "text": "42" }], "writes": [], "shown": "" },
+    { "name": "a disabled field writes nothing and shows the number of the layers", "bound": 7, "disabled": true, "steps": [{ "type": "focus" }, { "type": "input", "text": "5" }], "writes": [], "shown": "7" },
+    { "name": "without a path: it takes input, writes nothing", "bound": null, "hasPath": false, "steps": [{ "type": "focus" }, { "type": "input", "text": "5" }], "writes": [], "shown": "5" }
+  ],
+  "numberInvalidAbout": "A number field with a NON-NUMBER (a clarification before 9.14.0 was released). states — whether the field is in the error state AFTER each step (as many as there are steps). The state is shown only when the field is not focused; while the person types, there is none. The reader adds no text.",
+  "numberInvalidCases": [
+    { "name": "«25 років»: no error while focused, an error after leaving the field", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "25 років" }, { "type": "blur" }], "states": [false, false, true] },
+    { "name": "fixed to «25»: back in the field — the state is cleared at once, after leaving — there is none", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "25 років" }, { "type": "blur" }, { "type": "focus" }, { "type": "input", "text": "25" }, { "type": "blur" }], "states": [false, false, true, false, false, false] },
+    { "name": "a lone minus: silence while typing, an error after leaving", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "-" }, { "type": "blur" }], "states": [false, false, true] },
+    { "name": "several separators: an error after leaving", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "1,2,3" }, { "type": "blur" }], "states": [false, false, true] },
+    { "name": "«12a»: an error after leaving", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "12a" }, { "type": "blur" }], "states": [false, false, true] },
+    { "name": "a number with a comma is a number, no error", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "36,6" }, { "type": "blur" }], "states": [false, false, false] },
+    { "name": "spaces only — empty, not a non-number", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "   " }, { "type": "blur" }], "states": [false, false, false] },
+    { "name": "erased a non-number: an empty field has no error", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "abc" }, { "type": "blur" }, { "type": "focus" }, { "type": "input", "text": "" }, { "type": "blur" }], "states": [false, false, true, false, false, false] },
+    { "name": "the value of the layers changed after leaving: the field shows the number from the data, no error", "bound": null, "steps": [{ "type": "focus" }, { "type": "input", "text": "12a" }, { "type": "blur" }, { "type": "data", "bound": 7 }], "states": [false, false, true, false] },
+    { "name": "before the person's touch: a number from the data has no error", "bound": 7, "steps": [{ "type": "blur" }], "states": [false] },
+    { "name": "a disabled field holds nothing", "bound": null, "disabled": true, "steps": [{ "type": "focus" }, { "type": "input", "text": "abc" }, { "type": "blur" }], "states": [false, false, false] }
+  ],
+  "numberKeyboardCases": [
+    { "name": "number field: numeric keyboard, content left to right", "valueType": "number", "keyboard": "number", "lines": 1, "content": "left-to-right", "web": { "type": "text", "inputmode": "decimal" } },
+    { "name": "no keyboard field — numeric all the same", "valueType": "number", "keyboard": "number", "lines": 1, "content": "left-to-right" },
+    { "name": "a number field does not read keyboard: email", "valueType": "number", "given": { "keyboard": "email" }, "keyboard": "number", "lines": 1, "content": "left-to-right" },
+    { "name": "a number field does not read lines: 4 — one line", "valueType": "number", "given": { "lines": 4 }, "keyboard": "number", "lines": 1, "content": "left-to-right" },
+    { "name": "valueType: string — as without the field", "valueType": "string", "given": { "keyboard": "email" }, "keyboard": "email", "lines": 1, "content": "left-to-right" },
+    { "name": "no valueType field — a string field", "given": { "lines": 4 }, "keyboard": "multiline", "lines": 4, "content": "screen" },
+    { "name": "an unknown word (a newer minor) — a string field", "valueType": "date", "given": { "keyboard": "phone" }, "keyboard": "phone", "lines": 1, "content": "left-to-right" },
+    { "name": "valueType is not a string — a string field", "valueType": 7, "keyboard": "text", "lines": 1, "content": "screen" }
+  ],
+  "filledCases": [
+    { "name": "text", "kind": "text", "value": "Alex", "filled": true },
+    { "name": "empty string", "kind": "text", "value": "", "filled": false },
+    { "name": "spaces only — not an answer", "kind": "text", "value": "   ", "filled": false },
+    { "name": "an invisible character only (U+200B)", "kind": "text", "value": "​", "filled": false },
+    { "name": "a no-break space and a line break", "kind": "text", "value": " \n", "filled": false },
+    { "name": "spaces around a letter", "kind": "text", "value": " a ", "filled": true },
+    { "name": "«0» is text that can be heard", "kind": "text", "value": "0", "filled": true },
+    { "name": "no value", "kind": "text", "filled": false },
+    { "name": "null", "kind": "text", "value": null, "filled": false },
+    { "name": "a number under a string path — the field is empty", "kind": "text", "value": 12, "filled": false },
+    { "name": "a flag under a string path", "kind": "text", "value": true, "filled": false },
+    { "name": "number", "kind": "number", "value": 12, "filled": true },
+    { "name": "zero is a number", "kind": "number", "value": 0, "filled": true },
+    { "name": "negative", "kind": "number", "value": -5, "filled": true },
+    { "name": "fraction", "kind": "number", "value": 0.5, "filled": true },
+    { "name": "empty string: the number field was erased or a non-number was typed", "kind": "number", "value": "", "filled": false },
+    { "name": "a string of digits is not a number", "kind": "number", "value": "12", "filled": false },
+    { "name": "beyond the safe integer", "kind": "number", "value": 1e21, "filled": false },
+    { "name": "no value", "kind": "number", "filled": false },
+    { "name": "null", "kind": "number", "value": null, "filled": false },
+    { "name": "a flag under a number path", "kind": "number", "value": true, "filled": false },
+    { "name": "on", "kind": "flag", "value": true, "filled": true },
+    { "name": "off — a required checkbox is not filled", "kind": "flag", "value": false, "filled": false },
+    { "name": "the string «true» is not consent", "kind": "flag", "value": "true", "filled": false },
+    { "name": "one is not consent", "kind": "flag", "value": 1, "filled": false },
+    { "name": "no value", "kind": "flag", "filled": false },
+    { "name": "null", "kind": "flag", "value": null, "filled": false },
+    { "name": "selected", "kind": "choice", "value": "gold", "filled": true },
+    { "name": "nothing selected", "kind": "choice", "value": "", "filled": false },
+    { "name": "a space is not an option name", "kind": "choice", "value": " ", "filled": false },
+    { "name": "no value", "kind": "choice", "filled": false },
+    { "name": "a number under a choice path", "kind": "choice", "value": 5, "filled": false }
+  ],
+  "formCases": [
+    { "name": "one required text field: empty → typed → spaces → erased → host data", "screens": { "main": [{ "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.fullName" }, "required": true } }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "nothing typed and no data", "layers": {}, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "typed the first letter", "layers": { "session": { "form.fullName": "A" } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "spaces only", "layers": { "session": { "form.fullName": "  " } }, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "erased", "layers": { "session": { "form.fullName": "" } }, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "a value from the host data fills it", "layers": { "data": { "form.fullName": "Alex" } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "the host scope fills it", "layers": { "host": { "form.fullName": "Alex" } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "erased in the session beats host data", "layers": { "session": { "form.fullName": "" }, "data": { "form.fullName": "Alex" } }, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "null in the session — «no value»: the data is read", "layers": { "session": { "form.fullName": null }, "data": { "form.fullName": "Alex" } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "screen record beats session", "layers": { "record": { "form.fullName": "From the row" }, "session": { "form.fullName": "" } }, "filled": { "main": true }, "disabled": { "next": false } }] },
+    { "name": "an optional field is not counted", "screens": { "main": [{ "id": "comment", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.comment" } } }, { "id": "email", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.email" }, "required": true } }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "both empty", "layers": {}, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "only the optional one is filled", "layers": { "session": { "form.comment": "Hi" } }, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "only the required one is filled", "layers": { "session": { "form.email": "a@b.c" } }, "filled": { "main": true }, "disabled": { "next": false } }] },
+    { "name": "a field hidden by a condition is not required", "screens": { "main": [{ "id": "agree", "type": "Checkbox", "props": { "label": { "kind": "literal", "value": "Agree" }, "value": { "kind": "binding", "path": "form.agreed" } } }, { "id": "phone", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.phone" }, "required": true }, "visibleIf": { "path": "form.agreed", "op": "isTrue" } }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "the condition has nothing to rest on: the field is hidden, the form is filled", "layers": {}, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "the checkbox was turned on: the field appeared empty", "layers": { "session": { "form.agreed": true } }, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "…and it was filled", "layers": { "session": { "form.agreed": true, "form.phone": "0790" } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "the checkbox was turned off, the phone erased: the field is hidden again", "layers": { "session": { "form.agreed": false, "form.phone": "" } }, "filled": { "main": true }, "disabled": { "next": false } }] },
+    { "name": "a field in a hidden container is the same: the condition of every ancestor counts", "screens": { "main": [{ "id": "box", "type": "Column", "props": { "gap": "md" }, "visibleIf": { "path": "settings.notifications", "op": "isTrue" }, "children": [{ "id": "card", "type": "Container", "props": {}, "children": [{ "id": "email", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.email" }, "required": true } }] }] }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "container hidden", "layers": { "session": { "settings.notifications": false } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "container shown", "layers": { "session": { "settings.notifications": true } }, "filled": { "main": false }, "disabled": { "next": true } }] },
+    { "name": "a disabled field is not required", "screens": { "main": [{ "id": "comment", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.comment" }, "required": true, "disabledIf": { "path": "settings.notifications", "op": "isFalse" } } }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "the condition holds: the field is disabled", "layers": { "session": { "settings.notifications": false } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "the condition does not hold: the field waits for an answer", "layers": { "session": { "settings.notifications": true } }, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "the condition has no value: isFalse does not hold, the field is not disabled", "layers": {}, "filled": { "main": false }, "disabled": { "next": true } }] },
+    { "name": "an unknown operator: the node is shown, the field is not disabled — so it counts", "screens": { "main": [{ "id": "a", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.fullName" }, "required": true }, "visibleIf": { "path": "form.email", "op": "startsWith", "value": "a" } }, { "id": "b", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.email" }, "required": true, "disabledIf": { "path": "form.fullName", "op": "matches", "value": ".*" } } }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "both empty", "layers": {}, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "both filled", "layers": { "session": { "form.fullName": "A", "form.email": "b" } }, "filled": { "main": true }, "disabled": { "next": false } }] },
+    { "name": "a required checkbox is consent", "screens": { "main": [{ "id": "agree", "type": "Checkbox", "props": { "label": { "kind": "literal", "value": "Agree" }, "value": { "kind": "binding", "path": "form.agreed" }, "required": true } }, { "id": "send", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "no value", "layers": {}, "filled": { "main": false }, "disabled": { "send": true } }, { "name": "turned on", "layers": { "session": { "form.agreed": true } }, "filled": { "main": true }, "disabled": { "send": false } }, { "name": "turned off", "layers": { "session": { "form.agreed": false } }, "filled": { "main": false }, "disabled": { "send": true } }, { "name": "consent from the host data", "layers": { "data": { "form.agreed": true } }, "filled": { "main": true }, "disabled": { "send": false } }, { "name": "the string «true» is not consent", "layers": { "data": { "form.agreed": "true" } }, "filled": { "main": false }, "disabled": { "send": true } }] },
+    { "name": "a required choice group", "screens": { "main": [{ "id": "plan", "type": "ChoiceGroup", "props": { "value": { "kind": "binding", "path": "survey.goal", "fallback": "" }, "gap": "none", "required": true }, "children": [{ "id": "opt-gold", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "gold" }, "trailing": { "kind": "radio", "optionValue": "gold" } } }, { "id": "opt-silver", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "silver" }, "trailing": { "kind": "radio", "optionValue": "silver" } } }] }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "nothing selected", "layers": {}, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "an option selected", "layers": { "session": { "survey.goal": "gold" } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "a value that is not among the options fills it too: it is not checked against the options", "layers": { "data": { "survey.goal": "platinum" } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "empty string in the session", "layers": { "session": { "survey.goal": "" }, "data": { "survey.goal": "gold" } }, "filled": { "main": false }, "disabled": { "next": true } }] },
+    { "name": "a group with fallback text: without data its option is shown as selected — and the form sees it", "screens": { "main": [{ "id": "plan", "type": "ChoiceGroup", "props": { "value": { "kind": "binding", "path": "survey.goal", "fallback": "silver" }, "gap": "none", "required": true }, "children": [{ "id": "opt-gold", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "gold" }, "trailing": { "kind": "radio", "optionValue": "gold" } } }, { "id": "opt-silver", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "silver" }, "trailing": { "kind": "radio", "optionValue": "silver" } } }] }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "no data", "layers": {}, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "empty string in the data — the fallback text", "layers": { "data": { "survey.goal": "" } }, "filled": { "main": true }, "disabled": { "next": false } }] },
+    { "name": "a group with a literal value is never filled: its choice is written nowhere", "screens": { "main": [{ "id": "plan", "type": "ChoiceGroup", "props": { "value": { "kind": "literal", "value": "gold" }, "gap": "none", "required": true }, "children": [{ "id": "opt-gold", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "gold" }, "trailing": { "kind": "radio", "optionValue": "gold" } } }, { "id": "opt-silver", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "silver" }, "trailing": { "kind": "radio", "optionValue": "silver" } } }] }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "the literal is named", "layers": {}, "filled": { "main": false }, "disabled": { "next": true } }] },
+    { "name": "number field: filled when there is a number under the path", "screens": { "main": [{ "id": "age", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.age" }, "valueType": "number", "required": true } }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "no value", "layers": {}, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "typed «12»", "layers": { "session": { "survey.age": 12 } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "typed «12a»: the field wrote an empty string", "layers": { "session": { "survey.age": "" } }, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "zero is a number", "layers": { "session": { "survey.age": 0 } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "a string of digits under a number path is not a number", "layers": { "data": { "survey.age": "12" } }, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "a number from the host data", "layers": { "data": { "survey.age": 34 } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "erased in the session beats the host number", "layers": { "session": { "survey.age": "" }, "data": { "survey.age": 34 } }, "filled": { "main": false }, "disabled": { "next": true } }] },
+    { "name": "several required fields: all of them must be filled", "screens": { "main": [{ "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.name" }, "required": true } }, { "id": "age", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.age" }, "valueType": "number", "required": true } }, { "id": "agree", "type": "Checkbox", "props": { "label": { "kind": "literal", "value": "Agree" }, "value": { "kind": "binding", "path": "survey.agreed" }, "required": true } }, { "id": "send", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "none", "layers": {}, "filled": { "main": false }, "disabled": { "send": true } }, { "name": "name", "layers": { "session": { "survey.name": "Al" } }, "filled": { "main": false }, "disabled": { "send": true } }, { "name": "name and age", "layers": { "session": { "survey.name": "Al", "survey.age": 30 } }, "filled": { "main": false }, "disabled": { "send": true } }, { "name": "all three", "layers": { "session": { "survey.name": "Al", "survey.age": 30, "survey.agreed": true } }, "filled": { "main": true }, "disabled": { "send": false } }, { "name": "age erased", "layers": { "session": { "survey.name": "Al", "survey.age": "", "survey.agreed": true } }, "filled": { "main": false }, "disabled": { "send": true } }] },
+    { "name": "a field in a tab that is not open is counted", "screens": { "main": [{ "id": "tabs", "type": "Tabs", "props": {}, "children": [{ "id": "tab-a", "type": "Tab", "props": { "title": { "kind": "literal", "value": "A" } }, "children": [{ "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.name" }, "required": true } }] }, { "id": "tab-b", "type": "Tab", "props": { "title": { "kind": "literal", "value": "B" } }, "children": [{ "id": "comment", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.comment" }, "required": true } }] }] }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "only the field of the open tab is filled", "layers": { "session": { "survey.name": "Al" } }, "filled": { "main": false }, "disabled": { "next": true } }, { "name": "both filled", "layers": { "session": { "survey.name": "Al", "survey.comment": "Hi" } }, "filled": { "main": true }, "disabled": { "next": false } }] },
+    { "name": "a field in a list from data (a document built elsewhere) is not counted in the form", "screens": { "main": [{ "id": "list", "type": "Repeater", "props": { "source": "items", "item": "item" }, "children": [{ "id": "row", "type": "Column", "props": { "gap": "md" }, "children": [{ "id": "note", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.comment" }, "required": true } }] }] }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "the list field is empty", "layers": {}, "filled": { "main": true }, "disabled": { "next": false } }] },
+    { "name": "a modal layer is its own screen and its own form", "screens": { "main": [{ "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.name" }, "required": true } }, { "id": "open", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true } }], "sheet": [{ "id": "agree", "type": "Checkbox", "props": { "label": { "kind": "literal", "value": "Agree" }, "value": { "kind": "binding", "path": "survey.agreed" }, "required": true } }, { "id": "confirm", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "only the field of the screen under the layer is filled", "layers": { "session": { "survey.name": "Al" } }, "filled": { "main": true, "sheet": false }, "disabled": { "confirm": true, "open": false } }, { "name": "only the field of the layer is filled", "layers": { "session": { "survey.agreed": true } }, "filled": { "main": false, "sheet": true }, "disabled": { "confirm": false, "open": false } }] },
+    { "name": "app bar, body and pinned block are one screen", "screens": { "main": [{ "id": "bar", "type": "AppBar", "props": { "title": { "kind": "literal", "value": "Form" }, "showBack": true }, "children": [{ "id": "done", "type": "IconButton", "props": { "icon": "check", "label": { "kind": "literal", "value": "Done" }, "variant": "ghost", "size": "md", "action": { "type": "navigate", "params": { "screenId": "next" } }, "requiresFilled": true } }] }, { "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.name" }, "required": true } }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true }, "pin": "bottom" }] }, "states": [{ "name": "the field is empty: both the app bar action and the pinned button are disabled", "layers": {}, "filled": { "main": false }, "disabled": { "done": true, "next": true } }, { "name": "the field is filled", "layers": { "session": { "survey.name": "Al" } }, "filled": { "main": true }, "disabled": { "done": false, "next": false } }] },
+    { "name": "a button without requiresFilled does not depend on the form", "screens": { "main": [{ "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.name" }, "required": true } }, { "id": "skip", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true } }] }, "states": [{ "name": "the field is empty", "layers": {}, "filled": { "main": false }, "disabled": { "skip": false } }] },
+    { "name": "there are no required fields — the form is filled", "screens": { "main": [{ "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.name" } } }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "the field is empty", "layers": {}, "filled": { "main": true }, "disabled": { "next": false } }] },
+    { "name": "a required field without a path is never filled", "screens": { "main": [{ "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "required": true } }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true } }] }, "states": [{ "name": "whatever the session holds", "layers": { "session": { "survey.name": "Al" } }, "filled": { "main": false }, "disabled": { "next": true } }] },
+    { "name": "required and requiresFilled that are not the literal true (a newer minor) are not read", "screens": { "main": [{ "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.name" }, "required": "yes" } }, { "id": "email", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.email" }, "required": true } }, { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": "when-valid" } }] }, "states": [{ "name": "only the second field is required", "layers": { "session": { "form.email": "a@b.c" } }, "filled": { "main": true }, "disabled": { "next": false } }, { "name": "the form is not filled, but the button does not ask about it", "layers": {}, "filled": { "main": false }, "disabled": { "next": false } }] },
+    { "name": "disabledIf on a button together with requiresFilled: disabled if either applies", "screens": { "main": [{ "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.name" }, "required": true } }, { "id": "send", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "requiresFilled": true, "disabledIf": { "path": "survey.age", "op": "lt", "value": 16 } } }] }, "states": [{ "name": "the form is not filled, the condition has no value", "layers": {}, "filled": { "main": false }, "disabled": { "send": true } }, { "name": "the form is filled, the condition has no value: lt without a value does not hold", "layers": { "session": { "survey.name": "Al" } }, "filled": { "main": true }, "disabled": { "send": false } }, { "name": "the form is filled, the condition holds", "layers": { "session": { "survey.name": "Al", "survey.age": 12 } }, "filled": { "main": true }, "disabled": { "send": true } }, { "name": "the form is filled, the condition does not hold", "layers": { "session": { "survey.name": "Al", "survey.age": 20 } }, "filled": { "main": true }, "disabled": { "send": false } }, { "name": "the condition does not hold, but the form is not filled", "layers": { "session": { "survey.age": 20 } }, "filled": { "main": false }, "disabled": { "send": true } }, { "name": "age erased: an empty string is not a number, lt does not hold", "layers": { "session": { "survey.name": "Al", "survey.age": "" } }, "filled": { "main": true }, "disabled": { "send": false } }] },
+    { "name": "disabledIf without data: isEmpty holds, the rest do not", "screens": { "main": [{ "id": "a", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "disabledIf": { "path": "form.email", "op": "isEmpty" } } }, { "id": "b", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "disabledIf": { "path": "form.email", "op": "isNotEmpty" } } }, { "id": "c", "type": "IconButton", "props": { "icon": "check", "label": { "kind": "literal", "value": "Done" }, "variant": "ghost", "size": "md", "action": { "type": "navigate", "params": { "screenId": "next" } }, "disabledIf": { "path": "form.agreed", "op": "isFalse" } } }, { "id": "d", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "navigate", "params": { "screenId": "next" } }, "fullWidth": true, "disabledIf": { "path": "form.email", "op": "startsWith", "value": "a" } } }] }, "states": [{ "name": "no data", "layers": {}, "filled": { "main": true }, "disabled": { "a": true, "b": false, "c": false, "d": false } }, { "name": "email typed, no consent", "layers": { "session": { "form.email": "a@b.c", "form.agreed": false } }, "filled": { "main": true }, "disabled": { "a": false, "b": true, "c": true, "d": false } }] },
+    { "name": "a list row with an action is not disabled: it has no disabling fields", "screens": { "main": [{ "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.name" }, "required": true } }, { "id": "row", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "Open" }, "trailing": { "kind": "none" }, "action": { "type": "navigate", "params": { "screenId": "next" } }, "requiresFilled": true, "disabledIf": { "path": "form.email", "op": "isEmpty" } } }] }, "states": [{ "name": "the form is not filled and the condition would hold", "layers": {}, "filled": { "main": false }, "disabled": { "row": false } }] }
+  ],
+  "pressCases": [
+    { "name": "enabled button, touch", "disabled": false, "press": "tap", "action": 1, "track": 1 },
+    { "name": "disabled button, touch: neither an action nor an analytics event", "disabled": true, "press": "tap", "action": 0, "track": 0 },
+    { "name": "disabled button, double touch", "disabled": true, "press": "double-tap", "action": 0, "track": 0 },
+    { "name": "disabled button, Enter from focus", "disabled": true, "press": "enter", "action": 0, "track": 0 },
+    { "name": "disabled button, Space from focus", "disabled": true, "press": "space", "action": 0, "track": 0 },
+    { "name": "enabled button, Enter from focus", "disabled": false, "press": "enter", "action": 1, "track": 1 },
+    { "name": "enabled button, Enter held down: auto-repeat is not a press", "disabled": false, "press": "enter-held", "action": 1, "track": 1 },
+    { "name": "disabled icon button in the app bar, touch", "disabled": true, "widget": "IconButton", "press": "tap", "action": 0, "track": 0 }
+  ],
+  "disabledLookCases": [
+    { "name": "enabled button", "disabled": false, "opacity": 1, "semantics": { "disabled": false, "focusable": true } },
+    { "name": "disabled button: opacity of the whole widget, the same theme role", "disabled": true, "opacity": 0.5, "role": "unchanged", "semantics": { "disabled": true, "focusable": true }, "web": { "aria-disabled": "true", "disabled": null, "tabindex": 0 } },
+    { "name": "disabled tonal button: the same opacity", "disabled": true, "variant": "secondary", "opacity": 0.5, "role": "unchanged", "semantics": { "disabled": true, "focusable": true } },
+    { "name": "disabled icon button", "disabled": true, "widget": "IconButton", "opacity": 0.5, "role": "unchanged", "semantics": { "disabled": true, "focusable": true } },
+    { "name": "disabled button with its own style.opacity 0.8: the opacities multiply", "disabled": true, "styleOpacity": 0.8, "opacity": 0.4, "role": "unchanged", "semantics": { "disabled": true, "focusable": true } }
+  ],
+  "choiceCases": [
+    { "name": "a bound group: the choice is written under the path", "value": { "kind": "binding", "path": "survey.goal", "fallback": "" }, "shown": "", "pick": "gold", "write": { "path": "survey.goal", "value": "gold" } },
+    { "name": "another option — a new write", "value": { "kind": "binding", "path": "survey.goal", "fallback": "" }, "shown": "gold", "pick": "silver", "write": { "path": "survey.goal", "value": "silver" } },
+    { "name": "the same option is not written twice", "value": { "kind": "binding", "path": "survey.goal", "fallback": "" }, "shown": "gold", "pick": "gold", "write": null },
+    { "name": "an option shown as selected by the fallback text is not written until it is changed", "value": { "kind": "binding", "path": "survey.goal", "fallback": "silver" }, "shown": "silver", "pick": "silver", "write": null },
+    { "name": "an extra key in a binding of a newer minor does no harm", "value": { "kind": "binding", "path": "survey.goal", "fallback": "", "debounce": 300 }, "shown": "", "pick": "gold", "write": { "path": "survey.goal", "value": "gold" } },
+    { "name": "a literal value: the choice is the state of the group, written nowhere", "value": { "kind": "literal", "value": "" }, "shown": "", "pick": "gold", "write": null },
+    { "name": "a value of the wrong shape — the same", "value": "survey.goal", "shown": "", "pick": "gold", "write": null },
+    { "name": "empty path", "value": { "kind": "binding", "path": "" }, "shown": "", "pick": "gold", "write": null }
+  ],
+  "choiceSessionCases": [
+    { "name": "a choice at once makes a condition of the same screen hold", "value": { "kind": "binding", "path": "survey.goal", "fallback": "" }, "pick": "gold", "condition": { "path": "survey.goal", "op": "eq", "value": "gold" }, "before": false, "after": true },
+    { "name": "a choice is at once visible to a «not empty» condition", "value": { "kind": "binding", "path": "survey.goal", "fallback": "" }, "pick": "silver", "condition": { "path": "survey.goal", "op": "isNotEmpty" }, "before": false, "after": true },
+    { "name": "a choice at once clears an «empty» condition that held without data", "value": { "kind": "binding", "path": "survey.goal", "fallback": "" }, "pick": "curious", "condition": { "path": "survey.goal", "op": "isEmpty" }, "before": true, "after": false },
+    { "name": "a second choice replaces the first", "value": { "kind": "binding", "path": "survey.goal", "fallback": "" }, "pick": "silver", "pickFirst": "gold", "condition": { "path": "survey.goal", "op": "eq", "value": "gold" }, "before": false, "after": false },
+    { "name": "a literal group does not touch conditions: the choice is written nowhere", "value": { "kind": "literal", "value": "" }, "pick": "gold", "condition": { "path": "survey.goal", "op": "eq", "value": "gold" }, "before": false, "after": false }
+  ],
+  "formDocumentCases": [
+    { "name": "required text field", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.fullName" }, "required": true } }, "valid": true },
+    { "name": "required: false — there is no such value: «not required» is the absence of the field", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.fullName" }, "required": false } }, "valid": false },
+    { "name": "required as a string", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.fullName" }, "required": "yes" } }, "valid": false },
+    { "name": "required checkbox", "node": { "id": "n", "type": "Checkbox", "props": { "label": { "kind": "literal", "value": "Agree" }, "value": { "kind": "binding", "path": "form.agreed" }, "required": true } }, "valid": true },
+    { "name": "a switch has no required field", "node": { "id": "n", "type": "Switch", "props": { "label": { "kind": "literal", "value": "Push" }, "value": { "kind": "binding", "path": "settings.notifications" }, "required": true } }, "valid": false },
+    { "name": "a required group with a bound value", "node": { "id": "n", "type": "ChoiceGroup", "props": { "value": { "kind": "binding", "path": "survey.goal", "fallback": "" }, "gap": "none", "required": true }, "children": [{ "id": "opt-gold", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "gold" }, "trailing": { "kind": "radio", "optionValue": "gold" } } }, { "id": "opt-silver", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "silver" }, "trailing": { "kind": "radio", "optionValue": "silver" } } }] }, "valid": true },
+    { "name": "a required group with an empty literal: the choice is written nowhere", "node": { "id": "n", "type": "ChoiceGroup", "props": { "value": { "kind": "literal", "value": "" }, "gap": "none", "required": true }, "children": [{ "id": "opt-gold", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "gold" }, "trailing": { "kind": "radio", "optionValue": "gold" } } }, { "id": "opt-silver", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "silver" }, "trailing": { "kind": "radio", "optionValue": "silver" } } }] }, "valid": false, "code": "required_without_path" },
+    { "name": "a required group with a named literal — the same", "node": { "id": "n", "type": "ChoiceGroup", "props": { "value": { "kind": "literal", "value": "gold" }, "gap": "none", "required": true }, "children": [{ "id": "opt-gold", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "gold" }, "trailing": { "kind": "radio", "optionValue": "gold" } } }, { "id": "opt-silver", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "silver" }, "trailing": { "kind": "radio", "optionValue": "silver" } } }] }, "valid": false, "code": "required_without_path" },
+    { "name": "an optional group with a literal — as in 6.0.0", "node": { "id": "n", "type": "ChoiceGroup", "props": { "value": { "kind": "literal", "value": "gold" }, "gap": "none" }, "children": [{ "id": "opt-gold", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "gold" }, "trailing": { "kind": "radio", "optionValue": "gold" } } }, { "id": "opt-silver", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "silver" }, "trailing": { "kind": "radio", "optionValue": "silver" } } }] }, "valid": true },
+    { "name": "a badge has no required field", "node": { "id": "n", "type": "Badge", "props": { "label": { "kind": "literal", "value": "New" }, "tone": "info", "required": true } }, "valid": false },
+    { "name": "number field on a number path", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.age" }, "valueType": "number" } }, "valid": true },
+    { "name": "required number field with a length limit", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.age" }, "valueType": "number", "required": true, "maxLength": 3 } }, "valid": true },
+    { "name": "number field on a string path", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.email" }, "valueType": "number" } }, "valid": false, "code": "binding_type_mismatch" },
+    { "name": "string field (valueType: string) on a number path", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.age" }, "valueType": "string" } }, "valid": false, "code": "binding_type_mismatch" },
+    { "name": "a field without valueType on a number path is a string field, as in 9.13", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.age" } } }, "valid": false, "code": "binding_type_mismatch" },
+    { "name": "number field on a flag path", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "form.agreed" }, "valueType": "number" } }, "valid": false, "code": "binding_type_mismatch" },
+    { "name": "valueType: date — there is no such word", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.age" }, "valueType": "date" } }, "valid": false },
+    { "name": "number field with keyboard and lines: the document is valid, the reader does not read them", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "value": { "kind": "binding", "path": "survey.age" }, "valueType": "number", "keyboard": "email", "lines": 4 } }, "valid": true },
+    { "name": "number field without a path", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Label" }, "valueType": "number" } }, "valid": false, "code": "input_value_required" },
+    { "name": "a button that waits for a filled form", "node": { "id": "n", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "requiresFilled": true } }, "valid": true },
+    { "name": "requiresFilled: false — there is no such value", "node": { "id": "n", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "requiresFilled": false } }, "valid": false },
+    { "name": "button with disabledIf", "node": { "id": "n", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "disabledIf": { "path": "form.agreed", "op": "isFalse" } } }, "valid": true },
+    { "name": "button with both triggers", "node": { "id": "n", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "requiresFilled": true, "disabledIf": { "path": "survey.age", "op": "lt", "value": 16 } } }, "valid": true },
+    { "name": "button disabledIf on an unknown path", "node": { "id": "n", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "disabledIf": { "path": "form.nothing", "op": "isTrue" } } }, "valid": false },
+    { "name": "button disabledIf with an operator that does not fit the path type", "node": { "id": "n", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "disabledIf": { "path": "form.email", "op": "gt", "value": 3 } } }, "valid": false, "code": "visibility_type_mismatch" },
+    { "name": "there is no compound condition: an array of conditions", "node": { "id": "n", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "disabledIf": [{ "path": "form.agreed", "op": "isFalse" }] } }, "valid": false },
+    { "name": "there is no compound condition: all / any", "node": { "id": "n", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "disabledIf": { "all": [{ "path": "form.agreed", "op": "isFalse" }] } } }, "valid": false },
+    { "name": "icon button with both fields", "node": { "id": "n", "type": "IconButton", "props": { "icon": "check", "label": { "kind": "literal", "value": "Done" }, "variant": "ghost", "size": "md", "action": { "type": "none" }, "requiresFilled": true, "disabledIf": { "path": "form.agreed", "op": "isFalse" } } }, "valid": true },
+    { "name": "a list row has no requiresFilled field", "node": { "id": "n", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "Open" }, "trailing": { "kind": "none" }, "requiresFilled": true } }, "valid": false },
+    { "name": "a list row has no disabledIf field", "node": { "id": "n", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "Open" }, "trailing": { "kind": "none" }, "disabledIf": { "path": "form.agreed", "op": "isFalse" } } }, "valid": false },
+    { "name": "smallest button", "node": { "id": "n", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" } } }, "valid": true }
+  ],
+  "formRuleCases": [
+    { "at": "required.field", "expect": "required" },
+    { "at": "required.value", "expect": "literal-true-anything-else-is-not-required" },
+    { "at": "required.on", "expect": ["TextField", "Checkbox", "ChoiceGroup"] },
+    { "at": "required.notOn.Switch", "expect": "a-switch-always-has-a-value-there-is-nothing-to-require" },
+    { "at": "required.filled.asks", "expect": "the-value-under-the-path-of-the-field-read-through-the-data-layers" },
+    { "at": "required.filled.text", "expect": "a-string-that-can-be-heard" },
+    { "at": "required.filled.number", "expect": "a-number" },
+    { "at": "required.filled.flag", "expect": "true" },
+    { "at": "required.filled.choice", "expect": "a-string-that-can-be-heard-the-bound-value-or-the-fallback-of-the-binding-not-checked-against-the-options" },
+    { "at": "required.filled.silent", "expect": "x-accessibleName.silentCharacters" },
+    { "at": "required.filled.withoutPath", "expect": "never-filled" },
+    { "at": "required.counted", "expect": { "hidden": "not-counted-own-visibleIf-or-of-any-ancestor", "disabled": "not-counted", "inactiveTab": "counted", "insideDataList": "not-counted" } },
+    { "at": "required.mark.text", "expect": "*" },
+    { "at": "required.mark.place", "expect": "after-the-label-text-in-the-same-line-logical" },
+    { "at": "required.mark.gap", "expect": "xs" },
+    { "at": "required.mark.color", "expect": "danger" },
+    { "at": "required.mark.typography", "expect": "of-the-label" },
+    { "at": "required.mark.on", "expect": ["TextField", "Checkbox"] },
+    { "at": "required.mark.choiceGroup", "expect": "none-the-group-has-no-label-of-its-own" },
+    { "at": "required.mark.readAloud", "expect": "no-the-mark-is-hidden-from-the-screen-reader" },
+    { "at": "required.semantics.state", "expect": "required" },
+    { "at": "required.semantics.web", "expect": { "textField": "aria-required", "checkbox": "aria-required", "choiceGroup": "aria-required-on-the-radiogroup" } },
+    { "at": "required.semantics.flutter", "expect": "Semantics-isRequired-where-the-sdk-has-it" },
+    { "at": "required.message", "expect": "none-the-reader-shows-no-text-of-its-own" },
+    { "at": "filled.of", "expect": "the-screen-entry-the-control-stands-on-app-bar-body-pinned-block-and-nav-bar-together" },
+    { "at": "filled.modalLayer", "expect": "its-own-screen-entry-its-own-form" },
+    { "at": "filled.is", "expect": "every-counted-required-field-is-filled" },
+    { "at": "filled.noRequiredFields", "expect": "filled" },
+    { "at": "filled.reads", "expect": "record-of-the-screen-then-session-then-host-then-data" },
+    { "at": "filled.recomputed", "expect": "on-every-write-and-every-change-of-the-data" },
+    { "at": "button.requiresFilled.field", "expect": "requiresFilled" },
+    { "at": "button.requiresFilled.value", "expect": "literal-true-anything-else-is-not-read" },
+    { "at": "button.requiresFilled.on", "expect": ["Button", "IconButton"] },
+    { "at": "button.requiresFilled.disabledWhile", "expect": "the-form-of-its-screen-is-not-filled" },
+    { "at": "button.disabledIf", "expect": { "field": "disabledIf", "on": ["Button", "IconButton"], "condition": "same-form-and-rules-as-visibleIf", "unknownOp": "enabled", "missingValue": "as-missingConditionValue" } },
+    { "at": "button.both", "expect": "disabled-when-either-holds" },
+    { "at": "button.look", "expect": { "opacity": 0.5, "appliesTo": "the-whole-widget", "role": "unchanged-no-disabled-role-in-the-theme" } },
+    { "at": "button.press", "expect": "nothing-no-action-no-track-no-press-feedback" },
+    { "at": "button.focus", "expect": "stays-in-the-focus-order" },
+    { "at": "button.semantics", "expect": { "state": "disabled", "web": "aria-disabled-true-not-the-disabled-attribute", "flutter": "Semantics-enabled-false-onPressed-null" } },
+    { "at": "button.reason", "expect": "none-the-reader-does-not-say-why" },
+    { "at": "number.field", "expect": "valueType" },
+    { "at": "number.values", "expect": ["string", "number"] },
+    { "at": "number.default", "expect": "string" },
+    { "at": "number.unknown", "expect": "string" },
+    { "at": "number.pathType", "expect": ["number"] },
+    { "at": "number.keyboard", "expect": "number" },
+    { "at": "number.notRead", "expect": ["keyboard", "lines"] },
+    { "at": "number.parse.trimmed", "expect": [32, 160, 8239, 9] },
+    { "at": "number.parse.minus", "expect": [45, 8722] },
+    { "at": "number.parse.digitZeros", "expect": [48, 1632, 1776] },
+    { "at": "number.parse.separators", "expect": [46, 44, 1643] },
+    { "at": "number.parse.shape", "expect": "optional-minus-digits-optional-one-separator-digits-at-least-one-digit" },
+    { "at": "number.parse.maxDigits", "expect": 15 },
+    { "at": "number.parse.groups", "expect": "none-a-comma-is-a-decimal-separator" },
+    { "at": "number.parse.exponent", "expect": "none" },
+    { "at": "number.parse.negativeZero", "expect": "zero" },
+    { "at": "number.write", "expect": { "number": "json-number-a-whole-value-without-a-fraction", "notANumber": "empty-string-the-field-keeps-the-typed-text", "cleared": "empty-string", "sameValue": "not-written-again-numbers-are-compared-not-texts" } },
+    { "at": "number.read", "expect": { "number": "finite-and-within-the-safe-integer", "anythingElse": "empty-field-a-string-is-never-converted" } },
+    { "at": "number.shown.fromData", "expect": "ascii-digits-dot-no-groups-no-locale-shortest-round-trip" },
+    { "at": "number.shown.needsExponent", "expect": "empty-field" },
+    { "at": "number.shown.focused", "expect": "what-the-person-typed" },
+    { "at": "number.shown.unfocused", "expect": "what-the-person-typed-while-its-number-is-the-bound-number-then-the-bound-number" },
+    { "at": "number.shown.format", "expect": "the-number-format-of-a-binding-does-not-apply" },
+    { "at": "number.maxLength", "expect": "of-the-typed-text-in-code-points" },
+    { "at": "choice.write", "expect": "to-the-session-of-the-reader-and-the-host-at-the-same-moment-like-every-input" },
+    { "at": "choice.sameOption", "expect": "not-written-again" },
+    { "at": "choice.literalValue", "expect": "state-of-the-group-written-nowhere" },
+    { "at": "cases", "expect": "contract/fixtures/inputs/input-cases.json" },
+    { "at": "numberInvalid.when", "expect": "the-field-is-not-focused-and-the-shown-text-is-not-empty-and-is-not-a-number" },
+    { "at": "numberInvalid.whileFocused", "expect": "never-the-state-appears-only-after-focus-is-lost" },
+    { "at": "numberInvalid.semantics.web", "expect": "aria-invalid" },
+    { "at": "numberInvalid.text", "expect": "none-the-reader-adds-no-text-the-helper-of-the-field-says-what-to-type" }
+  ],
+  "choiceNote": "Choice built from plain nodes (schema 9.19.0): a node whose action is «setValue» is an option, a node whose action is «toggleValue» is a toggle; options that are children of one parent and write the same path are one group. The data is x-choice and x-actions.write. In choicePlaceCases «siblings» are the children of one parent in document order, «hidden» names the ones that are not shown, «places» gives [position, size] or null. In choiceControlCases and writeFormCases the host gave no data at all: the screen holds only «session» and what the presses wrote; «expect» is read from the finished screen — «absent» means the node is not on it, a missing key means the attribute is not there.",
+  "choicePlaceCases": [
+    {
+      "name": "three options of one path",
+      "siblings": [
+        { "id": "week", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+        { "id": "month", "type": "Button", "props": { "label": { "kind": "literal", "value": "Month" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } }, "fullWidth": false } },
+        { "id": "planned", "type": "Button", "props": { "label": { "kind": "literal", "value": "Planned" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "planned" } }, "fullWidth": false } }
+      ],
+      "places": { "week": [1, 3], "month": [2, 3], "planned": [3, 3] }
+    },
+    {
+      "name": "a divider between the options does not break the group",
+      "siblings": [
+        { "id": "week", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+        { "id": "line", "type": "Divider", "props": { "color": "border", "spacing": "none", "orientation": "vertical" } },
+        { "id": "month", "type": "Button", "props": { "label": { "kind": "literal", "value": "Month" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } }, "fullWidth": false } }
+      ],
+      "places": { "week": [1, 2], "line": null, "month": [2, 2] }
+    },
+    {
+      "name": "an option that is not shown is not counted",
+      "siblings": [
+        { "id": "week", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+        { "id": "month", "type": "Button", "props": { "label": { "kind": "literal", "value": "Month" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } }, "fullWidth": false } },
+        { "id": "planned", "type": "Button", "props": { "label": { "kind": "literal", "value": "Planned" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "planned" } }, "fullWidth": false } }
+      ],
+      "hidden": ["month"],
+      "places": { "week": [1, 2], "month": null, "planned": [2, 2] }
+    },
+    {
+      "name": "two options left after hiding one of three, then one — no position",
+      "siblings": [
+        { "id": "week", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+        { "id": "month", "type": "Button", "props": { "label": { "kind": "literal", "value": "Month" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } }, "fullWidth": false } },
+        { "id": "planned", "type": "Button", "props": { "label": { "kind": "literal", "value": "Planned" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "planned" } }, "fullWidth": false } }
+      ],
+      "hidden": ["month", "planned"],
+      "places": { "week": null, "month": null, "planned": null }
+    },
+    {
+      "name": "two groups in one parent: the path holds the group, not the neighbourhood",
+      "siblings": [
+        { "id": "a", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+        { "id": "b", "type": "Button", "props": { "label": { "kind": "literal", "value": "Gold" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "gold" } }, "fullWidth": false } },
+        { "id": "c", "type": "Button", "props": { "label": { "kind": "literal", "value": "Month" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } }, "fullWidth": false } },
+        { "id": "d", "type": "Button", "props": { "label": { "kind": "literal", "value": "Silver" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "silver" } }, "fullWidth": false } }
+      ],
+      "places": { "a": [1, 2], "b": [1, 2], "c": [2, 2], "d": [2, 2] }
+    },
+    {
+      "name": "a single option has no position",
+      "siblings": [
+        { "id": "week", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+        { "id": "open", "type": "Button", "props": { "label": { "kind": "literal", "value": "Open" }, "variant": "ghost", "action": { "type": "navigate", "params": { "screenId": "s" } }, "fullWidth": false } }
+      ],
+      "places": { "week": null, "open": null }
+    },
+    {
+      "name": "the button that clears the path is not an option of its group",
+      "siblings": [
+        { "id": "week", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+        { "id": "month", "type": "Button", "props": { "label": { "kind": "literal", "value": "Month" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } }, "fullWidth": false } },
+        { "id": "reset", "type": "Button", "props": { "label": { "kind": "literal", "value": "Reset" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period" } }, "fullWidth": false } }
+      ],
+      "places": { "week": [1, 2], "month": [2, 2], "reset": null }
+    },
+    {
+      "name": "toggles are not a group",
+      "siblings": [
+        { "id": "travel", "type": "Button", "props": { "label": { "kind": "literal", "value": "Travel" }, "variant": "ghost", "action": { "type": "toggleValue", "params": { "path": "survey.topicTravel" } }, "fullWidth": false } },
+        { "id": "food", "type": "Button", "props": { "label": { "kind": "literal", "value": "Food" }, "variant": "ghost", "action": { "type": "toggleValue", "params": { "path": "survey.topicFood" } }, "fullWidth": false } }
+      ],
+      "places": { "travel": null, "food": null }
+    },
+    {
+      "name": "an option with an invalid action is not counted",
+      "siblings": [
+        { "id": "one", "type": "Button", "props": { "label": { "kind": "literal", "value": "1" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.score", "value": "1", "valueType": "number" } }, "fullWidth": false } },
+        { "id": "bad", "type": "Button", "props": { "label": { "kind": "literal", "value": "two" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.score", "value": "two", "valueType": "number" } }, "fullWidth": false } },
+        { "id": "three", "type": "Button", "props": { "label": { "kind": "literal", "value": "3" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.score", "value": "3", "valueType": "number" } }, "fullWidth": false } }
+      ],
+      "places": { "one": [1, 2], "bad": null, "three": [2, 2] }
+    },
+    {
+      "name": "a pressable container and a button are options of one group",
+      "siblings": [
+        { "id": "card", "type": "Column", "props": { "gap": "sm", "align": "start", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "gold" } } }, "children": [{ "id": "card-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Gold" }, "align": "start" } }] },
+        { "id": "plain", "type": "Button", "props": { "label": { "kind": "literal", "value": "Silver" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "silver" } }, "fullWidth": false } },
+        { "id": "still", "type": "Column", "props": { "gap": "sm", "align": "start" }, "children": [{ "id": "still-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Not a control" }, "align": "start" } }] }
+      ],
+      "places": { "card": [1, 2], "plain": [2, 2], "still": null }
+    },
+    {
+      "name": "the same value twice is two options for the reader — the group counts nodes, not values (the builder does not publish such a document)",
+      "siblings": [
+        { "id": "icon", "type": "IconButton", "props": { "icon": "star", "label": { "kind": "literal", "value": "Gold" }, "variant": "ghost", "size": "md", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "gold" } } } },
+        { "id": "word", "type": "Button", "props": { "label": { "kind": "literal", "value": "Gold" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "gold" } }, "fullWidth": false } }
+      ],
+      "places": { "icon": [1, 2], "word": [2, 2] }
+    }
+  ],
+  "choiceControlCases": [
+    {
+      "name": "a segment of three: nothing chosen, then «Month» is pressed",
+      "nodes": [
+        { "id": "segment", "type": "Row", "props": { "gap": "xs", "align": "center", "justify": "start", "wrap": false, "scrollable": false }, "children": [
+          { "id": "week", "type": "Container", "props": { "direction": "column", "gap": "none", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } } }, "children": [{ "id": "week-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Week" }, "align": "center" } }] },
+          { "id": "month", "type": "Container", "props": { "direction": "column", "gap": "none", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } } }, "children": [{ "id": "month-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Month" }, "align": "center" } }] },
+          { "id": "planned", "type": "Container", "props": { "direction": "column", "gap": "none", "action": { "type": "setValue", "params": { "path": "account.period", "value": "planned" } } }, "children": [{ "id": "planned-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Planned" }, "align": "center" } }] }
+        ] }
+      ],
+      "session": {},
+      "expect": {
+        "segment": { "role": null },
+        "week": { "role": "radio", "checked": false, "position": 1, "size": 3 },
+        "month": { "role": "radio", "checked": false, "position": 2, "size": 3 },
+        "planned": { "role": "radio", "checked": false, "position": 3, "size": 3 },
+        "week-t": { "role": null }
+      },
+      "presses": ["month-t"],
+      "after": {
+        "week": { "role": "radio", "checked": false, "position": 1, "size": 3 },
+        "month": { "role": "radio", "checked": true, "position": 2, "size": 3 },
+        "planned": { "role": "radio", "checked": false, "position": 3, "size": 3 }
+      }
+    },
+    {
+      "name": "the chosen option comes from the session, a second press moves the choice",
+      "nodes": [
+        { "id": "segment", "type": "Row", "props": { "gap": "xs", "align": "center", "justify": "start", "wrap": false, "scrollable": false }, "children": [
+          { "id": "week", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+          { "id": "month", "type": "Button", "props": { "label": { "kind": "literal", "value": "Month" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } }, "fullWidth": false } }
+        ] }
+      ],
+      "session": { "account.period": "month" },
+      "expect": { "week": { "role": "radio", "checked": false, "position": 1, "size": 2 }, "month": { "role": "radio", "checked": true, "position": 2, "size": 2 } },
+      "presses": ["week"],
+      "after": { "week": { "role": "radio", "checked": true, "position": 1, "size": 2 }, "month": { "role": "radio", "checked": false, "position": 2, "size": 2 } }
+    },
+    {
+      "name": "pressing the chosen option does not unselect it",
+      "nodes": [
+        { "id": "segment", "type": "Row", "props": { "gap": "xs", "align": "center", "justify": "start", "wrap": false, "scrollable": false }, "children": [
+          { "id": "week", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+          { "id": "month", "type": "Button", "props": { "label": { "kind": "literal", "value": "Month" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } }, "fullWidth": false } }
+        ] }
+      ],
+      "session": { "account.period": "month" },
+      "expect": { "month": { "role": "radio", "checked": true, "position": 2, "size": 2 } },
+      "presses": ["month", "month"],
+      "after": { "week": { "role": "radio", "checked": false, "position": 1, "size": 2 }, "month": { "role": "radio", "checked": true, "position": 2, "size": 2 } }
+    },
+    {
+      "name": "the eye: a toggle is a button with a pressed state",
+      "nodes": [
+        { "id": "eye", "type": "IconButton", "props": { "icon": "eye", "label": { "kind": "literal", "value": "Hide balance" }, "variant": "ghost", "size": "md", "action": { "type": "toggleValue", "params": { "path": "account.balanceHidden" } } } }
+      ],
+      "session": {},
+      "expect": { "eye": { "role": "button", "pressed": false } },
+      "presses": ["eye"],
+      "after": { "eye": { "role": "button", "pressed": true } }
+    },
+    {
+      "name": "the eye pressed twice is off again",
+      "nodes": [
+        { "id": "eye", "type": "IconButton", "props": { "icon": "eye", "label": { "kind": "literal", "value": "Hide balance" }, "variant": "ghost", "size": "md", "action": { "type": "toggleValue", "params": { "path": "account.balanceHidden" } } } }
+      ],
+      "session": { "account.balanceHidden": true },
+      "expect": { "eye": { "role": "button", "pressed": true } },
+      "presses": ["eye", "eye", "eye"],
+      "after": { "eye": { "role": "button", "pressed": false } }
+    },
+    {
+      "name": "several at once: every chip is its own toggle with its own path",
+      "nodes": [
+        { "id": "chips", "type": "Row", "props": { "gap": "xs", "align": "center", "justify": "start", "wrap": true, "scrollable": false }, "children": [
+          { "id": "travel", "type": "Container", "props": { "direction": "row", "gap": "xs", "action": { "type": "toggleValue", "params": { "path": "survey.topicTravel" } } }, "children": [{ "id": "travel-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Travel" }, "align": "start" } }] },
+          { "id": "food", "type": "Container", "props": { "direction": "row", "gap": "xs", "action": { "type": "toggleValue", "params": { "path": "survey.topicFood" } } }, "children": [{ "id": "food-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Food" }, "align": "start" } }] },
+          { "id": "books", "type": "Container", "props": { "direction": "row", "gap": "xs", "action": { "type": "toggleValue", "params": { "path": "survey.topicBooks" } } }, "children": [{ "id": "books-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Books" }, "align": "start" } }] }
+        ] }
+      ],
+      "session": { "survey.topicFood": true },
+      "expect": { "travel": { "role": "button", "pressed": false }, "food": { "role": "button", "pressed": true }, "books": { "role": "button", "pressed": false } },
+      "presses": ["travel", "books", "food"],
+      "after": { "travel": { "role": "button", "pressed": true }, "food": { "role": "button", "pressed": false }, "books": { "role": "button", "pressed": true } }
+    },
+    {
+      "name": "a scale of numbers: the option is chosen by the number",
+      "nodes": [
+        { "id": "scale", "type": "Row", "props": { "gap": "xs", "align": "center", "justify": "start", "wrap": false, "scrollable": false }, "children": [
+          { "id": "s0", "type": "Button", "props": { "label": { "kind": "literal", "value": "0" }, "variant": "ghost", "size": "sm", "action": { "type": "setValue", "params": { "path": "survey.score", "value": "0", "valueType": "number" } }, "fullWidth": false } },
+          { "id": "s1", "type": "Button", "props": { "label": { "kind": "literal", "value": "1" }, "variant": "ghost", "size": "sm", "action": { "type": "setValue", "params": { "path": "survey.score", "value": "1", "valueType": "number" } }, "fullWidth": false } },
+          { "id": "s2", "type": "Button", "props": { "label": { "kind": "literal", "value": "2" }, "variant": "ghost", "size": "sm", "action": { "type": "setValue", "params": { "path": "survey.score", "value": "2", "valueType": "number" } }, "fullWidth": false } }
+        ] }
+      ],
+      "session": {},
+      "expect": { "s0": { "role": "radio", "checked": false, "position": 1, "size": 3 }, "s1": { "role": "radio", "checked": false, "position": 2, "size": 3 }, "s2": { "role": "radio", "checked": false, "position": 3, "size": 3 } },
+      "presses": ["s2", "s0"],
+      "after": { "s0": { "role": "radio", "checked": true, "position": 1, "size": 3 }, "s1": { "role": "radio", "checked": false, "position": 2, "size": 3 }, "s2": { "role": "radio", "checked": false, "position": 3, "size": 3 } }
+    },
+    {
+      "name": "the button that clears the choice is a plain button",
+      "nodes": [
+        { "id": "segment", "type": "Row", "props": { "gap": "xs", "align": "center", "justify": "start", "wrap": false, "scrollable": false }, "children": [
+          { "id": "week", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+          { "id": "month", "type": "Button", "props": { "label": { "kind": "literal", "value": "Month" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } }, "fullWidth": false } },
+          { "id": "reset", "type": "Button", "props": { "label": { "kind": "literal", "value": "Reset" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period" } }, "fullWidth": false } }
+        ] }
+      ],
+      "session": { "account.period": "week" },
+      "expect": { "week": { "role": "radio", "checked": true, "position": 1, "size": 2 }, "month": { "role": "radio", "checked": false, "position": 2, "size": 2 }, "reset": { "role": "button" } },
+      "presses": ["reset"],
+      "after": { "week": { "role": "radio", "checked": false, "position": 1, "size": 2 }, "month": { "role": "radio", "checked": false, "position": 2, "size": 2 }, "reset": { "role": "button" } }
+    },
+    {
+      "name": "an option hidden by a condition is not on the screen and not counted",
+      "nodes": [
+        { "id": "segment", "type": "Row", "props": { "gap": "xs", "align": "center", "justify": "start", "wrap": false, "scrollable": false }, "children": [
+          { "id": "week", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+          { "id": "month", "type": "Button", "visibleIf": { "path": "survey.agreed", "op": "isTrue" }, "props": { "label": { "kind": "literal", "value": "Month" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } }, "fullWidth": false } },
+          { "id": "planned", "type": "Button", "props": { "label": { "kind": "literal", "value": "Planned" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "planned" } }, "fullWidth": false } }
+        ] }
+      ],
+      "session": {},
+      "expect": { "week": { "role": "radio", "checked": false, "position": 1, "size": 2 }, "month": "absent", "planned": { "role": "radio", "checked": false, "position": 2, "size": 2 } }
+    },
+    {
+      "name": "options under different parents keep their state and have no position",
+      "nodes": [
+        { "id": "grid", "type": "Grid", "props": { "columns": 2, "gap": "sm" }, "children": [
+          { "id": "cell-a", "type": "Column", "props": { "gap": "sm", "align": "start" }, "children": [
+            { "id": "gold", "type": "Button", "props": { "label": { "kind": "literal", "value": "Gold" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "gold" } }, "fullWidth": true } }
+          ] },
+          { "id": "cell-b", "type": "Column", "props": { "gap": "sm", "align": "start" }, "children": [
+            { "id": "silver", "type": "Button", "props": { "label": { "kind": "literal", "value": "Silver" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "silver" } }, "fullWidth": true } }
+          ] }
+        ] }
+      ],
+      "session": { "survey.goal": "silver" },
+      "expect": { "gold": { "role": "radio", "checked": false }, "silver": { "role": "radio", "checked": true } }
+    },
+    {
+      "name": "cards two by two: the children of a grid are one group",
+      "nodes": [
+        { "id": "grid", "type": "Grid", "props": { "columns": 2, "gap": "sm" }, "children": [
+          { "id": "gold", "type": "Column", "props": { "gap": "xs", "align": "start", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "gold" } } }, "children": [{ "id": "gold-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Gold" }, "align": "start" } }] },
+          { "id": "silver", "type": "Column", "props": { "gap": "xs", "align": "start", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "silver" } } }, "children": [{ "id": "silver-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Silver" }, "align": "start" } }] },
+          { "id": "bronze", "type": "Column", "props": { "gap": "xs", "align": "start", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "bronze" } } }, "children": [{ "id": "bronze-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Bronze" }, "align": "start" } }] },
+          { "id": "none", "type": "Column", "props": { "gap": "xs", "align": "start", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "none" } } }, "children": [{ "id": "none-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Not sure" }, "align": "start" } }] }
+        ] }
+      ],
+      "session": {},
+      "expect": { "gold": { "role": "radio", "checked": false, "position": 1, "size": 4 }, "none": { "role": "radio", "checked": false, "position": 4, "size": 4 } },
+      "presses": ["bronze-t"],
+      "after": { "gold": { "role": "radio", "checked": false, "position": 1, "size": 4 }, "bronze": { "role": "radio", "checked": true, "position": 3, "size": 4 } }
+    },
+    {
+      "name": "an invalid write action leaves a plain button without a state",
+      "nodes": [
+        { "id": "bad", "type": "Button", "props": { "label": { "kind": "literal", "value": "Agree" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.agreed", "value": "yes", "valueType": "boolean" } }, "fullWidth": false } }
+      ],
+      "invalidDocument": true,
+      "session": { "survey.agreed": true },
+      "expect": { "bad": { "role": "button" } },
+      "presses": ["bad"],
+      "after": { "bad": { "role": "button" } }
+    },
+    {
+      "name": "a disabled option stays an option and says it is disabled",
+      "nodes": [
+        { "id": "segment", "type": "Row", "props": { "gap": "xs", "align": "center", "justify": "start", "wrap": false, "scrollable": false }, "children": [
+          { "id": "week", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+          { "id": "month", "type": "Button", "props": { "label": { "kind": "literal", "value": "Month" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } }, "fullWidth": false, "disabledIf": { "path": "survey.name", "op": "isEmpty" } } }
+        ] }
+      ],
+      "session": {},
+      "expect": { "week": { "role": "radio", "checked": false, "position": 1, "size": 2 }, "month": { "role": "radio", "checked": false, "position": 2, "size": 2, "disabled": true } },
+      "presses": ["month"],
+      "after": { "month": { "role": "radio", "checked": false, "position": 2, "size": 2, "disabled": true } }
+    },
+    {
+      "name": "a choice group is what it was: its rows are radios of the group, without a position",
+      "nodes": [
+        { "id": "group", "type": "ChoiceGroup", "props": { "value": { "kind": "binding", "path": "survey.goal", "fallback": "" }, "gap": "none" }, "children": [
+          { "id": "opt-gold", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "Gold" }, "trailing": { "kind": "radio", "optionValue": "gold" } } },
+          { "id": "opt-silver", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "Silver" }, "trailing": { "kind": "radio", "optionValue": "silver" } } }
+        ] },
+        { "id": "card", "type": "Button", "props": { "label": { "kind": "literal", "value": "Gold" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "gold" } }, "fullWidth": false } }
+      ],
+      "session": {},
+      "expect": { "opt-gold": { "role": "radio", "checked": false }, "opt-silver": { "role": "radio", "checked": false }, "card": { "role": "radio", "checked": false } },
+      "presses": ["card"],
+      "after": { "opt-gold": { "role": "radio", "checked": true }, "opt-silver": { "role": "radio", "checked": false }, "card": { "role": "radio", "checked": true } }
+    },
+    {
+      "name": "a card that is an option with a toggle inside: two controls, two states",
+      "nodes": [
+        { "id": "cards", "type": "Column", "props": { "gap": "sm", "align": "start" }, "children": [
+          { "id": "gold", "type": "Row", "props": { "gap": "sm", "align": "center", "justify": "between", "wrap": false, "scrollable": false, "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "gold" } } }, "children": [
+            { "id": "gold-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Gold" }, "align": "start" } },
+            { "id": "star", "type": "IconButton", "props": { "icon": "star", "label": { "kind": "literal", "value": "Favourite" }, "variant": "ghost", "size": "sm", "action": { "type": "toggleValue", "params": { "path": "survey.agreed" } } } }
+          ] },
+          { "id": "silver", "type": "Row", "props": { "gap": "sm", "align": "center", "justify": "between", "wrap": false, "scrollable": false, "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "silver" } } }, "children": [
+            { "id": "silver-t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Silver" }, "align": "start" } }
+          ] }
+        ] }
+      ],
+      "session": {},
+      "expect": { "gold": { "role": "radio", "checked": false, "position": 1, "size": 2 }, "star": { "role": "button", "pressed": false } },
+      "presses": ["star"],
+      "after": { "gold": { "role": "radio", "checked": false, "position": 1, "size": 2 }, "star": { "role": "button", "pressed": true }, "silver": { "role": "radio", "checked": false, "position": 2, "size": 2 } }
+    }
+  ],
+  "writeFormCases": [
+    {
+      "name": "a required choice group is filled by a card that writes its path",
+      "nodes": [
+        { "id": "group", "type": "ChoiceGroup", "props": { "value": { "kind": "binding", "path": "survey.goal", "fallback": "" }, "gap": "none", "required": true }, "children": [
+          { "id": "opt-gold", "type": "ListTile", "props": { "leading": { "kind": "none" }, "title": { "kind": "literal", "value": "Gold" }, "trailing": { "kind": "radio", "optionValue": "gold" } } }
+        ] },
+        { "id": "card", "type": "Button", "props": { "label": { "kind": "literal", "value": "Silver" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.goal", "value": "silver" } }, "fullWidth": false } },
+        { "id": "reset", "type": "Button", "props": { "label": { "kind": "literal", "value": "Reset" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.goal" } }, "fullWidth": false } },
+        { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "requiresFilled": true } }
+      ],
+      "presses": ["card", "reset", "card"],
+      "disabled": { "next": [true, false, true, false] }
+    },
+    {
+      "name": "options without a group field: the button asks the path itself with disabledIf",
+      "nodes": [
+        { "id": "segment", "type": "Row", "props": { "gap": "xs", "align": "center", "justify": "start", "wrap": false, "scrollable": false }, "children": [
+          { "id": "week", "type": "Button", "props": { "label": { "kind": "literal", "value": "Week" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "week" } }, "fullWidth": false } },
+          { "id": "month", "type": "Button", "props": { "label": { "kind": "literal", "value": "Month" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "account.period", "value": "month" } }, "fullWidth": false } }
+        ] },
+        { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "disabledIf": { "path": "account.period", "op": "isEmpty" } } }
+      ],
+      "presses": ["month", "week"],
+      "disabled": { "next": [true, false, false] }
+    },
+    {
+      "name": "a required checkbox is filled and emptied by a toggle action on its path",
+      "nodes": [
+        { "id": "agree", "type": "Checkbox", "props": { "label": { "kind": "literal", "value": "I agree" }, "value": { "kind": "binding", "path": "survey.agreed" }, "required": true } },
+        { "id": "flip", "type": "Button", "props": { "label": { "kind": "literal", "value": "Flip" }, "variant": "ghost", "action": { "type": "toggleValue", "params": { "path": "survey.agreed" } }, "fullWidth": false } },
+        { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "requiresFilled": true } }
+      ],
+      "presses": ["flip", "flip"],
+      "disabled": { "next": [true, false, true] }
+    },
+    {
+      "name": "a required checkbox is not filled by a written false",
+      "nodes": [
+        { "id": "agree", "type": "Checkbox", "props": { "label": { "kind": "literal", "value": "I agree" }, "value": { "kind": "binding", "path": "survey.agreed" }, "required": true } },
+        { "id": "no", "type": "Button", "props": { "label": { "kind": "literal", "value": "No" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.agreed", "value": "false", "valueType": "boolean" } }, "fullWidth": false } },
+        { "id": "yes", "type": "Button", "props": { "label": { "kind": "literal", "value": "Yes" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.agreed", "value": "true", "valueType": "boolean" } }, "fullWidth": false } },
+        { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "requiresFilled": true } }
+      ],
+      "presses": ["no", "yes", "no"],
+      "disabled": { "next": [true, true, false, true] }
+    },
+    {
+      "name": "a required number field is filled by a written number and emptied by a cleared one",
+      "nodes": [
+        { "id": "age", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Age" }, "value": { "kind": "binding", "path": "survey.age" }, "valueType": "number", "required": true } },
+        { "id": "thirty", "type": "Button", "props": { "label": { "kind": "literal", "value": "30" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.age", "value": "30", "valueType": "number" } }, "fullWidth": false } },
+        { "id": "clear", "type": "Button", "props": { "label": { "kind": "literal", "value": "Clear" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.age", "value": "", "valueType": "number" } }, "fullWidth": false } },
+        { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "requiresFilled": true } }
+      ],
+      "presses": ["thirty", "clear"],
+      "disabled": { "next": [true, false, true] }
+    },
+    {
+      "name": "a required text field is not filled by written spaces",
+      "nodes": [
+        { "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" }, "value": { "kind": "binding", "path": "survey.name" }, "required": true } },
+        { "id": "spaces", "type": "Button", "props": { "label": { "kind": "literal", "value": "Spaces" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.name", "value": "   " } }, "fullWidth": false } },
+        { "id": "alex", "type": "Button", "props": { "label": { "kind": "literal", "value": "Alex" }, "variant": "ghost", "action": { "type": "setValue", "params": { "path": "survey.name", "value": "Alex" } }, "fullWidth": false } },
+        { "id": "next", "type": "Button", "props": { "label": { "kind": "literal", "value": "Next" }, "variant": "primary", "action": { "type": "none" }, "fullWidth": true, "requiresFilled": true } }
+      ],
+      "presses": ["spaces", "alex"],
+      "disabled": { "next": [true, true, false] }
+    }
+  ],
+  "inputPartsNote": "9.19.0, parts of a text field — NEW groups, the groups above are untouched: the box of the field itself (fieldBoxCases), the row inside the box with a mark at the start and at the end (affixRowCases), the text of the character counter (counterCases), the row under the box (noteRowCases), documents (partsDocumentCases). Data — «x-style.layout.inputParts». Starts are measured from the LOGICAL start of the box by the direction of the SCREEN; the left edge in a right-to-left screen is «box − start − width» (rows with «rtl» give it). «null» means «absent».",
+  "fieldBoxCases": [
+    { "name": "one line, nothing named — the built-in box", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 1, "expect": 46 },
+    { "name": "three lines", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 3, "expect": 86 },
+    { "name": "border of 2 is part of the natural height", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 1, "borderWidth": 2, "expect": 48 },
+    { "name": "border of 4, two lines", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 2, "borderWidth": 4, "expect": 72 },
+    { "name": "border of 0 is out of range — the built-in 1", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 1, "borderWidth": 0, "expect": 46 },
+    { "name": "border of 5 is out of range", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 1, "borderWidth": 5, "expect": 46 },
+    { "name": "a fraction is not a border width", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 1, "borderWidth": 1.5, "expect": 46 },
+    { "name": "named height of a one-line field", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 1, "height": 56, "expect": 56 },
+    { "name": "a named height is exact: the border does not add to it", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 1, "height": 56, "borderWidth": 3, "expect": 56 },
+    { "name": "the smallest named height", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 1, "height": 32, "expect": 32 },
+    { "name": "the largest named height", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 1, "height": 120, "expect": 120 },
+    { "name": "height under the limit — natural", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 1, "height": 31, "expect": 46 },
+    { "name": "height over the limit — natural", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 1, "height": 121, "expect": 46 },
+    { "name": "height as a string — natural", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 1, "height": "56", "expect": 46 },
+    { "name": "a multiline field does not read the height", "metrics": { "textLine": 20, "paddingBlock": 12 }, "lines": 3, "height": 56, "expect": 86 },
+    { "name": "a larger line of the theme", "metrics": { "textLine": 24, "paddingBlock": 16 }, "lines": 1, "borderWidth": 2, "expect": 60 }
+  ],
+  "affixRowCases": [
+    { "name": "320: no marks — the text takes the box inside the border and padding", "boxInline": 288, "border": 1, "paddingInline": 12, "gap": 8, "expect": { "prefixStart": null, "textStart": 13, "textInline": 262, "suffixStart": null } },
+    { "name": "320: a mark at the start", "boxInline": 288, "border": 1, "paddingInline": 12, "gap": 8, "prefix": 14, "expect": { "prefixStart": 13, "textStart": 35, "textInline": 240, "suffixStart": null } },
+    { "name": "320: a mark at the end", "boxInline": 288, "border": 1, "paddingInline": 12, "gap": 8, "suffix": 9, "expect": { "prefixStart": null, "textStart": 13, "textInline": 245, "suffixStart": 266 } },
+    { "name": "320: both marks", "boxInline": 288, "border": 1, "paddingInline": 12, "gap": 8, "prefix": 14, "suffix": 9, "expect": { "prefixStart": 13, "textStart": 35, "textInline": 223, "suffixStart": 266 }, "rtl": { "prefixX": 261, "textX": 30, "suffixX": 13 } },
+    { "name": "393: both marks — the text takes the rest", "boxInline": 361, "border": 1, "paddingInline": 12, "gap": 8, "prefix": 14, "suffix": 9, "expect": { "prefixStart": 13, "textStart": 35, "textInline": 296, "suffixStart": 339 }, "rtl": { "prefixX": 334, "textX": 30, "suffixX": 13 } },
+    { "name": "a wider border moves the row", "boxInline": 288, "border": 2, "paddingInline": 12, "gap": 8, "prefix": 14, "expect": { "prefixStart": 14, "textStart": 36, "textInline": 238, "suffixStart": null } },
+    { "name": "marks never shrink: the text gets nothing", "boxInline": 60, "border": 1, "paddingInline": 12, "gap": 8, "prefix": 30, "suffix": 30, "expect": { "prefixStart": 13, "textStart": 51, "textInline": 0, "suffixStart": 59 } }
+  ],
+  "counterCases": [
+    { "name": "empty field", "props": { "counter": true, "maxLength": 280 }, "shown": "", "expect": "0 / 280" },
+    { "name": "four letters", "props": { "counter": true, "maxLength": 280 }, "shown": "Alex", "expect": "4 / 280" },
+    { "name": "an emoji of a surrogate pair is one", "props": { "counter": true, "maxLength": 10 }, "shown": "😀a😀", "expect": "3 / 10" },
+    { "name": "a flag is two code points", "props": { "counter": true, "maxLength": 10 }, "shown": "🇺🇦", "expect": "2 / 10" },
+    { "name": "a letter with a combining mark is two", "props": { "counter": true, "maxLength": 10 }, "shown": "é", "expect": "2 / 10" },
+    { "name": "a family joined with U+200D is five", "props": { "counter": true, "maxLength": 10 }, "shown": "👨‍👩‍👧", "expect": "5 / 10" },
+    { "name": "Arabic text — ASCII digits all the same", "props": { "counter": true, "maxLength": 20 }, "shown": "مرحبا", "expect": "5 / 20" },
+    { "name": "exactly at the limit", "props": { "counter": true, "maxLength": 4 }, "shown": "Alex", "expect": "4 / 4" },
+    { "name": "a text longer than the limit is counted as cut", "props": { "counter": true, "maxLength": 4 }, "shown": "Alexander", "expect": "4 / 4" },
+    { "name": "the largest limit — no grouping", "props": { "counter": true, "maxLength": 10000 }, "shown": "", "expect": "0 / 10000" },
+    { "name": "no word — no counter", "props": { "maxLength": 280 }, "shown": "Alex", "expect": null },
+    { "name": "«false» is not the word", "props": { "counter": false, "maxLength": 280 }, "shown": "Alex", "expect": null },
+    { "name": "a string is not the word", "props": { "counter": "true", "maxLength": 280 }, "shown": "Alex", "expect": null },
+    { "name": "no limit — nothing to count to", "props": { "counter": true }, "shown": "Alex", "expect": null },
+    { "name": "a limit of zero is no limit", "props": { "counter": true, "maxLength": 0 }, "shown": "Alex", "expect": null },
+    { "name": "a fraction is no limit", "props": { "counter": true, "maxLength": 2.5 }, "shown": "Alex", "expect": null }
+  ],
+  "noteRowCases": [
+    { "name": "320: no counter — the note takes the row", "rowInline": 288, "gap": 8, "expect": { "noteInline": 288, "counterStart": null } },
+    { "name": "320: the counter at the end, the note takes the rest", "rowInline": 288, "gap": 8, "counter": 43, "expect": { "noteInline": 237, "counterStart": 245 }, "rtl": { "counterX": 0 } },
+    { "name": "393: the same", "rowInline": 361, "gap": 8, "counter": 43, "expect": { "noteInline": 310, "counterStart": 318 }, "rtl": { "counterX": 0 } },
+    { "name": "a counter wider than the row: the note gets nothing", "rowInline": 30, "gap": 8, "counter": 43, "expect": { "noteInline": 0, "counterStart": 0 } }
+  ],
+  "partsDocumentCases": [
+    { "name": "a field with every new prop", "props": { "fieldRadius": 16, "fieldBackground": { "token": "primary", "opacity": 0.1 }, "fieldBorderColor": "primary", "fieldBorderWidth": 2, "fieldHeight": 56, "prefix": { "kind": "icon", "icon": "mail" }, "suffix": { "kind": "text", "text": { "kind": "literal", "value": "₴" } }, "maxLength": 280, "counter": true }, "schema": true, "codes": [] },
+    { "name": "a counter without a limit is not an error: it is not read", "props": { "counter": true }, "schema": true, "codes": [] },
+    { "name": "«counter: false» — the word is «true» or no field", "props": { "counter": false, "maxLength": 10 }, "schema": false, "codes": [] },
+    { "name": "border width of zero", "props": { "fieldBorderWidth": 0 }, "schema": false, "codes": [] },
+    { "name": "border width over four", "props": { "fieldBorderWidth": 5 }, "schema": false, "codes": [] },
+    { "name": "height under the limit", "props": { "fieldHeight": 31 }, "schema": false, "codes": [] },
+    { "name": "radius over the limit", "props": { "fieldRadius": 300 }, "schema": false, "codes": [] },
+    { "name": "a mark is a text OR an icon", "props": { "prefix": { "kind": "text", "text": { "kind": "literal", "value": "₴" }, "icon": "mail" } }, "schema": false, "codes": [] },
+    { "name": "a text mark without a text", "props": { "suffix": { "kind": "text" } }, "schema": false, "codes": [] },
+    { "name": "an icon outside the set", "props": { "prefix": { "kind": "icon", "icon": "no-such-icon" } }, "schema": false, "codes": [] },
+    { "name": "a plain string is not a mark", "props": { "suffix": "₴" }, "schema": false, "codes": [] },
+    { "name": "a radius token the theme does not know", "props": { "fieldRadius": "roundNope" }, "schema": true, "codes": ["unknown_token"] },
+    { "name": "a background token the theme does not know", "props": { "fieldBackground": "paperNope" }, "schema": true, "codes": ["unknown_token"] },
+    { "name": "a tinted border token the theme does not know", "props": { "fieldBorderColor": { "token": "inkNope", "opacity": 0.5 } }, "schema": true, "codes": ["unknown_token"] },
+    { "name": "a mark bound to a path the data contract does not know", "props": { "suffix": { "kind": "text", "text": { "kind": "binding", "path": "account.nope", "fallback": "₴" } } }, "schema": true, "codes": ["unknown_binding_path"] },
+    { "name": "a mark of eight characters is published", "props": { "prefix": { "kind": "text", "text": { "kind": "literal", "value": "12345678" } } }, "schema": true, "codes": [] },
+    { "name": "a mark of nine characters is not published: the mark does not shrink", "props": { "prefix": { "kind": "text", "text": { "kind": "literal", "value": "123456789" } } }, "schema": true, "codes": ["text_too_long"] },
+    { "name": "a bound mark with a fallback of nine characters is not published", "props": { "suffix": { "kind": "text", "text": { "kind": "binding", "path": "user.firstName", "fallback": "123456789" } } }, "schema": true, "codes": ["text_too_long"] },
+    { "name": "a named height on a field of several lines is not published: it is not read", "props": { "lines": 3, "fieldHeight": 56 }, "schema": true, "codes": ["part_field_not_read"] },
+    { "name": "a named height on a field with «lines: 1» is published", "props": { "lines": 1, "fieldHeight": 56 }, "schema": true, "codes": [] }
+  ],
+  "emptinessNote": "Schema 9.19.0: `isEmpty` / `isNotEmpty` are legal on a path of ANY type (`x-conditions`), and what is judged is the VALUE under the path, not the type of the path. `emptinessCases`: `value` is what lies under the path (no `value` key — nothing lies there); `isEmpty` and `isNotEmpty` are the answers of the two operators. `emptinessDocumentCases`: `condition` stands as `disabledIf` of a button; `codes` are the codes of the validator (empty: publishable). The paths are of the default data contract: `survey.goal` a text, `survey.score` a number, `survey.agreed` a flag, `offer.endsAt` a date, `items` a collection.",
+  "emptinessCases": [
+    { "name": "nothing under the path", "isEmpty": true, "isNotEmpty": false },
+    { "name": "null", "value": null, "isEmpty": true, "isNotEmpty": false },
+    { "name": "the empty string", "value": "", "isEmpty": true, "isNotEmpty": false },
+    { "name": "a text", "value": "gold", "isEmpty": false, "isNotEmpty": true },
+    { "name": "a string of spaces is not empty: the value is not trimmed", "value": "  ", "isEmpty": false, "isNotEmpty": true },
+    { "name": "a number", "value": 5, "isEmpty": false, "isNotEmpty": true },
+    { "name": "zero is a number: «0 is chosen» is a choice", "value": 0, "isEmpty": false, "isNotEmpty": true },
+    { "name": "a negative fraction", "value": -1.5, "isEmpty": false, "isNotEmpty": true },
+    { "name": "a cleared number field writes the empty string: empty", "value": "", "isEmpty": true, "isNotEmpty": false },
+    { "name": "the flag true", "value": true, "isEmpty": false, "isNotEmpty": true },
+    { "name": "the flag false is an answer, not an absence", "value": false, "isEmpty": false, "isNotEmpty": true },
+    { "name": "a list without records", "value": [], "isEmpty": true, "isNotEmpty": false },
+    { "name": "a list with a record", "value": [{ "id": "a" }], "isEmpty": false, "isNotEmpty": true },
+    { "name": "a date", "value": "2026-10-31T12:00:00.000Z", "isEmpty": false, "isNotEmpty": true }
+  ],
+  "emptinessDocumentCases": [
+    { "name": "isEmpty on a text path", "condition": { "path": "survey.goal", "op": "isEmpty" }, "codes": [] },
+    { "name": "isEmpty on a number path: «not chosen yet» for a scale", "condition": { "path": "survey.score", "op": "isEmpty" }, "codes": [] },
+    { "name": "isNotEmpty on a number path", "condition": { "path": "survey.score", "op": "isNotEmpty" }, "codes": [] },
+    { "name": "isEmpty on a flag path: «not touched yet»", "condition": { "path": "survey.agreed", "op": "isEmpty" }, "codes": [] },
+    { "name": "isNotEmpty on a flag path", "condition": { "path": "survey.agreed", "op": "isNotEmpty" }, "codes": [] },
+    { "name": "isEmpty on a date path", "condition": { "path": "offer.endsAt", "op": "isEmpty" }, "codes": [] },
+    { "name": "isEmpty on a collection", "condition": { "path": "items", "op": "isEmpty" }, "codes": [] },
+    { "name": "isTrue on a number path stays a mismatch", "condition": { "path": "survey.score", "op": "isTrue" }, "codes": ["visibility_type_mismatch"] },
+    { "name": "gt on a flag path stays a mismatch", "condition": { "path": "survey.agreed", "op": "gt", "value": 0 }, "codes": ["visibility_type_mismatch"] },
+    { "name": "isEmpty on a path the data contract does not know", "condition": { "path": "survey.nope", "op": "isEmpty" }, "codes": ["unknown_binding_path"] }
+  ],
+  "valuePathNote": "Schema 9.23.0: a comparison may take its operand from ANOTHER data path — «valuePath» instead of «value», with the same comparison operators (rules: x-listFilter.valuePath). `valuePathCases`: `condition` stands as `visibleIf` (or `styleWhen`, `disabledIf` — one form), `data` is the flat scope both paths are read in, `holds` is the answer. No value under «valuePath» (absent, null, the empty string) — the condition does NOT hold, `eq` and `neq` alike; inside «Repeater.where» the same comparison holds for every record (repeater-filter-cases.json).",
+  "valuePathCases": [
+    {"name": "eq: the two values are the same", "condition": {"path": "ui.category", "op": "eq", "valuePath": "ui.lastCategory"}, "data": {"ui.category": "fun", "ui.lastCategory": "fun"}, "holds": true},
+    {"name": "eq: the two values differ", "condition": {"path": "ui.category", "op": "eq", "valuePath": "ui.lastCategory"}, "data": {"ui.category": "fun", "ui.lastCategory": "food"}, "holds": false},
+    {"name": "neq: the two values differ", "condition": {"path": "ui.category", "op": "neq", "valuePath": "ui.lastCategory"}, "data": {"ui.category": "fun", "ui.lastCategory": "food"}, "holds": true},
+    {"name": "neq: the two values are the same", "condition": {"path": "ui.category", "op": "neq", "valuePath": "ui.lastCategory"}, "data": {"ui.category": "fun", "ui.lastCategory": "fun"}, "holds": false},
+    {"name": "the operand path has nothing: eq does not hold", "condition": {"path": "ui.category", "op": "eq", "valuePath": "ui.lastCategory"}, "data": {"ui.category": "fun"}, "holds": false},
+    {"name": "the operand path has nothing: neq does not hold either", "condition": {"path": "ui.category", "op": "neq", "valuePath": "ui.lastCategory"}, "data": {"ui.category": "fun"}, "holds": false},
+    {"name": "the empty string under the operand path: no operand", "condition": {"path": "ui.category", "op": "neq", "valuePath": "ui.lastCategory"}, "data": {"ui.category": "fun", "ui.lastCategory": ""}, "holds": false},
+    {"name": "null under the operand path: no operand", "condition": {"path": "ui.category", "op": "eq", "valuePath": "ui.lastCategory"}, "data": {"ui.category": "fun", "ui.lastCategory": null}, "holds": false},
+    {"name": "nothing under the path itself: no answer", "condition": {"path": "ui.category", "op": "neq", "valuePath": "ui.lastCategory"}, "data": {"ui.lastCategory": "fun"}, "holds": false},
+    {"name": "the path and the operand both empty strings: no operand", "condition": {"path": "ui.category", "op": "eq", "valuePath": "ui.lastCategory"}, "data": {"ui.category": "", "ui.lastCategory": ""}, "holds": false},
+    {"name": "the text is compared as it is: case counts", "condition": {"path": "ui.category", "op": "eq", "valuePath": "ui.lastCategory"}, "data": {"ui.category": "Fun", "ui.lastCategory": "fun"}, "holds": false},
+    {"name": "the text is not trimmed", "condition": {"path": "ui.category", "op": "eq", "valuePath": "ui.lastCategory"}, "data": {"ui.category": "fun ", "ui.lastCategory": "fun"}, "holds": false},
+    {"name": "numbers: gt", "condition": {"path": "ui.budget", "op": "gt", "valuePath": "ui.spent"}, "data": {"ui.budget": 2000, "ui.spent": 1800}, "holds": true},
+    {"name": "numbers: gte at equality", "condition": {"path": "ui.budget", "op": "gte", "valuePath": "ui.spent"}, "data": {"ui.budget": 1800, "ui.spent": 1800}, "holds": true},
+    {"name": "numbers: lt", "condition": {"path": "ui.budget", "op": "lt", "valuePath": "ui.spent"}, "data": {"ui.budget": 2000, "ui.spent": 1800}, "holds": false},
+    {"name": "numbers: lte below", "condition": {"path": "ui.budget", "op": "lte", "valuePath": "ui.spent"}, "data": {"ui.budget": 100, "ui.spent": 1800}, "holds": true},
+    {"name": "numbers: eq of 0 and 0", "condition": {"path": "ui.budget", "op": "eq", "valuePath": "ui.spent"}, "data": {"ui.budget": 0, "ui.spent": 0}, "holds": true},
+    {"name": "a cleared number field under the operand path: no operand", "condition": {"path": "ui.budget", "op": "gt", "valuePath": "ui.spent"}, "data": {"ui.budget": 2000, "ui.spent": ""}, "holds": false},
+    {"name": "flags: eq of two flags", "condition": {"path": "ui.a", "op": "eq", "valuePath": "ui.b"}, "data": {"ui.a": false, "ui.b": false}, "holds": true},
+    {"name": "flags: neq of true and false", "condition": {"path": "ui.a", "op": "neq", "valuePath": "ui.b"}, "data": {"ui.a": true, "ui.b": false}, "holds": true},
+    {"name": "dates are compared as text", "condition": {"path": "ui.from", "op": "eq", "valuePath": "ui.to"}, "data": {"ui.from": "2026-10-17T18:00:00.000Z", "ui.to": "2026-10-17T18:00:00.000Z"}, "holds": true},
+    {"name": "the operand path may be the path itself", "condition": {"path": "ui.category", "op": "eq", "valuePath": "ui.category"}, "data": {"ui.category": "fun"}, "holds": true}
+  ]
+}

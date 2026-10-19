@@ -1,0 +1,595 @@
+{
+  "schemaVersion": "9.14.0",
+  "documentId": "survey",
+  "name": "Survey: required fields, a disabled button, a number field",
+  "initialScreenId": "goal",
+  "screens": [
+    {
+      "screenId": "goal",
+      "name": "Step 1: one answer",
+      "root": {
+        "id": "goal-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "goal-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Quick survey"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "goal-step",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Step 1 of 3"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "goal-question",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "What brings you to the programme?"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "goal-choice",
+            "type": "ChoiceGroup",
+            "props": {
+              "value": {
+                "kind": "binding",
+                "path": "survey.goal",
+                "fallback": ""
+              },
+              "gap": "none",
+              "required": true
+            },
+            "children": [
+              {
+                "id": "rewards",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "none"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Rewards"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "I want to exchange points for gifts"
+                  },
+                  "trailing": {
+                    "kind": "radio",
+                    "optionValue": "rewards"
+                  }
+                }
+              },
+              {
+                "id": "savings",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "none"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Savings"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "I want to spend less on what I already buy"
+                  },
+                  "trailing": {
+                    "kind": "radio",
+                    "optionValue": "savings"
+                  }
+                }
+              },
+              {
+                "id": "curious",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "none"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Just looking"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "I have not decided yet"
+                  },
+                  "trailing": {
+                    "kind": "radio",
+                    "optionValue": "curious"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "goal-next",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Next"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "details"
+                }
+              },
+              "fullWidth": true,
+              "requiresFilled": true
+            },
+            "pin": "bottom"
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "details",
+      "name": "Step 2: text and a number",
+      "root": {
+        "id": "details-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "details-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "About you"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "details-step",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Step 2 of 3"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "name",
+            "type": "TextField",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Your name"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "survey.name"
+              },
+              "required": true,
+              "placeholder": {
+                "kind": "literal",
+                "value": "How should we address you"
+              },
+              "maxLength": 40
+            }
+          },
+          {
+            "id": "age",
+            "type": "TextField",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Your age"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "survey.age"
+              },
+              "valueType": "number",
+              "required": true,
+              "helper": {
+                "kind": "literal",
+                "value": "Full years, digits only."
+              },
+              "maxLength": 3
+            }
+          },
+          {
+            "id": "comment",
+            "type": "TextField",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Anything to add?"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "survey.comment"
+              },
+              "placeholder": {
+                "kind": "literal",
+                "value": "Optional"
+              },
+              "maxLength": 400,
+              "lines": 3
+            }
+          },
+          {
+            "id": "details-next",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Next"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "consent"
+                }
+              },
+              "fullWidth": true,
+              "requiresFilled": true
+            },
+            "pin": "bottom"
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "consent",
+      "name": "Step 3: consent",
+      "root": {
+        "id": "consent-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "consent-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Almost done"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "consent-step",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Step 3 of 3"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "consent-name",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "binding",
+                "path": "survey.name",
+                "fallback": "—"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "agree",
+            "type": "Checkbox",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "I agree that my answers are used to improve the programme"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "survey.agreed"
+              },
+              "required": true
+            }
+          },
+          {
+            "id": "consent-age-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "The survey is for people of 16 and older."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "visibleIf": {
+              "path": "survey.age",
+              "op": "lt",
+              "value": 16
+            },
+            "style": {
+              "color": "danger",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "send",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Send answers"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "done"
+                }
+              },
+              "fullWidth": true,
+              "requiresFilled": true,
+              "disabledIf": {
+                "path": "survey.age",
+                "op": "lt",
+                "value": 16
+              }
+            },
+            "pin": "bottom"
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "done",
+      "name": "Thank you",
+      "root": {
+        "id": "done-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "done-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Thank you"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "done-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Your answers are sent"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "done-text",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "We read every one of them. You can take the survey again at any time."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "again",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Start over"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.section",
+                "params": {
+                  "screenId": "goal"
+                }
+              },
+              "fullWidth": true
+            },
+            "pin": "bottom"
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "goal/goal-bar/title": "Коротке опитування",
+        "goal/goal-step/content": "Крок 1 із 3",
+        "goal/goal-question/content": "Що привело вас у програму?",
+        "goal/rewards/title": "Нагороди",
+        "goal/rewards/subtitle": "Хочу обмінювати бали на подарунки",
+        "goal/savings/title": "Заощадження",
+        "goal/savings/subtitle": "Хочу менше витрачати на те, що й так купую",
+        "goal/curious/title": "Просто дивлюся",
+        "goal/curious/subtitle": "Ще не вирішила",
+        "goal/goal-next/label": "Далі",
+        "details/details-bar/title": "Про вас",
+        "details/details-step/content": "Крок 2 із 3",
+        "details/name/label": "Ваше ім’я",
+        "details/name/placeholder": "Як до вас звертатися",
+        "details/age/label": "Ваш вік",
+        "details/age/helper": "Повних років, лише цифри.",
+        "details/comment/label": "Хочете щось додати?",
+        "details/comment/placeholder": "Необов’язково",
+        "details/details-next/label": "Далі",
+        "consent/consent-bar/title": "Майже все",
+        "consent/consent-step/content": "Крок 3 із 3",
+        "consent/agree/label": "Погоджуюсь, що мої відповіді використають, щоб покращити програму",
+        "consent/consent-age-note/content": "Опитування — для тих, кому вже є 16.",
+        "consent/send/label": "Надіслати відповіді",
+        "done/done-bar/title": "Дякуємо",
+        "done/done-title/content": "Ваші відповіді надіслано",
+        "done/done-text/content": "Ми читаємо кожну. Пройти опитування можна ще раз будь-коли.",
+        "done/again/label": "Почати спочатку"
+      },
+      "ar": {
+        "goal/goal-bar/title": "استبيان قصير",
+        "goal/goal-step/content": "الخطوة 1 من 3",
+        "goal/goal-question/content": "ما الذي جاء بك إلى البرنامج؟",
+        "goal/rewards/title": "المكافآت",
+        "goal/rewards/subtitle": "أريد استبدال النقاط بالهدايا",
+        "goal/savings/title": "التوفير",
+        "goal/savings/subtitle": "أريد أن أنفق أقل على ما أشتريه أصلاً",
+        "goal/curious/title": "أتصفح فقط",
+        "goal/curious/subtitle": "لم أقرر بعد",
+        "goal/goal-next/label": "التالي",
+        "details/details-bar/title": "عنك",
+        "details/details-step/content": "الخطوة 2 من 3",
+        "details/name/label": "اسمك",
+        "details/name/placeholder": "كيف نخاطبك",
+        "details/age/label": "عمرك",
+        "details/age/helper": "بالسنوات الكاملة، أرقام فقط.",
+        "details/comment/label": "هل تريد إضافة شيء؟",
+        "details/comment/placeholder": "اختياري",
+        "details/details-next/label": "التالي",
+        "consent/consent-bar/title": "أوشكنا على الانتهاء",
+        "consent/consent-step/content": "الخطوة 3 من 3",
+        "consent/agree/label": "أوافق على استخدام إجاباتي لتحسين البرنامج",
+        "consent/consent-age-note/content": "الاستبيان لمن أتمّ 16 عاماً.",
+        "consent/send/label": "إرسال الإجابات",
+        "done/done-bar/title": "شكراً لك",
+        "done/done-title/content": "تم إرسال إجاباتك",
+        "done/done-text/content": "نقرأ كل إجابة. يمكنك إعادة الاستبيان في أي وقت.",
+        "done/again/label": "البدء من جديد"
+      }
+    }
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "description": "A value that changes from data (schema 9.21.0, field «animateChanges», rules: x-valueTransition). Shared by every reader. «curveCases» — the eased share e at a share p of the duration. «stepCases» — the value shown at t milliseconds after the transition began: «digits» absent means a scale (no step). «decisionCases» — whether a change of data gives a transition, and if not, why (the first reason in the order of x-valueTransition.whenNoTransition.order). «targetCases» — which numbers of a node transition. Written by hand; the moments are quarters of the duration, where the curve is exact. Compare numbers with a tolerance of 1e-9.",
+  "durationMs": 700,
+  "curveCases": [
+    { "name": "start", "p": 0, "e": 0 },
+    { "name": "a quarter", "p": 0.25, "e": 0.578125 },
+    { "name": "a half", "p": 0.5, "e": 0.875 },
+    { "name": "three quarters", "p": 0.75, "e": 0.984375 },
+    { "name": "end", "p": 1, "e": 1 },
+    { "name": "past the end stays at the end", "p": 1.5, "e": 1 },
+    { "name": "before the start stays at the start", "p": -0.5, "e": 0 }
+  ],
+  "stepCases": [
+    { "name": "whole numbers: the first frame is the old value", "from": 1240, "to": 1580, "t": 0, "digits": 0, "expected": 1240 },
+    { "name": "whole numbers: a quarter of the time is more than half of the way", "from": 1240, "to": 1580, "t": 175, "digits": 0, "expected": 1436 },
+    { "name": "whole numbers: half of the time", "from": 1240, "to": 1580, "t": 350, "digits": 0, "expected": 1537 },
+    { "name": "whole numbers: three quarters of the time", "from": 1240, "to": 1580, "t": 525, "digits": 0, "expected": 1574 },
+    { "name": "whole numbers: the end is exactly the new value", "from": 1240, "to": 1580, "t": 700, "digits": 0, "expected": 1580 },
+    { "name": "whole numbers: after the end — the new value", "from": 1240, "to": 1580, "t": 5000, "digits": 0, "expected": 1580 },
+    { "name": "going down: the step is cut towards the old value", "from": 1580, "to": 1240, "t": 350, "digits": 0, "expected": 1283 },
+    { "name": "through zero: whole steps", "from": -50, "to": 50, "t": 350, "digits": 0, "expected": 37 },
+    { "name": "money in USD: two digits", "from": 10.5, "to": 20.25, "t": 350, "digits": 2, "expected": 19.03 },
+    { "name": "money in JOD: three digits", "from": 1.5, "to": 2, "t": 350, "digits": 3, "expected": 1.937 },
+    { "name": "a number with a fraction: three digits", "from": 0.1, "to": 3.1, "t": 350, "digits": 3, "expected": 2.725 },
+    { "name": "a number without a format: three digits", "from": 1.5, "to": 2.5, "t": 175, "digits": 3, "expected": 2.078 },
+    { "name": "the precision trap: 0.3 × 0.875 is not cut a step lower", "from": 0, "to": 0.3, "t": 350, "digits": 3, "expected": 0.262 },
+    { "name": "a scale has no step", "from": 30, "to": 90, "t": 350, "expected": 82.5 },
+    { "name": "a scale at a quarter", "from": 0, "to": 1000, "t": 175, "expected": 578.125 },
+    { "name": "a scale at the end", "from": 30, "to": 90, "t": 700, "expected": 90 }
+  ],
+  "digitsCases": [
+    { "name": "both ends whole — whole steps", "from": 1240, "to": 1580, "expected": 0 },
+    { "name": "both ends whole money — whole steps, no cents in between", "from": 100, "to": 200, "format": "currency", "currency": "USD", "expected": 0 },
+    { "name": "money with cents — the digits of the currency", "from": 10.5, "to": 20.25, "format": "currency", "currency": "USD", "expected": 2 },
+    { "name": "money in JOD — three digits", "from": 1.5, "to": 2, "format": "currency", "currency": "JOD", "expected": 3 },
+    { "name": "money in JPY with a fraction in the data — the currency has none", "from": 100.5, "to": 200, "format": "currency", "currency": "JPY", "expected": 0 },
+    { "name": "number with a fraction — three digits", "from": 0.1, "to": 3.1, "format": "number", "expected": 3 },
+    { "name": "no format with a fraction — three digits", "from": 1.5, "to": 2.5, "expected": 3 }
+  ],
+  "decisionCases": [
+    { "name": "a node without the field changes at once", "change": { "animates": false, "shownBefore": true, "from": 1240, "to": 1580 }, "expected": "noField" },
+    { "name": "the first show of a node changes at once", "change": { "animates": true, "shownBefore": false, "from": 1240, "to": 1580 }, "expected": "firstShow" },
+    { "name": "the first show wins over a value that is not a number", "change": { "animates": true, "shownBefore": false, "from": null, "to": 1580 }, "expected": "firstShow" },
+    { "name": "reduce motion", "change": { "animates": true, "shownBefore": true, "from": 1240, "to": 1580, "reducedMotion": true }, "expected": "reducedMotion" },
+    { "name": "the language changed in the same step", "change": { "animates": true, "shownBefore": true, "from": 1240, "to": 1580, "localeChanged": true }, "expected": "localeChanged" },
+    { "name": "no data before — the value appears at once", "change": { "animates": true, "shownBefore": true, "from": null, "to": 1580 }, "expected": "notANumber" },
+    { "name": "no data after — the fallback appears at once", "change": { "animates": true, "shownBefore": true, "from": 1240, "to": null }, "expected": "notANumber" },
+    { "name": "a string from the data is not a number", "change": { "animates": true, "shownBefore": true, "from": 1240, "to": "1580" }, "expected": "notANumber" },
+    { "name": "the string «Infinity» is not a number", "change": { "animates": true, "shownBefore": true, "from": 1240, "to": "Infinity" }, "expected": "notANumber" },
+    { "name": "the same value — nothing to lead", "change": { "animates": true, "shownBefore": true, "from": 1580, "to": 1580 }, "expected": "sameValue" },
+    { "name": "a change of the data under a shown node leads", "change": { "animates": true, "shownBefore": true, "from": 1240, "to": 1580 }, "expected": true },
+    { "name": "going down leads too", "change": { "animates": true, "shownBefore": true, "from": 1580, "to": 0 }, "expected": true }
+  ],
+  "targetCases": [
+    {
+      "name": "a text bound to a number without a format",
+      "props": { "content": { "kind": "binding", "path": "user.points", "fallback": "0" }, "animateChanges": true },
+      "expected": [{ "path": "user.points", "scale": false }]
+    },
+    {
+      "name": "a text with money keeps the code for the step",
+      "props": { "content": { "kind": "binding", "path": "user.balance", "fallback": "0", "format": "currency", "currency": "USD" }, "animateChanges": true },
+      "expected": [{ "path": "user.balance", "scale": false, "format": "currency", "currency": "USD" }]
+    },
+    {
+      "name": "a date is not counted through",
+      "props": { "content": { "kind": "binding", "path": "offer.endsAt", "fallback": "", "format": "date" }, "animateChanges": true },
+      "expected": []
+    },
+    {
+      "name": "days until and a countdown part are not counted through",
+      "props": {
+        "content": {
+          "kind": "template",
+          "template": "{points} points · {days} days · {h} h",
+          "values": {
+            "points": { "kind": "binding", "path": "user.points", "fallback": "0", "format": "number" },
+            "days": { "kind": "binding", "path": "offer.endsAt", "fallback": "", "format": "daysUntil" },
+            "h": { "kind": "binding", "path": "offer.endsAt", "fallback": "", "format": "countdownPart", "unit": "hours" }
+          }
+        },
+        "animateChanges": true
+      },
+      "expected": [{ "path": "user.points", "scale": false, "format": "number" }]
+    },
+    {
+      "name": "a literal has nothing to count",
+      "props": { "content": { "kind": "literal", "value": "1 240" }, "animateChanges": true },
+      "expected": []
+    },
+    {
+      "name": "a scale: the value from data, the max typed in",
+      "props": { "value": { "kind": "binding", "path": "task.progress", "fallback": 0 }, "max": { "kind": "literal", "value": 100 }, "animateChanges": true },
+      "expected": [{ "path": "task.progress", "scale": true }]
+    },
+    {
+      "name": "a scale: both ends from data, each its own transition",
+      "props": { "value": { "kind": "binding", "path": "task.progress", "fallback": 0 }, "max": { "kind": "binding", "path": "task.target", "fallback": 5 }, "animateChanges": true },
+      "expected": [{ "path": "task.progress", "scale": true }, { "path": "task.target", "scale": true }]
+    }
+  ],
+  "appearNote": "Schema 9.24.0, field «animateIn», rules: x-valueAppear. When the node is shown, its value grows from 0 with the curve and the step of x-valueTransition. «appearStepCases» — the value shown at t milliseconds after the show (from 0); «digits» absent means a scale. «appearDecisionCases» — whether the show gives an appearance, and if not, why (the first reason in the order of x-valueAppear.whenNoAppear.order). «appearTargetCases» — which numbers of a node appear: the numbers of a text that transition, and the VALUE of a scale (the max stands at once); a literal value of a scale appears too and is named «#value». «appearFlowCases» — what a reader shows on the given moment of a flow.",
+  "appearStepCases": [
+    { "name": "a whole balance: the first frame is zero", "to": 12480, "t": 0, "digits": 0, "expected": 0 },
+    { "name": "a whole balance at a quarter of the time", "to": 12480, "t": 175, "digits": 0, "expected": 7215 },
+    { "name": "a whole balance at half of the time", "to": 12480, "t": 350, "digits": 0, "expected": 10920 },
+    { "name": "a whole balance at the end is exactly the value", "to": 12480, "t": 700, "digits": 0, "expected": 12480 },
+    { "name": "a negative value falls from zero, cut towards zero", "to": -50, "t": 350, "digits": 0, "expected": -43 },
+    { "name": "money with cents: the digits of the currency", "to": 87.5, "t": 350, "digits": 2, "expected": 76.56 },
+    { "name": "a scale grows from empty, no step", "to": 87, "t": 175, "expected": 50.296875 },
+    { "name": "a scale at half of the time", "to": 87, "t": 350, "expected": 76.125 },
+    { "name": "a scale at the end", "to": 87, "t": 700, "expected": 87 }
+  ],
+  "appearDecisionCases": [
+    { "name": "a node without the field: the value at once", "input": { "animates": false, "to": 87 }, "expected": "noField" },
+    { "name": "reduce motion: the value at once", "input": { "animates": true, "to": 87, "reducedMotion": true }, "expected": "reducedMotion" },
+    { "name": "reduce motion wins over a value that is not a number", "input": { "animates": true, "to": null, "reducedMotion": true }, "expected": "reducedMotion" },
+    { "name": "no data: the fallback at once", "input": { "animates": true, "to": null }, "expected": "notANumber" },
+    { "name": "a string is not a number", "input": { "animates": true, "to": "87" }, "expected": "notANumber" },
+    { "name": "zero has nothing to grow", "input": { "animates": true, "to": 0 }, "expected": "zero" },
+    { "name": "a value grows", "input": { "animates": true, "to": 87 }, "expected": true },
+    { "name": "a negative value falls from zero", "input": { "animates": true, "to": -50 }, "expected": true }
+  ],
+  "appearTargetCases": [
+    {
+      "name": "a text bound to a number",
+      "props": { "content": { "kind": "binding", "path": "user.balance", "fallback": "0", "format": "number" }, "animateIn": true },
+      "expected": [{ "path": "user.balance", "scale": false, "format": "number" }]
+    },
+    {
+      "name": "a literal text has no number to grow",
+      "props": { "content": { "kind": "literal", "value": "12,480" }, "animateIn": true },
+      "expected": []
+    },
+    {
+      "name": "a scale from data: the value grows, the max from data stands at once",
+      "props": { "value": { "kind": "binding", "path": "task.progress", "fallback": 0 }, "max": { "kind": "binding", "path": "task.target", "fallback": 5 }, "animateIn": true },
+      "expected": [{ "path": "task.progress", "scale": true }]
+    },
+    {
+      "name": "a scale with a literal value grows too",
+      "props": { "value": { "kind": "literal", "value": 87 }, "max": { "kind": "literal", "value": 100 }, "animateIn": true },
+      "expected": [{ "path": "#value", "scale": true }]
+    }
+  ],
+  "appearFlowCases": [
+    { "name": "the first screen of the flow: every node with the field grows", "moment": "firstShow", "expected": "appear" },
+    { "name": "a screen pushed on top grows", "moment": "forward", "expected": "appear" },
+    { "name": "a screen shown again by back grows again", "moment": "back", "expected": "appear" },
+    { "name": "a section switch shows the section again", "moment": "switch", "expected": "appear" },
+    { "name": "a screen under a modal layer stays shown: closing the layer is not a show", "moment": "modalClosed", "expected": "none" },
+    { "name": "a node that appears by its condition grows", "moment": "conditionMet", "expected": "appear" },
+    { "name": "a change of data on a shown node is not a show", "moment": "dataChanged", "expected": "none" },
+    { "name": "with animateChanges, a change of data during the appearance leads from the shown value", "moment": "dataChangedDuringAppearWithAnimateChanges", "expected": "transition" },
+    { "name": "without animateChanges, a change of data during the appearance shows the new value at once", "moment": "dataChangedDuringAppear", "expected": "atOnce" }
+  ]
+}

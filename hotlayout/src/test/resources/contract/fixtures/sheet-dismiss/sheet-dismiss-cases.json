@@ -1,0 +1,52 @@
+{
+  "description": "Schema 9.26.0 — a modal sheet is dismissed by a drag down (rules: x-sheetDismiss). «startCases»: whether a move of the finger drags the sheet instead of scrolling its body: the layer is a sheet from the bottom (not a centred window), it can be dismissed, how far its body is scrolled from the top, the move (logical pixels, down positive) and whether the finger lies on the handle; «expect» — true or false. «releaseCases»: the height of the sheet, how far it was dragged down and the velocity at release (logical pixels per second, down positive); «expect» — «dismiss» or «return». «entryCases»: a screen entry; «expect» — whether a person can dismiss its layer. «documentCases»: screen entries; «expect» — the validation codes. «ruleCases»: data of the block. «escapeCases», «escapeRuleCases» (rules: x-modalEscape, clarified before release): «escapeCases» — a key down with or without «repeat» (an auto-repeated key held down), whether the top of the stack is a modal layer and whether a person can dismiss it; «expect» — how many steps back it makes, 0 or 1. «escapeRuleCases»: data of x-modalEscape. Written by hand.",
+  "startCases": [
+    {"name": "down past the slop at the top of the body", "sheet": true, "dismissible": true, "scrolled": 0, "dy": 14, "dx": 2, "onHandle": false, "expect": true},
+    {"name": "down within the slop — not yet", "sheet": true, "dismissible": true, "scrolled": 0, "dy": 10, "dx": 0, "onHandle": false, "expect": false},
+    {"name": "more sideways than down — a horizontal gesture", "sheet": true, "dismissible": true, "scrolled": 0, "dy": 14, "dx": 20, "onHandle": false, "expect": false},
+    {"name": "up — the body scrolls", "sheet": true, "dismissible": true, "scrolled": 0, "dy": -30, "dx": 0, "onHandle": false, "expect": false},
+    {"name": "the body is scrolled away from its top — the body scrolls back first", "sheet": true, "dismissible": true, "scrolled": 120, "dy": 40, "dx": 0, "onHandle": false, "expect": false},
+    {"name": "on the handle the sheet moves even when the body is scrolled", "sheet": true, "dismissible": true, "scrolled": 120, "dy": 40, "dx": 0, "onHandle": true, "expect": true},
+    {"name": "a centred window has no drag", "sheet": false, "dismissible": true, "scrolled": 0, "dy": 60, "dx": 0, "onHandle": false, "expect": false},
+    {"name": "«dismissible: false» — no drag", "sheet": true, "dismissible": false, "scrolled": 0, "dy": 60, "dx": 0, "onHandle": true, "expect": false}
+  ],
+  "releaseCases": [
+    {"name": "dragged a third of the height — dismiss", "sheetHeight": 600, "dragged": 200, "velocity": 0, "expect": "dismiss"},
+    {"name": "exactly the share — dismiss", "sheetHeight": 600, "dragged": 180, "velocity": 0, "expect": "dismiss"},
+    {"name": "just short of the share — return", "sheetHeight": 600, "dragged": 179, "velocity": 0, "expect": "return"},
+    {"name": "a short drag thrown down fast — dismiss", "sheetHeight": 600, "dragged": 40, "velocity": 700, "expect": "dismiss"},
+    {"name": "a short drag thrown slower — return", "sheetHeight": 600, "dragged": 40, "velocity": 699, "expect": "return"},
+    {"name": "far down but thrown back up — return", "sheetHeight": 600, "dragged": 400, "velocity": -700, "expect": "return"},
+    {"name": "a slow drift up after a long drag — the share decides", "sheetHeight": 600, "dragged": 400, "velocity": -200, "expect": "dismiss"},
+    {"name": "a short sheet: the same share", "sheetHeight": 200, "dragged": 61, "velocity": 0, "expect": "dismiss"},
+    {"name": "not moved — return", "sheetHeight": 600, "dragged": 0, "velocity": 0, "expect": "return"}
+  ],
+  "entryCases": [
+    {"name": "no field — a person can dismiss", "entry": {"screenId": "redeem", "name": "Redeem", "presentation": "modal"}, "expect": true},
+    {"name": "«dismissible: false» — only an action inside closes it", "entry": {"screenId": "redeem", "name": "Redeem", "presentation": "modal", "dismissible": false}, "expect": false}
+  ],
+  "documentCases": [
+    {"name": "a modal sheet that waits for an action", "entry": {"presentation": "modal", "dismissible": false}, "expect": []},
+    {"name": "a centred window that waits for an action", "entry": {"presentation": "modal", "modalPlacement": "center", "dismissible": false}, "expect": []},
+    {"name": "on a page — nothing to dismiss", "entry": {"dismissible": false}, "expect": ["dismissible_on_page"]}
+  ],
+  "ruleCases": [
+    {"name": "the share of the height", "rule": "release.dismissShare", "expect": 0.3},
+    {"name": "the fling velocity", "rule": "release.flingVelocity", "expect": 700},
+    {"name": "the velocity window", "rule": "release.velocityWindowMs", "expect": 100},
+    {"name": "the return", "rule": "returns", "expect": {"durationMs": 250, "curve": [0.2, 0, 0, 1]}},
+    {"name": "the exit", "rule": "exits", "expect": {"durationMs": 200, "curve": [0.4, 0, 1, 1]}},
+    {"name": "the field", "rule": "dismissible.field", "expect": "dismissible"}
+  ],
+  "escapeCases": [
+    {"name": "Esc on a dismissible layer — one step back", "key": "Escape", "repeat": false, "modalOnTop": true, "topDismissible": true, "expect": 1},
+    {"name": "Esc held — a repeat closes nothing", "key": "Escape", "repeat": true, "modalOnTop": true, "topDismissible": true, "expect": 0},
+    {"name": "Esc on a layer that waits for an action — nothing, the layer below is not closed", "key": "Escape", "repeat": false, "modalOnTop": true, "topDismissible": false, "expect": 0},
+    {"name": "Esc on a page — not the reader’s", "key": "Escape", "repeat": false, "modalOnTop": false, "topDismissible": true, "expect": 0},
+    {"name": "another key on a layer", "key": "Enter", "repeat": false, "modalOnTop": true, "topDismissible": true, "expect": 0}
+  ],
+  "escapeRuleCases": [
+    {"name": "who listens", "rule": "listener", "expect": "the top layer of the stack only"},
+    {"name": "the same rule as Enter and Space", "rule": "same", "expect": "x-compatibility.policy.keyAutoRepeat"}
+  ]
+}

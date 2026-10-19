@@ -1,0 +1,836 @@
+{
+  "schemaVersion": "9.7.0",
+  "documentId": "progress",
+  "name": "Progress: bar and ring — thickness, track, gradient, size",
+  "initialScreenId": "progress",
+  "screens": [
+    {
+      "screenId": "progress",
+      "name": "Progress",
+      "root": {
+        "id": "progress-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Progress"
+              },
+              "subtitle": {
+                "kind": "literal",
+                "value": "Bar and ring: thickness, track, gradient, size"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "hero",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "md"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "gradient",
+                "gradient": {
+                  "angle": 135,
+                  "stops": [
+                    {
+                      "color": "primary",
+                      "position": 0
+                    },
+                    {
+                      "color": "accent",
+                      "position": 1
+                    }
+                  ]
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "hero-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Weekly goal"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "surface",
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "hero-row",
+                "type": "Row",
+                "props": {
+                  "gap": "lg",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "hero-stack",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "children": [
+                      {
+                        "id": "hero-ring",
+                        "type": "CircularProgress",
+                        "props": {
+                          "value": {
+                            "kind": "literal",
+                            "value": 72
+                          },
+                          "max": {
+                            "kind": "literal",
+                            "value": 100
+                          },
+                          "color": "surface",
+                          "size": "md",
+                          "labelFormat": "none",
+                          "thickness": 12,
+                          "trackColor": {
+                            "token": "surface",
+                            "opacity": 0.3
+                          }
+                        },
+                        "style": {
+                          "width": 144,
+                          "height": 144
+                        }
+                      },
+                      {
+                        "id": "hero-value",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "72%"
+                          },
+                          "align": "center",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "surface",
+                          "typography": "displayL"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "hero-side",
+                    "type": "Column",
+                    "props": {
+                      "gap": "sm",
+                      "align": "start"
+                    },
+                    "weight": 1,
+                    "children": [
+                      {
+                        "id": "hero-note",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "A white ring on a gradient: a 30% white track under a white arc."
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "surface",
+                          "typography": "bodyS"
+                        }
+                      },
+                      {
+                        "id": "hero-bar",
+                        "type": "ProgressBar",
+                        "props": {
+                          "value": {
+                            "kind": "literal",
+                            "value": 72
+                          },
+                          "max": {
+                            "kind": "literal",
+                            "value": 100
+                          },
+                          "color": "surface",
+                          "labelFormat": "none",
+                          "thickness": "xs",
+                          "trackColor": {
+                            "token": "surface",
+                            "opacity": 0.3
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "bars",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "bars-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Gradient bars"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "bars-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The gradient lies on the filled part — whole at any value."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              },
+              {
+                "id": "bar-quarter",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 25
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "none",
+                  "thickness": "md",
+                  "gradient": {
+                    "angle": 135,
+                    "stops": [
+                      {
+                        "color": "primary",
+                        "position": 0
+                      },
+                      {
+                        "color": "accent",
+                        "position": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "bar-half",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 1850
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 2500
+                  },
+                  "color": "primary",
+                  "labelFormat": "valueOfMax",
+                  "thickness": "md",
+                  "trackColor": {
+                    "token": "primary",
+                    "opacity": 0.12
+                  },
+                  "gradient": {
+                    "angle": 135,
+                    "stops": [
+                      {
+                        "color": "primary",
+                        "position": 0
+                      },
+                      {
+                        "color": "accent",
+                        "position": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "bar-warm",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 90
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "none",
+                  "thickness": 20,
+                  "trackColor": {
+                    "token": "warning",
+                    "opacity": 0.16
+                  },
+                  "gradient": {
+                    "angle": 90,
+                    "stops": [
+                      {
+                        "color": "warning",
+                        "position": 0
+                      },
+                      {
+                        "color": "danger",
+                        "position": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "bar-thin",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 60
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "success",
+                  "labelFormat": "none",
+                  "thickness": 2,
+                  "trackColor": "border"
+                }
+              },
+              {
+                "id": "bar-default",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 50
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "percent"
+                }
+              }
+            ]
+          },
+          {
+            "id": "around",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "around-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "A ring around an icon"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "around-row",
+                "type": "Row",
+                "props": {
+                  "gap": "lg",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "around-flame",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "children": [
+                      {
+                        "id": "ring-flame",
+                        "type": "CircularProgress",
+                        "props": {
+                          "value": {
+                            "kind": "literal",
+                            "value": 5
+                          },
+                          "max": {
+                            "kind": "literal",
+                            "value": 7
+                          },
+                          "color": "primary",
+                          "size": "md",
+                          "labelFormat": "none",
+                          "thickness": 4,
+                          "trackColor": {
+                            "token": "warning",
+                            "opacity": 0.16
+                          },
+                          "gradient": {
+                            "angle": 90,
+                            "stops": [
+                              {
+                                "color": "warning",
+                                "position": 0
+                              },
+                              {
+                                "color": "danger",
+                                "position": 1
+                              }
+                            ]
+                          }
+                        },
+                        "style": {
+                          "width": 56,
+                          "height": 56
+                        }
+                      },
+                      {
+                        "id": "icon-flame",
+                        "type": "Icon",
+                        "props": {
+                          "name": "flame",
+                          "size": "md"
+                        },
+                        "style": {
+                          "color": "warning"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "around-gift",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "children": [
+                      {
+                        "id": "ring-gift",
+                        "type": "CircularProgress",
+                        "props": {
+                          "value": {
+                            "kind": "literal",
+                            "value": 2
+                          },
+                          "max": {
+                            "kind": "literal",
+                            "value": 3
+                          },
+                          "color": "primary",
+                          "size": "md",
+                          "labelFormat": "none",
+                          "thickness": 6,
+                          "gradient": {
+                            "angle": 90,
+                            "stops": [
+                              {
+                                "color": "accent",
+                                "position": 0
+                              },
+                              {
+                                "color": "success",
+                                "position": 1
+                              }
+                            ]
+                          }
+                        },
+                        "style": {
+                          "width": 72,
+                          "height": 72
+                        }
+                      },
+                      {
+                        "id": "icon-gift",
+                        "type": "Icon",
+                        "props": {
+                          "name": "gift",
+                          "size": "lg"
+                        },
+                        "style": {
+                          "color": "accent"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "around-star",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "children": [
+                      {
+                        "id": "ring-star",
+                        "type": "CircularProgress",
+                        "props": {
+                          "value": {
+                            "kind": "literal",
+                            "value": 1
+                          },
+                          "max": {
+                            "kind": "literal",
+                            "value": 4
+                          },
+                          "color": "primary",
+                          "size": "sm",
+                          "labelFormat": "none",
+                          "thickness": "xs"
+                        }
+                      },
+                      {
+                        "id": "icon-star",
+                        "type": "Icon",
+                        "props": {
+                          "name": "star",
+                          "size": "sm"
+                        },
+                        "style": {
+                          "color": "primary"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "around-lock",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "children": [
+                      {
+                        "id": "ring-lock",
+                        "type": "CircularProgress",
+                        "props": {
+                          "value": {
+                            "kind": "literal",
+                            "value": 0
+                          },
+                          "max": {
+                            "kind": "literal",
+                            "value": 4
+                          },
+                          "color": "primary",
+                          "size": "sm",
+                          "labelFormat": "none",
+                          "thickness": 2,
+                          "trackColor": "border"
+                        }
+                      },
+                      {
+                        "id": "icon-lock",
+                        "type": "Icon",
+                        "props": {
+                          "name": "lock",
+                          "size": "sm"
+                        },
+                        "style": {
+                          "color": "muted"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "sizes",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "sizes-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Size and thickness"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "sizes-row",
+                "type": "Row",
+                "props": {
+                  "gap": "md",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "size-sm",
+                    "type": "CircularProgress",
+                    "props": {
+                      "value": {
+                        "kind": "literal",
+                        "value": 60
+                      },
+                      "max": {
+                        "kind": "literal",
+                        "value": 100
+                      },
+                      "color": "primary",
+                      "size": "sm",
+                      "labelFormat": "none"
+                    }
+                  },
+                  {
+                    "id": "size-md",
+                    "type": "CircularProgress",
+                    "props": {
+                      "value": {
+                        "kind": "literal",
+                        "value": 60
+                      },
+                      "max": {
+                        "kind": "literal",
+                        "value": 100
+                      },
+                      "color": "primary",
+                      "size": "md",
+                      "labelFormat": "percent"
+                    }
+                  },
+                  {
+                    "id": "size-lg",
+                    "type": "CircularProgress",
+                    "props": {
+                      "value": {
+                        "kind": "literal",
+                        "value": 60
+                      },
+                      "max": {
+                        "kind": "literal",
+                        "value": 100
+                      },
+                      "color": "primary",
+                      "size": "lg",
+                      "labelFormat": "none",
+                      "thickness": "lg",
+                      "gradient": {
+                        "angle": 135,
+                        "stops": [
+                          {
+                            "color": "primary",
+                            "position": 0
+                          },
+                          {
+                            "color": "accent",
+                            "position": 1
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "size-big",
+                "type": "CircularProgress",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 3
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 4
+                  },
+                  "color": "primary",
+                  "size": "md",
+                  "labelFormat": "valueOfMax",
+                  "thickness": 20,
+                  "trackColor": {
+                    "token": "success",
+                    "opacity": 0.12
+                  },
+                  "gradient": {
+                    "angle": 90,
+                    "stops": [
+                      {
+                        "color": "accent",
+                        "position": 0
+                      },
+                      {
+                        "color": "success",
+                        "position": 1
+                      }
+                    ]
+                  }
+                },
+                "style": {
+                  "width": 200,
+                  "height": 160
+                }
+              },
+              {
+                "id": "size-disc",
+                "type": "CircularProgress",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 40
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "accent",
+                  "size": "md",
+                  "labelFormat": "none",
+                  "thickness": 64
+                },
+                "style": {
+                  "width": 64
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "progress/bar/title": "Прогрес",
+        "progress/bar/subtitle": "Смуга й кільце: товщина, доріжка, градієнт, розмір",
+        "progress/hero-title/content": "Мета тижня",
+        "progress/hero-value/content": "72%",
+        "progress/hero-note/content": "Біле кільце на градієнті: доріжка білим 30 % під білою дугою.",
+        "progress/bars-title/content": "Градієнтні смуги",
+        "progress/bars-note/content": "Градієнт лягає на заповнену частину — цілком за будь-якого значення.",
+        "progress/around-title/content": "Кільце довкола іконки",
+        "progress/sizes-title/content": "Розмір і товщина"
+      },
+      "ar": {
+        "progress/bar/title": "التقدّم",
+        "progress/bar/subtitle": "الشريط والحلقة: السماكة والمسار والتدرّج والحجم",
+        "progress/hero-title/content": "هدف الأسبوع",
+        "progress/hero-value/content": "٧٢٪",
+        "progress/hero-note/content": "حلقة بيضاء على تدرّج: مسار أبيض ٣٠٪ تحت قوس أبيض.",
+        "progress/bars-title/content": "أشرطة متدرّجة",
+        "progress/bars-note/content": "التدرّج يمتد على الجزء المملوء — كاملاً عند أي قيمة.",
+        "progress/around-title/content": "حلقة حول أيقونة",
+        "progress/sizes-title/content": "الحجم والسماكة"
+      }
+    }
+  }
+}

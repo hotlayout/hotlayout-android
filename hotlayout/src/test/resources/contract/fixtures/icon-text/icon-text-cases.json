@@ -1,0 +1,101 @@
+{
+  "description": "One table of cases for every reader (schema 9.5.0): an icon beside a text (button label, badge label, trailing text of a list row), button sizes and the icon button. Rules: x-style.layout.iconBesideText, buttonSizes, iconButton, listTileTrailingColor; policy rows unknownIconBesideText, emptyTextBesideIcon, iconButtonWithoutLabel. Numbers are logical pixels under the built-in theme of the contract (the «theme» block repeats the values the cases rely on). «logical» is the order of parts in reading direction, «visual» is the same order from left to right on the screen.",
+  "theme": {
+    "spacing": { "xs": 4, "sm": 8, "md": 12, "lg": 16 },
+    "typography": {
+      "caption": { "fontSize": 10, "lineHeight": 1.2 },
+      "bodyS": { "fontSize": 12, "lineHeight": 1.3333 },
+      "bodyM": { "fontSize": 14, "lineHeight": 1.4286 },
+      "titleS": { "fontSize": 16, "lineHeight": 1.5 },
+      "titleM": { "fontSize": 18, "lineHeight": 1.3333 }
+    }
+  },
+  "gap": "xs",
+  "orderCases": [
+    { "name": "button without the icon field: only the label", "widget": "Button", "props": {}, "direction": "ltr", "expect": { "logical": ["text"], "visual": ["text"], "drawn": false, "mirrored": false } },
+    { "name": "button, icon without a position: the position is «start»", "widget": "Button", "props": { "icon": "gift" }, "direction": "ltr", "expect": { "logical": ["icon", "text"], "visual": ["icon", "text"], "drawn": true, "mirrored": false } },
+    { "name": "button, icon at the start, LTR: the icon is on the left", "widget": "Button", "props": { "icon": "gift", "iconPosition": "start" }, "direction": "ltr", "expect": { "logical": ["icon", "text"], "visual": ["icon", "text"], "drawn": true, "mirrored": false } },
+    { "name": "button, icon at the end, LTR: the icon is on the right", "widget": "Button", "props": { "icon": "chevron-right", "iconPosition": "end" }, "direction": "ltr", "expect": { "logical": ["text", "icon"], "visual": ["text", "icon"], "drawn": true, "mirrored": false } },
+    { "name": "button, icon at the start, RTL: the icon is on the RIGHT", "widget": "Button", "props": { "icon": "gift", "iconPosition": "start" }, "direction": "rtl", "expect": { "logical": ["icon", "text"], "visual": ["text", "icon"], "drawn": true, "mirrored": false } },
+    { "name": "button, directional icon at the end, RTL: on the LEFT and mirrored", "widget": "Button", "props": { "icon": "chevron-right", "iconPosition": "end" }, "direction": "rtl", "expect": { "logical": ["text", "icon"], "visual": ["icon", "text"], "drawn": true, "mirrored": true } },
+    { "name": "an object icon is not mirrored in RTL, only moved", "widget": "Button", "props": { "icon": "clock", "iconPosition": "end" }, "direction": "rtl", "expect": { "logical": ["text", "icon"], "visual": ["icon", "text"], "drawn": true, "mirrored": false } },
+    { "name": "unknown position word (a newer minor): «start»", "widget": "Button", "props": { "icon": "gift", "iconPosition": "above" }, "direction": "ltr", "readerOnly": true, "expect": { "logical": ["icon", "text"], "visual": ["icon", "text"], "drawn": true, "mirrored": false } },
+    { "name": "icon name outside the set: an empty box and the gap stay", "widget": "Button", "props": { "icon": "icon-from-the-future", "iconPosition": "start" }, "direction": "ltr", "readerOnly": true, "expect": { "logical": ["icon", "text"], "visual": ["icon", "text"], "drawn": false, "mirrored": false } },
+    { "name": "icon value that is not a string: an empty box and the gap stay", "widget": "Button", "props": { "icon": { "kind": "media", "url": "https://example.com/a.svg" }, "iconPosition": "end" }, "direction": "ltr", "readerOnly": true, "expect": { "logical": ["text", "icon"], "visual": ["text", "icon"], "drawn": false, "mirrored": false } },
+    { "name": "position without an icon means nothing", "widget": "Button", "props": { "iconPosition": "end" }, "direction": "ltr", "expect": { "logical": ["text"], "visual": ["text"], "drawn": false, "mirrored": false } },
+    { "name": "badge, icon at the start", "widget": "Badge", "props": { "icon": "clock" }, "direction": "ltr", "expect": { "logical": ["icon", "text"], "visual": ["icon", "text"], "drawn": true, "mirrored": false } },
+    { "name": "badge, icon at the end («Medium ●»)", "widget": "Badge", "props": { "icon": "circle", "iconPosition": "end" }, "direction": "ltr", "expect": { "logical": ["text", "icon"], "visual": ["text", "icon"], "drawn": true, "mirrored": false } },
+    { "name": "badge, icon at the end, RTL: on the left", "widget": "Badge", "props": { "icon": "circle", "iconPosition": "end" }, "direction": "rtl", "expect": { "logical": ["text", "icon"], "visual": ["icon", "text"], "drawn": true, "mirrored": false } },
+    { "name": "list row, trailing text with an icon: always after the text", "widget": "ListTile", "props": { "icon": "coins" }, "direction": "ltr", "expect": { "logical": ["text", "icon"], "visual": ["text", "icon"], "drawn": true, "mirrored": false } },
+    { "name": "list row, trailing text with an icon, RTL: the icon is on the left of the text", "widget": "ListTile", "props": { "icon": "coins" }, "direction": "rtl", "expect": { "logical": ["text", "icon"], "visual": ["icon", "text"], "drawn": true, "mirrored": false } },
+    { "name": "list row, trailing text without an icon", "widget": "ListTile", "props": {}, "direction": "ltr", "expect": { "logical": ["text"], "visual": ["text"], "drawn": false, "mirrored": false } }
+  ],
+  "glyphCases": [
+    { "name": "button md: the glyph is the font size of the label, the box is its line", "widget": "Button", "size": "md", "typography": "titleS", "expect": { "glyph": 16, "boxInline": 16, "boxBlock": 24, "gap": 4, "addsInline": 20, "addsBlock": 0 } },
+    { "name": "button sm", "widget": "Button", "size": "sm", "typography": "bodyM", "expect": { "glyph": 14, "boxInline": 14, "boxBlock": 20, "gap": 4, "addsInline": 18, "addsBlock": 0 } },
+    { "name": "button lg", "widget": "Button", "size": "lg", "typography": "titleM", "expect": { "glyph": 18, "boxInline": 18, "boxBlock": 24, "gap": 4, "addsInline": 22, "addsBlock": 0 } },
+    { "name": "badge: the label is caption", "widget": "Badge", "typography": "caption", "expect": { "glyph": 10, "boxInline": 10, "boxBlock": 12, "gap": 4, "addsInline": 14, "addsBlock": 0 } },
+    { "name": "list row: the step of the icon scale named by listTileIconSizes.trailingIcon (sm = bodyS), not the font size of the text", "widget": "ListTile", "typography": "bodyS", "expect": { "glyph": 12, "boxInline": 12, "boxBlock": 16, "gap": 4, "addsInline": 16, "addsBlock": 0 } }
+  ],
+  "buttonSizeCases": [
+    { "name": "sm: line 20 + 2 × xs", "size": "sm", "border": 0, "expect": { "paddingBlock": 4, "paddingInline": 12, "typography": "bodyM", "block": 28 } },
+    { "name": "md: line 24 + 2 × sm — the button as before 9.5.0", "size": "md", "border": 0, "expect": { "paddingBlock": 8, "paddingInline": 12, "typography": "titleS", "block": 40 } },
+    { "name": "lg: line 24 + 2 × md", "size": "lg", "border": 0, "expect": { "paddingBlock": 12, "paddingInline": 16, "typography": "titleM", "block": 48 } },
+    { "name": "no size field: md", "size": null, "border": 0, "expect": { "paddingBlock": 8, "paddingInline": 12, "typography": "titleS", "block": 40 } },
+    { "name": "unknown size word (a newer minor): md", "size": "xl", "border": 0, "readerOnly": true, "expect": { "paddingBlock": 8, "paddingInline": 12, "typography": "titleS", "block": 40 } },
+    { "name": "the border of the role adds to the size", "size": "md", "border": 1, "expect": { "paddingBlock": 8, "paddingInline": 12, "typography": "titleS", "block": 42 } }
+  ],
+  "iconButtonCases": [
+    { "name": "sm: a circle 28, glyph 14", "size": "sm", "border": 0, "expect": { "side": 28, "glyph": 14, "padding": 4 } },
+    { "name": "md: a circle 40, glyph 16 — as high as an md button", "size": "md", "border": 0, "expect": { "side": 40, "glyph": 16, "padding": 8 } },
+    { "name": "lg: a circle 48, glyph 18", "size": "lg", "border": 0, "expect": { "side": 48, "glyph": 18, "padding": 12 } },
+    { "name": "unknown size word: md", "size": "xl", "border": 0, "readerOnly": true, "expect": { "side": 40, "glyph": 16, "padding": 8 } },
+    { "name": "the border of the role adds to the side", "size": "md", "border": 1, "expect": { "side": 42, "glyph": 16, "padding": 8 } }
+  ],
+  "nameCases": [
+    { "name": "the label is the accessible name", "label": "Back", "icon": "arrow-left", "expect": "Back" },
+    { "name": "empty label: the name of the icon in words", "label": "", "icon": "chevron-left", "readerOnly": true, "expect": "chevron left" },
+    { "name": "a label of spaces is empty", "label": "   ", "icon": "info", "readerOnly": true, "expect": "info" },
+    { "name": "empty label and an icon that is not a string: no name at all", "label": "", "icon": null, "readerOnly": true, "expect": "" }
+  ],
+  "colorCases": [
+    { "name": "trailing text of a list row, no color named: onSurface, and the icon beside it the same", "named": null, "expect": { "text": "onSurface", "icon": "onSurface" } },
+    { "name": "a named color (style.color of the row or an ancestor) wins for both", "named": "danger", "expect": { "text": "danger", "icon": "danger" } }
+  ],
+  "iconPathNote": "`iconPathCases` (schema 9.19.0, `x-iconFromData`): `props` are the icon props of the node, `data` is what the data layers hold under the paths (a path that is missing has no value). `resolved` is the value the reader takes as the icon name (null: the node has no icon at all); `box` — `drawn` (an icon of the set), `empty` (an empty box of the same size: the name is not in the set or the value is not a string) or `none` (no icon and no box); `mirrored` — whether the drawn icon is flipped in a right-to-left screen; `logical` — the order of parts of a button or a badge. `iconPathDocumentCases`: `props` of a node of the type `widget` standing on a screen; `schema` — the verdict of the JSON Schema (Zod and ajv agree), `codes` — the codes of the validator (empty: publishable).",
+  "iconPathCases": [
+    {"name": "icon without the field: the icon of the document", "widget": "Icon", "props": {"name": "star"}, "data": {}, "expect": {"resolved": "star", "box": "drawn", "mirrored": false}},
+    {"name": "icon: the data names an icon of the set", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": "trending-up"}, "expect": {"resolved": "trending-up", "box": "drawn", "mirrored": true}},
+    {"name": "icon: no value under the path — the icon of the document", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "data": {}, "expect": {"resolved": "star", "box": "drawn", "mirrored": false}},
+    {"name": "icon: null under the path — the icon of the document", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": null}, "expect": {"resolved": "star", "box": "drawn", "mirrored": false}},
+    {"name": "icon: an empty string is «no value» — the icon of the document", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": ""}, "expect": {"resolved": "star", "box": "drawn", "mirrored": false}},
+    {"name": "icon: a name that is not in the set — an empty box of the same size", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": "no-such-icon"}, "expect": {"resolved": "no-such-icon", "box": "empty", "mirrored": false}},
+    {"name": "icon: a name in another case is another name — an empty box", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": "Star"}, "expect": {"resolved": "Star", "box": "empty", "mirrored": false}},
+    {"name": "icon: a name with spaces around is not trimmed — an empty box", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": " star "}, "expect": {"resolved": " star ", "box": "empty", "mirrored": false}},
+    {"name": "icon: a number is not a name — an empty box", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": 42}, "expect": {"resolved": 42, "box": "empty", "mirrored": false}},
+    {"name": "icon: a flag is not a name — an empty box", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": true}, "expect": {"resolved": true, "box": "empty", "mirrored": false}},
+    {"name": "icon: an address is never drawn — an empty box", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": "https://example.com/icon.svg"}, "expect": {"resolved": "https://example.com/icon.svg", "box": "empty", "mirrored": false}},
+    {"name": "icon: a drawing is never taken from data — an empty box", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": "<path d='M0 0h24v24H0z'/>"}, "expect": {"resolved": "<path d='M0 0h24v24H0z'/>", "box": "empty", "mirrored": false}},
+    {"name": "icon: the name from data is mirrored by ITS rule, not by the rule of the document icon", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": "chevron-right"}, "expect": {"resolved": "chevron-right", "box": "drawn", "mirrored": true}},
+    {"name": "icon: a mirrored icon of the document, a plain one from data — not mirrored", "widget": "Icon", "props": {"name": "chevron-right", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": "star"}, "expect": {"resolved": "star", "box": "drawn", "mirrored": false}},
+    {"name": "button: the icon beside the label comes from data, the order does not change", "widget": "Button", "props": {"icon": "gift", "iconPath": "account.lastIcon", "iconPosition": "end"}, "data": {"account.lastIcon": "flame"}, "expect": {"resolved": "flame", "box": "drawn", "mirrored": false, "logical": ["text", "icon"]}},
+    {"name": "button: no data — the icon of the document", "widget": "Button", "props": {"icon": "gift", "iconPath": "account.lastIcon"}, "data": {}, "expect": {"resolved": "gift", "box": "drawn", "mirrored": false, "logical": ["icon", "text"]}},
+    {"name": "button: an unknown name keeps the box and the gap", "widget": "Button", "props": {"icon": "gift", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": "no-such-icon"}, "expect": {"resolved": "no-such-icon", "box": "empty", "mirrored": false, "logical": ["icon", "text"]}},
+    {"name": "button without an icon in the document: the path is not read, no icon", "widget": "Button", "props": {"iconPath": "account.lastIcon"}, "data": {"account.lastIcon": "flame"}, "expect": {"resolved": null, "box": "none", "mirrored": false, "logical": ["text"]}},
+    {"name": "badge: credited or spent by the data", "widget": "Badge", "props": {"icon": "check", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": "trending-down"}, "expect": {"resolved": "trending-down", "box": "drawn", "mirrored": true, "logical": ["icon", "text"]}},
+    {"name": "badge: no data — the icon of the document", "widget": "Badge", "props": {"icon": "check", "iconPath": "account.lastIcon"}, "data": {}, "expect": {"resolved": "check", "box": "drawn", "mirrored": false, "logical": ["icon", "text"]}},
+    {"name": "icon button: the drawing from data, the name stays its label", "widget": "IconButton", "props": {"icon": "info", "iconPath": "account.lastIcon"}, "data": {"account.lastIcon": "heart"}, "expect": {"resolved": "heart", "box": "drawn", "mirrored": false}},
+    {"name": "icon button: no data — the icon of the document", "widget": "IconButton", "props": {"icon": "info", "iconPath": "account.lastIcon"}, "data": {}, "expect": {"resolved": "info", "box": "drawn", "mirrored": false}}
+  ],
+  "iconPathDocumentCases": [
+    {"name": "a text path that holds an icon name", "widget": "Icon", "props": {"name": "star", "iconPath": "account.lastIcon"}, "schema": true, "codes": []},
+    {"name": "a path the dictionary does not know", "widget": "Icon", "props": {"name": "star", "iconPath": "account.noSuchPath"}, "schema": true, "codes": ["unknown_binding_path"]},
+    {"name": "a number path cannot hold a name", "widget": "Icon", "props": {"name": "star", "iconPath": "account.balance"}, "schema": true, "codes": ["binding_type_mismatch"]},
+    {"name": "a date path cannot hold a name", "widget": "Badge", "props": {"label": {"kind": "literal", "value": "New"}, "icon": "check", "iconPath": "account.lastAt"}, "schema": true, "codes": ["binding_type_mismatch"]},
+    {"name": "a path without an icon in the document draws nothing: not published", "widget": "Button", "props": {"label": {"kind": "literal", "value": "Go"}, "iconPath": "account.lastIcon"}, "schema": true, "codes": ["invalid_document"]},
+    {"name": "an empty path is not a path", "widget": "Icon", "props": {"name": "star", "iconPath": ""}, "schema": false, "codes": ["invalid_token"]},
+    {"name": "an object in place of the path", "widget": "Icon", "props": {"name": "star", "iconPath": {"kind": "binding", "path": "account.lastIcon"}}, "schema": false, "codes": ["invalid_token"]},
+    {"name": "an object in place of the NAME is still not a name", "widget": "Icon", "props": {"name": {"kind": "binding", "path": "account.lastIcon"}}, "schema": false, "codes": ["invalid_token"]},
+    {"name": "a list row has no icon from data: its slots keep a name of the set", "widget": "ListTile", "props": {"title": {"kind": "literal", "value": "Profile"}, "iconPath": "account.lastIcon"}, "schema": false, "codes": ["invalid_document"]}
+  ]
+}
