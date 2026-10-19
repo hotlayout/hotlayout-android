@@ -54,6 +54,7 @@ import com.hotlayout.model.ScreenPresentation
 import com.hotlayout.render.HotlayoutFonts
 import com.hotlayout.render.ImagePolicy
 import com.hotlayout.render.NodeView
+import com.hotlayout.render.layout.LocalScreenBodyHeight
 import com.hotlayout.render.Placement
 import com.hotlayout.render.RenderContext
 import com.hotlayout.text.LocaleResolution
@@ -282,8 +283,11 @@ private fun ScreenRoot(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup
     }
     BoxWithConstraints(Modifier.fillMaxSize().testTag("screen:${screen.screenId}")) {
         val area = maxHeight
-        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
-            NodeView(screen.root, context, Placement.Stretched, modifier = Modifier.heightIn(min = area))
+        // The visible body is what `justify` of the screen distributes (a layer as tall as its content has none).
+        CompositionLocalProvider(LocalScreenBodyHeight provides area) {
+            Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+                NodeView(screen.root, context, Placement.Stretched, modifier = Modifier.heightIn(min = area))
+            }
         }
     }
 }

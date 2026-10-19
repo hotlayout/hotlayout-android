@@ -1,0 +1,137 @@
+package com.hotlayout.render.motion
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameMillis
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalWindowInfo
+import com.hotlayout.json.JsonObject
+import com.hotlayout.json.JsonValue
+import com.hotlayout.model.DocumentNode
+import com.hotlayout.render.RenderContext
+import kotlinx.coroutines.delay
+import kotlin.math.floor
+
+/** Whole seconds a countdown below has ticked, instead of the real clock; tests read a real node at a chosen second. */
+internal val LocalCountdownTickedSeconds = compositionLocalOf<Double?> { null }
+
+/** Milliseconds since the first frame of every number run below, instead of the real clock; tests read a real node at a chosen moment. */
+internal val LocalValueTransitionElapsedMs = compositionLocalOf<Double?> { null }
+
+internal object CountdownRules {
+    /** Whether the text shows a part of a time left: a binding with `format: countdownPart`, alone or inside a template. */
+    fun ticks(props: JsonObject): Boolean {
+        val content = props["content"]?.obj ?: return false
+        if (content["kind"]?.string == "template") {
+            val values = content["values"]?.obj ?: return false
+            return values.any { isCountdown(it.second) }
+        }
+        return isCountdown(JsonValue.Obj(content))
+    }
+
+    private fun isCountdown(value: JsonValue): Boolean {
+        val record = value.obj ?: return false
+        return record["kind"]?.string == "binding" && record["format"]?.string == "countdownPart"
+    }
+
+    /** The moment [seconds] whole seconds later: the fraction of the sample moment stays, so the parts go down by whole seconds. */
+    fun now(base: Double, seconds: Double): Double = base + floor(seconds) * 1000
+}
+
+/** Whether the system asks for no motion (animations switched off in the developer settings or by the user). */
+@Composable
+internal fun rememberReducedMotion(): Boolean {
+    val resolver = LocalContext.current.contentResolver
+    return remember(resolver) {
+        runCatching { android.provider.Settings.Global.getFloat(resolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f }.getOrDefault(false)
+    }
+}
+
+/**
+ * Hosts a text whose time left counts down: once a second, from the moment the reader already uses
+ * as «now». The clock runs only while the node is on screen, so a screen under another one or a
+ * scrolled-away node does not keep the app awake.
+ */
+@Composable
+internal fun CountdownTicking(node: DocumentNode, context: RenderContext, content: @Composable (RenderContext) -> Unit) {
+    if (!CountdownRules.ticks(node.props)) {
+        content(context)
+        return
+    }
+    val fixed = LocalCountdownTickedSeconds.current
+    if (fixed != null) {
+        content(context.copy(now = CountdownRules.now(context.now, fixed)))
+        return
+    }
+    var onScreen by remember { mutableStateOf(false) }
+    var seconds by remember { mutableStateOf(0.0) }
+    val window = LocalWindowInfo.current.containerSize
+    LaunchedEffect(onScreen) {
+        if (!onScreen) return@LaunchedEffect
+        val begin = withFrameMillis { it }
+        seconds = 0.0
+        while (true) {
+            delay(1000)
+            seconds = (withFrameMillis { it } - begin) / 1000.0 + 0.05
+        }
+    }
+    Box(
+        Modifier.onGloballyPositioned { coordinates ->
+            val bounds = coordinates.boundsInWindow()
+            onScreen = coordinates.isAttached && !bounds.isEmpty && bounds.right > 0f && bounds.bottom > 0f && bounds.left < window.width && bounds.top < window.height
+        },
+    ) {
+        content(context.copy(now = CountdownRules.now(context.now, if (onScreen) seconds else 0.0)))
+    }
+}
+
+/**
+ * Hosts a node that may lead its numbers: without `animateChanges` and `animateIn` the content gets
+ * the data untouched; with them it is redrawn on every frame of the runs in progress.
+ */
+@Composable
+internal fun ValueTransitioned(node: DocumentNode, context: RenderContext, content: @Composable (ValueTransitionEngine.Shown) -> Unit) {
+    val leads = ValueTransition.animatesChanges(node.props)
+    val appears = ValueTransition.animatesIn(node.props)
+    if (!leads && !appears) {
+        content(ValueTransitionEngine.Shown.plain(context.scope))
+        return
+    }
+    val engine = remember { ValueTransitionEngine() }
+    val reduced = rememberReducedMotion()
+    val fixed = LocalValueTransitionElapsedMs.current
+    var frame by remember { mutableLongStateOf(0L) }
+    val scope = context.scope
+    val literal = node.props["value"]?.takeIf { it["kind"]?.string == "literal" }?.get("value")
+    val read: (String) -> JsonValue? = { path ->
+        val value = if (path == ValueTransition.LITERAL_KEY) literal else scope[path]
+        value?.takeIf { !it.isNull }
+    }
+    if (appears && !engine.mounted) engine.appear(ValueTransition.appearTargets(node.props), read, reduced)
+    val targets = if (leads) ValueTransition.targets(node.props) else ValueTransition.appearTargets(node.props)
+    val localeKey = "${context.locale.translation ?: ""}|${context.locale.formatting ?: ""}"
+    engine.sync(targets, read, leads, localeKey, reduced)
+    if (fixed != null) {
+        // The first frame fixes the start of a run; the second is the chosen moment.
+        engine.tick(0.0)
+        engine.tick(fixed)
+    } else {
+        // A frame loop that lives while runs are going on; a new run restarts it (the scope is the key).
+        LaunchedEffect(scope, localeKey) {
+            while (engine.isRunning) withFrameMillis { engine.tick(it.toDouble()); frame = it }
+            frame++
+        }
+    }
+    @Suppress("UNUSED_EXPRESSION") frame
+    content(engine.shown(scope))
+}

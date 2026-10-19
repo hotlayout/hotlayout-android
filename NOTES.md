@@ -79,6 +79,58 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 - `ChoiceGroup` is drawn and hands a `ChoiceScope` to rows through `RenderContext.choice`; the radio rows
   (`ListTile`) belong to the lists wave and must call `scope.select`.
 - Dashed borders are paths with the contract's pattern; `shadowColor: background` tints in `StyleResolve.box`.
+## Progress scales and value transitions
+
+- `ProgressBar` and `CircularProgress` are drawn on a canvas by `render/widgets/Progress*.kt`; the rules
+  (`ProgressRules`) are pure and run by `ProgressCasesTest` on every group of `progress-cases.json`.
+- The glow is a copy of the same shapes under the scale, drawn with a `BlurMaskFilter` (a software-safe
+  blur: `Modifier.blur` needs API 31 and a render effect). Skia takes a radius, so the sigma of the contract
+  is converted by `radius = (sigma − 0.5) / 0.57735`.
+- The ring turns the canvas a quarter, so that arcs and the sweep gradient start at the top.
+- The shared value-transition rule is `render/motion/ValueTransition.kt` (pure, run by
+  `ValueTransitionCasesTest`) with the clock in `ValueTransitionEngine.kt`; `ValueTransitioned` hosts a
+  node, redraws it per frame (`withFrameMillis`) and stops the frames while the node is outside the window.
+  Reduced motion is the device animator scale 0. Other families (Text) call the same engine.
+- A bar fills the width it is given; a bar in a row without a weight takes what the row leaves (weights are
+  the alignment zone's).
+## Lists, rows, accordion and tabs (`render/widgets/Lists*.kt`)
+
+- `ListsRules.kt` holds the pure rules run by the tables (`repeater-group`, `list-tile`, the grid and number
+  groups of `repeater-filter`, `icon-text/colorCases`); the widgets only call them.
+- Rows in a grid or a list with `columns` are laid out by one `GridCells` layout (cell width
+  `(width − gaps) ÷ columns`, floored to whole pixels; the missing cells of the last row keep the width).
+- `RepeaterRow` is the hook of the carousel wave: a `carousel` list is a plain horizontal scroll until the
+  carousel family replaces its body (card width, stops, dots). `repeater-filter/carouselCases` is that wave's.
+- A numbered template gets `RenderContext.listNumber`; the text family reads it for `Text.marker: number`.
+- `ListTileChoice` / `LocalListTileChoice` is where a `ChoiceGroup` hands its selection to option rows
+  (`trailing.kind: radio`); without a group the circle is drawn and nothing answers.
+- A row with an `action` is one control (click only; long press belongs to the gestures wave).
+- Tabs: the strip scrolls, each title is focusable (Role.Tab, selected); Left/Right move between titles,
+  swapped in right-to-left text, Home/End jump. There is no wrap-around.
+## Stack
+
+- A stack is one `Layout`; the role of each child (sizing, `fill`, overlay with its resolved place) travels as
+  parent data, so a child hidden by a condition (which draws nothing) never shifts the others.
+- An overlay is PLACED by the layout (logical start, mirrored by `placeRelative`) and turned with a layer
+  transform, so touches follow the drawing. Compose widens the touch area of a target smaller than 48 dp, so
+  a pixel on the very edge of a small turned overlay may still hit; the tests use targets above that size.
+- `pull` (`offset/pullCases`, `pullReadCases`) is read and laid out by the flow layouts (`render/layout/FlowPull.kt`).
+- A named icon box (`style.width` / `height`) now centres the glyph (it stood top-left).
+
+## Alignment and flow layouts
+
+- Column and row are own `Layout`s (`AlignedColumn`, `AlignedRow` in `render/layout/AlignedLayouts.kt`); the rules are pure
+  (`AlignRules`) and the layouts only measure and call them. Children hand `pull`, weight and width kind through `FlowChild`
+  (parent data).
+- Free height exists only with a source: `style.height`, `style.minHeight`, a stack fill (`fills`, for the stack zone to pass),
+  or the visible body of the page screen (`LocalScreenBodyHeight`, provided by `ScreenRoot`). A layer as tall as its content has none.
+  Screen anatomy (wave 2) must keep providing `LocalScreenBodyHeight` (the body area) and pass `ignoresFirstPull` for the top zone.
+- Natural widths come from intrinsic measurements (`maxIntrinsicWidth`), so a widget that sits in a row must implement them.
+- A named `style.width` / `style.height` is the size of the content too (`NodeView` passes min constraints on): a stack or a
+  column inside fills it and aligns by its own words.
+- Rows: `scrollable` children are bound by the viewport (stretching ones take it); `wrap` is a `FlowRow` (gap on both axes);
+  a row not given its width tightly is as wide as its content and has no shares. `Row.wrap` + `scrollable`: scroll wins.
+- `Screen.justify` is not read when the content scrolls (free space is zero).
 
 ## Zones of the code for parallel waves
 
@@ -97,11 +149,12 @@ Family files (one zone per agent):
 
 | Wave | Zone | Files |
 |---|---|---|
-| 1 | alignment | `render/layout/FlowLayouts.kt` (`ColumnWidget`, `RowWidget`: `justify`, free height, `pull`) |
-| 1 | text | `render/widgets/TextWidget.kt`, `render/TextStyles.kt` (spans, markers, gradient) |
+| 1 | alignment | `render/layout/` (done) |
+| 1 | text | `render/widgets/TextWidget.kt`, `TextRichWidget.kt`, `TextRichRules.kt`, `render/TextStyles.kt`, `render/motion/ValueTransition.kt`, `TextMotion.kt` (done) |
 | 1 | lists | new `render/widgets/Lists*.kt` (`Repeater`, `Grid`, `ListTile`, `Accordion`, `Tabs`) |
 | 1 | stack | new `render/widgets/Stack*.kt` (`Stack`, `layer`, `fill`) |
-| 1 | progress | new `render/widgets/Progress*.kt` |
+| 1 | progress | new `render/widgets/Progress*.kt` (done) |
+| 1 | stack | `render/widgets/Stack*.kt` (`Stack`, `layer`, `fill`) — built |
 | 1 | controls | `render/widgets/RoleWidgets.kt` (Button, Badge, `IconButton`), write actions in `actions/` |
 | 2 | inputs & form | new `render/widgets/Input*.kt`, `data/` session |
 | 2 | screen anatomy | `ScreenRoot` in `HotlayoutScreen.kt` → new `render/screen/` |
@@ -113,3 +166,23 @@ Family files (one zone per agent):
 
 Each wave moves its table groups from the deferred map of `TableCoverageTest` into `run` and adds a
 wiring test (semantics or pixels through `HotlayoutScreen`) for every capability it draws.
+
+## Text (wave 1)
+
+- Rich text is ONE `BasicText` with an `AnnotatedString`: every run sets all its fields (slant, line,
+  weight, colour or brush), so a run never takes the line of the paragraph. The paragraph line
+  height is the strut (tallest declared part), centred, so parts share a baseline and every line
+  has the same pitch. The gradient is a `ShaderBrush` over the whole text box, per run that takes it.
+- Differs: a line under a run that takes the gradient is drawn by Compose with the same brush
+  (iOS draws lines in the plain colour); no table row depends on it.
+- List numbering needs the siblings of ONE parent: `ColumnWidget` and `RowWidget` set
+  `RenderContext.listPosition` per child (`ListSiblings`, `at`); `NodeView` hands it to the widget
+  through `WidgetCall.position` and clears it for descendants. Other parents (Stack, Grid, Tabs,
+  carousel) must do the same, and a list that draws a numbered template sets `listNumber`.
+- `ValueTransition` and `ValueTransitionEngine` (`render/motion/`) are shared: a scale of the
+  progress zone uses `shown.smooth` / `ends`. Tests hold the clock with
+  `LocalValueTransitionElapsedMs` and `LocalCountdownTickedSeconds`. The countdown clock runs only
+  while the node is inside the window; reduced motion is the system animator scale being 0.
+- Rows of `amountPartCases` with plain `ar` digits differ like the money rows (`TextRichCasesTest.platformDiffers`).
+- The demo data carries the dates of the data dictionary (`user.memberSince`, `campaign.endsAt`,
+  `offer.endsAt`): without them the showcase's date texts showed their fallback «—».
