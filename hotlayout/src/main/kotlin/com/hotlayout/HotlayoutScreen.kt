@@ -1,0 +1,277 @@
+package com.hotlayout
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.LayoutDirection
+import com.hotlayout.actions.Flow
+import com.hotlayout.actions.FlowDocument
+import com.hotlayout.actions.FlowFrame
+import com.hotlayout.actions.HotlayoutAction
+import com.hotlayout.actions.ListInstance
+import com.hotlayout.actions.ScreenShownCause
+import com.hotlayout.actions.ScreenShownEvent
+import com.hotlayout.actions.TrackEvent
+import com.hotlayout.data.DataLayers
+import com.hotlayout.data.DataScope
+import com.hotlayout.data.RecordScope
+import com.hotlayout.data.WritablePaths
+import com.hotlayout.json.JsonObject
+import com.hotlayout.json.JsonValue
+import com.hotlayout.model.DocumentNode
+import com.hotlayout.model.HotlayoutDocument
+import com.hotlayout.model.HotlayoutReport
+import com.hotlayout.model.ReportSink
+import com.hotlayout.model.ScreenEntry
+import com.hotlayout.model.ScreenPresentation
+import com.hotlayout.render.HotlayoutFonts
+import com.hotlayout.render.ImagePolicy
+import com.hotlayout.render.NodeView
+import com.hotlayout.render.Placement
+import com.hotlayout.render.RenderContext
+import com.hotlayout.text.LocaleResolution
+import com.hotlayout.text.Localization
+import com.hotlayout.text.TextDirectionRule
+import com.hotlayout.theme.HotlayoutThemeSet
+import com.hotlayout.theme.NodeStyle
+import com.hotlayout.theme.StyleResolver
+import java.util.Locale
+import java.util.TimeZone
+
+/** Where a press came from: the node, the screen, and the record the node reads. */
+public data class ActionSource(val nodeId: String, val screenId: String, val record: DataScope?)
+
+/**
+ * Draws a HotLayout document: the screen the flow is on, with the stack of screens the reader
+ * navigates itself (`navigate`, `navigate.back`, `navigate.section`).
+ *
+ * The reader opens nothing by itself. Every other action — `openUrl`, `deeplink`, `close` and the
+ * actions of the app — goes to [onAction], already checked: a standard action carries `standard` or
+ * `invalid`. [com.hotlayout.actions.runStandardAction] helps a host that wants to open it.
+ *
+ * The stack is bound to the document's `documentId` and the [entry], not to the document object: a
+ * host that reads the JSON again on every composition stays on the screen it is on.
+ *
+ * @param document a document from [com.hotlayout.model.loadDocument].
+ * @param theme the theme contract of the project; the built-in theme without one.
+ * @param data the host's data, a flat map from a data path to a value.
+ * @param locale the device locale as the platform gives it (`ar-EG`, `pt_BR`).
+ * @param entry a named entry point of the document; an unknown name starts on the initial screen.
+ * @param now «now» in epoch milliseconds for dates and counted days; the clock of the device without it.
+ * @param fonts the families the theme names, from the host's resources; the system font otherwise.
+ * @param onWrite a value the person entered or chose, already put into the session of the screen.
+ * @param onHaptic the haptic feedback a press asks for; the reader never vibrates by itself.
+ * @param writablePaths the data paths the reader may write to; by default every path of the form of a data path.
+ */
+@Composable
+public fun HotlayoutScreen(
+    document: HotlayoutDocument,
+    modifier: Modifier = Modifier,
+    theme: HotlayoutThemeSet = HotlayoutThemeSet.builtIn,
+    themeId: String? = null,
+    data: DataScope = emptyMap(),
+    locale: String? = Locale.getDefault().toLanguageTag(),
+    entry: String? = null,
+    timeZone: TimeZone? = null,
+    now: Long? = null,
+    images: ImagePolicy = ImagePolicy(),
+    fonts: HotlayoutFonts = HotlayoutFonts.System,
+    writablePaths: WritablePaths? = null,
+    onAction: ((HotlayoutAction, ActionSource) -> Unit)? = null,
+    onTrack: ((TrackEvent, ActionSource) -> Unit)? = null,
+    onWrite: ((String, JsonValue) -> Unit)? = null,
+    onHaptic: ((String, ActionSource) -> Unit)? = null,
+    onScreenChange: ((ScreenShownEvent) -> Unit)? = null,
+    onReport: ((List<HotlayoutReport>) -> Unit)? = null,
+) {
+    val sink = remember(document.documentId) { ReportSink() }
+    var flow by remember(document.documentId) { mutableStateOf(Flow(FlowDocument.of(document), entry)) }
+    var session by remember(document.documentId) { mutableStateOf<DataScope>(emptyMap()) }
+    val callbacks = rememberUpdatedState(Callbacks(onAction, onTrack, onWrite, onHaptic, onScreenChange, onReport))
+
+    LaunchedEffect(document.documentId) {
+        flow.shownEvent(ScreenShownCause.Entry)?.let { callbacks.value.onScreenChange?.invoke(it) }
+    }
+    LaunchedEffect(document) {
+        // A new version of the same document: the stack stays unless it holds a screen that is gone.
+        val updated = flow.copy()
+        val shown = updated.update(FlowDocument.of(document))
+        if (updated != flow) flow = updated
+        shown?.let { callbacks.value.onScreenChange?.invoke(it) }
+        callbacks.value.onReport?.invoke(document.reports + sink.reports)
+    }
+    LaunchedEffect(entry) {
+        if (entry == flow.entry) return@LaunchedEffect
+        val updated = flow.copy()
+        val shown = updated.restart(entry)
+        flow = updated
+        shown?.let { callbacks.value.onScreenChange?.invoke(it) }
+    }
+    LaunchedEffect(data) {
+        // New data: every frame looks for its record again (`x-liveRecord`); an update of a record is not a show.
+        val host = RecordScope.merge(DataLayers(session = session, data = data))
+        val updated = flow.copy()
+        if (updated.refresh { host[it] }) flow = updated
+    }
+
+    fun write(path: String, value: JsonValue) {
+        if (!WritablePaths.permits(writablePaths, path)) {
+            sink.add(HotlayoutReport.Kind.IgnoredInput, "write: ${path.take(64)}", "the path is not one the host lets the reader write to; nothing was written")
+            return
+        }
+        session = session + (path to value)
+        callbacks.value.onWrite?.invoke(path, value)
+    }
+
+    fun perform(action: JsonObject, node: DocumentNode, instances: List<ListInstance>) {
+        val type = action["type"]?.string
+        if (type == "setValue" || type == "toggleValue") {
+            // Write actions are the reader's own (never the host's); they arrive with the controls.
+            sink.add(HotlayoutReport.Kind.IgnoredInput, "node “${node.id}”: action", "“$type” is not performed by this reader yet")
+            return
+        }
+        val before = flow
+        val updated = before.copy()
+        val host = RecordScope.merge(DataLayers(session = session, data = data))
+        val outcome = updated.press(action, instances, host, sink)
+        val source = ActionSource(node.id, before.top?.screenId ?: "", outcome.hostRecord)
+        val handlers = callbacks.value
+        outcome.haptic?.let { handlers.onHaptic?.invoke(it, source) }
+        outcome.track?.let { handlers.onTrack?.invoke(it, source) }
+        outcome.handed?.let { handlers.onAction?.invoke(it, source) }
+        if (updated != before) flow = updated
+        outcome.shown?.let { handlers.onScreenChange?.invoke(it) }
+    }
+
+    val resolution = Localization.resolve(document.localization, locale)
+    val rightToLeft = TextDirectionRule.isRightToLeft(resolution.directionLocale) ?: false
+    val frames = flow.stack
+    val pageIndex = frames.indices.lastOrNull { index -> index == 0 || document.screen(frames[index].screenId)?.presentation != ScreenPresentation.Modal } ?: 0
+    val resolver = StyleResolver(theme.theme(themeId))
+    val setup = ScreenSetup(document, resolver, resolution, rightToLeft, data, session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts, sink, ::perform, ::write)
+
+    CompositionLocalProvider(LocalLayoutDirection provides if (rightToLeft) LayoutDirection.Rtl else LayoutDirection.Ltr) {
+        Box(modifier.fillMaxSize()) {
+            val page = frames.getOrNull(pageIndex)
+            val pageScreen = page?.let { document.screen(it.screenId) }
+            if (page != null && pageScreen != null) ScreenRoot(pageScreen, page, setup, asLayer = false)
+            for (index in frames.indices) {
+                if (index <= pageIndex) continue
+                val frame = frames[index]
+                val screen = document.screen(frame.screenId) ?: continue
+                ModalLayer(screen, frame, setup) { perform(JsonObject.of("type" to "navigate.back"), DocumentNode("modal-dismiss", "Screen"), emptyList()) }
+            }
+        }
+    }
+}
+
+private data class Callbacks(
+    val onAction: ((HotlayoutAction, ActionSource) -> Unit)?,
+    val onTrack: ((TrackEvent, ActionSource) -> Unit)?,
+    val onWrite: ((String, JsonValue) -> Unit)?,
+    val onHaptic: ((String, ActionSource) -> Unit)?,
+    val onScreenChange: ((ScreenShownEvent) -> Unit)?,
+    val onReport: ((List<HotlayoutReport>) -> Unit)?,
+)
+
+/** What every screen of the stack is drawn with. */
+private class ScreenSetup(
+    val document: HotlayoutDocument,
+    val resolver: StyleResolver,
+    val resolution: LocaleResolution,
+    val rightToLeft: Boolean,
+    val data: DataScope,
+    val session: DataScope,
+    val timeZone: TimeZone?,
+    val now: Double,
+    val images: ImagePolicy,
+    val fonts: HotlayoutFonts,
+    val sink: ReportSink,
+    val perform: (JsonObject, DocumentNode, List<ListInstance>) -> Unit,
+    val write: (String, JsonValue) -> Unit,
+) {
+    fun context(screen: ScreenEntry, frame: FlowFrame): RenderContext {
+        val host = RecordScope.merge(DataLayers(session = session, data = data))
+        return RenderContext(
+            resolver = resolver,
+            screenId = screen.screenId,
+            localization = document.localization,
+            locale = resolution,
+            scope = RecordScope.overlay(host, frame.record) ?: host,
+            timeZone = timeZone,
+            now = now,
+            rightToLeft = rightToLeft,
+            inherited = NodeStyle.root(resolver),
+            sink = sink,
+            images = images,
+            fonts = fonts,
+            pressHandler = perform,
+            write = write,
+        )
+    }
+}
+
+/**
+ * A page: the root of the screen fills the area and its content scrolls.
+ *
+ * Wave «screen anatomy» replaces this with the zones of the contract (a fixed app bar and bottom
+ * zone, only the body scrolls, safe insets).
+ */
+@Composable
+private fun ScreenRoot(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup, asLayer: Boolean) {
+    val context = setup.context(screen, frame)
+    if (asLayer) {
+        Column(Modifier.fillMaxWidth().testTag("screen:${screen.screenId}").verticalScroll(rememberScrollState())) {
+            NodeView(screen.root, context, Placement.Stretched)
+        }
+        return
+    }
+    BoxWithConstraints(Modifier.fillMaxSize().testTag("screen:${screen.screenId}")) {
+        val area = maxHeight
+        Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState())) {
+            NodeView(screen.root, context, Placement.Stretched, modifier = Modifier.heightIn(min = area))
+        }
+    }
+}
+
+/**
+ * A modal layer: the screen below stays visible under a dimmed backdrop; the layer lies at the
+ * bottom, as tall as its content. A tap on the backdrop closes a dismissible layer.
+ *
+ * Wave «modals» replaces this with sheets, windows, blur and the drag to dismiss.
+ */
+@Composable
+private fun ModalLayer(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup, dismiss: () -> Unit) {
+    val source = remember { MutableInteractionSource() }
+    Box(Modifier.fillMaxSize()) {
+        Box(
+            Modifier.fillMaxSize().background(Color(0x66000000)).let {
+                if (screen.dismissible) it.clickable(interactionSource = source, indication = null, onClick = dismiss) else it
+            },
+        )
+        Box(Modifier.fillMaxWidth().align(if (screen.modalPlacement == "center") Alignment.Center else Alignment.BottomCenter)) {
+            ScreenRoot(screen, frame, setup, asLayer = true)
+        }
+    }
+}
