@@ -10,6 +10,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.Layout
@@ -37,6 +38,9 @@ import com.hotlayout.render.Placement
 import com.hotlayout.render.NodeView
 import com.hotlayout.render.StyledText
 import com.hotlayout.render.WidgetCall
+import com.hotlayout.render.adaptive.WideChrome
+import com.hotlayout.render.adaptive.contentColumn
+import com.hotlayout.render.adaptive.wideNavMetrics
 import com.hotlayout.render.color
 import com.hotlayout.render.interaction.pressInput
 import com.hotlayout.render.widgets.IconGlyph
@@ -46,7 +50,7 @@ import com.hotlayout.render.widgets.PartStyleRules
 import kotlin.math.roundToInt
 
 /** Which part of the app bar a child of the row is. */
-internal enum class AppBarPart { Back, LeadingNode, Title, Action }
+internal enum class AppBarPart { Back, LeadingNode, Title, Action, NavItem }
 
 private class PartData(val part: AppBarPart) : ParentDataModifier {
     override fun Density.modifyParentData(parentData: Any?): Any = part
@@ -75,9 +79,13 @@ internal fun AppBarWidget(call: WidgetCall) {
     val gap = theme.spacing[AppBarRules.GAP_TOKEN] ?: 8.0
     val actionGap = theme.spacing[AppBarRules.ACTION_GAP_TOKEN] ?: 4.0
     // What the children read: not the inset of the bar itself, not its scrolled state.
-    val child = context.copy(barInset = 0.0, barScrolled = false)
+    val child = context.copy(barInset = 0.0, barScrolled = false, contentMaxWidth = null, barNav = null)
     val titleHidden = AppBarRules.titleShownOnlyWhenScrolled(node.props) && !context.barScrolled
-    val policy = remember(side, gap, actionGap, node.props["titleAlign"]) { AppBarPolicy(side, gap, actionGap, node.props["titleAlign"]) }
+    // The items of the navigation bar that stands in this bar (`widePlacement`): the first five shown ones, in one block with the actions.
+    val navItems = context.barNav?.children.orEmpty().filter { it.type == "NavItem" && context.isShown(it) }.take(NavBarRules.MAX_ITEMS)
+    val navMetrics = if (navItems.isEmpty()) null else wideNavMetrics(theme)
+    val navContext = navItemsContext(context, child)
+    val policy = remember(side, gap, actionGap, node.props["titleAlign"], navMetrics) { AppBarPolicy(side, gap, actionGap, node.props["titleAlign"], navMetrics) }
 
     Layout(
         {
@@ -90,10 +98,18 @@ internal fun AppBarWidget(call: WidgetCall) {
             }
             TitleBlock(node, child, Modifier.then(PartData(AppBarPart.Title)).then(if (titleHidden) Modifier.alpha(0f) else Modifier))
             for (action in actionNodes) NodeView(action, child, Placement.Natural, call.depth + 1, "AppBar", Modifier.then(PartData(AppBarPart.Action)))
+            for (item in navItems) NodeView(item, navContext, Placement.Natural, call.depth + 1, "NavBar", Modifier.then(PartData(AppBarPart.NavItem)))
         },
-        Modifier.fillMaxWidth(),
+        Modifier.contentColumn(context.contentMaxWidth).fillMaxWidth().then(if (navItems.isEmpty()) Modifier else Modifier.clipToBounds()),
         policy,
     )
+}
+
+/** The context of the navigation items in this bar: the box of the navigation bar is not drawn, but the colour and the font it names pass to its items. */
+private fun navItemsContext(context: com.hotlayout.render.RenderContext, child: com.hotlayout.render.RenderContext): com.hotlayout.render.RenderContext {
+    val nav = context.barNav ?: return child
+    val style = com.hotlayout.theme.NodeStyle.effective(nav, context.scope)
+    return child.copy(navAtTop = true, inherited = com.hotlayout.theme.NodeStyle.inherited(context.inherited, style, context.resolver))
 }
 
 /** The width of the node of the leading zone is natural, even for a button that would fill: «full width» has nothing to mean in a zone as wide as the node. */
@@ -144,18 +160,23 @@ private fun TitleBlock(node: DocumentNode, context: com.hotlayout.render.RenderC
 }
 
 /** The row of the app bar: the leading zone, the title block, the actions. The formula is [AppBarRules.zones]; this measures the children and places them. Coordinates are logical: `placeRelative` mirrors them in right-to-left text. */
-private class AppBarPolicy(val backSide: Double, val gap: Double, val actionGap: Double, val titleAlign: JsonValue?) : MeasurePolicy {
+private class AppBarPolicy(val backSide: Double, val gap: Double, val actionGap: Double, val titleAlign: JsonValue?, val nav: WideChrome.NavMetrics?) : MeasurePolicy {
     override fun MeasureScope.measure(measurables: List<Measurable>, constraints: Constraints): MeasureResult {
         val d = density
         val leading = measurables.firstOrNull { it.part == AppBarPart.Back || it.part == AppBarPart.LeadingNode }
         val isNode = leading?.part == AppBarPart.LeadingNode
         val title = measurables.firstOrNull { it.part == AppBarPart.Title }
         val actions = measurables.filter { it.part == AppBarPart.Action }
+        val navItems = if (nav == null) emptyList() else measurables.filter { it.part == AppBarPart.NavItem }
         fun natural(item: Measurable?): Double = item?.maxIntrinsicWidth(Constraints.Infinity)?.let { it / d.toDouble() } ?: 0.0
         val actionSides = actions.map { natural(it) }
-        fun zonesFor(width: Double) = AppBarRules.zones(
-            AppBarRules.ZonesInput(width, leading != null && !isNode, backSide, actionSides, gap, actionGap, natural(title), if (isNode) natural(leading) else null, titleAlign),
-        )
+        fun input(width: Double) =
+            AppBarRules.ZonesInput(width, leading != null && !isNode, backSide, actionSides, gap, actionGap, natural(title), if (isNode) natural(leading) else null, titleAlign)
+        // With items the block «items, gap, actions» is one trailing zone and the labels are decided by the natural widths (never by the look chosen).
+        fun wideFor(width: Double): WideChrome.WideAppBarZones? =
+            if (nav == null || navItems.isEmpty()) null
+            else WideChrome.appBarZones(WideChrome.WideAppBarInput(input(width), navItems.map { maxOf(0.0, natural(it) - nav.fixed) }, nav))
+        fun zonesFor(width: Double) = wideFor(width)?.zones ?: AppBarRules.zones(input(width))
         val widthPx = if (constraints.hasBoundedWidth) constraints.maxWidth else {
             val wide = zonesFor(Double.POSITIVE_INFINITY)
             ((wide.leading + natural(title) + wide.trailing) * d).roundToInt()
@@ -165,12 +186,19 @@ private class AppBarPolicy(val backSide: Double, val gap: Double, val actionGap:
         val titleWidth = (zones.titleWidth * d).roundToInt()
         val titlePlaced = title?.measure(Constraints(minWidth = titleWidth, maxWidth = titleWidth))
         val actionPlaced = actions.map { it.measure(Constraints()) }
-        val height = (listOfNotNull(leadingPlaced, titlePlaced) + actionPlaced).maxOfOrNull { it.height } ?: 0
+        val wide = wideFor(widthPx / d.toDouble())
+        // An item stands in the box of the rule; a box narrower than its content (icons alone) clips the label away.
+        val navPlaced = navItems.mapIndexed { index, item ->
+            val w = ((wide?.navItemWidths?.getOrNull(index) ?: 0.0) * d).roundToInt()
+            item.measure(Constraints(minWidth = w, maxWidth = w))
+        }
+        val height = (listOfNotNull(leadingPlaced, titlePlaced) + actionPlaced + navPlaced).maxOfOrNull { it.height } ?: 0
         return layout(widthPx, constraints.constrainHeight(height)) {
             fun put(placeable: Placeable?, start: Double) = placeable?.placeRelative((start * d).roundToInt(), (height - placeable.height) / 2)
             put(leadingPlaced, 0.0)
             put(titlePlaced, zones.titleStart)
             actionPlaced.forEachIndexed { index, placeable -> put(placeable, zones.actionStarts[index]) }
+            navPlaced.forEachIndexed { index, placeable -> put(placeable, wide?.navItemStarts?.getOrNull(index) ?: 0.0) }
         }
     }
 

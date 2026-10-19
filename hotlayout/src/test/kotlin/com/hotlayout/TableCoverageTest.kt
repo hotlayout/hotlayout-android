@@ -67,6 +67,8 @@ class TableCoverageTest {
             "motion/blurCases", "motion/glassCases",
             "carousel/hostCases", "carousel/readCases", "carousel/cardCases", "carousel/stopCases", "carousel/activeCases",
             "carousel/dotCases", "carousel/areaCases", "carousel/stateCases", "repeater-filter/carouselCases",
+            // Adaptive: width classes, visibility and style by class, the wide places, `unset`.
+            "adaptive/classCases", "adaptive/layerCases", "adaptive/styleCases", "adaptive/propsCases", "adaptive/showCases", "adaptive/drawnCases", "adaptive/numberCases", "adaptive/tabCases", "adaptive/weightCases", "adaptive/zoneCases", "adaptive/formCases", "adaptive/validityCases", "adaptive/contentCases", "adaptive/gridCases", "adaptive/boxCases", "adaptive/ruleCases", "adaptive/chromeCases", "adaptive/wideNavItemCases", "adaptive/wideNavHeightCases", "adaptive/wideAppBarCases", "adaptive/wideNavBarCases", "adaptive/wideZoneCases", "adaptive/wideModalCases", "adaptive/wideModalRadiusCases", "adaptive/wideModalContentCases", "adaptive/wideRuleCases", "adaptive/unsetStyleCases", "adaptive/unsetStateCases", "adaptive/unsetPropsCases",
         )
 
         /** The wave a whole table belongs to (groups of it that the foundation runs are in [run]). */
@@ -92,7 +94,6 @@ class TableCoverageTest {
             "media-chrome" to "wave 2 · screen anatomy",
             "sheet-dismiss" to "wave 2 · modals",
             "carousel" to "wave 2 · carousel",
-            "adaptive" to "wave 3 · adaptive",
         )
 
         /** Groups of a table that belong to another wave than the table. */
@@ -121,6 +122,8 @@ class TableCoverageTest {
                 "media-chrome/appBarPlaceCases", "inputs/placementCases",
                 // Where a node may stand and how deep a document may go: what the builder may publish.
                 "composition/nestingCases", "composition/depthCases", "actions/writeTreeCases",
+                // Which documents may be published and what an editor advises about an older reader.
+                "adaptive/wideSectionCases", "adaptive/olderReaderShowOnCases", "adaptive/unsetScreenCases",
             )
 
         fun tables(): Map<String, Set<String>> {

@@ -23,9 +23,13 @@ import androidx.compose.ui.unit.dp
 import com.hotlayout.json.JsonObject
 import com.hotlayout.json.JsonValue
 import com.hotlayout.model.DocumentNode
+import com.hotlayout.model.WidthRules
 import com.hotlayout.render.NodeView
 import com.hotlayout.render.Placement
 import com.hotlayout.render.RenderContext
+import com.hotlayout.render.adaptive.NavPlace
+import com.hotlayout.render.adaptive.WideChrome
+import com.hotlayout.render.adaptive.contentColumn
 import com.hotlayout.render.layout.ColumnWidget
 import com.hotlayout.render.layout.FlowPull
 import com.hotlayout.render.layout.LocalScreenBodyHeight
@@ -45,7 +49,18 @@ internal class ScreenPlan(root: DocumentNode, private val context: RenderContext
     val topPinned: List<DocumentNode>
     val body: List<DocumentNode>
     val pinned: DocumentNode?
+
+    /** The navigation bar in the bottom zone. */
     val nav: DocumentNode?
+
+    /** The navigation bar of its own at the top (`navPlace == Top`). */
+    val topNav: DocumentNode?
+
+    /** The navigation bar whose items stand in the app bar (`navPlace == AppBar`). */
+    val barNav: DocumentNode?
+
+    /** The widest content (`Screen.contentMaxWidth`), in logical pixels. */
+    val contentMax: Double?
     val bodyEmpty: Boolean
     val firstPull: Double
     val gap: Double
@@ -58,19 +73,26 @@ internal class ScreenPlan(root: DocumentNode, private val context: RenderContext
     val floats: Boolean
 
     init {
-        val parts = ScreenAnatomy.childrenByZone(root.children, root.props)
         fun shown(node: DocumentNode?): DocumentNode? = node?.takeIf { context.isShown(it) }
+        // Who stands where in the width class of this screen, and where the navigation bar stands: one function answers both.
+        val chrome = WideChrome.screenChrome(root.children, context.widthClass, root.props) { context.isShown(it) }
+        val parts = chrome.zones
         bar = shown(parts.appBar)
         topPinned = parts.topPinned.filter { context.isShown(it) }
         body = parts.body
         pinned = shown(parts.pinned)
-        // A navigation bar is not drawn in a modal layer, nor when it is hidden; it stands at the bottom on every width until the adaptive wave.
-        nav = if (shrinks) null else shown(parts.navBar)
+        // A navigation bar is not drawn in a modal layer, nor when it is hidden.
+        val navShown = if (shrinks) null else shown(parts.navBar)
+        val place = if (navShown == null) null else chrome.navPlace
+        nav = if (place == NavPlace.Bottom) navShown else null
+        topNav = if (place == NavPlace.Top) navShown else null
+        barNav = if (place == NavPlace.AppBar && bar != null) navShown else null
+        contentMax = WidthRules.contentMaxWidth(root.props["contentMaxWidth"])
         val visibleBody = parts.body.filter { context.isShown(it) }
         bodyEmpty = visibleBody.isEmpty()
         firstPull = visibleBody.firstOrNull()?.let { child -> FlowPull.read(child, "Screen", root.props)?.let { context.resolver.spacing(it.first) } } ?: 0.0
         gap = context.resolver.spacing(root.props["gap"] ?: JsonValue.Str("sm")) ?: 0.0
-        bodyAtScreenTop = ScreenAnatomy.bodyStartsAtScreenTop(bodyTop, if (bar == null) TopZoneOwner.None else TopZoneOwner.AppBar)
+        bodyAtScreenTop = ScreenAnatomy.bodyStartsAtScreenTop(bodyTop, WideChrome.topZoneOwner(place, bar != null))
         floats = nav?.let { NavBarRules.floats("bottom", it.props) } ?: false
     }
 
@@ -94,11 +116,11 @@ internal class ScreenPlan(root: DocumentNode, private val context: RenderContext
     val tail: Double get() = if (pinned != null) (if (bodyEmpty) 0.0 else gap) else paddingBottom
 
     /** The lead of the top zone: the gap under the bar, or the inset and the top padding. */
-    val topLead: Double get() = if (bar != null) gap else insets.top + paddingTop
+    val topLead: Double get() = if (bar != null) gap else (if (topNav != null) 0.0 else insets.top) + paddingTop
 
     fun settings() = ScreenZonesSettings(
         shrink = shrinks, paddingTop = paddingTop, paddingBottom = paddingBottom, paddingStart = paddingStart, paddingEnd = paddingEnd, gap = gap,
-        bodyEmpty = bodyEmpty, firstPull = firstPull, bodyTop = bodyTop, safeTop = insets.top, safeBottom = insets.bottom, keyboard = insets.keyboard, navFloat = floats,
+        bodyEmpty = bodyEmpty, firstPull = firstPull, bodyTop = bodyTop, safeTop = if (topNav != null) 0.0 else insets.top, safeBottom = insets.bottom, keyboard = insets.keyboard, navFloat = floats,
     )
 }
 
@@ -111,8 +133,12 @@ internal class ScreenPlan(root: DocumentNode, private val context: RenderContext
  * @param insets the platform insets; the window's own (or the host's) when `null`.
  */
 @Composable
-internal fun AnatomyScreen(root: DocumentNode, context: RenderContext, modifier: Modifier = Modifier, shrinks: Boolean = false, insets: ScreenInsets? = null) {
-    val style = NodeStyle.effective(root, context.scope)
+internal fun AnatomyScreen(
+    root: DocumentNode, context: RenderContext, modifier: Modifier = Modifier, shrinks: Boolean = false, insets: ScreenInsets? = null, sheetWindow: Boolean = false,
+) {
+    var style = NodeStyle.effective(root, context.scope)
+    // A sheet shown as a window: the bottom corners it did not name take the radius of the top ones.
+    if (sheetWindow) WideChrome.sheetWindowRadius(style["radius"])?.let { style = style.with("radius", it) }
     val look = context.resolver.box(style, context.scope)
     val inner = context.copy(inherited = NodeStyle.inherited(context.inherited, style, context.resolver), listPosition = null, listNumber = null)
     val screenInsets = insets ?: rememberScreenInsets()
@@ -141,25 +167,31 @@ internal fun AnatomyScreen(root: DocumentNode, context: RenderContext, modifier:
         // The children of the root are siblings of each other wherever the zones put them (the place of an option in its group).
         ProvideSiblings(root) {
         ScreenZonesLayout(plan.settings(), report, Modifier.then(if (shrinks) Modifier.fillMaxWidth() else Modifier.fillMaxSize())) {
+            // A bar of navigation of its own at the top holds the status bar inset in its box, as an app bar does.
+            plan.topNav?.let { nav ->
+                Box(Modifier.inZone(ScreenZone.TopNav)) {
+                    NodeView(nav, inner.copy(navAtTop = true, barInset = screenInsets.top, contentMaxWidth = plan.contentMax), Placement.Stretched, 1, "Screen")
+                }
+            }
             plan.bar?.let { bar ->
                 val sink = if (plan.bodyAtScreenTop) Modifier.pointerInput(Unit) { detectTapGestures { } } else Modifier
                 Box(Modifier.inZone(ScreenZone.Bar).then(sink)) {
-                    NodeView(bar, inner.copy(barInset = screenInsets.top, barScrolled = scrolled), Placement.Stretched, 1, "Screen")
+                    NodeView(bar, inner.copy(barInset = screenInsets.top, barScrolled = scrolled, contentMaxWidth = plan.contentMax, barNav = plan.barNav), Placement.Stretched, 1, "Screen")
                 }
             }
             if (plan.topPinned.isNotEmpty()) {
                 Column(Modifier.inZone(ScreenZone.Top)) {
                     Spacer(Modifier.height(plan.topLead.dp))
-                    ColumnWidget(plan.topPinned, plan.gap, zoneRoot, inner, 0, ignoresFirstPull = true)
+                    Box(Modifier.contentColumn(plan.contentMax)) { ColumnWidget(plan.topPinned, plan.gap, zoneRoot, inner, 0, ignoresFirstPull = true) }
                 }
             }
             BodyZone(plan, inner, zoneRoot, scroll, report, Modifier.inZone(ScreenZone.Body))
             plan.pinned?.let { pinned ->
-                Box(Modifier.inZone(ScreenZone.Pinned)) { ColumnWidget(listOf(pinned), 0.0, zoneRoot, inner, 0, ignoresFirstPull = true) }
+                Box(Modifier.inZone(ScreenZone.Pinned).contentColumn(plan.contentMax)) { ColumnWidget(listOf(pinned), 0.0, zoneRoot, inner, 0, ignoresFirstPull = true) }
             }
             plan.nav?.let { nav ->
                 Box(Modifier.inZone(ScreenZone.Nav)) {
-                    NodeView(nav, inner.copy(navInset = if (plan.floats) 0.0 else screenInsets.bottom), Placement.Stretched, 1, "Screen")
+                    NodeView(nav, inner.copy(navInset = if (plan.floats) 0.0 else screenInsets.bottom, contentMaxWidth = plan.contentMax), Placement.Stretched, 1, "Screen")
                 }
             }
         }
@@ -178,7 +210,7 @@ private fun BodyZone(plan: ScreenPlan, inner: RenderContext, zoneRoot: DocumentN
     val column: @Composable (androidx.compose.ui.unit.Dp?) -> Unit = { area ->
         Column(Modifier.then(if (area != null) Modifier.fillMaxSize() else Modifier.fillMaxWidth()).verticalScroll(scroll)) {
             Spacer(Modifier.height(plan.lead.dp))
-            Box(Modifier.padding(start = plan.paddingStart.dp, end = plan.paddingEnd.dp)) {
+            Box(Modifier.padding(start = plan.paddingStart.dp, end = plan.paddingEnd.dp).contentColumn(plan.contentMax)) {
                 // The visible body is what `justify` of the screen distributes (a layer as tall as its content has none).
                 val free = area?.let { maxOf(0.0, it.value - plan.lead - tail).dp }
                 CompositionLocalProvider(LocalScreenBodyHeight provides free) {

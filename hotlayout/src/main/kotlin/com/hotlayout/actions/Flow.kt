@@ -119,6 +119,9 @@ public class Flow private constructor(
 
     public fun copy(): Flow = Flow(document, entry, stack)
 
+    /** The same flow with another stack (restored after a configuration change); the caller checks the screens exist. */
+    internal fun withStack(stack: List<FlowFrame>): Flow = Flow(document, entry, stack)
+
     override fun equals(other: Any?): Boolean = other is Flow && other.document == document && other.entry == entry && other.stack == stack
 
     override fun hashCode(): Int = stack.hashCode()

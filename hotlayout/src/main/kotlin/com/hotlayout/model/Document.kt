@@ -17,6 +17,8 @@ public data class DocumentNode(
     /** Every field of the node as it lies in the document (`style`, `styleWhen`, `visibleIf`, `weight`…). */
     val fields: JsonObject = JsonObject(),
     val children: List<DocumentNode> = emptyList(),
+    /** `columns` came from a width layer (`propsOn`): its bounds are 1…6, not the base's 2…4. Set by `inWidthClass` only. */
+    val columnsFromOverride: Boolean = false,
 ) {
     val style: JsonValue? get() = fields["style"]
     val styleWhen: JsonValue? get() = fields["styleWhen"]

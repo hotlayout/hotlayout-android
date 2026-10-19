@@ -58,7 +58,6 @@ see what a device shows. Rows that differ are listed by name in `TemplateCasesTe
 - `style.backdropBlur` (glass under a node) is read and validated (`motion/glassCases`) but not drawn: Compose
   has no backdrop capture across sibling nodes, and a page's own nodes cannot blur what is drawn under them.
   The blur under a modal layer is drawn (see Modal layers).
-- `showOn`, `styleOn`, `propsOn` are not read (wave 3 adaptive; `RenderContext.isShown` is the place).
 
 ## Controls (wave 1)
 
@@ -176,7 +175,7 @@ Family files (one zone per agent):
 | 2 | carousel | new `render/widgets/Carousel*.kt` |
 | 2 | gestures & motion | new `render/motion/`, `render/interaction/` |
 | 3 | images | `render/widgets/ImageWidget.kt` |
-| 3 | adaptive | new `model/WidthClass*.kt`, `RenderContext.isShown` |
+| 3 | adaptive | `model/WidthClass.kt`, `render/adaptive/` (built) |
 
 Each wave moves its table groups from the deferred map of `TableCoverageTest` into `run` and adds a
 wiring test (semantics or pixels through `HotlayoutScreen`) for every capability it draws.
@@ -273,7 +272,17 @@ wiring test (semantics or pixels through `HotlayoutScreen`) for every capability
   Layers take none. `statusBarIcons` is only in the show event; the reader never touches the system bars.
 - The keyboard lifts the pinned block (not the nav bar) by `keyboardInset()`; the body area shrinks, so a focused field
   scrolls into view by Compose's own bring-into-view in the body scroll.
-- Navigation bar: always at the bottom for now. `NavBarRules.place` is the hook for wave 3 (`widePlacement`, items in the
-  app bar); `RenderContext.barInset/barScrolled/navInset/navLine` are what the zones hand the bar and the items.
+- Navigation bar: its place is `WideChrome.screenChrome` / `navPlace` (`NavBarRules.place` delegates); `RenderContext.barInset/barScrolled/navInset/navLine` are what the zones hand the bar and the items.
 - The badge dot is tagged `nav-badge-dot` (read with the unmerged tree); the flash runs only on a change of the condition.
-- Not drawn: the bar of navigation of its own at the top and the items in the app bar (wave 3), `backdropBlur` of a floating bar.
+- Not drawn: `backdropBlur` of a floating bar.
+
+## Adaptive width (wave 3, `model/WidthClass.kt`, `render/adaptive/`)
+
+- The class is read from the box `HotlayoutScreen` is given (`BoxWithConstraints`, dp, not rounded; unbounded or non-finite is compact), one class per screen; a modal layer is always compact. Any change of the box (rotation, fold, split screen) resolves the tree again.
+- The reader resolves the tree for the class (`DocumentNode.inWidthClass`: effective props, base style with the `styleOn` layers, no `propsOn` / `styleOn`) and then draws a plain document; no widget knows the word class. `columns` that came from a layer is read as 1…6 (`DocumentNode.columnsFromOverride`). `showOn` stays a field and is answered with `visibleIf` in `RenderContext.isShown` (`WidthRules.isShown`); forms and the key order take the class too (`ScreenForm.requiredFields(root, widthClass)`, `hiddenByClass`).
+- Who stands where and the place of the navigation bar: one function, `WideChrome.screenChrome` (`bottom` / `appBar` / `top`). In the app bar the items and the actions are one block of the trailing zone (`WideChrome.appBarZones`); a bar of its own is the `TopNav` zone of `ScreenZonesLayout` (takes the top, everything else is counted under it, the status bar inset lies inside its box). Labels hide all together, decided by natural widths (`maxIntrinsicWidth`), never by the look chosen; the item gets a box narrower than its content and clips the label, which stays the accessible name.
+- `Screen.contentMaxWidth`: `Modifier.contentColumn` on the body, the pinned block, the top zone, the items of the app bar and of the navigation bar; backgrounds stay edge to edge.
+- Modal: a layer without `modalPlacement` on a wide box is a centred window of at most 560 (85 % of the height), no drag (`ModalLayerSpec.sheetWindow`); the class of the FRAME decides the shape, the content is compact; the bottom corners the style did not name take the top radii.
+- The stack and the entered values survive the recreation of the host activity (a rotation without `configChanges`): saved as JSON text by `ConfigChangeState` (`rememberSaveable`); a stack naming a screen the document no longer has is dropped; the host is not told the entry show again. The saved state is keyed by the place in the composition, so the host's content must be the same composable after the recreation (as `onCreate` makes it).
+- Tables run: every group of `adaptive-cases.json` except four validator groups (`wideSectionCases`, `olderReaderShowOnCases`, `unsetDocumentCases`, `unsetScreenCases`); pixel rows (`gridCases`, `boxCases`, `weightCases`, `contentCases`) through the real screen at 393 / 768 / 1280 / 1920 in both directions. Frames: `demo/frames/adaptive-screens-*.png`.
+- Not built: the wide rows of `wideAppBarCases` / `wideNavBarCases` run through the pure rules plus real-screen checks of order, side and mode, not number for number through the private layout policies.

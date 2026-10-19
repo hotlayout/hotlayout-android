@@ -45,6 +45,7 @@ import com.hotlayout.render.NodeView
 import com.hotlayout.render.Placement
 import com.hotlayout.render.StyledText
 import com.hotlayout.render.WidgetCall
+import com.hotlayout.render.adaptive.contentColumn
 import com.hotlayout.render.color
 import com.hotlayout.render.interaction.pressInput
 import com.hotlayout.render.widgets.ButtonGeometry
@@ -62,6 +63,10 @@ import kotlin.math.roundToInt
  */
 @Composable
 internal fun NavBarWidget(call: WidgetCall) {
+    if (call.context.navAtTop) {
+        com.hotlayout.render.adaptive.OwnNavBar(call)
+        return
+    }
     val context = call.context
     val theme = context.theme
     val items = call.node.children.filter { it.type == "NavItem" && context.isShown(it) }.take(NavBarRules.MAX_ITEMS)
@@ -74,7 +79,7 @@ internal fun NavBarWidget(call: WidgetCall) {
             .background(surface)
             .drawBehind { if (line > 0) drawRect(borderColor, size = Size(size.width, (line * density).toFloat())) },
     ) {
-        EqualShares {
+        EqualShares(Modifier.contentColumn(context.contentMaxWidth)) {
             for (item in items) NodeView(item, child, Placement.Stretched, call.depth + 1, "NavBar")
         }
         if (context.navInset > 0) Spacer(Modifier.height(context.navInset.dp))
@@ -83,8 +88,8 @@ internal fun NavBarWidget(call: WidgetCall) {
 
 /** The items of the bar: equal shares of its width, the first at the start of the reading direction. A share is not rounded (`NavBarRules.shares`); pixels are shared so that the shares fill the bar exactly. */
 @Composable
-private fun EqualShares(content: @Composable () -> Unit) {
-    Layout(content, Modifier.fillMaxWidth()) { measurables: List<Measurable>, constraints: Constraints ->
+private fun EqualShares(modifier: Modifier, content: @Composable () -> Unit) {
+    Layout(content, modifier.fillMaxWidth()) { measurables: List<Measurable>, constraints: Constraints ->
         val width = if (constraints.hasBoundedWidth) constraints.maxWidth else 0
         val shares = NavBarRules.shares(width.toDouble(), measurables.map { true }, false)
         val placeables = measurables.mapIndexed { index, item ->
@@ -107,6 +112,10 @@ private fun EqualShares(content: @Composable () -> Unit) {
  */
 @Composable
 internal fun NavItemWidget(call: WidgetCall) {
+    if (call.context.navAtTop) {
+        com.hotlayout.render.adaptive.TopNavItem(call)
+        return
+    }
     val node = call.node
     val context = call.context
     val theme = context.theme
@@ -152,7 +161,7 @@ internal fun NavItemWidget(call: WidgetCall) {
  * changes its answer on a shown screen; the first show and «reduce motion» are not moved.
  */
 @Composable
-private fun NavBadgeDot(shown: Boolean, glyph: Double, boxHeight: Double, color: Color, rightToLeft: Boolean) {
+internal fun NavBadgeDot(shown: Boolean, glyph: Double, boxHeight: Double, color: Color, rightToLeft: Boolean) {
     val resolver = LocalContext.current.contentResolver
     val reduced = remember { runCatching { Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f }.getOrDefault(false) }
     var seen by remember { mutableStateOf(false) }

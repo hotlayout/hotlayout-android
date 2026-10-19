@@ -40,7 +40,7 @@ internal fun RepeaterWidget(call: WidgetCall) {
     val plan = RepeaterPlan(node, context.scope) { template, scope -> context.isShown(template, scope) }
     if (plan.instances.isEmpty() || node.children.isEmpty()) return
     val template = node.children[0]
-    val columns = RepeaterPlan.columns(node.props, overridden = false)
+    val columns = RepeaterPlan.columns(node.props, overridden = node.columnsFromOverride)
     val gap = context.resolver.spacing(node.props["gap"] ?: com.hotlayout.json.JsonValue.Str("sm")) ?: 0.0
     val numbered = template.type == "Text" && template.props["marker"]?.string == "number"
     val item = node.props["item"]?.string ?: ""
@@ -158,7 +158,7 @@ internal fun GridCells(columns: Int, gap: Double, modifier: Modifier = Modifier,
 internal fun GridWidget(call: WidgetCall) {
     val node = call.node
     val context = call.context
-    val columns = gridColumns(node.props["columns"], overridden = false) ?: 2
+    val columns = gridColumns(node.props["columns"], overridden = node.columnsFromOverride) ?: 2
     val gap = context.resolver.spacing(node.props["gap"] ?: com.hotlayout.json.JsonValue.Str("sm")) ?: 0.0
     val cells = node.children.filter { context.isShown(it) }
     GridCells(columns, gap, if (call.placement.stretchWidth) Modifier.fillMaxWidth() else Modifier) {

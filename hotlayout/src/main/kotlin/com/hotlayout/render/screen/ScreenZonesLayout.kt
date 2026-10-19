@@ -20,7 +20,12 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 
 /** The zone of the screen a child of [ScreenZonesLayout] stands in. */
-internal enum class ScreenZone { Bar, Top, Body, Pinned, Nav }
+internal enum class ScreenZone {
+    Bar, Top, Body, Pinned, Nav,
+
+    /** The navigation bar of its own at the top of the screen (`wideNav.ownBar`); takes the whole top, the rest is counted under it. */
+    TopNav,
+}
 
 internal fun Modifier.inZone(zone: ScreenZone): Modifier = layoutId(zone)
 
@@ -88,6 +93,9 @@ private class ScreenZonesPolicy(val settings: ScreenZonesSettings, val report: Z
         val topZone = zone(ScreenZone.Top)?.measure(inside)
         val pinned = zone(ScreenZone.Pinned)?.measure(inside)
         val nav = zone(ScreenZone.Nav)?.measure(Constraints(minWidth = width, maxWidth = width))
+        val topNav = zone(ScreenZone.TopNav)?.measure(Constraints(minWidth = width, maxWidth = width))
+        // The bar of its own takes the top of the screen; everything else is counted in what is left under it.
+        val topNavHeight = (topNav?.height ?: 0) / d
         val barHeight = (bar?.height ?: 0) / d
         val topHeight = (topZone?.height ?: 0) / d
         val navHeight = nav?.let { it.height / d }
@@ -96,7 +104,7 @@ private class ScreenZonesPolicy(val settings: ScreenZonesSettings, val report: Z
         val navContent = navHeight?.let { if (floats) it else maxOf(0.0, it - s.safeBottom) }
 
         var input = AnatomyInput(
-            height = available / d, shrink = shrink, appBarHeight = null, paddingTop = s.paddingTop, paddingBottom = s.paddingBottom,
+            height = available / d - topNavHeight, shrink = shrink, appBarHeight = null, paddingTop = s.paddingTop, paddingBottom = s.paddingBottom,
             gap = s.gap, bodyContentHeight = if (s.bodyEmpty) null else 0.0, firstPull = s.firstPull,
             bottom = if (pinned != null || navContent != null) BottomZoneInput(pinned?.let { it.height / d }, navContent, s.safeBottom) else null,
             navFloat = floats, bodyTop = s.bodyTop, safeTop = s.safeTop, keyboard = if (shrink) 0.0 else s.keyboard,
@@ -108,7 +116,7 @@ private class ScreenZonesPolicy(val settings: ScreenZonesSettings, val report: Z
             val header = (if (bar != null) s.paddingTop + barHeight else 0.0) + topHeight
             input = input.copy(appBarHeight = header - s.paddingTop, safeTop = 0.0, bodyTop = null)
             barTop = if (bar != null) s.paddingTop else null
-            topZoneTop = if (bar != null) s.paddingTop + barHeight else 0.0
+            topZoneTop = (if (bar != null) s.paddingTop + barHeight else 0.0) + topNavHeight
         } else if (bar != null) {
             input = input.copy(appBarHeight = maxOf(0.0, barHeight - ScreenAnatomy.safeTop(s.safeTop, input.height)))
         }
@@ -129,12 +137,14 @@ private class ScreenZonesPolicy(val settings: ScreenZonesSettings, val report: Z
             bodyPlaced = placed
         }
         if (bar != null && topZone == null) barTop = zones.appBar?.top
+        zones = zones.lowered(topNavHeight)
         if (bodyPlaced == null && body != null) bodyPlaced = body.measure(Constraints.fixed(width, px(zones.body.height)))
         report.report(barHeight, if (zones.float) zones.bottom?.height ?: 0.0 else 0.0)
         val total = constraints.constrainHeight(px(zones.height))
 
         return layout(width, total) {
             val atTop = zones.bodyAtScreenTop
+            topNav?.placeRelative(0, 0)
             fun placeBar() { if (bar != null && barTop != null) bar.placeRelative(px(s.paddingStart), px(barTop!!)) }
             // With the body from the top edge the bar lies over it; otherwise a pulled first child lifts the body over the bar.
             if (atTop) bodyPlaced?.placeRelative(0, px(zones.body.top))

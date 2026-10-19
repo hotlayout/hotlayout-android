@@ -12,6 +12,8 @@ import com.hotlayout.json.JsonObject
 import com.hotlayout.json.JsonValue
 import com.hotlayout.model.DocumentLocalization
 import com.hotlayout.model.DocumentNode
+import com.hotlayout.model.WidthClass
+import com.hotlayout.model.WidthRules
 import com.hotlayout.model.ReportSink
 import com.hotlayout.text.BindableText
 import com.hotlayout.text.LocaleResolution
@@ -82,14 +84,22 @@ internal data class RenderContext(
     val instancePath: List<Int> = emptyList(),
     /** The width of the box of a card of a carousel with `perView`, in logical pixels; read once by [NodeView]. */
     val cardWidth: Double? = null,
+    /** The width class of the box of this screen (one per screen; a modal layer is always compact). The tree is already resolved for it. */
+    val widthClass: WidthClass = WidthClass.Compact,
+    /** `Screen.contentMaxWidth` (already clamped), for the zones whose content stands in a column; `null`: no column. */
+    val contentMaxWidth: Double? = null,
+    /** The navigation bar whose items stand in the app bar being drawn (`widePlacement`), or `null`. */
+    val barNav: DocumentNode? = null,
+    /** The navigation items are drawn at the top (in the app bar or a bar of their own): a row of glyph and label. */
+    val navAtTop: Boolean = false,
 ) {
     val theme: HotlayoutTheme get() = resolver.theme
 
     /**
-     * Whether a node is shown: the ONE place that answers it. Its condition holds now; the width
-     * class (`showOn`) joins here, never in a widget.
+     * Whether a node is shown: the ONE place that answers it. The width class lists it (`showOn`) AND its
+     * condition holds now; the two are independent. A widget never asks either alone.
      */
-    fun isShown(node: DocumentNode, scope: DataScope = this.scope): Boolean = Conditions.isVisible(node.visibleIf, scope)
+    fun isShown(node: DocumentNode, scope: DataScope = this.scope): Boolean = WidthRules.isShown(node, widthClass, scope)
 
     fun press(action: JsonObject, node: DocumentNode) {
         run(action, node)
@@ -103,7 +113,7 @@ internal data class RenderContext(
         }
 
     /** Whether a `Button` / `IconButton` is disabled: `disabledIf` holds, or `requiresFilled` on an unfilled form. */
-    fun isDisabled(node: DocumentNode): Boolean = WritePress.isDisabled(node, scope, screenRoot, screenScope ?: scope)
+    fun isDisabled(node: DocumentNode): Boolean = WritePress.isDisabled(node, scope, screenRoot, screenScope ?: scope, widthClass)
 
     val textEnvironment: TextEnvironment
         get() = TextEnvironment(

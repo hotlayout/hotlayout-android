@@ -45,6 +45,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.hotlayout.render.adaptive.WideChrome
 import com.hotlayout.render.motion.rememberReducedMotion
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
@@ -56,6 +57,8 @@ internal class ModalLayerSpec(
     val screenId: String,
     val name: String,
     val window: Boolean,
+    /** A sheet shown as a window in a wide place (`WideChrome.ModalShape.SheetWindow`): [window] too, but sized by the wide rule. */
+    val sheetWindow: Boolean = false,
     /** The blur under the layer, 1…40, or `null`. */
     val blur: Int?,
     val dismissible: Boolean,
@@ -180,7 +183,7 @@ private fun ModalLayerView(
                 .clearAndSetSemantics { }
                 .pointerInput(live, layer.dismissible) { detectTapGestures { if (live && layer.dismissible) dismissNow.value() } },
         )
-        ModalBox(layer.window, marginDp) {
+        ModalBox(layer.window, layer.sheetWindow, marginDp) {
             Box(
                 Modifier
                     .sheetDrag(
@@ -239,16 +242,21 @@ private fun escapeKey(down: Boolean, key: Key, repeating: Boolean, step: () -> U
  * with the smaller height and its body scrolls inside.
  */
 @Composable
-private fun ModalBox(window: Boolean, marginDp: Double, content: @Composable () -> Unit) {
+private fun ModalBox(window: Boolean, sheetWindow: Boolean, marginDp: Double, content: @Composable () -> Unit) {
     val density = LocalDensity.current.density
+    val shape = when {
+        sheetWindow -> WideChrome.ModalShape.SheetWindow
+        window -> WideChrome.ModalShape.Window
+        else -> WideChrome.ModalShape.Sheet
+    }
     Layout(content, Modifier.fillMaxSize()) { measurables, constraints ->
         // The rules speak logical pixels (400 wide at most): the box is worked out in them and then scaled.
         val width = constraints.maxWidth / density.toDouble()
         val height = constraints.maxHeight / density.toDouble()
-        val layerWidth = (ModalRules.width(window, width, marginDp) * density).roundToInt()
-        val available = ((if (window) maxOf(0.0, height - 2 * marginDp) else height) * density).roundToInt()
+        val layerWidth = (WideChrome.layerWidth(shape, width, marginDp) * density).roundToInt()
+        val available = (WideChrome.layerRoom(shape, height, marginDp) * density).roundToInt()
         val placeable = measurables.firstOrNull()?.measure(Constraints(layerWidth, layerWidth, 0, available))
-        val box = ModalRules.box(window, width, height, (placeable?.height ?: 0) / density.toDouble(), marginDp)
+        val box = WideChrome.layerBox(shape, width, height, (placeable?.height ?: 0) / density.toDouble(), marginDp).box
         layout(constraints.maxWidth, constraints.maxHeight) { placeable?.place((box.x * density).roundToInt(), (box.y * density).roundToInt()) }
     }
 }

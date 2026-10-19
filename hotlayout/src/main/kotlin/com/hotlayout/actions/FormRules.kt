@@ -4,6 +4,8 @@ import com.hotlayout.data.Conditions
 import com.hotlayout.data.DataScope
 import com.hotlayout.json.JsonValue
 import com.hotlayout.model.DocumentNode
+import com.hotlayout.model.WidthClass
+import com.hotlayout.model.WidthRules
 import com.hotlayout.render.widgets.InputRules
 import com.hotlayout.text.TextHeard
 
@@ -31,31 +33,34 @@ internal object ScreenForm {
         val disabledIf: JsonValue?,
         /** The fallback text of a choice group's binding: the option of that name is shown as selected. */
         val fallback: String? = null,
+        /** The node or an ancestor is not listed for the width class (`showOn`): the field does not count. */
+        val hiddenByClass: Boolean = false,
     )
 
     /**
      * The required fields of a screen in document order. The subtree of a list from data is not
      * included; a field in a tab that is not open IS included.
      */
-    fun requiredFields(root: DocumentNode): List<Field> {
+    fun requiredFields(root: DocumentNode, widthClass: WidthClass = WidthClass.Compact): List<Field> {
         val found = ArrayList<Field>()
-        fun walk(node: DocumentNode, inherited: List<JsonValue>) {
+        fun walk(node: DocumentNode, inherited: List<JsonValue>, hidden: Boolean) {
             val own = node.visibleIf?.takeIf { !it.isNull }?.let { inherited + it } ?: inherited
+            val off = hidden || !WidthRules.showsOn(node, widthClass)
             val required = InputRules.isLiteralTrue(node.props["required"])
             val path = InputRules.path(node.props["value"])
             when {
                 node.type == "TextField" && required -> {
                     val numeric = InputRules.isNumber(node.props["valueType"])
-                    found.add(Field(node.id, if (numeric) Kind.Number else Kind.Text, path, own, node.props["disabledIf"]))
+                    found.add(Field(node.id, if (numeric) Kind.Number else Kind.Text, path, own, node.props["disabledIf"], hiddenByClass = off))
                 }
-                node.type == "Checkbox" && required -> found.add(Field(node.id, Kind.Flag, path, own, node.props["disabledIf"]))
+                node.type == "Checkbox" && required -> found.add(Field(node.id, Kind.Flag, path, own, node.props["disabledIf"], hiddenByClass = off))
                 node.type == "ChoiceGroup" && required ->
-                    found.add(Field(node.id, Kind.Choice, path, own, null, InputRules.fallback(node.props["value"])))
+                    found.add(Field(node.id, Kind.Choice, path, own, null, InputRules.fallback(node.props["value"]), off))
             }
             if (node.type == "Repeater") return
-            for (child in node.children) walk(child, own)
+            for (child in node.children) walk(child, own, off)
         }
-        walk(root, emptyList())
+        walk(root, emptyList(), false)
         return found
     }
 
@@ -83,8 +88,9 @@ internal object ScreenForm {
     }
 
     /** Whether the form of the screen is filled; hidden and disabled fields do not count. No required fields: filled. */
-    fun isFilled(root: DocumentNode, scope: DataScope): Boolean {
-        for (field in requiredFields(root)) {
+    fun isFilled(root: DocumentNode, scope: DataScope, widthClass: WidthClass = WidthClass.Compact): Boolean {
+        for (field in requiredFields(root, widthClass)) {
+            if (field.hiddenByClass) continue
             val shown = field.visibleIf.all { Conditions.isVisible(it, scope) }
             if (!shown || InputRules.isDisabled(field.disabledIf, scope)) continue
             val path = field.path ?: return false
@@ -102,10 +108,10 @@ internal object InputOrder {
      * The text fields of a screen: reachable means shown and not disabled. A field inside a list
      * from data is not part of the order.
      */
-    fun fields(root: DocumentNode, scope: DataScope): List<Entry> {
+    fun fields(root: DocumentNode, scope: DataScope, widthClass: WidthClass = WidthClass.Compact): List<Entry> {
         val found = ArrayList<Entry>()
         fun walk(node: DocumentNode, visible: Boolean) {
-            val shown = visible && Conditions.isVisible(node.visibleIf, scope)
+            val shown = visible && WidthRules.isShown(node, widthClass, scope)
             if (node.type == "TextField") {
                 val numeric = InputRules.isNumber(node.props["valueType"])
                 val multiline = InputRules.effectiveLines(node.props["lines"], numeric) > 1

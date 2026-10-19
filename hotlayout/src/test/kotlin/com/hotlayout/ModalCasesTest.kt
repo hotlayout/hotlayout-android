@@ -5,6 +5,7 @@ import com.hotlayout.actions.FlowDocument
 import com.hotlayout.actions.ScreenShownCause
 import com.hotlayout.json.JsonObject
 import com.hotlayout.json.JsonValue
+import com.hotlayout.model.inWidthClass
 import com.hotlayout.model.ScreenPresentation
 import com.hotlayout.model.loadDocument
 import com.hotlayout.render.modal.ModalRules
@@ -113,9 +114,16 @@ class ModalCasesTest {
         val rows = Contract.rows(motion, "glassCases")
         assertEquals(11, rows.size)
         for (row in rows) {
-            // Width classes (`styleOn`) belong to the adaptive wave: the reader does not read them yet.
-            if (row["where"]?.string == "styleOn") continue
-            val look = resolver.box(JsonObject(listOf("backdropBlur" to (row["value"] ?: JsonValue.Null))), emptyMap())
+            // A layer of a wider class (`styleOn`): the same field, read after the tree is resolved for that class.
+            val style = if (row["where"]?.string == "styleOn") {
+                val node = com.hotlayout.model.DocumentNode(
+                    "n", "Container", fields = JsonObject.of("styleOn" to mapOf("medium" to mapOf("backdropBlur" to (row["value"] ?: JsonValue.Null)))),
+                ).inWidthClass(com.hotlayout.model.WidthClass.Medium)
+                node.style?.obj ?: JsonObject()
+            } else {
+                JsonObject(listOf("backdropBlur" to (row["value"] ?: JsonValue.Null)))
+            }
+            val look = resolver.box(style, emptyMap())
             assertEquals(row.name(), if (row["valid"]?.bool == true) row["value"]?.number?.toInt() else null, look.backdropBlur)
         }
     }

@@ -5,6 +5,7 @@ import com.hotlayout.data.DataScope
 import com.hotlayout.json.JsonObject
 import com.hotlayout.json.JsonValue
 import com.hotlayout.model.DocumentNode
+import com.hotlayout.model.WidthClass
 import com.hotlayout.model.ReportSink
 import com.hotlayout.model.HotlayoutReport
 import com.hotlayout.text.TextHeard
@@ -47,10 +48,10 @@ internal object WritePress {
      * Whether a `Button` or an `IconButton` is disabled: `requiresFilled` on an unfilled form of
      * its screen, or a `disabledIf` that holds. Other nodes are never disabled.
      */
-    fun isDisabled(node: DocumentNode, scope: DataScope, screenRoot: DocumentNode?, screenScope: DataScope): Boolean {
+    fun isDisabled(node: DocumentNode, scope: DataScope, screenRoot: DocumentNode?, screenScope: DataScope, widthClass: WidthClass = WidthClass.Compact): Boolean {
         if (node.type != "Button" && node.type != "IconButton") return false
         if (Conditions.understoodHolds(node.props["disabledIf"], scope)) return true
-        return node.props["requiresFilled"]?.bool == true && screenRoot != null && !ScreenForm.isFilled(screenRoot, screenScope)
+        return node.props["requiresFilled"]?.bool == true && screenRoot != null && !ScreenForm.isFilled(screenRoot, screenScope, widthClass)
     }
 
     /** The nodes from the root to the node with this id (inclusive), or `null` when there is none. */

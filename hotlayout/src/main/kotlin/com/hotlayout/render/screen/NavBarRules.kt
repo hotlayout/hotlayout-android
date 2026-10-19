@@ -101,10 +101,9 @@ internal object NavBarRules {
     /** Whether the bar floats: it stands in the bottom zone and names `float: true`. */
     fun floats(place: String, props: JsonObject): Boolean = place == "bottom" && props["float"]?.bool == true
 
-    /** Where the bar stands: always at the bottom on a compact screen; wide places are drawn by the width-class wave. */
-    fun place(widthClass: String, widePlacement: com.hotlayout.json.JsonValue?, appBarShown: Boolean): String {
-        if (widthClass == "compact") return "bottom"
-        if (widePlacement?.string == "bottom") return "bottom"
-        return if (appBarShown) "appBar" else "top"
-    }
+    /** Where the bar stands (`bottom`, `appBar` or `top`): the rule of the wide places, [com.hotlayout.render.adaptive.WideChrome.navPlace]. */
+    fun place(widthClass: String, widePlacement: com.hotlayout.json.JsonValue?, appBarShown: Boolean): String =
+        com.hotlayout.render.adaptive.WideChrome.navPlace(
+            com.hotlayout.model.WidthClass.named(widthClass) ?: com.hotlayout.model.WidthClass.Unknown, widePlacement?.string == "bottom", appBarShown,
+        ).word
 }

@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -48,6 +49,10 @@ import com.hotlayout.model.HotlayoutReport
 import com.hotlayout.model.ReportSink
 import com.hotlayout.model.ScreenEntry
 import com.hotlayout.model.ScreenPresentation
+import com.hotlayout.model.WidthClass
+import com.hotlayout.model.inWidthClass
+import com.hotlayout.render.adaptive.ConfigChangeState
+import com.hotlayout.render.adaptive.WideChrome
 import com.hotlayout.render.HotlayoutFonts
 import com.hotlayout.render.ImagePolicy
 import com.hotlayout.render.NodeView
@@ -133,8 +138,11 @@ public fun HotlayoutScreen(
     safeAreaBottom: Dp? = null,
 ) {
     val sink = remember(document.documentId) { ReportSink() }
-    var flow by remember(document.documentId) { mutableStateOf(Flow(FlowDocument.of(document), entry)) }
-    var session by remember(document.documentId) { mutableStateOf<DataScope>(emptyMap()) }
+    // The stack and the entered values survive the recreation of the host's activity (a rotation, a fold): saved as JSON.
+    val flowSaver = remember(document.documentId, entry) { ConfigChangeState.flowSaver(FlowDocument.of(document), entry) }
+    var flow by rememberSaveable(document.documentId, stateSaver = flowSaver) { mutableStateOf(Flow(FlowDocument.of(document), entry)) }
+    var session by rememberSaveable(document.documentId, stateSaver = ConfigChangeState.sessionSaver()) { mutableStateOf<DataScope>(emptyMap()) }
+    var announced by rememberSaveable(document.documentId) { mutableStateOf(false) }
     var shownSerial by remember(document.documentId) { mutableIntStateOf(0) }
     val focusRegistries = remember(document.documentId) { InputFocusRegistries() }
     // Counts the moves the person made in the stack: only they move the focus (never the first screen or the host's entry).
@@ -142,6 +150,9 @@ public fun HotlayoutScreen(
     val callbacks = rememberUpdatedState(Callbacks(onAction, onTrack, onWrite, onHaptic, onActionTask, onScreenChange, onReport))
 
     LaunchedEffect(document.documentId) {
+        // After the activity was recreated the screen was shown already: the host is not told again.
+        if (announced) return@LaunchedEffect
+        announced = true
         flow.shownEvent(ScreenShownCause.Entry)?.let { callbacks.value.onScreenChange?.invoke(it) }
     }
     LaunchedEffect(document) {
@@ -221,7 +232,12 @@ public fun HotlayoutScreen(
     val resolver = StyleResolver(theme.theme(themeId))
     val carousels = remember(document.documentId) { CarouselMemory() }
     SideEffect { carousels.prune(frames.map { it.screenId }) }
-    val setup = ScreenSetup(document, resolver, resolution, rightToLeft, data, session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts, sink, ::perform, ::write, shownSerial, focusRegistries, autofill, carousels, frames)
+    // One class for the whole screen, from the box the host gave it (not the window, not the device): a page takes the class
+    // of that box, a modal layer is always compact. The box changes with a rotation or a resize, and the tree is resolved again.
+    BoxWithConstraints(modifier) {
+    val areaWidth = maxWidth.value.toDouble()
+    val areaClass = WidthClass.of(areaWidth)
+    val setup = ScreenSetup(document, resolver, resolution, rightToLeft, data, session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts, sink, ::perform, ::write, shownSerial, focusRegistries, autofill, carousels, frames, areaClass)
 
     val goBack = { perform(JsonObject.of("type" to "navigate.back"), DocumentNode("modal-dismiss", "Screen"), emptyList()); Unit }
     val topScreen = frames.lastOrNull()?.let { document.screen(it.screenId) }
@@ -231,8 +247,9 @@ public fun HotlayoutScreen(
     val layers = frames.mapIndexedNotNull { index, frame ->
         if (index <= pageIndex) return@mapIndexedNotNull null
         val screen = document.screen(frame.screenId) ?: return@mapIndexedNotNull null
-        ModalLayerSpec(index, screen.screenId, screen.name, ModalRules.isWindow(screen.modalPlacement?.let(JsonValue::Str)), screen.backdropBlur, screen.dismissible) {
-            ScreenRoot(screen, frame, setup, asLayer = true)
+        val shape = WideChrome.modalShape(screen.modalPlacement?.let(JsonValue::Str), areaWidth)
+        ModalLayerSpec(index, screen.screenId, screen.name, shape != WideChrome.ModalShape.Sheet, shape == WideChrome.ModalShape.SheetWindow, screen.backdropBlur, screen.dismissible) {
+            ScreenRoot(screen, frame, setup, asLayer = true, sheetWindow = shape == WideChrome.ModalShape.SheetWindow)
         }
     }
     val margin = resolver.spacing(JsonValue.Str("xl")) ?: ModalRules.DEFAULT_MARGIN
@@ -250,8 +267,9 @@ public fun HotlayoutScreen(
             marginDp = margin,
             focusSerial = movedSerial,
             dismiss = goBack,
-            modifier = modifier,
+            modifier = Modifier,
         )
+    }
     }
 }
 
@@ -285,8 +303,10 @@ private class ScreenSetup(
     val autofill: Boolean,
     val carousels: CarouselMemory? = null,
     val frames: List<FlowFrame> = emptyList(),
+    /** The width class of the box the host gave the screen. */
+    val areaClass: WidthClass = WidthClass.Compact,
 ) {
-    fun context(screen: ScreenEntry, frame: FlowFrame): RenderContext {
+    fun context(screen: ScreenEntry, frame: FlowFrame, root: DocumentNode, widthClass: WidthClass): RenderContext {
         val host = RecordScope.merge(DataLayers(session = session, data = data))
         val scope = RecordScope.overlay(host, frame.record) ?: host
         return RenderContext(
@@ -304,13 +324,14 @@ private class ScreenSetup(
             fonts = fonts,
             pressHandler = { action, node, instances -> perform(action, node, instances) },
             write = write,
-            screenRoot = screen.root,
+            screenRoot = root,
             screenScope = RecordScope.overlay(host, frame.record) ?: host,
             shownSerial = shownSerial,
             pressRun = perform,
-            form = InputForm(InputOrder.fields(screen.root, scope), focusRegistries.of(screen.screenId), autofill),
+            form = InputForm(InputOrder.fields(root, scope, widthClass), focusRegistries.of(screen.screenId), autofill),
             carousels = carousels,
             frameIndex = frames.indexOfFirst { it === frame }.coerceAtLeast(0),
+            widthClass = widthClass,
         )
     }
 }
@@ -320,9 +341,12 @@ private class ScreenSetup(
  * its content and takes no platform insets of its own.
  */
 @Composable
-private fun ScreenRoot(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup, asLayer: Boolean) {
+private fun ScreenRoot(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup, asLayer: Boolean, sheetWindow: Boolean = false) {
+    // The reader resolves the tree for the class and then draws a plain document: no widget knows the word «class».
+    val widthClass = WideChrome.contentWidthClass(screen.presentation, setup.areaClass)
+    val root = remember(screen.root, widthClass) { screen.root.inWidthClass(widthClass) }
     AnatomyScreen(
-        screen.root, setup.context(screen, frame), Modifier.testTag("screen:${screen.screenId}"),
-        shrinks = asLayer, insets = if (asLayer) ScreenInsets() else null,
+        root, setup.context(screen, frame, root, widthClass), Modifier.testTag("screen:${screen.screenId}"),
+        shrinks = asLayer, insets = if (asLayer) ScreenInsets() else null, sheetWindow = sheetWindow,
     )
 }
