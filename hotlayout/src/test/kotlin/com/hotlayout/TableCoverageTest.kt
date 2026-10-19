@@ -66,6 +66,8 @@ class TableCoverageTest {
             "sheet-dismiss/escapeCases", "sheet-dismiss/escapeRuleCases",
             "media-chrome/modalCases", "media-chrome/modalAreaCases", "media-chrome/placementCases", "media-chrome/modalRuleCases", "media-chrome/shownCases",
             "motion/blurCases", "motion/glassCases",
+            // Pictures: the proportion, the box, the file in the box, the radius, the circle.
+            "media-chrome/ratioCases", "media-chrome/imageBoxCases", "media-chrome/paintCases", "media-chrome/radiusCases", "media-chrome/circleCases",
             "carousel/hostCases", "carousel/readCases", "carousel/cardCases", "carousel/stopCases", "carousel/activeCases",
             "carousel/dotCases", "carousel/areaCases", "carousel/stateCases", "repeater-filter/carouselCases",
         )
@@ -98,9 +100,6 @@ class TableCoverageTest {
 
         /** Groups of a table that belong to another wave than the table. */
         val groupWave: Map<String, String> = mapOf(
-            "media-chrome/ratioCases" to "wave 3 · images", "media-chrome/imageBoxCases" to "wave 3 · images",
-            "media-chrome/paintCases" to "wave 3 · images", "media-chrome/radiusCases" to "wave 3 · images",
-            "media-chrome/circleCases" to "wave 3 · images",
             "media-chrome/modalCases" to "wave 2 · modals", "media-chrome/modalAreaCases" to "wave 2 · modals",
             "media-chrome/placementCases" to "wave 2 · modals",
             "inputs/choiceCases" to "wave 1 · controls", "inputs/choiceSessionCases" to "wave 1 · controls",

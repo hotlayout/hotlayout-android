@@ -57,6 +57,23 @@ internal object ImageRules {
         else -> RATIO_FALLBACK
     }
 
+    /** The box of a picture: [height] is the named one; otherwise width over the proportion. Limits act either way, the minimum beats the maximum. */
+    class Box(val width: Double, val height: Double, val byRatio: Boolean)
+
+    fun box(aspectRatio: JsonValue?, width: Double, height: Double?, minHeight: Double?, maxHeight: Double?): Box {
+        val raw = height ?: (width / ratio(aspectRatio))
+        val capped = maxHeight?.let { minOf(raw, it) } ?: raw
+        val floored = minHeight?.let { maxOf(capped, it) } ?: capped
+        return Box(width, floored, height == null)
+    }
+
+    /** The radius a corner really has: the named one, held to half of the shorter side. */
+    fun effectiveRadius(boxWidth: Double, boxHeight: Double, radius: Double): Double = maxOf(0.0, minOf(radius, boxWidth / 2, boxHeight / 2))
+
+    /** A circle is a square whose effective radius is half the side; `pill` is a number of the theme, so a large square with it is a rounded square. */
+    fun isCircle(boxWidth: Double, boxHeight: Double, radius: Double): Boolean =
+        boxWidth == boxHeight && effectiveRadius(boxWidth, boxHeight, radius) == boxWidth / 2
+
     /** Where a file of the proportion [natural] lies in a box: `contain` inside it, anything else over it, centred. */
     fun paintRect(boxWidth: Double, boxHeight: Double, natural: Double, fit: String?): DoubleArray {
         if (boxWidth <= 0 || boxHeight <= 0 || natural <= 0 || !natural.isFinite()) return doubleArrayOf(0.0, 0.0, boxWidth, boxHeight)
@@ -177,13 +194,14 @@ internal fun ImageWidget(call: WidgetCall) {
         // The node box gives the named height; the proportion is not read.
         Box(semantics.fillMaxSize()) { picture() }
     } else {
-        val ratio = ImageRules.ratio(node.props["aspectRatio"])
+        val aspectRatio = node.props["aspectRatio"]
         val inset = look.padding.vertical + 2 * (look.borderWidth ?: 0.0)
         Layout(content = picture, modifier = semantics) { measurables, constraints ->
             val width = if (constraints.hasBoundedWidth) constraints.maxWidth else 0
-            var height = (width / ratio).toInt()
-            look.maxHeight?.let { height = minOf(height, ((it - inset) * density).toInt()) }
-            look.minHeight?.let { height = maxOf(height, ((it - inset) * density).toInt()) }
+            var height = ImageRules.box(
+                aspectRatio, width.toDouble(), null,
+                look.minHeight?.let { (it - inset) * density }, look.maxHeight?.let { (it - inset) * density },
+            ).height.toInt()
             height = height.coerceIn(constraints.minHeight, if (constraints.hasBoundedHeight) constraints.maxHeight else Int.MAX_VALUE)
             val placeables = measurables.map { it.measure(Constraints.fixed(width, maxOf(0, height))) }
             layout(width, maxOf(0, height)) { placeables.forEach { it.place(0, 0) } }

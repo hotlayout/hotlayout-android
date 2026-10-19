@@ -1,0 +1,539 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hotlayout.com/schema/data-contract.json",
+  "title": "DataContract",
+  "x-dataContractVersion": "1.7.0",
+  "x-generatedFrom": "src/entities/component-schema/data-contract.ts — generated, do not edit by hand",
+  "x-delivery": {
+    "pathsShape": "flat-map",
+    "collectionShape": "array-of-records",
+    "missingValue": "null-or-absent",
+    "absentCollection": "empty",
+    "maxCollectionItems": 50
+  },
+  "x-sampleNow": "2026-10-10T09:00:00.000Z",
+  "x-typeLabels": {
+    "string": "text",
+    "number": "number",
+    "date": "date",
+    "boolean": "yes/no"
+  },
+  "x-schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/DataContract",
+    "$defs": {
+      "DataContract": {
+        "type": "object",
+        "properties": {
+          "paths": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "type": {
+                  "type": "string",
+                  "enum": [
+                    "string",
+                    "number",
+                    "date",
+                    "boolean"
+                  ]
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "sampleValue": {
+                  "type": [
+                    "string",
+                    "number",
+                    "boolean"
+                  ]
+                }
+              },
+              "required": [
+                "path",
+                "type",
+                "label",
+                "sampleValue"
+              ],
+              "additionalProperties": false
+            }
+          },
+          "collections": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "path": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "label": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "item": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "path",
+                "label",
+                "item"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "paths",
+          "collections"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "contract": {
+    "paths": [
+      {
+        "path": "user.firstName",
+        "type": "string",
+        "label": "First name",
+        "sampleValue": "Alex"
+      },
+      {
+        "path": "user.points",
+        "type": "number",
+        "label": "Points balance",
+        "sampleValue": 1250
+      },
+      {
+        "path": "user.level",
+        "type": "number",
+        "label": "Level",
+        "sampleValue": 3
+      },
+      {
+        "path": "user.isPremium",
+        "type": "boolean",
+        "label": "Premium member",
+        "sampleValue": false
+      },
+      {
+        "path": "user.memberSince",
+        "type": "date",
+        "label": "Member since",
+        "sampleValue": "2026-01-15T12:00:00.000Z"
+      },
+      {
+        "path": "offer.title",
+        "type": "string",
+        "label": "Offer title",
+        "sampleValue": "Double points this weekend"
+      },
+      {
+        "path": "offer.description",
+        "type": "string",
+        "label": "Offer description",
+        "sampleValue": "Pay with your card on Saturday and Sunday"
+      },
+      {
+        "path": "offer.image",
+        "type": "string",
+        "label": "Offer image",
+        "sampleValue": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAR0lEQVR42mNkzlzIQA3AwvD/H3UMYvz3j1ou+kslF1HLawzU8xq1AptaYUQ1r1EvsAddrA2+wKZiOhq+gT0IvTboSsjBliABfF4vIldx0gsAAAAASUVORK5CYII="
+      },
+      {
+        "path": "offer.endsAt",
+        "type": "date",
+        "label": "Offer ends at",
+        "sampleValue": "2026-10-31T12:00:00.000Z"
+      },
+      {
+        "path": "offer.discountPercent",
+        "type": "number",
+        "label": "Discount, %",
+        "sampleValue": 20
+      },
+      {
+        "path": "offer.price",
+        "type": "number",
+        "label": "Offer price",
+        "sampleValue": 120
+      },
+      {
+        "path": "offer.isActive",
+        "type": "boolean",
+        "label": "Offer is active",
+        "sampleValue": true
+      },
+      {
+        "path": "offer.code",
+        "type": "string",
+        "label": "Promo code",
+        "sampleValue": "WEEKEND20"
+      },
+      {
+        "path": "task.title",
+        "type": "string",
+        "label": "Task title",
+        "sampleValue": "Make 5 card payments"
+      },
+      {
+        "path": "task.description",
+        "type": "string",
+        "label": "Task description",
+        "sampleValue": "Any amount, any merchant"
+      },
+      {
+        "path": "task.image",
+        "type": "string",
+        "label": "Task image",
+        "sampleValue": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAIAAABvFaqvAAAAOElEQVR42mP0d3vKQA3A8v//H+oY9O//70HmolGvEWPQb2qF0fD12r/B5iIqpuxh67XR3D8EvQYA8rRGPi+OUGUAAAAASUVORK5CYII="
+      },
+      {
+        "path": "task.progress",
+        "type": "number",
+        "label": "Current progress",
+        "sampleValue": 3
+      },
+      {
+        "path": "task.target",
+        "type": "number",
+        "label": "Target",
+        "sampleValue": 5
+      },
+      {
+        "path": "task.completed",
+        "type": "boolean",
+        "label": "Task completed",
+        "sampleValue": false
+      },
+      {
+        "path": "task.completedAt",
+        "type": "date",
+        "label": "Completed at",
+        "sampleValue": "2026-10-03T10:14:35.000Z"
+      },
+      {
+        "path": "task.rewardPoints",
+        "type": "number",
+        "label": "Reward points",
+        "sampleValue": 100
+      },
+      {
+        "path": "task.status",
+        "type": "string",
+        "label": "Task status",
+        "sampleValue": "inProgress"
+      },
+      {
+        "path": "taskGroup.title",
+        "type": "string",
+        "label": "Group title",
+        "sampleValue": "October challenge"
+      },
+      {
+        "path": "taskGroup.description",
+        "type": "string",
+        "label": "Group description",
+        "sampleValue": "Complete all tasks before the end of the month"
+      },
+      {
+        "path": "taskGroup.totalTasks",
+        "type": "number",
+        "label": "Tasks in group",
+        "sampleValue": 5
+      },
+      {
+        "path": "taskGroup.completedTasks",
+        "type": "number",
+        "label": "Tasks completed",
+        "sampleValue": 3
+      },
+      {
+        "path": "taskGroup.completed",
+        "type": "boolean",
+        "label": "Group completed",
+        "sampleValue": false
+      },
+      {
+        "path": "taskGroup.rewardPoints",
+        "type": "number",
+        "label": "Group reward points",
+        "sampleValue": 500
+      },
+      {
+        "path": "item.name",
+        "type": "string",
+        "label": "Item name",
+        "sampleValue": "Wireless headphones"
+      },
+      {
+        "path": "item.image",
+        "type": "string",
+        "label": "Item image",
+        "sampleValue": "data:image/webp;base64,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"
+      },
+      {
+        "path": "item.description",
+        "type": "string",
+        "label": "Item description",
+        "sampleValue": "Noise cancelling, 30h battery"
+      },
+      {
+        "path": "item.price",
+        "type": "number",
+        "label": "Price in points",
+        "sampleValue": 4900
+      },
+      {
+        "path": "item.selectedId",
+        "type": "string",
+        "label": "Selected item",
+        "sampleValue": "headphones"
+      },
+      {
+        "path": "campaign.title",
+        "type": "string",
+        "label": "Campaign title",
+        "sampleValue": "Autumn rewards"
+      },
+      {
+        "path": "campaign.endsAt",
+        "type": "date",
+        "label": "Campaign ends at",
+        "sampleValue": "2026-11-30T12:00:00.000Z"
+      },
+      {
+        "path": "form.fullName",
+        "type": "string",
+        "label": "Form: full name",
+        "sampleValue": "Alex Morgan"
+      },
+      {
+        "path": "form.email",
+        "type": "string",
+        "label": "Form: email",
+        "sampleValue": "alex@example.com"
+      },
+      {
+        "path": "form.phone",
+        "type": "string",
+        "label": "Form: phone",
+        "sampleValue": "0790 000"
+      },
+      {
+        "path": "form.phoneError",
+        "type": "string",
+        "label": "Form: phone error",
+        "sampleValue": "Enter the number with the country code"
+      },
+      {
+        "path": "form.comment",
+        "type": "string",
+        "label": "Form: delivery notes",
+        "sampleValue": "Call me after six"
+      },
+      {
+        "path": "form.agreed",
+        "type": "boolean",
+        "label": "Form: terms accepted",
+        "sampleValue": false
+      },
+      {
+        "path": "settings.notifications",
+        "type": "boolean",
+        "label": "Settings: push notifications",
+        "sampleValue": true
+      },
+      {
+        "path": "settings.marketing",
+        "type": "boolean",
+        "label": "Settings: marketing emails",
+        "sampleValue": false
+      },
+      {
+        "path": "survey.goal",
+        "type": "string",
+        "label": "Survey: chosen answer",
+        "sampleValue": "rewards"
+      },
+      {
+        "path": "survey.name",
+        "type": "string",
+        "label": "Survey: name",
+        "sampleValue": "Alex"
+      },
+      {
+        "path": "survey.age",
+        "type": "number",
+        "label": "Survey: age",
+        "sampleValue": 34
+      },
+      {
+        "path": "survey.comment",
+        "type": "string",
+        "label": "Survey: comment",
+        "sampleValue": "More rewards for books, please"
+      },
+      {
+        "path": "survey.agreed",
+        "type": "boolean",
+        "label": "Survey: consent given",
+        "sampleValue": false
+      },
+      {
+        "path": "account.balance",
+        "type": "number",
+        "label": "Account balance",
+        "sampleValue": 24580.75
+      },
+      {
+        "path": "account.income",
+        "type": "number",
+        "label": "Last income",
+        "sampleValue": 42000
+      },
+      {
+        "path": "account.spent",
+        "type": "number",
+        "label": "Last spending",
+        "sampleValue": -1200.5
+      },
+      {
+        "path": "account.limit",
+        "type": "number",
+        "label": "Offer limit",
+        "sampleValue": 500
+      },
+      {
+        "path": "account.lastIcon",
+        "type": "string",
+        "label": "Last operation: icon name",
+        "sampleValue": "trending-up"
+      },
+      {
+        "path": "account.lastStatus",
+        "type": "string",
+        "label": "Last operation: status",
+        "sampleValue": "Credited"
+      },
+      {
+        "path": "account.lastMerchant",
+        "type": "string",
+        "label": "Last operation: merchant",
+        "sampleValue": "Corner bakery"
+      },
+      {
+        "path": "account.lastAt",
+        "type": "date",
+        "label": "Last operation: time",
+        "sampleValue": "2026-10-15T09:30:00.000Z"
+      },
+      {
+        "path": "account.balanceHidden",
+        "type": "boolean",
+        "label": "Account: balance hidden",
+        "sampleValue": false
+      },
+      {
+        "path": "account.period",
+        "type": "string",
+        "label": "Account: period shown",
+        "sampleValue": "week"
+      },
+      {
+        "path": "survey.score",
+        "type": "number",
+        "label": "Survey: score",
+        "sampleValue": 8
+      },
+      {
+        "path": "survey.topicTravel",
+        "type": "boolean",
+        "label": "Survey: topic «travel»",
+        "sampleValue": true
+      },
+      {
+        "path": "survey.topicFood",
+        "type": "boolean",
+        "label": "Survey: topic «food»",
+        "sampleValue": false
+      },
+      {
+        "path": "survey.topicBooks",
+        "type": "boolean",
+        "label": "Survey: topic «books»",
+        "sampleValue": false
+      },
+      {
+        "path": "activity.title",
+        "type": "string",
+        "label": "History: title",
+        "sampleValue": "Welcome bonus"
+      },
+      {
+        "path": "activity.points",
+        "type": "number",
+        "label": "History: points",
+        "sampleValue": 50
+      },
+      {
+        "path": "activity.day",
+        "type": "string",
+        "label": "History: day",
+        "sampleValue": "Mon, Oct 12"
+      },
+      {
+        "path": "task.id",
+        "type": "string",
+        "label": "Task id",
+        "sampleValue": "card-payments"
+      }
+    ],
+    "collections": [
+      {
+        "path": "tasks",
+        "label": "Tasks",
+        "item": "task"
+      },
+      {
+        "path": "taskGroups",
+        "label": "Task groups",
+        "item": "taskGroup"
+      },
+      {
+        "path": "taskGroup.tasks",
+        "label": "Tasks of the group",
+        "item": "task"
+      },
+      {
+        "path": "items",
+        "label": "Catalog items",
+        "item": "item"
+      },
+      {
+        "path": "offers",
+        "label": "Offers",
+        "item": "offer"
+      },
+      {
+        "path": "activities",
+        "label": "History",
+        "item": "activity"
+      },
+      {
+        "path": "doneTasks",
+        "label": "Completed tasks",
+        "item": "task"
+      }
+    ]
+  }
+}

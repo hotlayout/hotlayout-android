@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import com.hotlayout.json.JsonValue
 import com.hotlayout.model.HotlayoutReport
+import com.hotlayout.render.layout.AlignRules
 import com.hotlayout.render.layout.ColumnWidget
 import com.hotlayout.render.layout.RowWidget
 import com.hotlayout.render.widgets.AccordionWidget
@@ -50,13 +51,15 @@ internal val drawnWidgets: Set<String> = setOf(
 internal fun Widget(call: WidgetCall) {
     val node = call.node
     val context = call.context
+    // A layer that fills its stack has the stack's height as the free height of its own flow.
+    val fills = AlignRules.fills(node.fields, call.parentType)
     when (node.type) {
-        "Screen", "Column" -> ColumnWidget(node.children, context.resolver.spacing(node.props["gap"] ?: JsonValue.Str("sm")) ?: 0.0, node, context, call.depth, call.placement.stretchWidth)
-        "Row" -> RowWidget(node, context, call.depth, call.placement.stretchWidth)
+        "Screen", "Column" -> ColumnWidget(node.children, context.resolver.spacing(node.props["gap"] ?: JsonValue.Str("sm")) ?: 0.0, node, context, call.depth, call.placement.stretchWidth, fills)
+        "Row" -> RowWidget(node, context, call.depth, call.placement.stretchWidth, fills)
         "Container" -> if (node.props["direction"]?.string == "row") {
-            RowWidget(node, context, call.depth, call.placement.stretchWidth)
+            RowWidget(node, context, call.depth, call.placement.stretchWidth, fills)
         } else {
-            ColumnWidget(node.children, context.resolver.spacing(node.props["gap"] ?: JsonValue.Str("none")) ?: 0.0, node, context, call.depth, call.placement.stretchWidth)
+            ColumnWidget(node.children, context.resolver.spacing(node.props["gap"] ?: JsonValue.Str("none")) ?: 0.0, node, context, call.depth, call.placement.stretchWidth, fills)
         }
         "Text" -> TextWidget(call)
         "Image" -> ImageWidget(call)

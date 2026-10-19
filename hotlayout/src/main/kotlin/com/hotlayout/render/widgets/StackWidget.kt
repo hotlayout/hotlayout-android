@@ -77,7 +77,8 @@ internal fun StackWidget(call: WidgetCall) {
                 val turn = (role as? LayerRole.Overlay)?.let { LayerGeometry.drawnAngle(it.place.rotate, context.rightToLeft).toFloat() } ?: 0f
                 // A layer takes its OWN size: only `fill` stretches one (done by the layout).
                 CompositionLocalProvider(LocalLayerTurn provides turn) {
-                    NodeView(child, context, Placement.Natural, call.depth + 1, node.type, Modifier.then(LayerData(role)))
+                    // A `fill` layer has the size of the stack, so its own flow is as wide as the stack, not as its widest child.
+                NodeView(child, context, if (role == LayerRole.Fill) Placement.Stretched else Placement.Natural, call.depth + 1, node.type, Modifier.then(LayerData(role)))
                 }
             }
         },

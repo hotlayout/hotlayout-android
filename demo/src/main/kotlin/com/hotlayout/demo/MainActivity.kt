@@ -86,9 +86,10 @@ fun FixtureScreen(name: String, screenId: String?, locale: String?, now: Long? =
     HotlayoutScreen(
         document = document.getOrThrow(),
         theme = remember(name) { Fixtures.theme(context, name) },
-        data = remember(name) { SampleData.scope() },
+        data = remember(name) { SampleData.scope(context) },
         locale = locale ?: java.util.Locale.getDefault().toLanguageTag(),
         fonts = DemoFonts,
+        images = remember { ContractSamples.policy(context) },
         now = now,
         onAction = { action, _ ->
             Log.i("HotLayoutDemo", "action ${action.type} standard=${action.standard} invalid=${action.invalid}")

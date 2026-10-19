@@ -63,8 +63,13 @@ internal fun Modifier.nodeBox(look: BoxLook, stretch: Boolean, rightToLeft: Bool
     if (look.minWidth != null || look.maxWidth != null) {
         modifier = modifier.widthIn(min = look.minWidth?.dp ?: androidx.compose.ui.unit.Dp.Unspecified, max = look.maxWidth?.dp ?: androidx.compose.ui.unit.Dp.Unspecified)
     }
-    look.height?.let { modifier = modifier.height(it.dp) }
-    if (look.minHeight != null || look.maxHeight != null) {
+    // A named height is held by the limits too (the minimum beats the maximum), so the clamp is done here:
+    // `height()` first would fix the constraints and the limits inside could no longer change them.
+    look.height?.let { named ->
+        val capped = look.maxHeight?.let { minOf(named, it) } ?: named
+        modifier = modifier.height((look.minHeight?.let { maxOf(capped, it) } ?: capped).dp)
+    }
+    if (look.height == null && (look.minHeight != null || look.maxHeight != null)) {
         modifier = modifier.heightIn(min = look.minHeight?.dp ?: androidx.compose.ui.unit.Dp.Unspecified, max = look.maxHeight?.dp ?: androidx.compose.ui.unit.Dp.Unspecified)
     }
     look.opacity?.let { modifier = modifier.alpha(it.toFloat()) }

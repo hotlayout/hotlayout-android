@@ -172,7 +172,7 @@ Family files (one zone per agent):
 | 2 | modals | `ModalLayer` → new `render/modal/` |
 | 2 | carousel | new `render/widgets/Carousel*.kt` |
 | 2 | gestures & motion | new `render/motion/`, `render/interaction/` |
-| 3 | images | `render/widgets/ImageWidget.kt` |
+| 3 | images | `render/widgets/ImageWidget.kt` (built) |
 | 3 | adaptive | new `model/WidthClass*.kt`, `RenderContext.isShown` |
 
 Each wave moves its table groups from the deferred map of `TableCoverageTest` into `run` and adds a
@@ -305,3 +305,18 @@ wiring test (semantics or pixels through `HotlayoutScreen`) for every capability
   from a row follows the host data in place with no show event, and keeps the last record when it is nowhere in the data.
 - Fixture `motion-blur-screens`: the three drifting dots of the page do not appear in the frame (the nested stacks with a `fill`
   anchor draw nothing); the same on `main` before this work. The glass card appears.
+
+## Pictures (`render/widgets/ImageWidget.kt`)
+
+- `ImageRules` is pure and run by `ImageCasesTest` on the picture groups of `media-chrome-cases.json` (`ratioCases`,
+  `imageBoxCases`, `paintCases`, `radiusCases`, `circleCases`); the box rows also run through the real node. The loader
+  (memory cache, `https:` only by default, no redirects) is unchanged; a refused address draws the placeholder.
+- A named height is clamped by `minHeight` / `maxHeight` in `nodeBox` itself (the minimum wins): `height()` first would fix the
+  constraints and the limits inside could not change them.
+- A `fill` layer of a stack is drawn stretched (as wide as the stack), and a column or row that is one gets `fills` from the
+  dispatcher (`AlignRules.fills`), so `justify: end` in a fill layer rests on the bottom of the stack. Before this a fill layer
+  that was a container was as wide as its widest child: a nested stack in it was zero wide and its overlays did not draw.
+- The demo reads the data dictionary's own sample pictures (`data-contract.json` bundled by the sync script) and lets `data:`
+  addresses through its `ImagePolicy`, so frames never touch the network. The dictionary holds one `item.image` sample, so every
+  catalog item shows it. The dates of `alt-icon-date-screens` still read «—»: the demo data has no `operation.*` paths.
+- Icon from data (`iconPath`) was already built with the icon-text rules (`icon-text/iconPathCases`).

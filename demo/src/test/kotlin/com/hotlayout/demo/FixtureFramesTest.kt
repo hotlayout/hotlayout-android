@@ -70,6 +70,12 @@ class FixtureFramesTest {
 
     @Test fun motionAndGlassAtRest() = frame("motion-blur-screens", null, atRest = true)
 
+    @Test fun mediaChromePage() = frame("media-chrome-screens", null, atRest = true)
+
+    @Test fun mediaChromeAbout() = frame("media-chrome-screens", "about", atRest = true)
+
+    @Test fun altIconDate() = frame("alt-icon-date-screens", "operation")
+
     @Test fun rewardsShowcase() = frame("rewards-showcase-screens", null)
 
     @Test fun buttonsAndChips() = frame("buttons-chips-screens", null)
