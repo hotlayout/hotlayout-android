@@ -1,0 +1,606 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "motion-blur",
+  "name": "Motion and blur",
+  "initialScreenId": "home",
+  "screens": [
+    {
+      "screenId": "home",
+      "name": "Home",
+      "root": {
+        "id": "home-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "none",
+          "background": {
+            "kind": "color",
+            "color": {
+              "value": "#0b1024"
+            }
+          }
+        },
+        "children": [
+          {
+            "id": "sky-stack",
+            "type": "Stack",
+            "props": {
+              "alignHorizontal": "center",
+              "alignVertical": "center"
+            },
+            "children": [
+              {
+                "id": "sky",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "height": 300,
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "value": "#0b1024"
+                    }
+                  }
+                },
+                "children": []
+              },
+              {
+                "id": "dots-a",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "children": [
+                  {
+                    "id": "dots-a-stack",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "children": [
+                      {
+                        "id": "dots-a-anchor",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "none"
+                        },
+                        "style": {
+                          "height": 300
+                        },
+                        "children": []
+                      },
+                      {
+                        "id": "dot-1",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "none"
+                        },
+                        "style": {
+                          "width": 96,
+                          "height": 96,
+                          "radius": "pill",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "value": "#7c5cff",
+                              "opacity": 0.35
+                            }
+                          }
+                        },
+                        "children": [],
+                        "layer": {
+                          "alignHorizontal": "start",
+                          "alignVertical": "start",
+                          "offset": {
+                            "x": {
+                              "toward": "end",
+                              "by": 8
+                            },
+                            "y": {
+                              "toward": "bottom",
+                              "by": 24
+                            }
+                          }
+                        },
+                        "motion": {
+                          "kind": "float",
+                          "axis": "both",
+                          "amplitude": 18,
+                          "duration": 9000
+                        }
+                      },
+                      {
+                        "id": "dot-2",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "none"
+                        },
+                        "style": {
+                          "width": 14,
+                          "height": 14,
+                          "radius": "pill",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "value": "#3dd6f5",
+                              "opacity": 0.9
+                            }
+                          }
+                        },
+                        "children": [],
+                        "layer": {
+                          "alignHorizontal": "end",
+                          "alignVertical": "start",
+                          "offset": {
+                            "x": {
+                              "toward": "start",
+                              "by": 106
+                            },
+                            "y": {
+                              "toward": "bottom",
+                              "by": 40
+                            }
+                          }
+                        },
+                        "motion": {
+                          "kind": "float",
+                          "axis": "vertical",
+                          "amplitude": 10,
+                          "duration": 4200,
+                          "delay": 600
+                        }
+                      },
+                      {
+                        "id": "dot-3",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "none"
+                        },
+                        "style": {
+                          "width": 8,
+                          "height": 8,
+                          "radius": "pill",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "value": "#ffffff",
+                              "opacity": 0.8
+                            }
+                          }
+                        },
+                        "children": [],
+                        "layer": {
+                          "alignHorizontal": "end",
+                          "alignVertical": "end",
+                          "offset": {
+                            "x": {
+                              "toward": "start",
+                              "by": 52
+                            },
+                            "y": {
+                              "toward": "top",
+                              "by": 112
+                            }
+                          }
+                        },
+                        "motion": {
+                          "kind": "float",
+                          "axis": "horizontal",
+                          "amplitude": 12,
+                          "duration": 5200,
+                          "delay": 1400
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "fill": true
+              },
+              {
+                "id": "dots-b",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "children": [
+                  {
+                    "id": "dots-b-stack",
+                    "type": "Stack",
+                    "props": {
+                      "alignHorizontal": "center",
+                      "alignVertical": "center"
+                    },
+                    "children": [
+                      {
+                        "id": "dots-b-anchor",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "none"
+                        },
+                        "style": {
+                          "height": 300
+                        },
+                        "children": []
+                      },
+                      {
+                        "id": "dot-4",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "none"
+                        },
+                        "style": {
+                          "width": 64,
+                          "height": 64,
+                          "radius": "pill",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "value": "#3dd6f5",
+                              "opacity": 0.3
+                            }
+                          }
+                        },
+                        "children": [],
+                        "layer": {
+                          "alignHorizontal": "start",
+                          "alignVertical": "end",
+                          "offset": {
+                            "x": {
+                              "toward": "end",
+                              "by": 120
+                            },
+                            "y": {
+                              "toward": "top",
+                              "by": 66
+                            }
+                          }
+                        },
+                        "motion": {
+                          "kind": "float",
+                          "axis": "vertical",
+                          "amplitude": 14,
+                          "duration": 7000,
+                          "delay": 2100
+                        }
+                      },
+                      {
+                        "id": "dot-5",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "none"
+                        },
+                        "style": {
+                          "width": 10,
+                          "height": 10,
+                          "radius": "pill",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "value": "#ffffff",
+                              "opacity": 0.7
+                            }
+                          }
+                        },
+                        "children": [],
+                        "layer": {
+                          "alignHorizontal": "start",
+                          "alignVertical": "start",
+                          "offset": {
+                            "x": {
+                              "toward": "end",
+                              "by": 120
+                            },
+                            "y": {
+                              "toward": "bottom",
+                              "by": 70
+                            }
+                          }
+                        },
+                        "motion": {
+                          "kind": "pulse",
+                          "scale": 1.5,
+                          "opacity": 0.3,
+                          "duration": 2600,
+                          "delay": 300
+                        }
+                      },
+                      {
+                        "id": "dot-6",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "none"
+                        },
+                        "style": {
+                          "width": 20,
+                          "height": 20,
+                          "radius": "pill",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "value": "#7c5cff",
+                              "opacity": 0.7
+                            }
+                          }
+                        },
+                        "children": [],
+                        "layer": {
+                          "alignHorizontal": "start",
+                          "alignVertical": "end",
+                          "offset": {
+                            "x": {
+                              "toward": "end",
+                              "by": 40
+                            },
+                            "y": {
+                              "toward": "top",
+                              "by": 90
+                            }
+                          }
+                        },
+                        "motion": {
+                          "kind": "float",
+                          "axis": "both",
+                          "amplitude": 8,
+                          "duration": 6400,
+                          "delay": 3000
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "fill": true
+              },
+              {
+                "id": "glass-card",
+                "type": "Column",
+                "props": {
+                  "gap": "xs",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "glass-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Your points"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleM"
+                    }
+                  },
+                  {
+                    "id": "glass-amount",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "1,850"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "displayL"
+                    }
+                  }
+                ],
+                "style": {
+                  "width": 240,
+                  "padding": "lg",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "value": "#ffffff",
+                      "opacity": 0.12
+                    }
+                  },
+                  "backdropBlur": 14,
+                  "color": {
+                    "value": "#f4f6ff"
+                  }
+                },
+                "layer": {
+                  "alignHorizontal": "start",
+                  "alignVertical": "end",
+                  "offset": {
+                    "x": {
+                      "toward": "end",
+                      "by": "lg"
+                    },
+                    "y": {
+                      "toward": "top",
+                      "by": "lg"
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "home-body",
+            "type": "Column",
+            "props": {
+              "gap": "md",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Quiet sky"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "home-lead",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The dots drift on their own, each out of step with the others. Open the sheet to see the sky blur under it."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "open-sheet",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Open the sheet"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "sheet"
+                    }
+                  },
+                  "fullWidth": true
+                },
+                "motion": {
+                  "kind": "pulse",
+                  "scale": 1.04,
+                  "duration": 2400
+                }
+              }
+            ],
+            "style": {
+              "padding": {
+                "start": "lg",
+                "end": "lg"
+              },
+              "color": {
+                "value": "#f4f6ff"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "sheet",
+      "name": "Sheet",
+      "presentation": "modal",
+      "backdropBlur": 16,
+      "root": {
+        "id": "sheet-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "radius": {
+            "topStart": "lg",
+            "topEnd": "lg"
+          },
+          "background": {
+            "kind": "color",
+            "color": {
+              "value": "#1a2140"
+            }
+          },
+          "color": {
+            "value": "#f4f6ff"
+          }
+        },
+        "children": [
+          {
+            "id": "sheet-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Behind the glass"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "sheet-text",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Everything under this sheet is blurred, and the dimming lies over the blur."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          },
+          {
+            "id": "close-sheet",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Close"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "home/glass-title/content": "Ваші бали",
+        "home/glass-amount/content": "1 850",
+        "home/home-title/content": "Тихе небо",
+        "home/home-lead/content": "Точки пливуть самі, кожна не в такт іншим. Відкрийте аркуш — і небо під ним розмиється.",
+        "home/open-sheet/label": "Відкрити аркуш",
+        "sheet/sheet-title/content": "За склом",
+        "sheet/sheet-text/content": "Усе під цим аркушем розмите, а затемнення лежить поверх розмиття.",
+        "sheet/close-sheet/label": "Закрити"
+      }
+    }
+  }
+}

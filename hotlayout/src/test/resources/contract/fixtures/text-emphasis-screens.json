@@ -1,0 +1,932 @@
+{
+  "schemaVersion": "9.17.0",
+  "documentId": "text-emphasis",
+  "name": "Text emphasis, list items and ring label",
+  "initialScreenId": "article",
+  "screens": [
+    {
+      "screenId": "article",
+      "name": "Paragraph and lists",
+      "root": {
+        "id": "article-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "article-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Double points week"
+              },
+              "showBack": false
+            }
+          },
+          {
+            "id": "article-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "How it works"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "article-lead",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "Earn {double} points for every purchase until {day}.",
+                "values": {
+                  "double": {
+                    "kind": "text",
+                    "text": "double"
+                  },
+                  "day": {
+                    "kind": "text",
+                    "text": "Sunday"
+                  }
+                }
+              },
+              "align": "start",
+              "overflow": "ellipsis",
+              "spans": {
+                "double": {
+                  "weight": "bold"
+                },
+                "day": {
+                  "fontStyle": "italic"
+                }
+              }
+            }
+          },
+          {
+            "id": "article-bullets",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "bullet-1",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Pay with your card in any store"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "bullet"
+                }
+              },
+              {
+                "id": "bullet-2",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Points arrive within a day after the purchase and stay on your account for a whole year"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "bullet"
+                }
+              },
+              {
+                "id": "bullet-3",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "template",
+                    "template": "Spend them on {rewards}",
+                    "values": {
+                      "rewards": {
+                        "kind": "text",
+                        "text": "rewards"
+                      }
+                    }
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "spans": {
+                    "rewards": {
+                      "color": "primary",
+                      "textDecoration": "underline"
+                    }
+                  },
+                  "marker": "bullet"
+                }
+              }
+            ]
+          },
+          {
+            "id": "article-steps-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Three steps"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "article-steps",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "step-1",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Open the catalog"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "step-2",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Choose a reward — the price in points is under every card, and the items you can afford are marked"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "step-premium",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Premium members confirm with one tap"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                },
+                "visibleIf": {
+                  "path": "user.isPremium",
+                  "op": "isTrue"
+                }
+              },
+              {
+                "id": "step-3",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Confirm and show the code at the counter"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              }
+            ]
+          },
+          {
+            "id": "article-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Terms apply. The offer may end earlier."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS",
+              "fontStyle": "italic"
+            }
+          },
+          {
+            "id": "article-price",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "price-old",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "1,200"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted",
+                  "textDecoration": "lineThrough"
+                }
+              },
+              {
+                "id": "price-new",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "900 points"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": {
+                    "token": "titleS",
+                    "fontWeight": 700
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "price-line",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "Was {old}, now {price}",
+                "values": {
+                  "old": {
+                    "kind": "text",
+                    "text": "1,200"
+                  },
+                  "price": {
+                    "kind": "text",
+                    "text": "900"
+                  }
+                }
+              },
+              "align": "start",
+              "overflow": "ellipsis",
+              "spans": {
+                "old": {
+                  "color": "muted",
+                  "textDecoration": "lineThrough"
+                },
+                "price": {
+                  "typography": "titleS",
+                  "weight": "bold"
+                }
+              }
+            }
+          },
+          {
+            "id": "to-steps",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "A long list"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "steps"
+                }
+              },
+              "fullWidth": true
+            }
+          },
+          {
+            "id": "to-ring",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Progress"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "ring"
+                }
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "steps",
+      "name": "A long numbered list",
+      "root": {
+        "id": "steps-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "steps-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Ten steps"
+              },
+              "showBack": false
+            }
+          },
+          {
+            "id": "steps-list",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "long-1",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Open the app"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "long-2",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Sign in"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "long-3",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Open the catalog"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "long-4",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Pick a category"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "long-5",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Choose a reward"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "long-6",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Check the price in points"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "long-7",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Tap Redeem"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "long-8",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Confirm the delivery address and the phone number the courier will call"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "long-9",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Wait for the message"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "long-10",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Enjoy"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              }
+            ]
+          },
+          {
+            "id": "steps-plain",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "A paragraph breaks the count:"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          },
+          {
+            "id": "steps-again",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "again-1",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The count starts from one again"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "again-2",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "And goes on"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              }
+            ]
+          },
+          {
+            "id": "steps-inherit",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "style": {
+              "fontStyle": "italic",
+              "textDecoration": "underline",
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "secondary"
+              }
+            },
+            "children": [
+              {
+                "id": "inherit-1",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Everything in this card is italic and underlined"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "bullet"
+                }
+              },
+              {
+                "id": "inherit-2",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "This item cancels both for itself"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "bullet"
+                },
+                "style": {
+                  "fontStyle": "normal",
+                  "textDecoration": "none"
+                }
+              },
+              {
+                "id": "inherit-3",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "template",
+                    "template": "One {word} stays upright",
+                    "values": {
+                      "word": {
+                        "kind": "text",
+                        "text": "word"
+                      }
+                    }
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "spans": {
+                    "word": {
+                      "weight": "bold",
+                      "fontStyle": "normal",
+                      "textDecoration": "none"
+                    }
+                  },
+                  "marker": "bullet"
+                }
+              }
+            ]
+          },
+          {
+            "id": "steps-back",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Back"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "article"
+                }
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "ring",
+      "name": "Ring label",
+      "root": {
+        "id": "ring-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "ring-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Your progress"
+              },
+              "showBack": false
+            }
+          },
+          {
+            "id": "ring-big-row",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "center",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "ring-big",
+                "type": "CircularProgress",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 74
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 119
+                  },
+                  "color": "primary",
+                  "size": "lg",
+                  "labelFormat": "valueOfMax",
+                  "labelTypography": {
+                    "token": "displayL",
+                    "fontSize": 40
+                  },
+                  "labelColor": "primary"
+                },
+                "style": {
+                  "width": 240,
+                  "height": 240
+                }
+              }
+            ]
+          },
+          {
+            "id": "ring-caption",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "The label of a big ring has its own text style"
+              },
+              "align": "center",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted"
+            }
+          },
+          {
+            "id": "ring-small",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "center",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "ring-sm",
+                "type": "CircularProgress",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 74
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 119
+                  },
+                  "color": "primary",
+                  "size": "sm",
+                  "labelFormat": "valueOfMax"
+                }
+              },
+              {
+                "id": "ring-md",
+                "type": "CircularProgress",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 74
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 119
+                  },
+                  "color": "primary",
+                  "size": "md",
+                  "labelFormat": "valueOfMax"
+                }
+              },
+              {
+                "id": "ring-lg",
+                "type": "CircularProgress",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 74
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 119
+                  },
+                  "color": "primary",
+                  "size": "lg",
+                  "labelFormat": "valueOfMax"
+                }
+              },
+              {
+                "id": "ring-styled",
+                "type": "CircularProgress",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 74
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 119
+                  },
+                  "color": "primary",
+                  "size": "lg",
+                  "labelFormat": "valueOfMax",
+                  "labelTypography": "titleM",
+                  "labelColor": {
+                    "token": "accent",
+                    "opacity": 0.8
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "ring-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Without the fields the label is as before: small and of the text colour"
+              },
+              "align": "center",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "ring-back",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Back"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "article"
+                }
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "ar-EG"
+    ],
+    "strings": {
+      "ar-EG": {
+        "article/article-bar/title": "أسبوع النقاط المضاعفة",
+        "article/article-title/content": "كيف يعمل",
+        "article/article-lead/content.template": "اكسب نقاطًا {double} على كل عملية شراء حتى {day}.",
+        "article/article-lead/content.values.double.text": "مضاعفة",
+        "article/article-lead/content.values.day.text": "الأحد",
+        "article/bullet-1/content": "ادفع ببطاقتك في أي متجر",
+        "article/bullet-2/content": "تصل النقاط خلال يوم من الشراء وتبقى في حسابك لمدة عام كامل",
+        "article/bullet-3/content.template": "أنفقها على {rewards}",
+        "article/bullet-3/content.values.rewards.text": "المكافآت",
+        "article/article-steps-title/content": "ثلاث خطوات",
+        "article/step-1/content": "افتح الكتالوج",
+        "article/step-2/content": "اختر مكافأة — السعر بالنقاط تحت كل بطاقة، والعناصر التي تستطيع شراءها مميزة",
+        "article/step-premium/content": "أعضاء بريميوم يؤكدون بنقرة واحدة",
+        "article/step-3/content": "أكّد واعرض الرمز عند الصندوق",
+        "article/article-note/content": "تطبق الشروط. قد ينتهي العرض مبكرًا.",
+        "article/price-old/content": "١٬٢٠٠",
+        "article/price-new/content": "٩٠٠ نقطة",
+        "article/price-line/content.template": "كان {old}، الآن {price}",
+        "article/price-line/content.values.old.text": "١٬٢٠٠",
+        "article/price-line/content.values.price.text": "٩٠٠",
+        "article/to-steps/label": "قائمة طويلة",
+        "article/to-ring/label": "التقدم",
+        "steps/steps-bar/title": "عشر خطوات",
+        "steps/long-1/content": "افتح التطبيق",
+        "steps/long-2/content": "سجّل الدخول",
+        "steps/long-3/content": "افتح الكتالوج",
+        "steps/long-4/content": "اختر فئة",
+        "steps/long-5/content": "اختر مكافأة",
+        "steps/long-6/content": "تحقق من السعر بالنقاط",
+        "steps/long-7/content": "اضغط استبدال",
+        "steps/long-8/content": "أكّد عنوان التوصيل ورقم الهاتف الذي سيتصل به المندوب",
+        "steps/long-9/content": "انتظر الرسالة",
+        "steps/long-10/content": "استمتع",
+        "steps/steps-plain/content": "فقرة تقطع العدّ:",
+        "steps/again-1/content": "يبدأ العدّ من واحد مجددًا",
+        "steps/again-2/content": "ويستمر",
+        "steps/inherit-1/content": "كل ما في هذه البطاقة مائل ومسطّر",
+        "steps/inherit-2/content": "هذا البند يلغيهما لنفسه",
+        "steps/inherit-3/content.template": "{word} واحدة تبقى مستقيمة",
+        "steps/inherit-3/content.values.word.text": "كلمة",
+        "steps/steps-back/label": "رجوع",
+        "ring/ring-bar/title": "تقدمك",
+        "ring/ring-caption/content": "لتسمية الحلقة الكبيرة نمط نص خاص بها",
+        "ring/ring-note/content": "بدون الحقول تبقى التسمية كما كانت: صغيرة وبلون النص",
+        "ring/ring-back/label": "رجوع"
+      }
+    }
+  }
+}

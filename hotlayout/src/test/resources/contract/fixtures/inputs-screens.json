@@ -1,0 +1,404 @@
+{
+  "schemaVersion": "9.13.0",
+  "documentId": "inputs",
+  "name": "Inputs: text field, switch, checkbox",
+  "initialScreenId": "profile",
+  "screens": [
+    {
+      "screenId": "profile",
+      "name": "Profile form",
+      "root": {
+        "id": "profile-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "profile-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Your details"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "profile-intro",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "We will put this name on the parcel:"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "profile-name-echo",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "binding",
+                "path": "form.fullName",
+                "fallback": "—"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "name",
+            "type": "TextField",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Full name"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "form.fullName"
+              },
+              "placeholder": {
+                "kind": "literal",
+                "value": "As in your ID"
+              },
+              "maxLength": 40
+            }
+          },
+          {
+            "id": "email",
+            "type": "TextField",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Email"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "form.email"
+              },
+              "helper": {
+                "kind": "literal",
+                "value": "We send the exchange confirmation here."
+              },
+              "keyboard": "email"
+            }
+          },
+          {
+            "id": "phone",
+            "type": "TextField",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Phone"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "form.phone"
+              },
+              "helper": {
+                "kind": "literal",
+                "value": "The courier calls before the delivery."
+              },
+              "error": {
+                "kind": "binding",
+                "path": "form.phoneError",
+                "fallback": ""
+              },
+              "keyboard": "phone"
+            }
+          },
+          {
+            "id": "agree",
+            "type": "Checkbox",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "I agree to the terms of the programme and to my data being used to deliver rewards"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "form.agreed"
+              }
+            }
+          },
+          {
+            "id": "agree-hint",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Tick the box to save the details."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "visibleIf": {
+              "path": "form.agreed",
+              "op": "isFalse"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "save",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Save"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "settings"
+                }
+              },
+              "fullWidth": true
+            },
+            "visibleIf": {
+              "path": "form.agreed",
+              "op": "isTrue"
+            },
+            "pin": "bottom"
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "settings",
+      "name": "Notification settings",
+      "root": {
+        "id": "settings-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "settings-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Notifications"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "settings-card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "md"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "push",
+                "type": "Switch",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Push notifications about points and rewards"
+                  },
+                  "value": {
+                    "kind": "binding",
+                    "path": "settings.notifications"
+                  }
+                }
+              },
+              {
+                "id": "settings-line",
+                "type": "Divider",
+                "props": {
+                  "color": "border",
+                  "spacing": "sm",
+                  "orientation": "horizontal"
+                }
+              },
+              {
+                "id": "marketing",
+                "type": "Switch",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Emails with reward picks"
+                  },
+                  "value": {
+                    "kind": "binding",
+                    "path": "settings.marketing"
+                  },
+                  "disabledIf": {
+                    "path": "settings.notifications",
+                    "op": "isFalse"
+                  }
+                }
+              },
+              {
+                "id": "marketing-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "No more than one email a week."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "visibleIf": {
+                  "path": "settings.marketing",
+                  "op": "isTrue"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              }
+            ]
+          },
+          {
+            "id": "comment-card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "md"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "comment",
+                "type": "TextField",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Delivery notes"
+                  },
+                  "value": {
+                    "kind": "binding",
+                    "path": "form.comment"
+                  },
+                  "placeholder": {
+                    "kind": "literal",
+                    "value": "For example: call after six"
+                  },
+                  "helper": {
+                    "kind": "literal",
+                    "value": "The courier sees this before setting off."
+                  },
+                  "maxLength": 200,
+                  "lines": 3
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "profile/profile-bar/title": "Ваші дані",
+        "profile/name/label": "Ім’я та прізвище",
+        "profile/name/placeholder": "Як у документі",
+        "profile/email/label": "Електронна пошта",
+        "profile/email/helper": "Сюди надішлемо підтвердження обміну.",
+        "profile/phone/label": "Телефон",
+        "profile/phone/helper": "Кур’єр зателефонує перед доставкою.",
+        "profile/agree/label": "Погоджуюсь з умовами програми й обробкою моїх даних для доставки нагород",
+        "profile/save/label": "Зберегти",
+        "profile/profile-intro/content": "Це ім’я буде на посилці:",
+        "profile/agree-hint/content": "Поставте позначку, щоб зберегти дані.",
+        "settings/settings-bar/title": "Сповіщення",
+        "settings/push/label": "Пуш-сповіщення про бали й нагороди",
+        "settings/marketing/label": "Листи з добірками нагород",
+        "settings/comment/label": "Побажання до доставки",
+        "settings/comment/placeholder": "Наприклад: дзвоніть після шостої",
+        "settings/comment/helper": "Кур’єр побачить це перед виїздом.",
+        "settings/marketing-note/content": "Не частіше одного листа на тиждень."
+      },
+      "ar": {
+        "profile/profile-bar/title": "بياناتك",
+        "profile/name/label": "الاسم الكامل",
+        "profile/name/placeholder": "كما في الوثيقة",
+        "profile/email/label": "البريد الإلكتروني",
+        "profile/email/helper": "سنرسل تأكيد الاستبدال إلى هذا العنوان.",
+        "profile/phone/label": "رقم الهاتف",
+        "profile/phone/helper": "سيتصل بك المندوب قبل التوصيل.",
+        "profile/agree/label": "أوافق على شروط البرنامج وعلى معالجة بياناتي لتوصيل المكافآت",
+        "profile/save/label": "حفظ",
+        "profile/profile-intro/content": "سنكتب هذا الاسم على الطرد:",
+        "profile/agree-hint/content": "ضع علامة لحفظ البيانات.",
+        "settings/settings-bar/title": "الإشعارات",
+        "settings/push/label": "إشعارات فورية عن النقاط والمكافآت",
+        "settings/marketing/label": "رسائل بمجموعات المكافآت",
+        "settings/comment/label": "ملاحظات للتوصيل",
+        "settings/comment/placeholder": "مثلاً: اتصلوا بعد السادسة",
+        "settings/comment/helper": "سيرى المندوب هذا قبل الانطلاق.",
+        "settings/marketing-note/content": "لا أكثر من رسالة واحدة في الأسبوع."
+      }
+    }
+  }
+}

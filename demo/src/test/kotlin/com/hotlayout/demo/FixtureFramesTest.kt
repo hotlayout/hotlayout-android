@@ -1,0 +1,150 @@
+package com.hotlayout.demo
+
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.onRoot
+import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performTouchInput
+import androidx.compose.ui.test.swipeUp
+import androidx.compose.ui.unit.dp
+import com.github.takahirom.roborazzi.captureRoboImage
+import org.junit.Rule
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+
+/**
+ * Frames of real fixtures as the demo draws them (with Inter), for putting side by side with the
+ * frames of the other readers. Recorded with `./gradlew :demo:recordRoborazziDebug` into
+ * `demo/frames/`; a plain `./gradlew test` draws them without writing.
+ */
+@RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(qualifiers = "w393dp-h852dp-xxhdpi")
+class FixtureFramesTest {
+    @get:Rule val compose = createComposeRule()
+
+    /** The moment the data dictionary calls «now» (`x-sampleNow`): dates and countdowns in the frames do not depend on the day of the run. */
+    private val sampleNow = java.time.Instant.parse("2026-10-10T09:00:00.000Z").toEpochMilli()
+
+    /** Endless motion asks for a frame forever, so the test would never be idle: the frame is taken at rest (the system asks for no motion). */
+    private fun stillMotion() {
+        val context = androidx.test.core.app.ApplicationProvider.getApplicationContext<android.content.Context>()
+        android.provider.Settings.Global.putFloat(context.contentResolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 0f)
+    }
+
+    private fun frame(fixture: String, screen: String?, atRest: Boolean = false) {
+        if (atRest) stillMotion()
+        compose.setContent {
+            Box(Modifier.size(393.dp, 852.dp)) { FixtureScreen(fixture, screen, "en", sampleNow) }
+        }
+        compose.waitForIdle()
+        compose.onRoot().captureRoboImage("frames/$fixture${screen?.let { "-$it" } ?: ""}.png")
+    }
+
+    /** A frame after a press: the fixture's page with the layer its button opens. */
+    private fun frameAfterPress(fixture: String, button: String, name: String, atRest: Boolean = false) {
+        if (atRest) stillMotion()
+        compose.setContent {
+            Box(Modifier.size(393.dp, 852.dp)) { FixtureScreen(fixture, null, "en", sampleNow) }
+        }
+        compose.waitForIdle()
+        compose.onNodeWithText(button).performClick()
+        compose.waitForIdle()
+        compose.onRoot().captureRoboImage("frames/$name.png")
+    }
+
+    @Test fun modalSheetWithBlur() = frameAfterPress("motion-blur-screens", "Open the sheet", "motion-blur-screens-sheet", atRest = true)
+
+    @Test fun modalSheetFromTheBottom() = frameAfterPress("longpress-groups-sheet-screens", "Quick redeem", "longpress-groups-sheet-screens-redeem")
+
+    @Test fun modalSheetThatWaitsForAnAction() = frameAfterPress("longpress-groups-sheet-screens", "Confirm", "longpress-groups-sheet-screens-confirm")
+
+    @Test fun modalWindowInTheMiddle() = frameAfterPress("media-chrome-screens", "Complete the mission", "media-chrome-screens-window")
+
+    @Test fun motionAndGlassAtRest() = frame("motion-blur-screens", null, atRest = true)
+
+    @Test fun mediaChromePage() = frame("media-chrome-screens", null, atRest = true)
+
+    @Test fun mediaChromeAbout() = frame("media-chrome-screens", "about", atRest = true)
+
+    @Test fun altIconDate() = frame("alt-icon-date-screens", "operation")
+
+    @Test fun rewardsShowcase() = frame("rewards-showcase-screens", null)
+
+    @Test fun buttonsAndChips() = frame("buttons-chips-screens", null)
+
+    @Test fun buttonsAndChipsDetails() = frame("buttons-chips-screens", "details")
+
+    @Test fun choiceControls() = frame("choice-controls-screens", null)
+    @Test fun progress() = frame("progress-screens", null)
+
+    @Test fun rewardCatalog() = frame("reward-catalog-screens", null)
+
+    @Test fun tasksWithTabs() = frame("tasks-flow-screens", null)
+
+    @Test fun fullCatalog() = frame("full-catalog-screen", null)
+
+    @Test fun rowParts() = frame("parts-screens", "card")
+    @Test fun offsetOverlap() = frame("offset-screens", "overlap")
+
+    @Test fun offsetDetails() = frame("offset-screens", "details")
+
+    @Test fun alignmentCentered() = frame("alignment-screens", "centered")
+
+    @Test fun alignmentAxes() = frame("alignment-screens", "axes")
+
+    @Test fun alignmentBottom() = frame("alignment-screens", "bottom")
+
+    @Test fun minimalScreen() = frame("minimal-screen", null)
+
+    @Test fun textEmphasis() = frame("text-emphasis-screens", null)
+
+    @Test fun textEmphasisSteps() = frame("text-emphasis-screens", "steps")
+
+    @Test fun richText() = frame("rich-text-screens", null)
+
+    @Test fun money() = frame("money-screens", null)
+
+    @Test fun valueCountdown() = frame("value-countdown-screens", null)
+
+    @Test fun inputsProfile() = frame("inputs-screens", "profile")
+
+    @Test fun inputsSettings() = frame("inputs-screens", "settings")
+
+    @Test fun surveyGoal() = frame("survey-screens", "goal")
+
+    @Test fun surveyDetails() = frame("survey-screens", "details")
+    @Test fun carouselSteps() = frame("carousel-steps-screens", null)
+
+    /** A frame after the body was scrolled: the app bar and the bottom zone stay, the body has moved. */
+    private fun frameAfterScroll(fixture: String, screen: String, name: String) {
+        compose.setContent {
+            Box(Modifier.size(393.dp, 852.dp)) { FixtureScreen(fixture, screen, "en", sampleNow) }
+        }
+        compose.waitForIdle()
+        compose.onNodeWithTag("screen:$screen").performTouchInput { swipeUp(startY = height * 0.75f, endY = height * 0.25f) }
+        compose.waitForIdle()
+        compose.onRoot().captureRoboImage("frames/$name.png")
+    }
+
+    @Test fun bottomZone() = frame("bottom-zone-screens", "home")
+
+    @Test fun bottomZoneScrolled() = frameAfterScroll("bottom-zone-screens", "home", "bottom-zone-screens-scrolled")
+
+    @Test fun floatingNavigation() = frame("float-nav-swipe-screens", "home")
+
+    @Test fun floatingNavigationScrolled() = frameAfterScroll("float-nav-swipe-screens", "home", "float-nav-swipe-screens-scrolled")
+
+    @Test fun appBar() = frame("app-bar-screens", null)
+
+    @Test fun heroPromo() = frame("hero-screens", "promo")
+
+    @Test fun rewardsShowcaseScrolled() = frameAfterScroll("rewards-showcase-screens", "home", "rewards-showcase-screens-scrolled")
+}

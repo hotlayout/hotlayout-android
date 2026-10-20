@@ -1,0 +1,2505 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "adaptive",
+  "name": "Adaptive layout",
+  "initialScreenId": "home",
+  "screens": [
+    {
+      "screenId": "home",
+      "name": "Home",
+      "root": {
+        "id": "home-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md",
+          "contentMaxWidth": 1120
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "home-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Home"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            },
+            "children": [
+              {
+                "id": "home-bell",
+                "type": "IconButton",
+                "props": {
+                  "icon": "bell",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Notifications"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "layout",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "md"
+            },
+            "children": [
+              {
+                "id": "main",
+                "type": "Column",
+                "props": {
+                  "gap": "md",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "level",
+                    "type": "Container",
+                    "props": {
+                      "direction": "row",
+                      "gap": "md",
+                      "align": "center"
+                    },
+                    "style": {
+                      "padding": "md",
+                      "radius": "md",
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "muted",
+                          "opacity": 0.1
+                        }
+                      }
+                    },
+                    "children": [
+                      {
+                        "id": "level-ring",
+                        "type": "CircularProgress",
+                        "props": {
+                          "value": {
+                            "kind": "literal",
+                            "value": 77
+                          },
+                          "max": {
+                            "kind": "literal",
+                            "value": 100
+                          },
+                          "color": "primary",
+                          "size": "lg",
+                          "labelFormat": "percent"
+                        }
+                      },
+                      {
+                        "id": "level-info",
+                        "type": "Column",
+                        "props": {
+                          "gap": "sm",
+                          "align": "start"
+                        },
+                        "children": [
+                          {
+                            "id": "level-title",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "Level 7 · Explorer"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "typography": "titleM"
+                            }
+                          },
+                          {
+                            "id": "level-bar",
+                            "type": "ProgressBar",
+                            "props": {
+                              "value": {
+                                "kind": "literal",
+                                "value": 1850
+                              },
+                              "max": {
+                                "kind": "literal",
+                                "value": 2400
+                              },
+                              "color": "primary",
+                              "labelFormat": "none"
+                            }
+                          },
+                          {
+                            "id": "level-xp",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "1,850 / 2,400 XP"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "typography": "caption",
+                              "color": "muted"
+                            }
+                          },
+                          {
+                            "id": "level-continue",
+                            "type": "Button",
+                            "props": {
+                              "label": {
+                                "kind": "literal",
+                                "value": "Continue quest"
+                              },
+                              "variant": "primary",
+                              "action": {
+                                "type": "none"
+                              },
+                              "fullWidth": false
+                            }
+                          }
+                        ],
+                        "weight": 1
+                      }
+                    ],
+                    "styleOn": {
+                      "expanded": {
+                        "padding": "lg"
+                      }
+                    }
+                  },
+                  {
+                    "id": "stats",
+                    "type": "Grid",
+                    "props": {
+                      "columns": 3,
+                      "gap": "sm"
+                    },
+                    "children": [
+                      {
+                        "id": "stat-points",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "xs"
+                        },
+                        "style": {
+                          "padding": "sm",
+                          "radius": "md",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "token": "muted",
+                              "opacity": 0.1
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "id": "stat-points-label",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "Points"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "typography": "caption",
+                              "color": "muted"
+                            }
+                          },
+                          {
+                            "id": "stat-points-value",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "1,850"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "typography": "titleM"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "id": "stat-streak",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "xs"
+                        },
+                        "style": {
+                          "padding": "sm",
+                          "radius": "md",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "token": "muted",
+                              "opacity": 0.1
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "id": "stat-streak-label",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "Streak"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "typography": "caption",
+                              "color": "muted"
+                            }
+                          },
+                          {
+                            "id": "stat-streak-value",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "5 days"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "typography": "titleM"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "id": "stat-badges",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "xs"
+                        },
+                        "style": {
+                          "padding": "sm",
+                          "radius": "md",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "token": "muted",
+                              "opacity": 0.1
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "id": "stat-badges-label",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "Badges"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "typography": "caption",
+                              "color": "muted"
+                            }
+                          },
+                          {
+                            "id": "stat-badges-value",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "12 / 30"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "typography": "titleM"
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "propsOn": {
+                      "expanded": {
+                        "gap": "md"
+                      }
+                    }
+                  },
+                  {
+                    "id": "quests-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Active quests"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleM"
+                    }
+                  },
+                  {
+                    "id": "quests",
+                    "type": "Repeater",
+                    "props": {
+                      "source": "tasks",
+                      "item": "task",
+                      "direction": "column",
+                      "gap": "md",
+                      "limit": 3
+                    },
+                    "children": [
+                      {
+                        "id": "quest",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "sm"
+                        },
+                        "style": {
+                          "padding": "md",
+                          "radius": "md",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "token": "muted",
+                              "opacity": 0.1
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "id": "quest-image",
+                            "type": "Image",
+                            "props": {
+                              "source": {
+                                "kind": "binding",
+                                "path": "task.image",
+                                "fallback": "placeholder"
+                              },
+                              "aspectRatio": "16:9",
+                              "fit": "cover",
+                              "alt": "Quest"
+                            },
+                            "style": {
+                              "radius": "md"
+                            }
+                          },
+                          {
+                            "id": "quest-done",
+                            "type": "Badge",
+                            "props": {
+                              "label": {
+                                "kind": "literal",
+                                "value": "Completed"
+                              },
+                              "tone": "success"
+                            },
+                            "visibleIf": {
+                              "path": "task.completed",
+                              "op": "isTrue"
+                            }
+                          },
+                          {
+                            "id": "quest-active",
+                            "type": "Badge",
+                            "props": {
+                              "label": {
+                                "kind": "literal",
+                                "value": "In progress"
+                              },
+                              "tone": "accent"
+                            },
+                            "visibleIf": {
+                              "path": "task.completed",
+                              "op": "isFalse"
+                            }
+                          },
+                          {
+                            "id": "quest-title",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "binding",
+                                "path": "task.title",
+                                "fallback": "Quest"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "typography": "titleS"
+                            }
+                          },
+                          {
+                            "id": "quest-text",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "binding",
+                                "path": "task.description",
+                                "fallback": "Complete the steps to earn points"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis",
+                              "maxLines": 2
+                            },
+                            "style": {
+                              "typography": "bodyS",
+                              "color": "muted"
+                            }
+                          },
+                          {
+                            "id": "quest-bar",
+                            "type": "ProgressBar",
+                            "props": {
+                              "value": {
+                                "kind": "binding",
+                                "path": "task.progress",
+                                "fallback": 0
+                              },
+                              "max": {
+                                "kind": "binding",
+                                "path": "task.target",
+                                "fallback": 1
+                              },
+                              "color": "primary",
+                              "labelFormat": "none"
+                            }
+                          },
+                          {
+                            "id": "quest-points",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "template",
+                                "template": "+{points} pts",
+                                "values": {
+                                  "points": {
+                                    "kind": "binding",
+                                    "path": "task.rewardPoints",
+                                    "fallback": "0",
+                                    "format": "number"
+                                  }
+                                }
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "typography": "titleS",
+                              "color": "primary"
+                            }
+                          },
+                          {
+                            "id": "quest-open",
+                            "type": "Button",
+                            "props": {
+                              "label": {
+                                "kind": "literal",
+                                "value": "Open"
+                              },
+                              "variant": "secondary",
+                              "action": {
+                                "type": "none"
+                              },
+                              "fullWidth": true,
+                              "size": "sm"
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "propsOn": {
+                      "medium": {
+                        "columns": 2
+                      },
+                      "expanded": {
+                        "columns": 3
+                      }
+                    }
+                  }
+                ],
+                "weight": 2
+              },
+              {
+                "id": "side",
+                "type": "Column",
+                "props": {
+                  "gap": "md",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "leaderboard",
+                    "type": "Container",
+                    "props": {
+                      "direction": "column",
+                      "gap": "xs"
+                    },
+                    "style": {
+                      "padding": "md",
+                      "radius": "md",
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "muted",
+                          "opacity": 0.1
+                        }
+                      }
+                    },
+                    "children": [
+                      {
+                        "id": "leaderboard-title",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "Leaderboard"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "typography": "titleS"
+                        }
+                      },
+                      {
+                        "id": "leader-1",
+                        "type": "ListTile",
+                        "props": {
+                          "leading": {
+                            "kind": "icon",
+                            "icon": "circle-user"
+                          },
+                          "title": {
+                            "kind": "literal",
+                            "value": "1  Maya"
+                          },
+                          "trailing": {
+                            "kind": "text",
+                            "text": {
+                              "kind": "literal",
+                              "value": "2,940"
+                            }
+                          }
+                        },
+                        "style": {
+                          "padding": {
+                            "top": "sm",
+                            "bottom": "sm"
+                          }
+                        }
+                      },
+                      {
+                        "id": "leader-2",
+                        "type": "ListTile",
+                        "props": {
+                          "leading": {
+                            "kind": "icon",
+                            "icon": "circle-user"
+                          },
+                          "title": {
+                            "kind": "literal",
+                            "value": "2  Oleh"
+                          },
+                          "trailing": {
+                            "kind": "text",
+                            "text": {
+                              "kind": "literal",
+                              "value": "2,310"
+                            }
+                          }
+                        },
+                        "style": {
+                          "padding": {
+                            "top": "sm",
+                            "bottom": "sm"
+                          }
+                        }
+                      },
+                      {
+                        "id": "leader-3",
+                        "type": "ListTile",
+                        "props": {
+                          "leading": {
+                            "kind": "icon",
+                            "icon": "star"
+                          },
+                          "title": {
+                            "kind": "literal",
+                            "value": "3  You"
+                          },
+                          "trailing": {
+                            "kind": "text",
+                            "text": {
+                              "kind": "literal",
+                              "value": "1,850"
+                            }
+                          }
+                        },
+                        "style": {
+                          "padding": "sm",
+                          "radius": "md",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "token": "primary",
+                              "opacity": 0.1
+                            }
+                          }
+                        }
+                      },
+                      {
+                        "id": "leader-4",
+                        "type": "ListTile",
+                        "props": {
+                          "leading": {
+                            "kind": "icon",
+                            "icon": "circle-user"
+                          },
+                          "title": {
+                            "kind": "literal",
+                            "value": "4  Sara"
+                          },
+                          "trailing": {
+                            "kind": "text",
+                            "text": {
+                              "kind": "literal",
+                              "value": "1,620"
+                            }
+                          }
+                        },
+                        "style": {
+                          "padding": {
+                            "top": "sm",
+                            "bottom": "sm"
+                          }
+                        }
+                      },
+                      {
+                        "id": "leader-5",
+                        "type": "ListTile",
+                        "props": {
+                          "leading": {
+                            "kind": "icon",
+                            "icon": "circle-user"
+                          },
+                          "title": {
+                            "kind": "literal",
+                            "value": "5  Tim"
+                          },
+                          "trailing": {
+                            "kind": "text",
+                            "text": {
+                              "kind": "literal",
+                              "value": "1,480"
+                            }
+                          }
+                        },
+                        "style": {
+                          "padding": {
+                            "top": "sm",
+                            "bottom": "sm"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "bonus",
+                    "type": "Container",
+                    "props": {
+                      "direction": "column",
+                      "gap": "sm"
+                    },
+                    "style": {
+                      "padding": "md",
+                      "radius": "md",
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "muted",
+                          "opacity": 0.1
+                        }
+                      }
+                    },
+                    "children": [
+                      {
+                        "id": "bonus-title",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "Daily bonus"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "typography": "titleS"
+                        }
+                      },
+                      {
+                        "id": "bonus-bar",
+                        "type": "ProgressBar",
+                        "props": {
+                          "value": {
+                            "kind": "literal",
+                            "value": 5
+                          },
+                          "max": {
+                            "kind": "literal",
+                            "value": 7
+                          },
+                          "color": "primary",
+                          "labelFormat": "none",
+                          "segments": 7
+                        }
+                      },
+                      {
+                        "id": "bonus-note",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "Day 5 of 7"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "typography": "caption",
+                          "color": "muted"
+                        }
+                      },
+                      {
+                        "id": "bonus-claim",
+                        "type": "Button",
+                        "props": {
+                          "label": {
+                            "kind": "literal",
+                            "value": "Claim +20 pts"
+                          },
+                          "variant": "primary",
+                          "action": {
+                            "type": "navigate",
+                            "params": {
+                              "screenId": "bonus"
+                            }
+                          },
+                          "fullWidth": true
+                        }
+                      }
+                    ]
+                  }
+                ],
+                "weight": 1
+              }
+            ],
+            "propsOn": {
+              "expanded": {
+                "direction": "row",
+                "gap": "lg",
+                "align": "start"
+              }
+            }
+          },
+          {
+            "id": "nav",
+            "type": "NavBar",
+            "props": {},
+            "children": [
+              {
+                "id": "nav-home",
+                "type": "NavItem",
+                "props": {
+                  "icon": "house",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Home"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "home"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-lab",
+                "type": "NavItem",
+                "props": {
+                  "icon": "layout-grid",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Layout lab"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "lab"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-rewards",
+                "type": "NavItem",
+                "props": {
+                  "icon": "gift",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Rewards"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "rewards"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-profile",
+                "type": "NavItem",
+                "props": {
+                  "icon": "circle-user",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Profile"
+                  },
+                  "action": {
+                    "type": "none"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "styleOn": {
+          "expanded": {
+            "padding": "lg"
+          }
+        }
+      }
+    },
+    {
+      "screenId": "lab",
+      "name": "Layout lab",
+      "root": {
+        "id": "lab-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "lab-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Layout lab"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "lab-grid-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Grid: 2, 3 or 4 in a row"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "lab-grid",
+            "type": "Grid",
+            "props": {
+              "columns": 2,
+              "gap": "sm"
+            },
+            "children": [
+              {
+                "id": "lab-cell-1",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center"
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "lab-cell-1-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "1"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "lab-cell-2",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center"
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "lab-cell-2-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "2"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "lab-cell-3",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center"
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "lab-cell-3-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "3"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "lab-cell-4",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center"
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "lab-cell-4-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "4"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "lab-cell-5",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center"
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "lab-cell-5-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "5"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "lab-cell-6",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center"
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "lab-cell-6-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "6"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "lab-cell-7",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center"
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "lab-cell-7-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "7"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "lab-cell-8",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center"
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "lab-cell-8-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "8"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ]
+              }
+            ],
+            "propsOn": {
+              "medium": {
+                "columns": 3
+              },
+              "expanded": {
+                "columns": 4
+              }
+            }
+          },
+          {
+            "id": "lab-show-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Shown by screen width"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "lab-phone",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "accent",
+                  "opacity": 0.12
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "lab-phone-text",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Phone only"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyM"
+                }
+              }
+            ],
+            "showOn": [
+              "compact"
+            ]
+          },
+          {
+            "id": "lab-tablet",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "success",
+                  "opacity": 0.12
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "lab-tablet-text",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Tablet and wider"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyM"
+                }
+              }
+            ],
+            "showOn": [
+              "medium",
+              "expanded"
+            ]
+          },
+          {
+            "id": "lab-wide",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "warning",
+                  "opacity": 0.12
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "lab-wide-text",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Wide only"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyM"
+                }
+              }
+            ],
+            "showOn": [
+              "expanded"
+            ]
+          },
+          {
+            "id": "lab-style-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Style by screen width"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "lab-style",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": "sm",
+              "radius": "sm",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "lab-style-text",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "This card gets more padding on wider screens"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyM"
+                }
+              }
+            ],
+            "styleOn": {
+              "medium": {
+                "padding": "md",
+                "radius": "md"
+              },
+              "expanded": {
+                "padding": "lg",
+                "background": {
+                  "kind": "color",
+                  "color": {
+                    "token": "primary",
+                    "opacity": 0.16
+                  }
+                }
+              }
+            }
+          },
+          {
+            "id": "lab-split-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "A column that becomes a row"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "lab-split",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "md"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "muted",
+                  "opacity": 0.1
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "lab-split-main",
+                "type": "Column",
+                "props": {
+                  "gap": "xs",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "lab-split-main-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Main part"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "lab-split-main-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Two thirds of the row on a wide screen, the full width on a phone"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "bodyS",
+                      "color": "muted"
+                    }
+                  }
+                ],
+                "weight": 2
+              },
+              {
+                "id": "lab-split-line-flat",
+                "type": "Divider",
+                "props": {
+                  "color": "border",
+                  "spacing": "sm",
+                  "orientation": "horizontal"
+                },
+                "showOn": [
+                  "compact",
+                  "medium"
+                ]
+              },
+              {
+                "id": "lab-split-line-tall",
+                "type": "Divider",
+                "props": {
+                  "color": "border",
+                  "spacing": "sm",
+                  "orientation": "vertical"
+                },
+                "showOn": [
+                  "expanded"
+                ]
+              },
+              {
+                "id": "lab-split-side",
+                "type": "Column",
+                "props": {
+                  "gap": "xs",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "lab-split-side-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Side part"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "lab-split-side-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "One third of the row, or the next block down"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "bodyS",
+                      "color": "muted"
+                    }
+                  }
+                ],
+                "weight": 1
+              }
+            ],
+            "propsOn": {
+              "expanded": {
+                "direction": "row",
+                "align": "start"
+              }
+            }
+          },
+          {
+            "id": "nav",
+            "type": "NavBar",
+            "props": {},
+            "children": [
+              {
+                "id": "nav-home",
+                "type": "NavItem",
+                "props": {
+                  "icon": "house",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Home"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "home"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-lab",
+                "type": "NavItem",
+                "props": {
+                  "icon": "layout-grid",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Layout lab"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "lab"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-rewards",
+                "type": "NavItem",
+                "props": {
+                  "icon": "gift",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Rewards"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "rewards"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-profile",
+                "type": "NavItem",
+                "props": {
+                  "icon": "circle-user",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Profile"
+                  },
+                  "action": {
+                    "type": "none"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "propsOn": {
+          "expanded": {
+            "contentMaxWidth": 960,
+            "gap": "lg"
+          }
+        }
+      }
+    },
+    {
+      "screenId": "rewards",
+      "name": "Rewards",
+      "root": {
+        "id": "rewards-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md",
+          "contentMaxWidth": 1120
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "rewards-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Rewards"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL"
+            }
+          },
+          {
+            "id": "rewards-lead",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Spend your points on something nice"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "rewards-grid",
+            "type": "Grid",
+            "props": {
+              "columns": 2,
+              "gap": "sm"
+            },
+            "children": [
+              {
+                "id": "reward-coffee",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "reward-coffee-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "coffee",
+                      "size": "lg"
+                    },
+                    "style": {
+                      "color": "primary"
+                    }
+                  },
+                  {
+                    "id": "reward-coffee-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Coffee"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "reward-coffee-price",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "300 pts"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption",
+                      "color": "muted"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "reward-ticket",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "reward-ticket-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "ticket",
+                      "size": "lg"
+                    },
+                    "style": {
+                      "color": "primary"
+                    }
+                  },
+                  {
+                    "id": "reward-ticket-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Cinema ticket"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "reward-ticket-price",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "900 pts"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption",
+                      "color": "muted"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "reward-book",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "reward-book-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "book-open",
+                      "size": "lg"
+                    },
+                    "style": {
+                      "color": "primary"
+                    }
+                  },
+                  {
+                    "id": "reward-book-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Book"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "reward-book-price",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "1,200 pts"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption",
+                      "color": "muted"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "reward-headphones",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "reward-headphones-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "headphones",
+                      "size": "lg"
+                    },
+                    "style": {
+                      "color": "primary"
+                    }
+                  },
+                  {
+                    "id": "reward-headphones-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Headphones"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "reward-headphones-price",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "4,500 pts"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption",
+                      "color": "muted"
+                    }
+                  }
+                ]
+              }
+            ],
+            "propsOn": {
+              "medium": {
+                "columns": 3
+              },
+              "expanded": {
+                "columns": 4,
+                "gap": "md"
+              }
+            }
+          },
+          {
+            "id": "nav",
+            "type": "NavBar",
+            "props": {},
+            "children": [
+              {
+                "id": "nav-home",
+                "type": "NavItem",
+                "props": {
+                  "icon": "house",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Home"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "home"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-lab",
+                "type": "NavItem",
+                "props": {
+                  "icon": "layout-grid",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Layout lab"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "lab"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-rewards",
+                "type": "NavItem",
+                "props": {
+                  "icon": "gift",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Rewards"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "rewards"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-profile",
+                "type": "NavItem",
+                "props": {
+                  "icon": "circle-user",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Profile"
+                  },
+                  "action": {
+                    "type": "none"
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        "styleOn": {
+          "expanded": {
+            "padding": "lg"
+          }
+        }
+      }
+    },
+    {
+      "screenId": "bonus",
+      "name": "Daily bonus",
+      "presentation": "modal",
+      "root": {
+        "id": "bonus-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "radius": {
+            "topStart": "lg",
+            "topEnd": "lg"
+          }
+        },
+        "children": [
+          {
+            "id": "bonus-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Daily bonus"
+              },
+              "showBack": false,
+              "titleAlign": "start"
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            },
+            "children": [
+              {
+                "id": "bonus-close",
+                "type": "IconButton",
+                "props": {
+                  "icon": "x",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Close"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "navigate.back"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "bonus-lead",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Come back every day: the reward grows, and the seventh day doubles it"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "bonus-week",
+            "type": "ProgressBar",
+            "props": {
+              "value": {
+                "kind": "literal",
+                "value": 5
+              },
+              "max": {
+                "kind": "literal",
+                "value": 7
+              },
+              "color": "primary",
+              "labelFormat": "none",
+              "segments": 7
+            }
+          },
+          {
+            "id": "bonus-days",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "bonus-day-5",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "gift"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Day 5 · today"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "+20"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "bonus-day-4",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "circle-check"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Day 4"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "+15"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "bonus-day-3",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "circle-check"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Day 3"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "+10"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "bonus-take",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Claim +20 pts"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            },
+            "pin": "bottom"
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "home/home-bar/title": "Головна",
+        "home/home-bell/label": "Сповіщення",
+        "home/level-title/content": "Рівень 7 · Дослідник",
+        "home/level-xp/content": "1 850 / 2 400 XP",
+        "home/level-continue/label": "Продовжити квест",
+        "home/stat-points-label/content": "Бали",
+        "home/stat-points-value/content": "1 850",
+        "home/stat-streak-label/content": "Серія",
+        "home/stat-streak-value/content": "5 днів",
+        "home/stat-badges-label/content": "Відзнаки",
+        "home/stat-badges-value/content": "12 / 30",
+        "home/quests-title/content": "Активні квести",
+        "home/quest-image/alt": "Квест",
+        "home/quest-done/label": "Виконано",
+        "home/quest-active/label": "Триває",
+        "home/quest-points/content.template": "+{points} балів",
+        "home/quest-open/label": "Відкрити",
+        "home/leaderboard-title/content": "Рейтинг",
+        "home/leader-1/title": "1  Мая",
+        "home/leader-1/trailing.text": "2 940",
+        "home/leader-2/title": "2  Олег",
+        "home/leader-2/trailing.text": "2 310",
+        "home/leader-3/title": "3  Ви",
+        "home/leader-3/trailing.text": "1 850",
+        "home/leader-4/title": "4  Сара",
+        "home/leader-4/trailing.text": "1 620",
+        "home/leader-5/title": "5  Тім",
+        "home/leader-5/trailing.text": "1 480",
+        "home/bonus-title/content": "Щоденний бонус",
+        "home/bonus-note/content": "День 5 із 7",
+        "home/bonus-claim/label": "Забрати +20 балів",
+        "home/nav-home/label": "Головна",
+        "home/nav-lab/label": "Стенд розкладки",
+        "home/nav-rewards/label": "Нагороди",
+        "home/nav-profile/label": "Профіль",
+        "lab/lab-bar/title": "Стенд розкладки",
+        "lab/lab-grid-title/content": "Сітка: 2, 3 або 4 в ряд",
+        "lab/lab-cell-1-text/content": "1",
+        "lab/lab-cell-2-text/content": "2",
+        "lab/lab-cell-3-text/content": "3",
+        "lab/lab-cell-4-text/content": "4",
+        "lab/lab-cell-5-text/content": "5",
+        "lab/lab-cell-6-text/content": "6",
+        "lab/lab-cell-7-text/content": "7",
+        "lab/lab-cell-8-text/content": "8",
+        "lab/lab-show-title/content": "Видно за шириною екрана",
+        "lab/lab-phone-text/content": "Лише телефон",
+        "lab/lab-tablet-text/content": "Планшет і ширше",
+        "lab/lab-wide-text/content": "Лише широкий",
+        "lab/lab-style-title/content": "Стиль за шириною екрана",
+        "lab/lab-style-text/content": "На ширших екранах ця картка дістає більші поля",
+        "lab/lab-split-title/content": "Колонка, що стає рядком",
+        "lab/lab-split-main-title/content": "Основна частина",
+        "lab/lab-split-main-text/content": "Дві третини рядка на широкому екрані, уся ширина на телефоні",
+        "lab/lab-split-side-title/content": "Бічна частина",
+        "lab/lab-split-side-text/content": "Третина рядка або наступний блок униз",
+        "lab/nav-home/label": "Головна",
+        "lab/nav-lab/label": "Стенд розкладки",
+        "lab/nav-rewards/label": "Нагороди",
+        "lab/nav-profile/label": "Профіль",
+        "rewards/rewards-title/content": "Нагороди",
+        "rewards/rewards-lead/content": "Витратьте бали на щось приємне",
+        "rewards/reward-coffee-title/content": "Кава",
+        "rewards/reward-coffee-price/content": "300 балів",
+        "rewards/reward-ticket-title/content": "Квиток у кіно",
+        "rewards/reward-ticket-price/content": "900 балів",
+        "rewards/reward-book-title/content": "Книжка",
+        "rewards/reward-book-price/content": "1 200 балів",
+        "rewards/reward-headphones-title/content": "Навушники",
+        "rewards/reward-headphones-price/content": "4 500 балів",
+        "rewards/nav-home/label": "Головна",
+        "rewards/nav-lab/label": "Стенд розкладки",
+        "rewards/nav-rewards/label": "Нагороди",
+        "rewards/nav-profile/label": "Профіль",
+        "bonus/bonus-bar/title": "Щоденний бонус",
+        "bonus/bonus-close/label": "Закрити",
+        "bonus/bonus-lead/content": "Повертайтеся щодня: нагорода росте, а сьомий день її подвоює",
+        "bonus/bonus-day-5/title": "День 5 · сьогодні",
+        "bonus/bonus-day-5/trailing.text": "+20",
+        "bonus/bonus-day-4/title": "День 4",
+        "bonus/bonus-day-4/trailing.text": "+15",
+        "bonus/bonus-day-3/title": "День 3",
+        "bonus/bonus-day-3/trailing.text": "+10",
+        "bonus/bonus-take/label": "Забрати +20 балів"
+      },
+      "ar": {
+        "home/home-bar/title": "الرئيسية",
+        "home/home-bell/label": "الإشعارات",
+        "home/level-title/content": "المستوى 7 · مستكشف",
+        "home/level-xp/content": "1,850 / 2,400 XP",
+        "home/level-continue/label": "متابعة المهمة",
+        "home/stat-points-label/content": "النقاط",
+        "home/stat-points-value/content": "1,850",
+        "home/stat-streak-label/content": "السلسلة",
+        "home/stat-streak-value/content": "5 أيام",
+        "home/stat-badges-label/content": "الشارات",
+        "home/stat-badges-value/content": "12 / 30",
+        "home/quests-title/content": "المهام النشطة",
+        "home/quest-image/alt": "مهمة",
+        "home/quest-done/label": "مكتملة",
+        "home/quest-active/label": "قيد التنفيذ",
+        "home/quest-points/content.template": "+{points} نقطة",
+        "home/quest-open/label": "فتح",
+        "home/leaderboard-title/content": "لوحة المتصدرين",
+        "home/leader-1/title": "1  مايا",
+        "home/leader-1/trailing.text": "2,940",
+        "home/leader-2/title": "2  أوليه",
+        "home/leader-2/trailing.text": "2,310",
+        "home/leader-3/title": "3  أنت",
+        "home/leader-3/trailing.text": "1,850",
+        "home/leader-4/title": "4  سارة",
+        "home/leader-4/trailing.text": "1,620",
+        "home/leader-5/title": "5  تيم",
+        "home/leader-5/trailing.text": "1,480",
+        "home/bonus-title/content": "المكافأة اليومية",
+        "home/bonus-note/content": "اليوم 5 من 7",
+        "home/bonus-claim/label": "احصل على +20 نقطة",
+        "home/nav-home/label": "الرئيسية",
+        "home/nav-lab/label": "مختبر التخطيط",
+        "home/nav-rewards/label": "المكافآت",
+        "home/nav-profile/label": "الملف الشخصي",
+        "lab/lab-bar/title": "مختبر التخطيط",
+        "lab/lab-grid-title/content": "شبكة: 2 أو 3 أو 4 في الصف",
+        "lab/lab-cell-1-text/content": "1",
+        "lab/lab-cell-2-text/content": "2",
+        "lab/lab-cell-3-text/content": "3",
+        "lab/lab-cell-4-text/content": "4",
+        "lab/lab-cell-5-text/content": "5",
+        "lab/lab-cell-6-text/content": "6",
+        "lab/lab-cell-7-text/content": "7",
+        "lab/lab-cell-8-text/content": "8",
+        "lab/lab-show-title/content": "يظهر حسب عرض الشاشة",
+        "lab/lab-phone-text/content": "الهاتف فقط",
+        "lab/lab-tablet-text/content": "الجهاز اللوحي وما هو أعرض",
+        "lab/lab-wide-text/content": "الشاشة العريضة فقط",
+        "lab/lab-style-title/content": "النمط حسب عرض الشاشة",
+        "lab/lab-style-text/content": "تحصل هذه البطاقة على هوامش أكبر في الشاشات الأعرض",
+        "lab/lab-split-title/content": "عمود يتحول إلى صف",
+        "lab/lab-split-main-title/content": "الجزء الرئيسي",
+        "lab/lab-split-main-text/content": "ثلثا الصف في الشاشة العريضة، والعرض الكامل في الهاتف",
+        "lab/lab-split-side-title/content": "الجزء الجانبي",
+        "lab/lab-split-side-text/content": "ثلث الصف، أو الكتلة التالية للأسفل",
+        "lab/nav-home/label": "الرئيسية",
+        "lab/nav-lab/label": "مختبر التخطيط",
+        "lab/nav-rewards/label": "المكافآت",
+        "lab/nav-profile/label": "الملف الشخصي",
+        "rewards/rewards-title/content": "المكافآت",
+        "rewards/rewards-lead/content": "أنفق نقاطك على شيء جميل",
+        "rewards/reward-coffee-title/content": "قهوة",
+        "rewards/reward-coffee-price/content": "300 نقطة",
+        "rewards/reward-ticket-title/content": "تذكرة سينما",
+        "rewards/reward-ticket-price/content": "900 نقطة",
+        "rewards/reward-book-title/content": "كتاب",
+        "rewards/reward-book-price/content": "1,200 نقطة",
+        "rewards/reward-headphones-title/content": "سماعات",
+        "rewards/reward-headphones-price/content": "4,500 نقطة",
+        "rewards/nav-home/label": "الرئيسية",
+        "rewards/nav-lab/label": "مختبر التخطيط",
+        "rewards/nav-rewards/label": "المكافآت",
+        "rewards/nav-profile/label": "الملف الشخصي",
+        "bonus/bonus-bar/title": "المكافأة اليومية",
+        "bonus/bonus-close/label": "إغلاق",
+        "bonus/bonus-lead/content": "عُد كل يوم: المكافأة تزداد، واليوم السابع يضاعفها",
+        "bonus/bonus-day-5/title": "اليوم 5 · اليوم",
+        "bonus/bonus-day-5/trailing.text": "+20",
+        "bonus/bonus-day-4/title": "اليوم 4",
+        "bonus/bonus-day-4/trailing.text": "+15",
+        "bonus/bonus-day-3/title": "اليوم 3",
+        "bonus/bonus-day-3/trailing.text": "+10",
+        "bonus/bonus-take/label": "احصل على +20 نقطة"
+      }
+    }
+  }
+}

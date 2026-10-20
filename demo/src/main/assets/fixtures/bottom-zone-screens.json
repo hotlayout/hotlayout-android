@@ -1,0 +1,1454 @@
+{
+  "schemaVersion": "9.12.0",
+  "documentId": "bottom-zone",
+  "name": "Bottom navigation and a block pinned to the bottom",
+  "initialScreenId": "home",
+  "screens": [
+    {
+      "screenId": "home",
+      "name": "Home",
+      "root": {
+        "id": "home-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "home-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Today"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "home-balance",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "home-balance-label",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Your balance"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              },
+              {
+                "id": "home-balance-value",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "1 250 points"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "displayL"
+                }
+              },
+              {
+                "id": "home-balance-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The bar below switches sections: it stays in place while this list scrolls."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              }
+            ]
+          },
+          {
+            "id": "home-tasks",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "home-tasks-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Tasks for today"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "task-walk",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "footprints"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Walk 5 000 steps"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Until the end of the day"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "+50"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "task-read",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "book-open"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Read the weekly digest"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Two minutes"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "+20"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "task-invite",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "users"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Invite a friend"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Both of you get points"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "+200"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "task-quiz",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "circle-help"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Answer the quiz"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Five questions"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "+80"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "task-review",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "star"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Rate the app"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Once"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "+30"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "task-streak",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "flame"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Keep a 7-day streak"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Day 4 of 7"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "+150"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "home-terms",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "How points work"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "terms"
+                }
+              },
+              "fullWidth": true
+            }
+          },
+          {
+            "id": "nav",
+            "type": "NavBar",
+            "props": {},
+            "children": [
+              {
+                "id": "nav-home",
+                "type": "NavItem",
+                "props": {
+                  "icon": "house",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Home"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "home"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-rewards",
+                "type": "NavItem",
+                "props": {
+                  "icon": "gift",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Rewards"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "rewards"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-profile",
+                "type": "NavItem",
+                "props": {
+                  "icon": "circle-user",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Profile"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "profile"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "rewards",
+      "name": "Rewards",
+      "root": {
+        "id": "rewards-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "rewards-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Rewards"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "rewards-list",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "rewards-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Spend your points"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "reward-coffee",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "coffee"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Coffee to go"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Any partner café"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "300"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "reward-cinema",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "ticket"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Cinema ticket"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Weekdays"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "900"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "reward-book",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "book-open"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "E-book of the month"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Download once"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "450"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "reward-bottle",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "droplet"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Steel bottle"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Delivery in 5 days"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "1 200"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "reward-bag",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "shopping-bag"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Canvas bag"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Pick-up point"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "600"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "reward-donate",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "heart"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Donate to a shelter"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "We double it"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "100"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "reward-headphones",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "headphones"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Headphones"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "While stocks last"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "4 500"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "rewards-end",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "The last line of the list is reachable above the pinned button."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "rewards-redeem",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Redeem the steel bottle"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "confirm"
+                }
+              },
+              "fullWidth": true
+            },
+            "pin": "bottom"
+          },
+          {
+            "id": "nav",
+            "type": "NavBar",
+            "props": {},
+            "children": [
+              {
+                "id": "nav-home",
+                "type": "NavItem",
+                "props": {
+                  "icon": "house",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Home"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "home"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-rewards",
+                "type": "NavItem",
+                "props": {
+                  "icon": "gift",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Rewards"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "rewards"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-profile",
+                "type": "NavItem",
+                "props": {
+                  "icon": "circle-user",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Profile"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "profile"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "profile",
+      "name": "Profile",
+      "root": {
+        "id": "profile-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "profile-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Profile"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "profile-card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "profile-name",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Olena Kovalenko"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "profile-level",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Level 4 · 1 250 points"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyM"
+                }
+              }
+            ]
+          },
+          {
+            "id": "profile-settings",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "profile-language",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "languages"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Language"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "English"
+                  },
+                  "trailing": {
+                    "kind": "none"
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "profile-notify",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "bell"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Notifications"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "On"
+                  },
+                  "trailing": {
+                    "kind": "none"
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "nav",
+            "type": "NavBar",
+            "props": {},
+            "children": [
+              {
+                "id": "nav-home",
+                "type": "NavItem",
+                "props": {
+                  "icon": "house",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Home"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "home"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-rewards",
+                "type": "NavItem",
+                "props": {
+                  "icon": "gift",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Rewards"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "rewards"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-profile",
+                "type": "NavItem",
+                "props": {
+                  "icon": "circle-user",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Profile"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "profile"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "terms",
+      "name": "How points work",
+      "root": {
+        "id": "terms-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "terms-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "How points work"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "terms-card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "terms-1",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Points are added within a day after a task is done. If they are not there after two days, write to support from the profile screen."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "terms-2",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "A task counts once. Doing it again on the same day brings nothing: the list on the home screen shows what is still open."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "terms-3",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Points do not expire while you open the app at least once in ninety days. After that they are kept for another thirty days and then removed."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "terms-4",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "A reward is reserved for you for fifteen minutes after you press the button. If you do not confirm, the points come back."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "terms-5",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Delivery is free. A reward that was not picked up in ten days goes back to the catalogue, and the points go back to you."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "terms-6",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The season lasts three months. Season badges can be earned only during their season; the ones you have stay with you."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "terms-7",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "This is the last paragraph. It ends above the pinned button and is never hidden under it: the body scrolls down to the gap of the screen."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              }
+            ]
+          },
+          {
+            "id": "terms-continue",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Continue to rewards"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.section",
+                "params": {
+                  "screenId": "rewards"
+                }
+              },
+              "fullWidth": true
+            },
+            "pin": "bottom"
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "confirm",
+      "name": "Confirm the reward",
+      "presentation": "modal",
+      "root": {
+        "id": "confirm-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "radius": {
+            "topStart": "lg",
+            "topEnd": "lg"
+          },
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "confirm-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Redeem the steel bottle?"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "confirm-price",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "1 200 points will be taken from your balance. 50 will be left."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          },
+          {
+            "id": "confirm-delivery",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Delivery takes five days. We send a message when the parcel is at the pick-up point."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          },
+          {
+            "id": "confirm-return",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "You can cancel within fifteen minutes: the points come back in full."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "confirm-actions",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm"
+            },
+            "pin": "bottom",
+            "children": [
+              {
+                "id": "confirm-yes",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Confirm"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate.back"
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "confirm-no",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Not now"
+                  },
+                  "variant": "ghost",
+                  "action": {
+                    "type": "navigate.back"
+                  },
+                  "fullWidth": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "home/home-bar/title": "Сьогодні",
+        "home/home-balance-label/content": "Ваш баланс",
+        "home/home-balance-value/content": "1 250 балів",
+        "home/home-balance-note/content": "Панель унизу перемикає розділи: вона стоїть на місці, поки цей список гортається.",
+        "home/home-tasks-title/content": "Завдання на сьогодні",
+        "home/task-walk/title": "Пройдіть 5 000 кроків",
+        "home/task-walk/subtitle": "До кінця дня",
+        "home/task-walk/trailing.text": "+50",
+        "home/task-read/title": "Прочитайте тижневий дайджест",
+        "home/task-read/subtitle": "Дві хвилини",
+        "home/task-read/trailing.text": "+20",
+        "home/task-invite/title": "Запросіть друга",
+        "home/task-invite/subtitle": "Бали дістанете обоє",
+        "home/task-invite/trailing.text": "+200",
+        "home/task-quiz/title": "Пройдіть вікторину",
+        "home/task-quiz/subtitle": "П'ять запитань",
+        "home/task-quiz/trailing.text": "+80",
+        "home/task-review/title": "Оцініть застосунок",
+        "home/task-review/subtitle": "Один раз",
+        "home/task-review/trailing.text": "+30",
+        "home/task-streak/title": "Тримайте серію 7 днів",
+        "home/task-streak/subtitle": "День 4 із 7",
+        "home/task-streak/trailing.text": "+150",
+        "home/home-terms/label": "Як працюють бали",
+        "home/nav-home/label": "Головна",
+        "home/nav-rewards/label": "Нагороди",
+        "home/nav-profile/label": "Профіль",
+        "rewards/rewards-bar/title": "Нагороди",
+        "rewards/rewards-title/content": "Витратьте бали",
+        "rewards/reward-coffee/title": "Кава з собою",
+        "rewards/reward-coffee/subtitle": "Будь-яка кав'ярня-партнер",
+        "rewards/reward-coffee/trailing.text": "300",
+        "rewards/reward-cinema/title": "Квиток у кіно",
+        "rewards/reward-cinema/subtitle": "У будні",
+        "rewards/reward-cinema/trailing.text": "900",
+        "rewards/reward-book/title": "Електронна книжка місяця",
+        "rewards/reward-book/subtitle": "Одне завантаження",
+        "rewards/reward-book/trailing.text": "450",
+        "rewards/reward-bottle/title": "Сталева пляшка",
+        "rewards/reward-bottle/subtitle": "Доставка за 5 днів",
+        "rewards/reward-bottle/trailing.text": "1 200",
+        "rewards/reward-bag/title": "Полотняна сумка",
+        "rewards/reward-bag/subtitle": "Пункт видачі",
+        "rewards/reward-bag/trailing.text": "600",
+        "rewards/reward-donate/title": "Передати притулку",
+        "rewards/reward-donate/subtitle": "Ми подвоїмо",
+        "rewards/reward-donate/trailing.text": "100",
+        "rewards/reward-headphones/title": "Навушники",
+        "rewards/reward-headphones/subtitle": "Поки є в наявності",
+        "rewards/reward-headphones/trailing.text": "4 500",
+        "rewards/rewards-end/content": "Останній рядок списку доступний над прибитою кнопкою.",
+        "rewards/rewards-redeem/label": "Отримати сталеву пляшку",
+        "rewards/nav-home/label": "Головна",
+        "rewards/nav-rewards/label": "Нагороди",
+        "rewards/nav-profile/label": "Профіль",
+        "profile/profile-bar/title": "Профіль",
+        "profile/profile-name/content": "Олена Коваленко",
+        "profile/profile-level/content": "Рівень 4 · 1 250 балів",
+        "profile/profile-language/title": "Мова",
+        "profile/profile-language/subtitle": "Українська",
+        "profile/profile-notify/title": "Сповіщення",
+        "profile/profile-notify/subtitle": "Увімкнено",
+        "profile/nav-home/label": "Головна",
+        "profile/nav-rewards/label": "Нагороди",
+        "profile/nav-profile/label": "Профіль",
+        "terms/terms-bar/title": "Як працюють бали",
+        "terms/terms-1/content": "Бали нараховуються протягом доби після виконання завдання. Якщо за дві доби їх немає, напишіть у підтримку з екрана профілю.",
+        "terms/terms-2/content": "Завдання зараховується один раз. Повтор того самого дня нічого не дає: перелік на головному екрані показує, що ще відкрито.",
+        "terms/terms-3/content": "Бали не згоряють, доки ви відкриваєте застосунок хоча б раз на дев'яносто днів. Після цього вони зберігаються ще тридцять днів і зникають.",
+        "terms/terms-4/content": "Нагорода резервується за вами на п'ятнадцять хвилин після натискання кнопки. Якщо не підтвердити, бали повертаються.",
+        "terms/terms-5/content": "Доставка безкоштовна. Нагорода, яку не забрали за десять днів, повертається в каталог, а бали — вам.",
+        "terms/terms-6/content": "Сезон триває три місяці. Сезонні значки можна здобути лише в їхній сезон; здобуті лишаються з вами.",
+        "terms/terms-7/content": "Це останній абзац. Він кінчається над прибитою кнопкою й ніколи під нею не ховається: тіло гортається до проміжку екрана.",
+        "terms/terms-continue/label": "Далі до нагород",
+        "confirm/confirm-title/content": "Отримати сталеву пляшку?",
+        "confirm/confirm-price/content": "З балансу спишеться 1 200 балів. Залишиться 50.",
+        "confirm/confirm-delivery/content": "Доставка триває п'ять днів. Ми надішлемо повідомлення, коли посилка буде в пункті видачі.",
+        "confirm/confirm-return/content": "Скасувати можна протягом п'ятнадцяти хвилин: бали повернуться повністю.",
+        "confirm/confirm-yes/label": "Підтвердити",
+        "confirm/confirm-no/label": "Не зараз"
+      },
+      "ar": {
+        "home/home-bar/title": "اليوم",
+        "home/home-balance-label/content": "رصيدك",
+        "home/home-balance-value/content": "1250 نقطة",
+        "home/home-balance-note/content": "الشريط في الأسفل يبدّل الأقسام: يبقى في مكانه بينما تُمرَّر هذه القائمة.",
+        "home/home-tasks-title/content": "مهام اليوم",
+        "home/task-walk/title": "امشِ 5000 خطوة",
+        "home/task-walk/subtitle": "حتى نهاية اليوم",
+        "home/task-walk/trailing.text": "+50",
+        "home/task-read/title": "اقرأ الملخص الأسبوعي",
+        "home/task-read/subtitle": "دقيقتان",
+        "home/task-read/trailing.text": "+20",
+        "home/task-invite/title": "ادعُ صديقاً",
+        "home/task-invite/subtitle": "تحصلان على النقاط معاً",
+        "home/task-invite/trailing.text": "+200",
+        "home/task-quiz/title": "أجب عن الاختبار",
+        "home/task-quiz/subtitle": "خمسة أسئلة",
+        "home/task-quiz/trailing.text": "+80",
+        "home/task-review/title": "قيّم التطبيق",
+        "home/task-review/subtitle": "مرة واحدة",
+        "home/task-review/trailing.text": "+30",
+        "home/task-streak/title": "حافظ على سلسلة 7 أيام",
+        "home/task-streak/subtitle": "اليوم 4 من 7",
+        "home/task-streak/trailing.text": "+150",
+        "home/home-terms/label": "كيف تعمل النقاط",
+        "home/nav-home/label": "الرئيسية",
+        "home/nav-rewards/label": "المكافآت",
+        "home/nav-profile/label": "الملف",
+        "rewards/rewards-bar/title": "المكافآت",
+        "rewards/rewards-title/content": "أنفق نقاطك",
+        "rewards/reward-coffee/title": "قهوة سريعة",
+        "rewards/reward-coffee/subtitle": "أي مقهى شريك",
+        "rewards/reward-coffee/trailing.text": "300",
+        "rewards/reward-cinema/title": "تذكرة سينما",
+        "rewards/reward-cinema/subtitle": "أيام الأسبوع",
+        "rewards/reward-cinema/trailing.text": "900",
+        "rewards/reward-book/title": "كتاب الشهر الإلكتروني",
+        "rewards/reward-book/subtitle": "تنزيل واحد",
+        "rewards/reward-book/trailing.text": "450",
+        "rewards/reward-bottle/title": "قارورة فولاذية",
+        "rewards/reward-bottle/subtitle": "التوصيل خلال 5 أيام",
+        "rewards/reward-bottle/trailing.text": "1200",
+        "rewards/reward-bag/title": "حقيبة قماشية",
+        "rewards/reward-bag/subtitle": "نقطة الاستلام",
+        "rewards/reward-bag/trailing.text": "600",
+        "rewards/reward-donate/title": "تبرّع لمأوى",
+        "rewards/reward-donate/subtitle": "نضاعفه",
+        "rewards/reward-donate/trailing.text": "100",
+        "rewards/reward-headphones/title": "سماعات",
+        "rewards/reward-headphones/subtitle": "حتى نفاد الكمية",
+        "rewards/reward-headphones/trailing.text": "4500",
+        "rewards/rewards-end/content": "السطر الأخير من القائمة ظاهر فوق الزر المثبَّت.",
+        "rewards/rewards-redeem/label": "استبدل القارورة الفولاذية",
+        "rewards/nav-home/label": "الرئيسية",
+        "rewards/nav-rewards/label": "المكافآت",
+        "rewards/nav-profile/label": "الملف",
+        "profile/profile-bar/title": "الملف الشخصي",
+        "profile/profile-name/content": "أولينا كوفالينكو",
+        "profile/profile-level/content": "المستوى 4 · 1250 نقطة",
+        "profile/profile-language/title": "اللغة",
+        "profile/profile-language/subtitle": "العربية",
+        "profile/profile-notify/title": "الإشعارات",
+        "profile/profile-notify/subtitle": "مفعّلة",
+        "profile/nav-home/label": "الرئيسية",
+        "profile/nav-rewards/label": "المكافآت",
+        "profile/nav-profile/label": "الملف",
+        "terms/terms-bar/title": "كيف تعمل النقاط",
+        "terms/terms-1/content": "تُضاف النقاط خلال يوم بعد إتمام المهمة. إذا لم تظهر بعد يومين، راسل الدعم من شاشة الملف الشخصي.",
+        "terms/terms-2/content": "تُحتسب المهمة مرة واحدة. تكرارها في اليوم نفسه لا يضيف شيئاً: القائمة في الشاشة الرئيسية تعرض ما بقي مفتوحاً.",
+        "terms/terms-3/content": "لا تنتهي صلاحية النقاط ما دمت تفتح التطبيق مرة كل تسعين يوماً على الأقل. بعد ذلك تُحفظ ثلاثين يوماً أخرى ثم تُحذف.",
+        "terms/terms-4/content": "تُحجز المكافأة لك خمس عشرة دقيقة بعد الضغط على الزر. إذا لم تؤكّد، تعود النقاط.",
+        "terms/terms-5/content": "التوصيل مجاني. المكافأة التي لم تُستلم خلال عشرة أيام تعود إلى القائمة، وتعود النقاط إليك.",
+        "terms/terms-6/content": "يستمر الموسم ثلاثة أشهر. شارات الموسم تُكسب خلال موسمها فقط؛ وما كسبته يبقى معك.",
+        "terms/terms-7/content": "هذه الفقرة الأخيرة. تنتهي فوق الزر المثبَّت ولا تختفي تحته أبداً: يُمرَّر المحتوى حتى فاصل الشاشة.",
+        "terms/terms-continue/label": "متابعة إلى المكافآت",
+        "confirm/confirm-title/content": "استبدال القارورة الفولاذية؟",
+        "confirm/confirm-price/content": "ستُخصم 1200 نقطة من رصيدك. سيبقى 50.",
+        "confirm/confirm-delivery/content": "يستغرق التوصيل خمسة أيام. نرسل رسالة عندما يصل الطرد إلى نقطة الاستلام.",
+        "confirm/confirm-return/content": "يمكنك الإلغاء خلال خمس عشرة دقيقة: تعود النقاط كاملة.",
+        "confirm/confirm-yes/label": "تأكيد",
+        "confirm/confirm-no/label": "ليس الآن"
+      }
+    }
+  }
+}

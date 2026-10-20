@@ -1,0 +1,473 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "filter-gradient-compact",
+  "name": "Filtered list, text gradient, compact number",
+  "initialScreenId": "catalog",
+  "screens": [
+    {
+      "screenId": "catalog",
+      "name": "Catalog",
+      "root": {
+        "id": "catalog-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "catalog-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Rewards"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL",
+              "color": "primary",
+              "textGradient": {
+                "angle": 90,
+                "stops": [
+                  {
+                    "color": "primary",
+                    "position": 0
+                  },
+                  {
+                    "color": "accent",
+                    "position": 1
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "id": "catalog-balance",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "{points} ✦ this year",
+                "values": {
+                  "points": {
+                    "kind": "binding",
+                    "path": "user.points",
+                    "fallback": "0",
+                    "format": "number",
+                    "notation": "compact"
+                  }
+                }
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted"
+            }
+          },
+          {
+            "id": "chips",
+            "type": "Row",
+            "props": {
+              "gap": "xs",
+              "align": "center",
+              "justify": "start",
+              "wrap": true,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "chip-all",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "none",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.goal",
+                      "value": ""
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "xs",
+                    "end": "md",
+                    "bottom": "xs",
+                    "start": "md"
+                  },
+                  "radius": "pill",
+                  "border": {
+                    "width": 1,
+                    "color": {
+                      "token": "onSurface",
+                      "opacity": 0.16
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "chip-all-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "All"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis",
+                      "maxLines": 1
+                    },
+                    "style": {
+                      "typography": "bodyS"
+                    }
+                  }
+                ],
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.goal",
+                      "op": "isEmpty"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "chip-backpack",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "none",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.goal",
+                      "value": "backpack"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "xs",
+                    "end": "md",
+                    "bottom": "xs",
+                    "start": "md"
+                  },
+                  "radius": "pill",
+                  "border": {
+                    "width": 1,
+                    "color": {
+                      "token": "onSurface",
+                      "opacity": 0.16
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "chip-backpack-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Backpacks"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis",
+                      "maxLines": 1
+                    },
+                    "style": {
+                      "typography": "bodyS"
+                    }
+                  }
+                ],
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.goal",
+                      "op": "eq",
+                      "value": "backpack"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "chip-coffee",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "none",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.goal",
+                      "value": "coffee-set"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "xs",
+                    "end": "md",
+                    "bottom": "xs",
+                    "start": "md"
+                  },
+                  "radius": "pill",
+                  "border": {
+                    "width": 1,
+                    "color": {
+                      "token": "onSurface",
+                      "opacity": 0.16
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "chip-coffee-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Coffee"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis",
+                      "maxLines": 1
+                    },
+                    "style": {
+                      "typography": "bodyS"
+                    }
+                  }
+                ],
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.goal",
+                      "op": "eq",
+                      "value": "coffee-set"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "chip-books",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "none",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.goal",
+                      "value": "books"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "xs",
+                    "end": "md",
+                    "bottom": "xs",
+                    "start": "md"
+                  },
+                  "radius": "pill",
+                  "border": {
+                    "width": 1,
+                    "color": {
+                      "token": "onSurface",
+                      "opacity": 0.16
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "chip-books-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Books"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis",
+                      "maxLines": 1
+                    },
+                    "style": {
+                      "typography": "bodyS"
+                    }
+                  }
+                ],
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.goal",
+                      "op": "eq",
+                      "value": "books"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "grid",
+            "type": "Repeater",
+            "props": {
+              "source": "items",
+              "item": "item",
+              "direction": "column",
+              "gap": "sm",
+              "columns": 2,
+              "where": {
+                "path": "item.selectedId",
+                "op": "eq",
+                "valuePath": "survey.goal"
+              }
+            },
+            "children": [
+              {
+                "id": "tile",
+                "type": "Column",
+                "props": {
+                  "gap": "xs",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "tile-art",
+                    "type": "Image",
+                    "props": {
+                      "source": {
+                        "kind": "binding",
+                        "path": "item.image",
+                        "fallback": "placeholder"
+                      },
+                      "aspectRatio": "1:1",
+                      "fit": "cover",
+                      "alt": {
+                        "kind": "literal",
+                        "value": "Reward picture"
+                      }
+                    },
+                    "style": {
+                      "radius": "sm"
+                    }
+                  },
+                  {
+                    "id": "tile-name",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "item.name",
+                        "fallback": "—"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis",
+                      "maxLines": 2
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ],
+                "style": {
+                  "padding": "sm",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "primary",
+                      "opacity": 0.08
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "empty",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Nothing in this category yet"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted"
+            },
+            "visibleIf": {
+              "path": "items",
+              "op": "isEmpty",
+              "item": "item",
+              "where": {
+                "path": "item.selectedId",
+                "op": "eq",
+                "valuePath": "survey.goal"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "catalog/catalog-title/content": "Нагороди",
+        "catalog/catalog-balance/content.template": "{points} ✦ за рік",
+        "catalog/chip-all-text/content": "Усі",
+        "catalog/chip-backpack-text/content": "Рюкзаки",
+        "catalog/chip-coffee-text/content": "Кава",
+        "catalog/chip-books-text/content": "Книжки",
+        "catalog/tile-art/alt": "Зображення нагороди",
+        "catalog/empty/content": "У цій категорії поки нічого"
+      }
+    }
+  }
+}

@@ -1,0 +1,728 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "value-countdown",
+  "name": "Value, countdown and app bar",
+  "initialScreenId": "balance",
+  "screens": [
+    {
+      "screenId": "balance",
+      "name": "Balance",
+      "root": {
+        "id": "balance-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "balance-card",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "balance-label",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Your points"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "caption"
+                }
+              },
+              {
+                "id": "balance-amount",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "user.points",
+                    "fallback": "0",
+                    "format": "number"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "animateChanges": true
+                },
+                "style": {
+                  "typography": "displayL"
+                }
+              }
+            ],
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "gradient",
+                "gradient": {
+                  "angle": 135,
+                  "stops": [
+                    {
+                      "color": "primary",
+                      "position": 0
+                    },
+                    {
+                      "color": "accent",
+                      "position": 1
+                    }
+                  ]
+                }
+              },
+              "color": "onPrimary"
+            }
+          },
+          {
+            "id": "progress-row",
+            "type": "Row",
+            "props": {
+              "gap": "lg",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "ring-stack",
+                "type": "Stack",
+                "props": {
+                  "alignHorizontal": "center",
+                  "alignVertical": "center"
+                },
+                "children": [
+                  {
+                    "id": "ring",
+                    "type": "CircularProgress",
+                    "props": {
+                      "value": {
+                        "kind": "binding",
+                        "path": "task.progress",
+                        "fallback": 0
+                      },
+                      "max": {
+                        "kind": "binding",
+                        "path": "task.target",
+                        "fallback": 5
+                      },
+                      "color": "primary",
+                      "size": "md",
+                      "labelFormat": "none",
+                      "animateChanges": true,
+                      "cap": "round",
+                      "thickness": "md"
+                    },
+                    "style": {
+                      "width": 120,
+                      "height": 120
+                    }
+                  },
+                  {
+                    "id": "ring-center",
+                    "type": "Column",
+                    "props": {
+                      "gap": "none",
+                      "align": "center"
+                    },
+                    "children": [
+                      {
+                        "id": "ring-done",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "template",
+                            "template": "{done} / {total}",
+                            "values": {
+                              "done": {
+                                "kind": "binding",
+                                "path": "task.progress",
+                                "fallback": "0"
+                              },
+                              "total": {
+                                "kind": "binding",
+                                "path": "task.target",
+                                "fallback": "5"
+                              }
+                            }
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis",
+                          "animateChanges": true
+                        },
+                        "style": {
+                          "typography": "titleM"
+                        }
+                      },
+                      {
+                        "id": "ring-caption",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "payments"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "typography": "caption",
+                          "color": "muted"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "bars",
+                "type": "Column",
+                "props": {
+                  "gap": "md",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "bar-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Week mission"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleM"
+                    }
+                  },
+                  {
+                    "id": "bar",
+                    "type": "ProgressBar",
+                    "props": {
+                      "value": {
+                        "kind": "binding",
+                        "path": "task.progress",
+                        "fallback": 0
+                      },
+                      "max": {
+                        "kind": "binding",
+                        "path": "task.target",
+                        "fallback": 5
+                      },
+                      "color": "primary",
+                      "labelFormat": "none",
+                      "animateChanges": true,
+                      "cap": "round",
+                      "thickness": "sm"
+                    }
+                  },
+                  {
+                    "id": "steps",
+                    "type": "ProgressBar",
+                    "props": {
+                      "value": {
+                        "kind": "binding",
+                        "path": "task.progress",
+                        "fallback": 0
+                      },
+                      "max": {
+                        "kind": "binding",
+                        "path": "task.target",
+                        "fallback": 5
+                      },
+                      "color": "primary",
+                      "labelFormat": "none",
+                      "animateChanges": true,
+                      "cap": "round",
+                      "thickness": "sm",
+                      "segments": 5
+                    }
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          },
+          {
+            "id": "countdown-box",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "onSurface",
+                  "opacity": 0.06
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "countdown",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "template",
+                    "template": "Ends in {d} d {h} h {m} min {s} s",
+                    "values": {
+                      "d": {
+                        "kind": "binding",
+                        "path": "offer.endsAt",
+                        "fallback": "0",
+                        "format": "countdownPart",
+                        "unit": "days"
+                      },
+                      "h": {
+                        "kind": "binding",
+                        "path": "offer.endsAt",
+                        "fallback": "0",
+                        "format": "countdownPart",
+                        "unit": "hours"
+                      },
+                      "m": {
+                        "kind": "binding",
+                        "path": "offer.endsAt",
+                        "fallback": "0",
+                        "format": "countdownPart",
+                        "unit": "minutes",
+                        "pad": 2
+                      },
+                      "s": {
+                        "kind": "binding",
+                        "path": "offer.endsAt",
+                        "fallback": "0",
+                        "format": "countdownPart",
+                        "unit": "seconds",
+                        "pad": 2
+                      }
+                    }
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              }
+            ]
+          },
+          {
+            "id": "open-mission",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Open the mission"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "mission"
+                }
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "mission",
+      "name": "Mission",
+      "statusBarIcons": "light",
+      "root": {
+        "id": "mission-root",
+        "type": "Screen",
+        "props": {
+          "gap": "none",
+          "bodyTop": "screenTop"
+        },
+        "style": {
+          "padding": "none",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "mission-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Coffee week"
+              },
+              "showBack": true,
+              "titleShown": "scrolled"
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm",
+                "start": "md",
+                "end": "md"
+              },
+              "color": "onPrimary"
+            },
+            "styleScrolled": {
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "color": "onSurface",
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "mission-share",
+                "type": "IconButton",
+                "props": {
+                  "icon": "share-2",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Share"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "share"
+                  }
+                },
+                "style": {
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "onSurface",
+                      "opacity": 0.32
+                    }
+                  },
+                  "color": "onPrimary"
+                }
+              },
+              {
+                "id": "mission-back",
+                "type": "IconButton",
+                "props": {
+                  "icon": "chevron-left",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "navigate.back"
+                  }
+                },
+                "style": {
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "onSurface",
+                      "opacity": 0.32
+                    }
+                  },
+                  "color": "onPrimary"
+                },
+                "zone": "leading"
+              }
+            ]
+          },
+          {
+            "id": "mission-hero",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start",
+              "justify": "end"
+            },
+            "children": [
+              {
+                "id": "mission-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Coffee week"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "displayL"
+                }
+              },
+              {
+                "id": "mission-lead",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Five coffees — 300 points."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyM"
+                }
+              }
+            ],
+            "style": {
+              "height": 300,
+              "padding": "lg",
+              "background": {
+                "kind": "gradient",
+                "gradient": {
+                  "angle": 135,
+                  "stops": [
+                    {
+                      "color": "primary",
+                      "position": 0
+                    },
+                    {
+                      "color": "accent",
+                      "position": 1
+                    }
+                  ]
+                }
+              },
+              "color": "onPrimary"
+            }
+          },
+          {
+            "id": "mission-steps",
+            "type": "Column",
+            "props": {
+              "gap": "md",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "mission-step-1",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Pay for coffee five times."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "mission-step-2",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Any café takes part."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "mission-step-3",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "One payment a day counts."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "mission-step-4",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The reward arrives the next morning."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "mission-step-5",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The mission ends with the week."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "mission-step-6",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Unused steps do not move to the next week."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              }
+            ],
+            "style": {
+              "padding": "lg"
+            }
+          },
+          {
+            "id": "mission-more",
+            "type": "Column",
+            "props": {
+              "gap": "md",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "mission-note-1",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Pay for coffee five times."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "mission-note-2",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Any café takes part."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "mission-note-3",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "One payment a day counts."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "mission-note-4",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The reward arrives the next morning."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "mission-note-5",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The mission ends with the week."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "mission-note-6",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Unused steps do not move to the next week."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              }
+            ],
+            "style": {
+              "padding": "lg"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "balance/balance-label/content": "Ваші бали",
+        "balance/ring-done/content.template": "{done} / {total}",
+        "balance/ring-caption/content": "оплат",
+        "balance/bar-title/content": "Місія тижня",
+        "balance/countdown/content.template": "Лишилося {d} дн {h} год {m} хв {s} с",
+        "balance/open-mission/label": "Відкрити місію",
+        "mission/mission-bar/title": "Кавовий тиждень",
+        "mission/mission-share/label": "Поділитися",
+        "mission/mission-back/label": "Назад",
+        "mission/mission-title/content": "Кавовий тиждень",
+        "mission/mission-lead/content": "П’ять кав — 300 балів.",
+        "mission/mission-step-1/content": "Заплатіть за каву п’ять разів.",
+        "mission/mission-step-2/content": "Бере участь будь-яка кав’ярня.",
+        "mission/mission-step-3/content": "Рахується одна оплата на день.",
+        "mission/mission-step-4/content": "Нагорода приходить наступного ранку.",
+        "mission/mission-step-5/content": "Місія закінчується разом із тижнем.",
+        "mission/mission-step-6/content": "Невикористані кроки на наступний тиждень не переходять.",
+        "mission/mission-note-1/content": "Заплатіть за каву п’ять разів.",
+        "mission/mission-note-2/content": "Бере участь будь-яка кав’ярня.",
+        "mission/mission-note-3/content": "Рахується одна оплата на день.",
+        "mission/mission-note-4/content": "Нагорода приходить наступного ранку.",
+        "mission/mission-note-5/content": "Місія закінчується разом із тижнем.",
+        "mission/mission-note-6/content": "Невикористані кроки на наступний тиждень не переходять."
+      }
+    }
+  }
+}

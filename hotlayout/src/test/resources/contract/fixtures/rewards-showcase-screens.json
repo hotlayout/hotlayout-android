@@ -1,0 +1,3085 @@
+{
+  "schemaVersion": "9.5.0",
+  "documentId": "rewards-showcase",
+  "name": "Rewards showcase",
+  "initialScreenId": "home",
+  "entryPoints": {
+    "home": "home",
+    "mission": "mission",
+    "redeem": "redeem"
+  },
+  "screens": [
+    {
+      "screenId": "home",
+      "name": "Home",
+      "root": {
+        "id": "home-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": {
+            "top": "md",
+            "end": "lg",
+            "bottom": "xxl",
+            "start": "lg"
+          },
+          "background": {
+            "kind": "color",
+            "color": "canvas"
+          }
+        },
+        "children": [
+          {
+            "id": "home-greeting",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "between",
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "home-hello",
+                "type": "Column",
+                "props": {
+                  "gap": "none",
+                  "align": "start"
+                },
+                "weight": 1,
+                "children": [
+                  {
+                    "id": "home-hello-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Welcome back"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "bodyS"
+                    }
+                  },
+                  {
+                    "id": "home-hello-name",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "user.firstName",
+                        "fallback": "Friend"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "displayL"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "home-avatar",
+                "type": "Icon",
+                "props": {
+                  "name": "user",
+                  "size": "md"
+                },
+                "style": {
+                  "color": "brandText",
+                  "width": 44,
+                  "height": 44,
+                  "radius": "pill",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "primary",
+                      "opacity": 0.14
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "home-balance",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "md"
+            },
+            "style": {
+              "color": "onBrand",
+              "padding": {
+                "top": 20,
+                "end": "xl",
+                "bottom": "xl",
+                "start": "xl"
+              },
+              "minHeight": 176,
+              "radius": "card",
+              "background": {
+                "kind": "gradient",
+                "gradient": "heroAurora"
+              },
+              "shadow": "floating"
+            },
+            "children": [
+              {
+                "id": "home-balance-top",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "between",
+                  "wrap": false
+                },
+                "children": [
+                  {
+                    "id": "home-balance-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "POINTS BALANCE"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "eyebrow"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "home-level-chip",
+                    "type": "Container",
+                    "props": {
+                      "direction": "row",
+                      "gap": "xs"
+                    },
+                    "style": {
+                      "typography": "chip",
+                      "padding": {
+                        "top": "chipY",
+                        "end": "md",
+                        "bottom": "chipY",
+                        "start": "md"
+                      },
+                      "radius": "pill",
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "ink",
+                          "opacity": 0.3
+                        }
+                      },
+                      "border": {
+                        "width": 1,
+                        "color": {
+                          "token": "onBrand",
+                          "opacity": 0.3
+                        }
+                      }
+                    },
+                    "children": [
+                      {
+                        "id": "home-level-label",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "Level"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "gold"
+                        }
+                      },
+                      {
+                        "id": "home-level-value",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "binding",
+                            "path": "user.level",
+                            "fallback": "1"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "home-balance-amount",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "end",
+                  "justify": "start",
+                  "wrap": false
+                },
+                "children": [
+                  {
+                    "id": "home-points",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "user.points",
+                        "fallback": "0",
+                        "format": "number"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": {
+                        "token": "numericL",
+                        "fontSize": 44,
+                        "fontWeight": 800,
+                        "lineHeight": 1.05,
+                        "letterSpacing": -1
+                      }
+                    }
+                  },
+                  {
+                    "id": "home-points-unit",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "pts"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS",
+                      "margin": {
+                        "bottom": "chipY"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "home-balance-meta",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": true
+                },
+                "children": [
+                  {
+                    "id": "home-since-chip",
+                    "type": "Container",
+                    "props": {
+                      "direction": "row",
+                      "gap": "xs"
+                    },
+                    "style": {
+                      "typography": "chip",
+                      "padding": {
+                        "top": "chipY",
+                        "end": "md",
+                        "bottom": "chipY",
+                        "start": "md"
+                      },
+                      "radius": "pill",
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "ink",
+                          "opacity": 0.3
+                        }
+                      }
+                    },
+                    "children": [
+                      {
+                        "id": "home-since-label",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "Member since"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        }
+                      },
+                      {
+                        "id": "home-since-value",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "binding",
+                            "path": "user.memberSince",
+                            "fallback": "—",
+                            "format": "date"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "home-premium-chip",
+                    "type": "Container",
+                    "props": {
+                      "direction": "row",
+                      "gap": "xs"
+                    },
+                    "visibleIf": {
+                      "path": "user.isPremium",
+                      "op": "isTrue"
+                    },
+                    "style": {
+                      "typography": "chip",
+                      "padding": {
+                        "top": "chipY",
+                        "end": "md",
+                        "bottom": "chipY",
+                        "start": "md"
+                      },
+                      "radius": "pill",
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "ink",
+                          "opacity": 0.3
+                        }
+                      },
+                      "color": "gold"
+                    },
+                    "children": [
+                      {
+                        "id": "home-premium-icon",
+                        "type": "Icon",
+                        "props": {
+                          "name": "star",
+                          "size": "sm"
+                        }
+                      },
+                      {
+                        "id": "home-premium-label",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "Premium"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "home-actions",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "start",
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "home-action-missions",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Missions"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "mission"
+                    }
+                  },
+                  "fullWidth": false
+                },
+                "style": {
+                  "color": "onBrand",
+                  "padding": {
+                    "top": "md",
+                    "end": "sm",
+                    "bottom": "md",
+                    "start": "sm"
+                  },
+                  "radius": "lg",
+                  "background": {
+                    "kind": "gradient",
+                    "gradient": "ctaGlow"
+                  },
+                  "shadow": "floating"
+                }
+              },
+              {
+                "id": "home-action-redeem",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Redeem"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "redeem"
+                    }
+                  },
+                  "fullWidth": false
+                },
+                "style": {
+                  "color": "brandText",
+                  "padding": {
+                    "top": "md",
+                    "end": "sm",
+                    "bottom": "md",
+                    "start": "sm"
+                  },
+                  "radius": "lg",
+                  "border": {
+                    "width": 1,
+                    "color": {
+                      "token": "brandText",
+                      "opacity": 0.4
+                    }
+                  },
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "primary",
+                      "opacity": 0.1
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "home-streak",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "md"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "card",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "card"
+            },
+            "children": [
+              {
+                "id": "home-streak-head",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "between",
+                  "wrap": false
+                },
+                "children": [
+                  {
+                    "id": "home-streak-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Weekly streak"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "home-streak-badge",
+                    "type": "Badge",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "3 weeks in a row"
+                      },
+                      "tone": "accent",
+                      "icon": "flame",
+                      "iconPosition": "start"
+                    },
+                    "style": {
+                      "color": "onSurface",
+                      "typography": "chip",
+                      "radius": "pill",
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "gold",
+                          "opacity": 0.3
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "home-streak-weeks",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "between",
+                  "wrap": false
+                },
+                "children": [
+                  {
+                    "id": "home-week-1",
+                    "type": "Icon",
+                    "props": {
+                      "name": "check",
+                      "size": "sm"
+                    },
+                    "style": {
+                      "color": "onBrand",
+                      "width": 40,
+                      "height": 40,
+                      "radius": "pill",
+                      "background": {
+                        "kind": "gradient",
+                        "gradient": "missionForest"
+                      }
+                    }
+                  },
+                  {
+                    "id": "home-week-2",
+                    "type": "Icon",
+                    "props": {
+                      "name": "check",
+                      "size": "sm"
+                    },
+                    "style": {
+                      "color": "onBrand",
+                      "width": 40,
+                      "height": 40,
+                      "radius": "pill",
+                      "background": {
+                        "kind": "gradient",
+                        "gradient": "missionForest"
+                      }
+                    }
+                  },
+                  {
+                    "id": "home-week-3",
+                    "type": "Icon",
+                    "props": {
+                      "name": "check",
+                      "size": "sm"
+                    },
+                    "style": {
+                      "color": "onBrand",
+                      "width": 40,
+                      "height": 40,
+                      "radius": "pill",
+                      "background": {
+                        "kind": "gradient",
+                        "gradient": "missionForest"
+                      }
+                    }
+                  },
+                  {
+                    "id": "home-week-4",
+                    "type": "Icon",
+                    "props": {
+                      "name": "flame",
+                      "size": "sm"
+                    },
+                    "style": {
+                      "color": "brandText",
+                      "width": 40,
+                      "height": 40,
+                      "radius": "pill",
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "primary",
+                          "opacity": 0.16
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "id": "home-week-5",
+                    "type": "Icon",
+                    "props": {
+                      "name": "lock",
+                      "size": "sm"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "width": 40,
+                      "height": 40,
+                      "radius": "pill",
+                      "background": {
+                        "kind": "color",
+                        "color": "secondary"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "home-missions-head",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "end",
+              "justify": "between",
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "home-missions-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Missions"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "home-missions-until",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "xs"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "home-missions-until-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "until"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  },
+                  {
+                    "id": "home-missions-until-date",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "campaign.endsAt",
+                        "fallback": "—",
+                        "format": "date"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "home-missions",
+            "type": "Repeater",
+            "props": {
+              "source": "tasks",
+              "item": "task",
+              "direction": "column",
+              "gap": "md"
+            },
+            "children": [
+              {
+                "id": "home-mission-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "color": "onBrand",
+                  "padding": {
+                    "top": "sm",
+                    "end": "lg",
+                    "bottom": "lg",
+                    "start": "lg"
+                  },
+                  "radius": "card",
+                  "background": {
+                    "kind": "gradient",
+                    "gradient": "missionSunset"
+                  },
+                  "shadow": "card"
+                },
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "task.status",
+                      "op": "eq",
+                      "value": "completed"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "gradient",
+                        "gradient": "missionForest"
+                      }
+                    }
+                  },
+                  {
+                    "when": {
+                      "path": "task.status",
+                      "op": "eq",
+                      "value": "locked"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "gradient",
+                        "gradient": "missionDusk"
+                      },
+                      "shadow": "none",
+                      "opacity": 0.85
+                    }
+                  }
+                ],
+                "children": [
+                  {
+                    "id": "home-mission-row",
+                    "type": "ListTile",
+                    "props": {
+                      "leading": {
+                        "kind": "none"
+                      },
+                      "title": {
+                        "kind": "binding",
+                        "path": "task.title",
+                        "fallback": "Mission"
+                      },
+                      "trailing": {
+                        "kind": "text",
+                        "text": {
+                          "kind": "binding",
+                          "path": "task.rewardPoints",
+                          "fallback": "0",
+                          "format": "number"
+                        },
+                        "icon": "star"
+                      },
+                      "action": {
+                        "type": "navigate",
+                        "params": {
+                          "screenId": "mission"
+                        }
+                      }
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "sm",
+                        "bottom": "sm"
+                      }
+                    }
+                  },
+                  {
+                    "id": "home-mission-bar",
+                    "type": "ProgressBar",
+                    "props": {
+                      "value": {
+                        "kind": "binding",
+                        "path": "task.progress",
+                        "fallback": 0
+                      },
+                      "max": {
+                        "kind": "binding",
+                        "path": "task.target",
+                        "fallback": 5
+                      },
+                      "color": "onBrand",
+                      "labelFormat": "none"
+                    }
+                  },
+                  {
+                    "id": "home-mission-meta",
+                    "type": "Row",
+                    "props": {
+                      "gap": "sm",
+                      "align": "center",
+                      "justify": "between",
+                      "wrap": false
+                    },
+                    "children": [
+                      {
+                        "id": "home-mission-chip",
+                        "type": "Container",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs"
+                        },
+                        "style": {
+                          "typography": "chip",
+                          "padding": {
+                            "top": "chipY",
+                            "end": "md",
+                            "bottom": "chipY",
+                            "start": "md"
+                          },
+                          "radius": "pill",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "token": "ink",
+                              "opacity": 0.3
+                            }
+                          }
+                        },
+                        "children": [
+                          {
+                            "id": "home-mission-chip-icon",
+                            "type": "Icon",
+                            "props": {
+                              "name": "clock",
+                              "size": "sm"
+                            }
+                          },
+                          {
+                            "id": "home-mission-chip-date",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "binding",
+                                "path": "campaign.endsAt",
+                                "fallback": "—",
+                                "format": "date"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "id": "home-mission-count",
+                        "type": "Container",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs"
+                        },
+                        "style": {
+                          "typography": "chip"
+                        },
+                        "children": [
+                          {
+                            "id": "home-mission-progress",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "binding",
+                                "path": "task.progress",
+                                "fallback": "0"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            }
+                          },
+                          {
+                            "id": "home-mission-of",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "of"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            }
+                          },
+                          {
+                            "id": "home-mission-target",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "binding",
+                                "path": "task.target",
+                                "fallback": "5"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "home-missions-empty",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "New missions arrive every Monday"
+              },
+              "align": "center",
+              "overflow": "visible"
+            },
+            "visibleIf": {
+              "path": "tasks",
+              "op": "isEmpty"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "home-sets-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Challenge sets"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "home-sets",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "start",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": true
+            },
+            "children": [
+              {
+                "id": "home-set-coffee",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "color": "onBrand",
+                  "padding": "md",
+                  "width": 156,
+                  "minHeight": 148,
+                  "radius": "lg",
+                  "background": {
+                    "kind": "gradient",
+                    "gradient": "missionOcean"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "home-set-coffee-top",
+                    "type": "Row",
+                    "props": {
+                      "gap": "sm",
+                      "align": "center",
+                      "justify": "start",
+                      "wrap": false
+                    },
+                    "children": [
+                      {
+                        "id": "home-set-coffee-icon",
+                        "type": "Icon",
+                        "props": {
+                          "name": "coffee",
+                          "size": "sm"
+                        },
+                        "style": {
+                          "padding": "sm",
+                          "radius": "md",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "token": "ink",
+                              "opacity": 0.3
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "home-set-coffee-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Coffee week"
+                      },
+                      "align": "start",
+                      "maxLines": 2,
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "home-set-coffee-bar",
+                    "type": "ProgressBar",
+                    "props": {
+                      "value": {
+                        "kind": "literal",
+                        "value": 2
+                      },
+                      "max": {
+                        "kind": "literal",
+                        "value": 4
+                      },
+                      "color": "gold",
+                      "labelFormat": "none"
+                    }
+                  },
+                  {
+                    "id": "home-set-coffee-meta",
+                    "type": "Row",
+                    "props": {
+                      "gap": "sm",
+                      "align": "center",
+                      "justify": "between",
+                      "wrap": false
+                    },
+                    "style": {
+                      "typography": "chip"
+                    },
+                    "children": [
+                      {
+                        "id": "home-set-coffee-count",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "2 of 4"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        }
+                      },
+                      {
+                        "id": "home-set-coffee-reward",
+                        "type": "Container",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "id": "home-set-coffee-star",
+                            "type": "Icon",
+                            "props": {
+                              "name": "star",
+                              "size": "sm"
+                            },
+                            "style": {
+                              "color": "gold"
+                            }
+                          },
+                          {
+                            "id": "home-set-coffee-points",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "300"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "home-set-city",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "color": "onBrand",
+                  "padding": "md",
+                  "width": 156,
+                  "minHeight": 148,
+                  "radius": "lg",
+                  "background": {
+                    "kind": "gradient",
+                    "gradient": "missionForest"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "home-set-city-top",
+                    "type": "Row",
+                    "props": {
+                      "gap": "sm",
+                      "align": "center",
+                      "justify": "start",
+                      "wrap": false
+                    },
+                    "children": [
+                      {
+                        "id": "home-set-city-icon",
+                        "type": "Icon",
+                        "props": {
+                          "name": "map-pin",
+                          "size": "sm"
+                        },
+                        "style": {
+                          "padding": "sm",
+                          "radius": "md",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "token": "ink",
+                              "opacity": 0.3
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "home-set-city-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "City explorer"
+                      },
+                      "align": "start",
+                      "maxLines": 2,
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "home-set-city-bar",
+                    "type": "ProgressBar",
+                    "props": {
+                      "value": {
+                        "kind": "literal",
+                        "value": 3
+                      },
+                      "max": {
+                        "kind": "literal",
+                        "value": 5
+                      },
+                      "color": "gold",
+                      "labelFormat": "none"
+                    }
+                  },
+                  {
+                    "id": "home-set-city-meta",
+                    "type": "Row",
+                    "props": {
+                      "gap": "sm",
+                      "align": "center",
+                      "justify": "between",
+                      "wrap": false
+                    },
+                    "style": {
+                      "typography": "chip"
+                    },
+                    "children": [
+                      {
+                        "id": "home-set-city-count",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "3 of 5"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        }
+                      },
+                      {
+                        "id": "home-set-city-reward",
+                        "type": "Container",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "id": "home-set-city-star",
+                            "type": "Icon",
+                            "props": {
+                              "name": "star",
+                              "size": "sm"
+                            },
+                            "style": {
+                              "color": "gold"
+                            }
+                          },
+                          {
+                            "id": "home-set-city-points",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "500"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "home-set-family",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "color": "onBrand",
+                  "padding": "md",
+                  "width": 156,
+                  "minHeight": 148,
+                  "radius": "lg",
+                  "background": {
+                    "kind": "gradient",
+                    "gradient": "missionSunset"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "home-set-family-top",
+                    "type": "Row",
+                    "props": {
+                      "gap": "sm",
+                      "align": "center",
+                      "justify": "start",
+                      "wrap": false
+                    },
+                    "children": [
+                      {
+                        "id": "home-set-family-icon",
+                        "type": "Icon",
+                        "props": {
+                          "name": "users",
+                          "size": "sm"
+                        },
+                        "style": {
+                          "padding": "sm",
+                          "radius": "md",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "token": "ink",
+                              "opacity": 0.3
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "home-set-family-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Family pack"
+                      },
+                      "align": "start",
+                      "maxLines": 2,
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "home-set-family-bar",
+                    "type": "ProgressBar",
+                    "props": {
+                      "value": {
+                        "kind": "literal",
+                        "value": 1
+                      },
+                      "max": {
+                        "kind": "literal",
+                        "value": 6
+                      },
+                      "color": "gold",
+                      "labelFormat": "none"
+                    }
+                  },
+                  {
+                    "id": "home-set-family-meta",
+                    "type": "Row",
+                    "props": {
+                      "gap": "sm",
+                      "align": "center",
+                      "justify": "between",
+                      "wrap": false
+                    },
+                    "style": {
+                      "typography": "chip"
+                    },
+                    "children": [
+                      {
+                        "id": "home-set-family-count",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "1 of 6"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        }
+                      },
+                      {
+                        "id": "home-set-family-reward",
+                        "type": "Container",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs"
+                        },
+                        "children": [
+                          {
+                            "id": "home-set-family-star",
+                            "type": "Icon",
+                            "props": {
+                              "name": "star",
+                              "size": "sm"
+                            },
+                            "style": {
+                              "color": "gold"
+                            }
+                          },
+                          {
+                            "id": "home-set-family-points",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "800"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "home-invite",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "center",
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "home-action-invite",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Invite a friend"
+                  },
+                  "variant": "ghost",
+                  "action": {
+                    "type": "share"
+                  },
+                  "fullWidth": false
+                },
+                "style": {
+                  "color": "onSurface",
+                  "padding": {
+                    "top": "sm",
+                    "end": "xl",
+                    "bottom": "sm",
+                    "start": "xl"
+                  },
+                  "radius": "pill",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "mission",
+      "name": "Mission",
+      "root": {
+        "id": "mission-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "color": "onBrand",
+          "padding": {
+            "top": "sm"
+          },
+          "background": {
+            "kind": "gradient",
+            "gradient": "heroAurora"
+          }
+        },
+        "styleWhen": [
+          {
+            "when": {
+              "path": "task.status",
+              "op": "eq",
+              "value": "completed"
+            },
+            "style": {
+              "background": {
+                "kind": "gradient",
+                "gradient": "missionForest"
+              }
+            }
+          },
+          {
+            "when": {
+              "path": "task.status",
+              "op": "eq",
+              "value": "locked"
+            },
+            "style": {
+              "background": {
+                "kind": "gradient",
+                "gradient": "missionDusk"
+              }
+            }
+          }
+        ],
+        "children": [
+          {
+            "id": "mission-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Mission"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "end": "lg",
+                "bottom": "sm",
+                "start": "lg"
+              }
+            }
+          },
+          {
+            "id": "mission-hero",
+            "type": "Column",
+            "props": {
+              "gap": "md",
+              "align": "center"
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "end": "lg",
+                "bottom": "lg",
+                "start": "lg"
+              }
+            },
+            "children": [
+              {
+                "id": "mission-ring-stack",
+                "type": "Stack",
+                "props": {
+                  "alignHorizontal": "center",
+                  "alignVertical": "center"
+                },
+                "children": [
+                  {
+                    "id": "mission-ring",
+                    "type": "CircularProgress",
+                    "props": {
+                      "value": {
+                        "kind": "binding",
+                        "path": "task.progress",
+                        "fallback": 0
+                      },
+                      "max": {
+                        "kind": "binding",
+                        "path": "task.target",
+                        "fallback": 5
+                      },
+                      "color": "gold",
+                      "size": "lg"
+                    },
+                    "styleWhen": [
+                      {
+                        "when": {
+                          "path": "task.status",
+                          "op": "eq",
+                          "value": "locked"
+                        },
+                        "style": {
+                          "opacity": 0.4
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "mission-ring-center",
+                    "type": "Column",
+                    "props": {
+                      "gap": "none",
+                      "align": "center"
+                    },
+                    "children": [
+                      {
+                        "id": "mission-ring-value",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "binding",
+                            "path": "task.progress",
+                            "fallback": "0"
+                          },
+                          "align": "center",
+                          "overflow": "clip"
+                        },
+                        "style": {
+                          "typography": "statValue"
+                        }
+                      },
+                      {
+                        "id": "mission-ring-of",
+                        "type": "Container",
+                        "props": {
+                          "direction": "row",
+                          "gap": "xs"
+                        },
+                        "style": {
+                          "typography": "chip"
+                        },
+                        "children": [
+                          {
+                            "id": "mission-ring-of-label",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "of"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            }
+                          },
+                          {
+                            "id": "mission-ring-target",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "binding",
+                                "path": "task.target",
+                                "fallback": "5"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "mission-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "task.title",
+                    "fallback": "Mission of the week"
+                  },
+                  "align": "center",
+                  "maxLines": 2,
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "displayL"
+                }
+              },
+              {
+                "id": "mission-description",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "task.description",
+                    "fallback": "Any amount, any merchant"
+                  },
+                  "align": "center",
+                  "overflow": "visible"
+                }
+              },
+              {
+                "id": "mission-lock-chip",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "xs"
+                },
+                "visibleIf": {
+                  "path": "task.status",
+                  "op": "eq",
+                  "value": "locked"
+                },
+                "style": {
+                  "typography": "chip",
+                  "padding": {
+                    "top": "chipY",
+                    "end": "md",
+                    "bottom": "chipY",
+                    "start": "md"
+                  },
+                  "radius": "pill",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "ink",
+                      "opacity": 0.3
+                    }
+                  },
+                  "border": {
+                    "width": 1,
+                    "color": {
+                      "token": "onBrand",
+                      "opacity": 0.3
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "mission-lock-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "lock",
+                      "size": "sm"
+                    }
+                  },
+                  {
+                    "id": "mission-lock-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Finish the previous mission first"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "mission-sheet",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "lg"
+            },
+            "style": {
+              "color": "onSurface",
+              "padding": {
+                "top": "xl",
+                "end": "lg",
+                "bottom": "xxl",
+                "start": "lg"
+              },
+              "minHeight": 440,
+              "radius": {
+                "topStart": "sheet",
+                "topEnd": "sheet"
+              },
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": [
+                {
+                  "offsetX": 0,
+                  "offsetY": -10,
+                  "blur": 28,
+                  "spread": 0,
+                  "color": {
+                    "token": "ink",
+                    "opacity": 0.22
+                  }
+                }
+              ]
+            },
+            "children": [
+              {
+                "id": "mission-stats",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "start",
+                  "justify": "start",
+                  "wrap": false
+                },
+                "children": [
+                  {
+                    "id": "mission-reward",
+                    "type": "Container",
+                    "props": {
+                      "direction": "column",
+                      "gap": "xs"
+                    },
+                    "style": {
+                      "padding": "md",
+                      "radius": "lg",
+                      "border": {
+                        "width": 1,
+                        "color": {
+                          "token": "primary",
+                          "opacity": 0.18
+                        }
+                      },
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "primary",
+                          "opacity": 0.08
+                        }
+                      }
+                    },
+                    "weight": 1,
+                    "children": [
+                      {
+                        "id": "mission-reward-label",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "REWARD"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "muted",
+                          "typography": "eyebrow"
+                        }
+                      },
+                      {
+                        "id": "mission-reward-value",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "binding",
+                            "path": "task.rewardPoints",
+                            "fallback": "0",
+                            "format": "number"
+                          },
+                          "align": "start",
+                          "overflow": "clip"
+                        },
+                        "style": {
+                          "color": "brandText",
+                          "typography": "statValue"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "mission-target",
+                    "type": "Container",
+                    "props": {
+                      "direction": "column",
+                      "gap": "xs"
+                    },
+                    "style": {
+                      "padding": "md",
+                      "radius": "lg",
+                      "border": {
+                        "width": 1,
+                        "color": {
+                          "token": "primary",
+                          "opacity": 0.18
+                        }
+                      },
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "primary",
+                          "opacity": 0.08
+                        }
+                      }
+                    },
+                    "weight": 1,
+                    "children": [
+                      {
+                        "id": "mission-target-label",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "TARGET"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "muted",
+                          "typography": "eyebrow"
+                        }
+                      },
+                      {
+                        "id": "mission-target-value",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "binding",
+                            "path": "task.target",
+                            "fallback": "5"
+                          },
+                          "align": "start",
+                          "overflow": "clip"
+                        },
+                        "style": {
+                          "color": "brandText",
+                          "typography": "statValue"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "mission-deadline",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "border": {
+                    "width": 1,
+                    "color": {
+                      "token": "inProgress",
+                      "opacity": 0.35
+                    }
+                  },
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "inProgress",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "task.status",
+                      "op": "eq",
+                      "value": "completed"
+                    },
+                    "style": {
+                      "border": {
+                        "width": 1,
+                        "color": {
+                          "token": "completed",
+                          "opacity": 0.4
+                        }
+                      },
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "completed",
+                          "opacity": 0.12
+                        }
+                      }
+                    }
+                  },
+                  {
+                    "when": {
+                      "path": "task.status",
+                      "op": "eq",
+                      "value": "locked"
+                    },
+                    "style": {
+                      "border": {
+                        "width": 1,
+                        "color": "border"
+                      },
+                      "background": {
+                        "kind": "color",
+                        "color": "secondary"
+                      }
+                    }
+                  }
+                ],
+                "children": [
+                  {
+                    "id": "mission-deadline-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "clock",
+                      "size": "sm"
+                    }
+                  },
+                  {
+                    "id": "mission-deadline-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Campaign ends"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "weight": 1
+                  },
+                  {
+                    "id": "mission-deadline-date",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "campaign.endsAt",
+                        "fallback": "—",
+                        "format": "date"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "mission-completed",
+                "type": "Row",
+                "props": {
+                  "gap": "xs",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false
+                },
+                "visibleIf": {
+                  "path": "task.completed",
+                  "op": "isTrue"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "mission-completed-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "check",
+                      "size": "sm"
+                    }
+                  },
+                  {
+                    "id": "mission-completed-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Completed"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  },
+                  {
+                    "id": "mission-completed-at",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "task.completedAt",
+                        "fallback": "—",
+                        "format": "dateTime"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "mission-rules",
+                "type": "Accordion",
+                "props": {
+                  "title": {
+                    "kind": "literal",
+                    "value": "How it works"
+                  },
+                  "initiallyExpanded": false
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "secondary"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "mission-rule-1",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Every eligible payment moves the ring one step forward."
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "typography": "bodyS"
+                    }
+                  },
+                  {
+                    "id": "mission-rule-2",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Points land on your balance as soon as the ring is full."
+                      },
+                      "align": "start",
+                      "overflow": "visible"
+                    },
+                    "style": {
+                      "typography": "bodyS"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "mission-actions",
+                "type": "Column",
+                "props": {
+                  "gap": "sm",
+                  "align": "center"
+                },
+                "style": {
+                  "margin": {
+                    "top": "sm"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "mission-claim-row",
+                    "type": "Row",
+                    "props": {
+                      "gap": "sm",
+                      "align": "center",
+                      "justify": "center",
+                      "wrap": false
+                    },
+                    "children": [
+                      {
+                        "id": "mission-claim",
+                        "type": "Button",
+                        "props": {
+                          "label": {
+                            "kind": "literal",
+                            "value": "Claim reward"
+                          },
+                          "variant": "primary",
+                          "action": {
+                            "type": "navigate",
+                            "params": {
+                              "screenId": "mission-done"
+                            }
+                          },
+                          "fullWidth": false,
+                          "icon": "chevron-right",
+                          "iconPosition": "end"
+                        },
+                        "style": {
+                          "color": "onBrand",
+                          "typography": "titleS",
+                          "padding": {
+                            "top": "md",
+                            "end": "xl",
+                            "bottom": "md",
+                            "start": "xl"
+                          },
+                          "minWidth": 220,
+                          "radius": "pill",
+                          "background": {
+                            "kind": "gradient",
+                            "gradient": "ctaGlow"
+                          },
+                          "shadow": "floating"
+                        },
+                        "styleWhen": [
+                          {
+                            "when": {
+                              "path": "task.status",
+                              "op": "eq",
+                              "value": "locked"
+                            },
+                            "style": {
+                              "color": "muted",
+                              "background": {
+                                "kind": "color",
+                                "color": "secondary"
+                              },
+                              "shadow": "none"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "mission-back-row",
+                    "type": "Row",
+                    "props": {
+                      "gap": "sm",
+                      "align": "center",
+                      "justify": "center",
+                      "wrap": false
+                    },
+                    "children": [
+                      {
+                        "id": "mission-back",
+                        "type": "Button",
+                        "props": {
+                          "label": {
+                            "kind": "literal",
+                            "value": "All missions"
+                          },
+                          "variant": "ghost",
+                          "action": {
+                            "type": "navigate.back"
+                          },
+                          "fullWidth": false,
+                          "icon": "arrow-left",
+                          "iconPosition": "start"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "redeem",
+      "name": "Redeem points",
+      "root": {
+        "id": "redeem-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": {
+            "top": "md",
+            "end": "lg",
+            "bottom": "xxl",
+            "start": "lg"
+          },
+          "background": {
+            "kind": "color",
+            "color": "canvas"
+          }
+        },
+        "children": [
+          {
+            "id": "redeem-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Redeem points"
+              },
+              "subtitle": {
+                "kind": "binding",
+                "path": "campaign.title",
+                "fallback": "Autumn rewards"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "redeem-banner",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm"
+            },
+            "style": {
+              "padding": "lg",
+              "minHeight": 132,
+              "maxHeight": 180,
+              "radius": "card",
+              "background": {
+                "kind": "image",
+                "source": {
+                  "kind": "binding",
+                  "path": "offer.image",
+                  "fallback": "banner"
+                },
+                "fit": "cover"
+              },
+              "shadow": "card"
+            },
+            "children": [
+              {
+                "id": "redeem-banner-row",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false
+                },
+                "children": [
+                  {
+                    "id": "redeem-code",
+                    "type": "Badge",
+                    "props": {
+                      "label": {
+                        "kind": "binding",
+                        "path": "offer.code",
+                        "fallback": "CODE"
+                      },
+                      "tone": "neutral"
+                    },
+                    "style": {
+                      "color": "onBrand",
+                      "typography": "chip",
+                      "radius": "sm",
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "value": "#0b1020",
+                          "opacity": 0.8
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "redeem-offer",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "redeem-offer-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "offer.title",
+                    "fallback": "Double points this weekend"
+                  },
+                  "align": "start",
+                  "maxLines": 2,
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "redeem-offer-until",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "xs"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "redeem-offer-until-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Valid until"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  },
+                  {
+                    "id": "redeem-offer-until-date",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "offer.endsAt",
+                        "fallback": "—",
+                        "format": "dateTime"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "redeem-balance",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "start",
+              "wrap": false
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "border": {
+                "width": 1,
+                "color": "border"
+              },
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "redeem-balance-icon",
+                "type": "Icon",
+                "props": {
+                  "name": "star",
+                  "size": "md"
+                },
+                "style": {
+                  "color": "brandText"
+                }
+              },
+              {
+                "id": "redeem-balance-label",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Your balance"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "weight": 1
+              },
+              {
+                "id": "redeem-balance-value",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "user.points",
+                    "fallback": "0",
+                    "format": "number"
+                  },
+                  "align": "start",
+                  "overflow": "clip"
+                },
+                "style": {
+                  "color": "brandText",
+                  "typography": "numericL"
+                }
+              }
+            ]
+          },
+          {
+            "id": "redeem-list",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "color": "onBrand",
+              "padding": {
+                "top": "lg",
+                "end": "sm",
+                "bottom": "sm",
+                "start": "sm"
+              },
+              "radius": "card",
+              "background": {
+                "kind": "gradient",
+                "gradient": "catalogNight"
+              },
+              "shadow": "card"
+            },
+            "children": [
+              {
+                "id": "redeem-list-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "REWARDS CATALOG"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "gold",
+                  "typography": "eyebrow"
+                }
+              },
+              {
+                "id": "redeem-items",
+                "type": "Repeater",
+                "props": {
+                  "source": "items",
+                  "item": "item",
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "children": [
+                  {
+                    "id": "redeem-item",
+                    "type": "ListTile",
+                    "props": {
+                      "leading": {
+                        "kind": "image",
+                        "source": {
+                          "kind": "binding",
+                          "path": "item.image",
+                          "fallback": "placeholder"
+                        }
+                      },
+                      "title": {
+                        "kind": "binding",
+                        "path": "item.name",
+                        "fallback": "Reward"
+                      },
+                      "subtitle": {
+                        "kind": "binding",
+                        "path": "item.description",
+                        "fallback": ""
+                      },
+                      "trailing": {
+                        "kind": "text",
+                        "text": {
+                          "kind": "binding",
+                          "path": "item.price",
+                          "fallback": "0",
+                          "format": "number"
+                        }
+                      }
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "md",
+                        "bottom": "md"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "redeem-empty",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The catalog is being restocked"
+                  },
+                  "align": "center",
+                  "overflow": "visible"
+                },
+                "visibleIf": {
+                  "path": "items",
+                  "op": "isEmpty"
+                },
+                "style": {
+                  "margin": {
+                    "top": "md",
+                    "bottom": "md"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "redeem-actions",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "center",
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "redeem-submit",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Redeem now"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "submit"
+                  },
+                  "fullWidth": false,
+                  "icon": "gift",
+                  "iconPosition": "start"
+                },
+                "style": {
+                  "color": "onBrand",
+                  "typography": "titleS",
+                  "padding": {
+                    "top": "md",
+                    "end": "xl",
+                    "bottom": "md",
+                    "start": "xl"
+                  },
+                  "minWidth": 220,
+                  "radius": "pill",
+                  "background": {
+                    "kind": "gradient",
+                    "gradient": "ctaGlow"
+                  },
+                  "shadow": "floating",
+                  "maxWidth": 320
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "mission-done",
+      "name": "Mission complete",
+      "presentation": "modal",
+      "root": {
+        "id": "done-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": {
+            "top": "xl",
+            "end": "xl",
+            "bottom": "xxl",
+            "start": "xl"
+          },
+          "radius": {
+            "topStart": "sheet",
+            "topEnd": "sheet"
+          },
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "done-column",
+            "type": "Column",
+            "props": {
+              "gap": "md",
+              "align": "center"
+            },
+            "children": [
+              {
+                "id": "done-medal",
+                "type": "Stack",
+                "props": {
+                  "alignHorizontal": "center",
+                  "alignVertical": "center"
+                },
+                "children": [
+                  {
+                    "id": "done-medal-ring",
+                    "type": "CircularProgress",
+                    "props": {
+                      "value": {
+                        "kind": "literal",
+                        "value": 1
+                      },
+                      "max": {
+                        "kind": "literal",
+                        "value": 1
+                      },
+                      "color": "gold",
+                      "size": "lg"
+                    }
+                  },
+                  {
+                    "id": "done-medal-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "medal",
+                      "size": "lg"
+                    },
+                    "style": {
+                      "color": "brandText"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "done-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Mission complete!"
+                  },
+                  "align": "center",
+                  "overflow": "visible"
+                },
+                "style": {
+                  "typography": "displayL"
+                }
+              },
+              {
+                "id": "done-task",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "task.title",
+                    "fallback": "Mission of the week"
+                  },
+                  "align": "center",
+                  "maxLines": 2,
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "done-reward",
+                "type": "Row",
+                "props": {
+                  "gap": "xs",
+                  "align": "center",
+                  "justify": "center",
+                  "wrap": false
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "end": "lg",
+                    "bottom": "sm",
+                    "start": "lg"
+                  },
+                  "radius": "pill",
+                  "border": {
+                    "width": 1,
+                    "color": {
+                      "token": "gold",
+                      "opacity": 0.7
+                    }
+                  },
+                  "background": {
+                    "kind": "gradient",
+                    "gradient": {
+                      "angle": 90,
+                      "stops": [
+                        {
+                          "color": {
+                            "token": "gold",
+                            "opacity": 0.34
+                          },
+                          "position": 0
+                        },
+                        {
+                          "color": {
+                            "token": "primary",
+                            "opacity": 0.14
+                          },
+                          "position": 1
+                        }
+                      ]
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "done-reward-plus",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "+"
+                      },
+                      "align": "start",
+                      "overflow": "clip"
+                    },
+                    "style": {
+                      "typography": "statValue"
+                    }
+                  },
+                  {
+                    "id": "done-reward-value",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "task.rewardPoints",
+                        "fallback": "100",
+                        "format": "number"
+                      },
+                      "align": "start",
+                      "overflow": "clip"
+                    },
+                    "style": {
+                      "typography": "statValue"
+                    }
+                  },
+                  {
+                    "id": "done-reward-unit",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "points"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "done-when",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "task.completedAt",
+                    "fallback": "—",
+                    "format": "dateTime"
+                  },
+                  "align": "center",
+                  "overflow": "clip"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              }
+            ]
+          },
+          {
+            "id": "done-collect-row",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "center",
+              "wrap": false
+            },
+            "style": {
+              "margin": {
+                "top": "sm"
+              }
+            },
+            "children": [
+              {
+                "id": "done-collect",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Collect and continue"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "home"
+                    }
+                  },
+                  "fullWidth": false
+                },
+                "style": {
+                  "color": "onBrand",
+                  "typography": "titleS",
+                  "padding": {
+                    "top": "md",
+                    "end": "xl",
+                    "bottom": "md",
+                    "start": "xl"
+                  },
+                  "minWidth": 220,
+                  "radius": "pill",
+                  "background": {
+                    "kind": "gradient",
+                    "gradient": "ctaGlow"
+                  },
+                  "shadow": "floating"
+                }
+              }
+            ]
+          },
+          {
+            "id": "done-close-row",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "center",
+              "wrap": false
+            },
+            "children": [
+              {
+                "id": "done-close",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back to the mission"
+                  },
+                  "variant": "ghost",
+                  "action": {
+                    "type": "navigate.back"
+                  },
+                  "fullWidth": false,
+                  "icon": "arrow-left",
+                  "iconPosition": "start"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "de"
+    ],
+    "strings": {
+      "uk": {
+        "home/home-hello-label/content": "З поверненням",
+        "home/home-balance-label/content": "БАЛАНС БАЛІВ",
+        "home/home-level-label/content": "Рівень",
+        "home/home-points-unit/content": "балів",
+        "home/home-since-label/content": "З нами з",
+        "home/home-premium-label/content": "Преміум",
+        "home/home-action-missions/label": "Місії",
+        "home/home-action-redeem/label": "Обміняти",
+        "home/home-action-invite/label": "Запросити друга",
+        "home/home-streak-title/content": "Серія тижнів",
+        "home/home-streak-badge/label": "3 тижні поспіль",
+        "home/home-missions-title/content": "Місії",
+        "home/home-missions-until-label/content": "до",
+        "home/home-mission-of/content": "з",
+        "home/home-missions-empty/content": "Нові місії з’являються щопонеділка",
+        "home/home-sets-title/content": "Набори челенджів",
+        "home/home-set-coffee-title/content": "Кавовий тиждень",
+        "home/home-set-coffee-count/content": "2 з 4",
+        "home/home-set-coffee-points/content": "300",
+        "home/home-set-city-title/content": "Дослідник міста",
+        "home/home-set-city-count/content": "3 з 5",
+        "home/home-set-city-points/content": "500",
+        "home/home-set-family-title/content": "Сімейний набір",
+        "home/home-set-family-count/content": "1 з 6",
+        "home/home-set-family-points/content": "800",
+        "mission/mission-bar/title": "Місія",
+        "mission/mission-ring-of-label/content": "з",
+        "mission/mission-lock-label/content": "Спершу завершіть попередню місію",
+        "mission/mission-reward-label/content": "НАГОРОДА",
+        "mission/mission-target-label/content": "ЦІЛЬ",
+        "mission/mission-deadline-label/content": "Акція триває до",
+        "mission/mission-completed-label/content": "Виконано",
+        "mission/mission-rules/title": "Як це працює",
+        "mission/mission-rule-1/content": "Кожен платіж, що підходить, просуває кільце на крок.",
+        "mission/mission-rule-2/content": "Бали потрапляють на баланс, щойно кільце заповниться.",
+        "mission/mission-claim/label": "Забрати нагороду",
+        "mission/mission-back/label": "Усі місії",
+        "redeem/redeem-bar/title": "Обмін балів",
+        "redeem/redeem-offer-until-label/content": "Діє до",
+        "redeem/redeem-balance-label/content": "Ваш баланс",
+        "redeem/redeem-list-title/content": "КАТАЛОГ НАГОРОД",
+        "redeem/redeem-empty/content": "Каталог поповнюється",
+        "redeem/redeem-submit/label": "Обміняти зараз",
+        "mission-done/done-title/content": "Місію виконано!",
+        "mission-done/done-reward-plus/content": "+",
+        "mission-done/done-reward-unit/content": "балів",
+        "mission-done/done-collect/label": "Забрати й продовжити",
+        "mission-done/done-close/label": "Назад до місії"
+      },
+      "de": {
+        "home/home-hello-label/content": "Willkommen zurück",
+        "home/home-balance-label/content": "PUNKTESTAND",
+        "home/home-level-label/content": "Stufe",
+        "home/home-points-unit/content": "Pkt.",
+        "home/home-since-label/content": "Dabei seit",
+        "home/home-action-missions/label": "Missionen",
+        "home/home-action-redeem/label": "Einlösen",
+        "home/home-action-invite/label": "Freund einladen",
+        "home/home-streak-title/content": "Wochenserie",
+        "home/home-streak-badge/label": "3 Wochen in Folge",
+        "home/home-missions-title/content": "Missionen",
+        "home/home-missions-until-label/content": "bis",
+        "home/home-mission-of/content": "von",
+        "home/home-missions-empty/content": "Neue Missionen gibt es jeden Montag",
+        "home/home-sets-title/content": "Challenge-Sets",
+        "home/home-set-coffee-title/content": "Kaffeewoche",
+        "home/home-set-coffee-count/content": "2 von 4",
+        "home/home-set-city-title/content": "Stadtentdecker",
+        "home/home-set-city-count/content": "3 von 5",
+        "home/home-set-family-title/content": "Familienpaket",
+        "home/home-set-family-count/content": "1 von 6",
+        "mission/mission-ring-of-label/content": "von",
+        "mission/mission-lock-label/content": "Schließe zuerst die vorherige Mission ab",
+        "mission/mission-reward-label/content": "PRÄMIE",
+        "mission/mission-target-label/content": "ZIEL",
+        "mission/mission-deadline-label/content": "Aktion läuft bis",
+        "mission/mission-completed-label/content": "Abgeschlossen",
+        "mission/mission-rules/title": "So funktioniert es",
+        "mission/mission-rule-1/content": "Jede passende Zahlung bringt den Ring einen Schritt weiter.",
+        "mission/mission-rule-2/content": "Die Punkte werden gutgeschrieben, sobald der Ring voll ist.",
+        "mission/mission-claim/label": "Prämie abholen",
+        "mission/mission-back/label": "Alle Missionen",
+        "redeem/redeem-bar/title": "Punkte einlösen",
+        "redeem/redeem-offer-until-label/content": "Gültig bis",
+        "redeem/redeem-balance-label/content": "Guthaben",
+        "redeem/redeem-list-title/content": "PRÄMIENKATALOG",
+        "redeem/redeem-empty/content": "Der Katalog wird aufgefüllt",
+        "redeem/redeem-submit/label": "Jetzt einlösen",
+        "mission-done/done-title/content": "Mission geschafft!",
+        "mission-done/done-reward-unit/content": "Punkte",
+        "mission-done/done-collect/label": "Abholen und weiter",
+        "mission-done/done-close/label": "Zurück zur Mission",
+        "home/home-premium-label/content": "Premium",
+        "home/home-set-coffee-points/content": "300",
+        "home/home-set-city-points/content": "500",
+        "home/home-set-family-points/content": "800",
+        "mission/mission-bar/title": "Mission",
+        "mission-done/done-reward-plus/content": "+"
+      }
+    }
+  }
+}

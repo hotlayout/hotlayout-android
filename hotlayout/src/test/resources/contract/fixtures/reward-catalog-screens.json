@@ -1,0 +1,674 @@
+{
+  "schemaVersion": "9.0.0",
+  "documentId": "reward-catalog",
+  "name": "Reward catalog",
+  "initialScreenId": "catalog",
+  "screens": [
+    {
+      "screenId": "catalog",
+      "name": "Catalog",
+      "root": {
+        "id": "catalog-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "catalog-app-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Rewards"
+              },
+              "showBack": true,
+              "subtitle": {
+                "kind": "binding",
+                "path": "campaign.title",
+                "fallback": "Autumn rewards"
+              }
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              },
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            }
+          },
+          {
+            "id": "catalog-column",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "style": {
+              "padding": "md"
+            },
+            "children": [
+              {
+                "id": "catalog-heading",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Choose your reward"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "displayL"
+                }
+              },
+              {
+                "id": "catalog-hint",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "You can change your choice until the campaign ends"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              },
+              {
+                "id": "balance-row",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "between",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "balance-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Your balance"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "bodyS"
+                    }
+                  },
+                  {
+                    "id": "balance-value",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "user.points",
+                        "fallback": "1 250"
+                      },
+                      "align": "end",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "primary",
+                      "typography": "titleS"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "catalog-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "item-choice",
+                    "type": "ChoiceGroup",
+                    "props": {
+                      "value": {
+                        "kind": "binding",
+                        "path": "item.selectedId",
+                        "fallback": "headphones"
+                      },
+                      "gap": "none"
+                    },
+                    "children": [
+                      {
+                        "id": "headphones",
+                        "type": "ListTile",
+                        "props": {
+                          "leading": {
+                            "kind": "image",
+                            "source": {
+                              "kind": "url",
+                              "url": "https://cdn.example.com/items/headphones.png"
+                            }
+                          },
+                          "title": {
+                            "kind": "literal",
+                            "value": "Wireless headphones"
+                          },
+                          "trailing": {
+                            "kind": "radio",
+                            "optionValue": "headphones"
+                          },
+                          "subtitle": {
+                            "kind": "literal",
+                            "value": "4 900 points"
+                          }
+                        },
+                        "style": {
+                          "padding": {
+                            "top": "sm",
+                            "bottom": "sm"
+                          }
+                        }
+                      },
+                      {
+                        "id": "sep-backpack",
+                        "type": "Divider",
+                        "props": {
+                          "color": "border",
+                          "spacing": "sm",
+                          "orientation": "horizontal"
+                        }
+                      },
+                      {
+                        "id": "backpack",
+                        "type": "ListTile",
+                        "props": {
+                          "leading": {
+                            "kind": "image",
+                            "source": {
+                              "kind": "url",
+                              "url": "https://cdn.example.com/items/backpack.png"
+                            }
+                          },
+                          "title": {
+                            "kind": "literal",
+                            "value": "Travel backpack"
+                          },
+                          "trailing": {
+                            "kind": "radio",
+                            "optionValue": "backpack"
+                          },
+                          "subtitle": {
+                            "kind": "literal",
+                            "value": "3 200 points"
+                          }
+                        },
+                        "style": {
+                          "padding": {
+                            "top": "sm",
+                            "bottom": "sm"
+                          }
+                        }
+                      },
+                      {
+                        "id": "sep-coffee-set",
+                        "type": "Divider",
+                        "props": {
+                          "color": "border",
+                          "spacing": "sm",
+                          "orientation": "horizontal"
+                        }
+                      },
+                      {
+                        "id": "coffee-set",
+                        "type": "ListTile",
+                        "props": {
+                          "leading": {
+                            "kind": "image",
+                            "source": {
+                              "kind": "url",
+                              "url": "https://cdn.example.com/items/coffee-set.png"
+                            }
+                          },
+                          "title": {
+                            "kind": "literal",
+                            "value": "Coffee set"
+                          },
+                          "trailing": {
+                            "kind": "radio",
+                            "optionValue": "coffee-set"
+                          },
+                          "subtitle": {
+                            "kind": "literal",
+                            "value": "1 500 points"
+                          }
+                        },
+                        "style": {
+                          "padding": {
+                            "top": "sm",
+                            "bottom": "sm"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "catalog-footer",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "One reward per campaign. Prices are in points."
+                  },
+                  "align": "center",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              },
+              {
+                "id": "catalog-submit",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Confirm choice"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "item-details"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "trending-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "trending-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Popular this week"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "trending-list",
+                    "type": "Repeater",
+                    "props": {
+                      "source": "items",
+                      "item": "item",
+                      "direction": "column",
+                      "gap": "none"
+                    },
+                    "children": [
+                      {
+                        "id": "trending-row",
+                        "type": "ListTile",
+                        "props": {
+                          "leading": {
+                            "kind": "image",
+                            "source": {
+                              "kind": "binding",
+                              "path": "item.image",
+                              "fallback": "placeholder"
+                            }
+                          },
+                          "title": {
+                            "kind": "binding",
+                            "path": "item.name",
+                            "fallback": "Reward"
+                          },
+                          "trailing": {
+                            "kind": "text",
+                            "text": {
+                              "kind": "binding",
+                              "path": "item.price",
+                              "fallback": "0"
+                            },
+                            "icon": "star"
+                          },
+                          "subtitle": {
+                            "kind": "binding",
+                            "path": "item.description",
+                            "fallback": ""
+                          },
+                          "action": {
+                            "type": "navigate",
+                            "params": {
+                              "screenId": "item-details"
+                            }
+                          }
+                        },
+                        "style": {
+                          "padding": {
+                            "top": "sm",
+                            "bottom": "sm"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "item-details",
+      "name": "Reward details",
+      "root": {
+        "id": "details-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "background": {
+            "kind": "gradient",
+            "gradient": "brandBackdrop"
+          }
+        },
+        "children": [
+          {
+            "id": "details-app-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Rewards"
+              },
+              "showBack": true,
+              "subtitle": {
+                "kind": "binding",
+                "path": "campaign.title",
+                "fallback": "Autumn rewards"
+              }
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "details-column",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "style": {
+              "padding": "md"
+            },
+            "children": [
+              {
+                "id": "item-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "item-photo",
+                    "type": "Image",
+                    "props": {
+                      "source": {
+                        "kind": "binding",
+                        "path": "item.image",
+                        "fallback": "placeholder"
+                      },
+                      "aspectRatio": "16:9",
+                      "fit": "cover",
+                      "alt": "Reward photo"
+                    },
+                    "style": {
+                      "radius": "md"
+                    }
+                  },
+                  {
+                    "id": "item-name",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "item.name",
+                        "fallback": "Wireless headphones"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "item-description",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "item.description",
+                        "fallback": "Noise cancelling, 30h battery"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "bodyS"
+                    }
+                  },
+                  {
+                    "id": "item-price",
+                    "type": "ListTile",
+                    "props": {
+                      "leading": {
+                        "kind": "icon",
+                        "icon": "star"
+                      },
+                      "title": {
+                        "kind": "literal",
+                        "value": "Price"
+                      },
+                      "trailing": {
+                        "kind": "text",
+                        "text": {
+                          "kind": "binding",
+                          "path": "item.price",
+                          "fallback": "4 900"
+                        }
+                      },
+                      "subtitle": {
+                        "kind": "literal",
+                        "value": "Paid with points"
+                      }
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "sm",
+                        "bottom": "sm"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "points-card",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "points-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Your points"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "points-progress",
+                    "type": "ProgressBar",
+                    "props": {
+                      "value": {
+                        "kind": "binding",
+                        "path": "user.points",
+                        "fallback": 1250
+                      },
+                      "max": {
+                        "kind": "binding",
+                        "path": "item.price",
+                        "fallback": 4900
+                      },
+                      "color": "primary",
+                      "labelFormat": "valueOfMax"
+                    }
+                  },
+                  {
+                    "id": "premium-badge",
+                    "type": "Badge",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Premium: free delivery"
+                      },
+                      "tone": "accent"
+                    },
+                    "visibleIf": {
+                      "path": "user.isPremium",
+                      "op": "isTrue"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "details-redeem",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Redeem"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "submit"
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "details-back",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back to catalog"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "catalog"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en"
+    ],
+    "strings": {}
+  }
+}

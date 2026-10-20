@@ -1,0 +1,916 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "hero",
+  "name": "App bar over a hero",
+  "initialScreenId": "promo",
+  "screens": [
+    {
+      "screenId": "promo",
+      "name": "Offer",
+      "statusBarIcons": "light",
+      "root": {
+        "id": "promo-root",
+        "type": "Screen",
+        "props": {
+          "gap": "none",
+          "bodyTop": "screenTop"
+        },
+        "style": {
+          "padding": "none",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "promo-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Offer"
+              },
+              "showBack": true
+            },
+            "style": {
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "onSurface",
+                  "opacity": 0.4
+                }
+              },
+              "color": "onPrimary",
+              "padding": {
+                "top": "sm",
+                "bottom": "sm",
+                "start": "md",
+                "end": "md"
+              }
+            },
+            "children": [
+              {
+                "id": "promo-share",
+                "type": "IconButton",
+                "props": {
+                  "icon": "share-2",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Share"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "share"
+                  }
+                },
+                "style": {
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "onSurface",
+                      "opacity": 0.32
+                    }
+                  },
+                  "color": "onPrimary"
+                }
+              },
+              {
+                "id": "promo-back",
+                "type": "IconButton",
+                "props": {
+                  "icon": "chevron-left",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "navigate.back"
+                  }
+                },
+                "style": {
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "onSurface",
+                      "opacity": 0.32
+                    }
+                  },
+                  "color": "onPrimary"
+                },
+                "zone": "leading"
+              }
+            ]
+          },
+          {
+            "id": "hero",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start",
+              "justify": "end"
+            },
+            "children": [
+              {
+                "id": "hero-badge",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Until 15 October"
+                  },
+                  "tone": "accent"
+                }
+              },
+              {
+                "id": "hero-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Double cashback on groceries"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "displayL"
+                }
+              },
+              {
+                "id": "hero-lead",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Pay with the card in any supermarket and get twice the points."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyM"
+                }
+              }
+            ],
+            "style": {
+              "height": 340,
+              "padding": "lg",
+              "background": {
+                "kind": "gradient",
+                "gradient": {
+                  "angle": 135,
+                  "stops": [
+                    {
+                      "color": "primary",
+                      "position": 0
+                    },
+                    {
+                      "color": "accent",
+                      "position": 1
+                    }
+                  ]
+                }
+              },
+              "color": "onPrimary"
+            }
+          },
+          {
+            "id": "how",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "how-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "How it works"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "how-1",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Activate the offer below."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "how-2",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Pay with your card in a supermarket."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "how-3",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Points arrive the next day."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              },
+              {
+                "id": "how-4",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Spend them in the rewards catalogue."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "number"
+                }
+              }
+            ],
+            "style": {
+              "padding": "lg"
+            }
+          },
+          {
+            "id": "terms",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "terms-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Terms"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "terms-1",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The offer runs for two weeks."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "bullet"
+                }
+              },
+              {
+                "id": "terms-2",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "One purchase a day takes part."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "bullet"
+                }
+              },
+              {
+                "id": "terms-3",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Returned purchases do not count."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "bullet"
+                }
+              },
+              {
+                "id": "terms-4",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Points stay valid for a year."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "bullet"
+                }
+              },
+              {
+                "id": "terms-5",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The offer does not add up with others."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "bullet"
+                }
+              },
+              {
+                "id": "terms-6",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Questions are answered in the chat."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "marker": "bullet"
+                }
+              },
+              {
+                "id": "terms-more",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "All terms"
+                  },
+                  "variant": "ghost",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "terms"
+                    }
+                  },
+                  "fullWidth": false
+                }
+              }
+            ],
+            "style": {
+              "padding": {
+                "start": "lg",
+                "end": "lg"
+              }
+            }
+          },
+          {
+            "id": "faq",
+            "type": "Column",
+            "props": {
+              "gap": "md",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "faq-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Questions"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "faq-1",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "onSurface",
+                      "opacity": 0.06
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "faq-1-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Which shops take part? Supermarkets and grocery shops — the app marks them on the map."
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "faq-2",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "onSurface",
+                      "opacity": 0.06
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "faq-2-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "When do the points arrive? The day after the purchase, in the morning."
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "faq-3",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "onSurface",
+                      "opacity": 0.06
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "faq-3-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Can the offer be switched off? Yes, at any moment — the points already added stay."
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "faq-4",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "onSurface",
+                      "opacity": 0.06
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "faq-4-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Do online orders count? Only when the shop takes the payment by card on delivery."
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "padding": "lg"
+            }
+          },
+          {
+            "id": "join-box",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "start": "lg",
+                "end": "lg",
+                "bottom": "lg"
+              },
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "join",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Take part"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "welcome"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              }
+            ],
+            "pin": "bottom"
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "terms",
+      "name": "Terms",
+      "statusBarIcons": "light",
+      "root": {
+        "id": "terms-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "none",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "terms-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Terms of the offer"
+              },
+              "showBack": true
+            },
+            "style": {
+              "background": {
+                "kind": "color",
+                "color": "primary"
+              },
+              "color": "onPrimary",
+              "padding": {
+                "top": "sm",
+                "bottom": "sm",
+                "start": "md",
+                "end": "md"
+              }
+            }
+          },
+          {
+            "id": "terms-list",
+            "type": "Column",
+            "props": {
+              "gap": "md",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "terms-line-1",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The offer runs from 1 to 15 October."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "terms-line-2",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Purchases in supermarkets and grocery shops take part."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "terms-line-3",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Double points are added to the first purchase of the day."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "terms-line-4",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Points for a returned purchase are taken back."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "terms-line-5",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "The bank may end the offer early and will say so in the app."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              }
+            ],
+            "style": {
+              "padding": {
+                "start": "lg",
+                "end": "lg"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "welcome",
+      "name": "Welcome",
+      "statusBarIcons": "light",
+      "root": {
+        "id": "welcome-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg",
+          "bodyTop": "screenTop"
+        },
+        "style": {
+          "padding": "none",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "welcome-art",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "end"
+            },
+            "children": [
+              {
+                "id": "welcome-icon",
+                "type": "Icon",
+                "props": {
+                  "name": "gift",
+                  "size": "lg"
+                }
+              },
+              {
+                "id": "welcome-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "You are in"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "displayL"
+                }
+              }
+            ],
+            "style": {
+              "height": 420,
+              "padding": "lg",
+              "background": {
+                "kind": "gradient",
+                "gradient": {
+                  "angle": 135,
+                  "stops": [
+                    {
+                      "color": "accent",
+                      "position": 0
+                    },
+                    {
+                      "color": "primary",
+                      "position": 1
+                    }
+                  ]
+                }
+              },
+              "color": "onPrimary"
+            }
+          },
+          {
+            "id": "welcome-body",
+            "type": "Column",
+            "props": {
+              "gap": "md",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "welcome-text",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Double points are on until 15 October. We will remind you a day before the end."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              },
+              {
+                "id": "welcome-done",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back to the offer"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate.back"
+                  },
+                  "fullWidth": true
+                }
+              }
+            ],
+            "style": {
+              "padding": {
+                "start": "lg",
+                "end": "lg"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "promo/promo-bar/title": "Акція",
+        "promo/promo-share/label": "Поділитися",
+        "promo/promo-back/label": "Назад",
+        "promo/hero-badge/label": "До 15 жовтня",
+        "promo/hero-title/content": "Подвійний кешбек на продукти",
+        "promo/hero-lead/content": "Платіть карткою в будь-якому супермаркеті й отримуйте вдвічі більше балів.",
+        "promo/how-title/content": "Як це працює",
+        "promo/how-1/content": "Увімкніть акцію кнопкою внизу.",
+        "promo/how-2/content": "Платіть карткою в супермаркеті.",
+        "promo/how-3/content": "Бали надходять наступного дня.",
+        "promo/how-4/content": "Витрачайте їх у каталозі нагород.",
+        "promo/terms-title/content": "Умови",
+        "promo/terms-1/content": "Акція триває два тижні.",
+        "promo/terms-2/content": "Бере участь одна покупка на день.",
+        "promo/terms-3/content": "Повернені покупки не рахуються.",
+        "promo/terms-4/content": "Бали дійсні рік.",
+        "promo/terms-5/content": "Акція не сумується з іншими.",
+        "promo/terms-6/content": "На питання відповідаємо в чаті.",
+        "promo/terms-more/label": "Усі умови",
+        "promo/faq-title/content": "Питання",
+        "promo/faq-1-text/content": "Які магазини беруть участь? Супермаркети й продуктові магазини — застосунок позначає їх на мапі.",
+        "promo/faq-2-text/content": "Коли надходять бали? Наступного дня після покупки, зранку.",
+        "promo/faq-3-text/content": "Чи можна вимкнути акцію? Так, будь-коли — уже нараховані бали лишаються.",
+        "promo/faq-4-text/content": "Чи рахуються онлайн-замовлення? Лише коли магазин приймає оплату карткою при доставці.",
+        "promo/join/label": "Взяти участь",
+        "terms/terms-bar/title": "Умови акції",
+        "terms/terms-line-1/content": "Акція триває з 1 до 15 жовтня.",
+        "terms/terms-line-2/content": "Беруть участь покупки в супермаркетах і продуктових магазинах.",
+        "terms/terms-line-3/content": "Подвійні бали нараховуються за першу покупку дня.",
+        "terms/terms-line-4/content": "Бали за повернену покупку списуються.",
+        "terms/terms-line-5/content": "Банк може завершити акцію раніше й повідомить про це в застосунку.",
+        "welcome/welcome-title/content": "Ви берете участь",
+        "welcome/welcome-text/content": "Подвійні бали діють до 15 жовтня. Нагадаємо за день до завершення.",
+        "welcome/welcome-done/label": "Назад до акції"
+      },
+      "ar": {
+        "promo/promo-bar/title": "العرض",
+        "promo/promo-share/label": "مشاركة",
+        "promo/promo-back/label": "رجوع",
+        "promo/hero-badge/label": "حتى 15 أكتوبر",
+        "promo/hero-title/content": "استرداد نقدي مضاعف على البقالة",
+        "promo/hero-lead/content": "ادفع بالبطاقة في أي متجر واحصل على ضعف النقاط.",
+        "promo/how-title/content": "كيف يعمل",
+        "promo/how-1/content": "فعّل العرض من الأسفل.",
+        "promo/how-2/content": "ادفع ببطاقتك في المتجر.",
+        "promo/how-3/content": "تصل النقاط في اليوم التالي.",
+        "promo/how-4/content": "أنفقها في كتالوج المكافآت.",
+        "promo/terms-title/content": "الشروط",
+        "promo/terms-1/content": "يستمر العرض أسبوعين.",
+        "promo/terms-2/content": "تشارك عملية شراء واحدة يوميًا.",
+        "promo/terms-3/content": "لا تُحتسب المشتريات المرتجعة.",
+        "promo/terms-4/content": "تبقى النقاط صالحة لمدة عام.",
+        "promo/terms-5/content": "لا يُجمع العرض مع عروض أخرى.",
+        "promo/terms-6/content": "نجيب عن الأسئلة في المحادثة.",
+        "promo/terms-more/label": "كل الشروط",
+        "promo/faq-title/content": "الأسئلة",
+        "promo/faq-1-text/content": "ما المتاجر المشاركة؟ المتاجر ومحلات البقالة — يحددها التطبيق على الخريطة.",
+        "promo/faq-2-text/content": "متى تصل النقاط؟ في صباح اليوم التالي للشراء.",
+        "promo/faq-3-text/content": "هل يمكن إيقاف العرض؟ نعم، في أي وقت — وتبقى النقاط المضافة.",
+        "promo/faq-4-text/content": "هل تُحتسب الطلبات عبر الإنترنت؟ فقط عندما يقبل المتجر الدفع بالبطاقة عند التسليم.",
+        "promo/join/label": "شارك",
+        "terms/terms-bar/title": "شروط العرض",
+        "terms/terms-line-1/content": "يستمر العرض من 1 إلى 15 أكتوبر.",
+        "terms/terms-line-2/content": "تشارك المشتريات في المتاجر ومحلات البقالة.",
+        "terms/terms-line-3/content": "تُضاف النقاط المضاعفة لأول عملية شراء في اليوم.",
+        "terms/terms-line-4/content": "تُسحب نقاط المشتريات المرتجعة.",
+        "terms/terms-line-5/content": "قد ينهي البنك العرض مبكرًا وسيُعلن ذلك في التطبيق.",
+        "welcome/welcome-title/content": "أنت مشارك",
+        "welcome/welcome-text/content": "النقاط المضاعفة سارية حتى 15 أكتوبر. سنذكّرك قبل النهاية بيوم.",
+        "welcome/welcome-done/label": "العودة إلى العرض"
+      }
+    }
+  }
+}

@@ -1,0 +1,465 @@
+{
+ "now": "2026-10-12T09:00:00.000Z",
+ "en": {
+  "data": {
+   "user.fullName": "Alex Morgan",
+   "user.avatar": "/landing/demo/obsidian/avatar.webp",
+   "user.points": 1850,
+   "user.tier": "GOLD MEMBER",
+   "user.nextTier": "Platinum",
+   "user.pointsToNext": 150,
+   "user.tierProgress": 78,
+   "user.questsDone": 12,
+   "user.lifetimePoints": 4230,
+   "streak.days": 4,
+   "streak.left": 3,
+   "streak.bonus": 50,
+   "art.balance": "/landing/demo/obsidian/card-art.webp"
+  },
+  "collections": {
+   "quests": [
+    {
+     "quest.id": "coffee",
+     "quest.title": "Coffee week",
+     "quest.summary": "Five café payments by card",
+     "quest.description": "Pay with your card at any café five times this week and the bonus is yours.",
+     "quest.image": "/landing/demo/obsidian/quest-coffee.webp",
+     "quest.hero": "/landing/demo/obsidian/hero-coffee.webp",
+     "quest.progress": 3,
+     "quest.target": 5,
+     "quest.what": "payments",
+     "quest.reward": 200,
+     "quest.endsAt": "2026-10-15T20:00:00.000Z",
+     "quest.status": "active",
+     "quest.statusLabel": "In progress",
+     "quest.stage": 2,
+     "quest.stepOne": "Join the quest",
+     "quest.stepTwo": "Make 5 café payments",
+     "quest.stepThree": "Collect your bonus",
+     "quest.noteOne": "Done · Oct 8",
+     "quest.noteTwo": "3 of 5 · any café, any amount",
+     "quest.noteThree": "+200 pts land instantly"
+    },
+    {
+     "quest.id": "rides",
+     "quest.title": "Ride & earn",
+     "quest.summary": "Three taxi rides this weekend",
+     "quest.description": "Pay for three taxi rides with your card this weekend and collect extra points.",
+     "quest.image": "/landing/demo/obsidian/quest-rides.webp",
+     "quest.hero": "/landing/demo/obsidian/hero-rides.webp",
+     "quest.progress": 1,
+     "quest.target": 3,
+     "quest.what": "rides",
+     "quest.reward": 150,
+     "quest.endsAt": "2026-10-14T08:00:00.000Z",
+     "quest.status": "new",
+     "quest.statusLabel": "New",
+     "quest.stage": 1,
+     "quest.stepOne": "Join the quest",
+     "quest.stepTwo": "Take 3 taxi rides",
+     "quest.stepThree": "Collect your bonus",
+     "quest.noteOne": "One tap to start",
+     "quest.noteTwo": "1 of 3 · any taxi service",
+     "quest.noteThree": "+150 pts land instantly"
+    },
+    {
+     "quest.id": "roundups",
+     "quest.title": "Round-up saver",
+     "quest.summary": "Save the change from four purchases",
+     "quest.description": "Turn on round-ups and set aside the spare change from four purchases.",
+     "quest.image": "/landing/demo/obsidian/quest-roundups.webp",
+     "quest.hero": "/landing/demo/obsidian/hero-roundups.webp",
+     "quest.progress": 3,
+     "quest.target": 4,
+     "quest.what": "purchases",
+     "quest.reward": 350,
+     "quest.endsAt": "2026-10-31T20:00:00.000Z",
+     "quest.status": "active",
+     "quest.statusLabel": "In progress",
+     "quest.stage": 2,
+     "quest.stepOne": "Turn on round-ups",
+     "quest.stepTwo": "Round up 4 purchases",
+     "quest.stepThree": "Collect your bonus",
+     "quest.noteOne": "Done · Oct 5",
+     "quest.noteTwo": "3 of 4 · any purchase counts",
+     "quest.noteThree": "+350 pts land instantly"
+    }
+   ],
+   "activity": [
+    {
+     "entry.title": "Coffee week",
+     "entry.label": "Quest step",
+     "entry.icon": "coffee",
+     "entry.date": "2026-10-11T08:40:00.000Z",
+     "entry.points": 40
+    },
+    {
+     "entry.title": "Cinema for two",
+     "entry.label": "Reward",
+     "entry.icon": "ticket",
+     "entry.date": "2026-10-09T18:05:00.000Z",
+     "entry.points": -900
+    },
+    {
+     "entry.title": "Card payments",
+     "entry.label": "Weekly bonus",
+     "entry.icon": "credit-card",
+     "entry.date": "2026-10-07T12:30:00.000Z",
+     "entry.points": 120
+    },
+    {
+     "entry.title": "Friend joined",
+     "entry.label": "Referral",
+     "entry.icon": "users",
+     "entry.date": "2026-10-03T16:20:00.000Z",
+     "entry.points": 250
+    },
+    {
+     "entry.title": "September streak",
+     "entry.label": "Streak bonus",
+     "entry.icon": "flame",
+     "entry.date": "2026-09-30T09:00:00.000Z",
+     "entry.points": 100
+    }
+   ],
+   "rewards": [
+    {
+     "reward.id": "coffee",
+     "reward.title": "Coffee voucher",
+     "reward.note": "Any partner café",
+     "reward.icon": "coffee",
+     "reward.price": 400
+    },
+    {
+     "reward.id": "cinema",
+     "reward.title": "Cinema for two",
+     "reward.note": "Two tickets, any film",
+     "reward.icon": "popcorn",
+     "reward.price": 900
+    },
+    {
+     "reward.id": "boost",
+     "reward.title": "Cashback boost",
+     "reward.note": "Double cashback for a week",
+     "reward.icon": "badge-percent",
+     "reward.price": 1200
+    },
+    {
+     "reward.id": "tree",
+     "reward.title": "Plant a tree",
+     "reward.note": "We plant it, you get the photo",
+     "reward.icon": "tree-pine",
+     "reward.price": 250
+    }
+   ]
+  }
+ },
+ "uk": {
+  "data": {
+   "user.fullName": "Олекса Мороз",
+   "user.avatar": "/landing/demo/obsidian/avatar.webp",
+   "user.points": 1850,
+   "user.tier": "ЗОЛОТИЙ РІВЕНЬ",
+   "user.nextTier": "Платини",
+   "user.pointsToNext": 150,
+   "user.tierProgress": 78,
+   "user.questsDone": 12,
+   "user.lifetimePoints": 4230,
+   "streak.days": 4,
+   "streak.left": 3,
+   "streak.bonus": 50,
+   "art.balance": "/landing/demo/obsidian/card-art.webp"
+  },
+  "collections": {
+   "quests": [
+    {
+     "quest.id": "coffee",
+     "quest.title": "Кавовий тиждень",
+     "quest.summary": "П’ять оплат карткою в кав’ярнях",
+     "quest.description": "П’ять разів заплатіть карткою в будь-якій кав’ярні цього тижня — і бонус ваш.",
+     "quest.image": "/landing/demo/obsidian/quest-coffee.webp",
+     "quest.hero": "/landing/demo/obsidian/hero-coffee.webp",
+     "quest.progress": 3,
+     "quest.target": 5,
+     "quest.what": "оплат",
+     "quest.reward": 200,
+     "quest.endsAt": "2026-10-15T20:00:00.000Z",
+     "quest.status": "active",
+     "quest.statusLabel": "Триває",
+     "quest.stage": 2,
+     "quest.stepOne": "Приєднатися до квесту",
+     "quest.stepTwo": "Зробити 5 оплат у кав’ярнях",
+     "quest.stepThree": "Забрати бонус",
+     "quest.noteOne": "Виконано · 8 жовт.",
+     "quest.noteTwo": "3 із 5 · будь-яка кав’ярня й сума",
+     "quest.noteThree": "+200 балів надійдуть одразу"
+    },
+    {
+     "quest.id": "rides",
+     "quest.title": "Їдь і заробляй",
+     "quest.summary": "Три поїздки на таксі на вихідних",
+     "quest.description": "Оплатіть карткою три поїздки на таксі на вихідних — і отримайте додаткові бали.",
+     "quest.image": "/landing/demo/obsidian/quest-rides.webp",
+     "quest.hero": "/landing/demo/obsidian/hero-rides.webp",
+     "quest.progress": 1,
+     "quest.target": 3,
+     "quest.what": "поїздок",
+     "quest.reward": 150,
+     "quest.endsAt": "2026-10-14T08:00:00.000Z",
+     "quest.status": "new",
+     "quest.statusLabel": "Новий",
+     "quest.stage": 1,
+     "quest.stepOne": "Приєднатися до квесту",
+     "quest.stepTwo": "Зробити 3 поїздки на таксі",
+     "quest.stepThree": "Забрати бонус",
+     "quest.noteOne": "Один дотик, щоб почати",
+     "quest.noteTwo": "1 із 3 · будь-який сервіс таксі",
+     "quest.noteThree": "+150 балів надійдуть одразу"
+    },
+    {
+     "quest.id": "roundups",
+     "quest.title": "Скарбничка з решти",
+     "quest.summary": "Відкладіть решту з чотирьох покупок",
+     "quest.description": "Увімкніть заокруглення й відкладіть решту з чотирьох покупок.",
+     "quest.image": "/landing/demo/obsidian/quest-roundups.webp",
+     "quest.hero": "/landing/demo/obsidian/hero-roundups.webp",
+     "quest.progress": 3,
+     "quest.target": 4,
+     "quest.what": "покупок",
+     "quest.reward": 350,
+     "quest.endsAt": "2026-10-31T20:00:00.000Z",
+     "quest.status": "active",
+     "quest.statusLabel": "Триває",
+     "quest.stage": 2,
+     "quest.stepOne": "Увімкнути заокруглення",
+     "quest.stepTwo": "Заокруглити 4 покупки",
+     "quest.stepThree": "Забрати бонус",
+     "quest.noteOne": "Виконано · 5 жовт.",
+     "quest.noteTwo": "3 із 4 · рахується будь-яка покупка",
+     "quest.noteThree": "+350 балів надійдуть одразу"
+    }
+   ],
+   "activity": [
+    {
+     "entry.title": "Кавовий тиждень",
+     "entry.label": "Крок квесту",
+     "entry.icon": "coffee",
+     "entry.date": "2026-10-11T08:40:00.000Z",
+     "entry.points": 40
+    },
+    {
+     "entry.title": "Кіно на двох",
+     "entry.label": "Нагорода",
+     "entry.icon": "ticket",
+     "entry.date": "2026-10-09T18:05:00.000Z",
+     "entry.points": -900
+    },
+    {
+     "entry.title": "Оплати карткою",
+     "entry.label": "Бонус тижня",
+     "entry.icon": "credit-card",
+     "entry.date": "2026-10-07T12:30:00.000Z",
+     "entry.points": 120
+    },
+    {
+     "entry.title": "Друг приєднався",
+     "entry.label": "Запрошення",
+     "entry.icon": "users",
+     "entry.date": "2026-10-03T16:20:00.000Z",
+     "entry.points": 250
+    },
+    {
+     "entry.title": "Серія за вересень",
+     "entry.label": "Бонус серії",
+     "entry.icon": "flame",
+     "entry.date": "2026-09-30T09:00:00.000Z",
+     "entry.points": 100
+    }
+   ],
+   "rewards": [
+    {
+     "reward.id": "coffee",
+     "reward.title": "Сертифікат на каву",
+     "reward.note": "Будь-яка кав’ярня-партнер",
+     "reward.icon": "coffee",
+     "reward.price": 400
+    },
+    {
+     "reward.id": "cinema",
+     "reward.title": "Кіно на двох",
+     "reward.note": "Два квитки на будь-який фільм",
+     "reward.icon": "popcorn",
+     "reward.price": 900
+    },
+    {
+     "reward.id": "boost",
+     "reward.title": "Підвищений кешбек",
+     "reward.note": "Подвійний кешбек на тиждень",
+     "reward.icon": "badge-percent",
+     "reward.price": 1200
+    },
+    {
+     "reward.id": "tree",
+     "reward.title": "Посадити дерево",
+     "reward.note": "Ми садимо — ви отримуєте фото",
+     "reward.icon": "tree-pine",
+     "reward.price": 250
+    }
+   ]
+  }
+ },
+ "ar": {
+  "data": {
+   "user.fullName": "أليكس مورغان",
+   "user.avatar": "/landing/demo/obsidian/avatar.webp",
+   "user.points": 1850,
+   "user.tier": "الفئة الذهبية",
+   "user.nextTier": "البلاتينية",
+   "user.pointsToNext": 150,
+   "user.tierProgress": 78,
+   "user.questsDone": 12,
+   "user.lifetimePoints": 4230,
+   "streak.days": 4,
+   "streak.left": 3,
+   "streak.bonus": 50,
+   "art.balance": "/landing/demo/obsidian/card-art.webp"
+  },
+  "collections": {
+   "quests": [
+    {
+     "quest.id": "coffee",
+     "quest.title": "أسبوع القهوة",
+     "quest.summary": "خمس عمليات دفع بالبطاقة في المقاهي",
+     "quest.description": "ادفع ببطاقتك في أي مقهى خمس مرات هذا الأسبوع لتحصل على المكافأة.",
+     "quest.image": "/landing/demo/obsidian/quest-coffee.webp",
+     "quest.hero": "/landing/demo/obsidian/hero-coffee.webp",
+     "quest.progress": 3,
+     "quest.target": 5,
+     "quest.what": "عمليات دفع",
+     "quest.reward": 200,
+     "quest.endsAt": "2026-10-15T20:00:00.000Z",
+     "quest.status": "active",
+     "quest.statusLabel": "جارٍ",
+     "quest.stage": 2,
+     "quest.stepOne": "انضم إلى التحدي",
+     "quest.stepTwo": "أتمم 5 عمليات دفع في المقاهي",
+     "quest.stepThree": "احصل على مكافأتك",
+     "quest.noteOne": "تمّ · 8 أكتوبر",
+     "quest.noteTwo": "3 من 5 · أي مقهى وأي مبلغ",
+     "quest.noteThree": "تُضاف 200 نقطة فوراً"
+    },
+    {
+     "quest.id": "rides",
+     "quest.title": "اركب واكسب",
+     "quest.summary": "ثلاث رحلات بسيارة الأجرة في نهاية الأسبوع",
+     "quest.description": "ادفع ببطاقتك مقابل ثلاث رحلات بسيارة الأجرة في نهاية الأسبوع واحصل على نقاط إضافية.",
+     "quest.image": "/landing/demo/obsidian/quest-rides.webp",
+     "quest.hero": "/landing/demo/obsidian/hero-rides.webp",
+     "quest.progress": 1,
+     "quest.target": 3,
+     "quest.what": "رحلات",
+     "quest.reward": 150,
+     "quest.endsAt": "2026-10-14T08:00:00.000Z",
+     "quest.status": "new",
+     "quest.statusLabel": "جديد",
+     "quest.stage": 1,
+     "quest.stepOne": "انضم إلى التحدي",
+     "quest.stepTwo": "أتمم 3 رحلات بسيارة الأجرة",
+     "quest.stepThree": "احصل على مكافأتك",
+     "quest.noteOne": "نقرة واحدة للبدء",
+     "quest.noteTwo": "1 من 3 · أي خدمة سيارات أجرة",
+     "quest.noteThree": "تُضاف 150 نقطة فوراً"
+    },
+    {
+     "quest.id": "roundups",
+     "quest.title": "ادّخار الباقي",
+     "quest.summary": "ادّخر الباقي من أربع عمليات شراء",
+     "quest.description": "فعّل تقريب المبالغ وادّخر الباقي من أربع عمليات شراء.",
+     "quest.image": "/landing/demo/obsidian/quest-roundups.webp",
+     "quest.hero": "/landing/demo/obsidian/hero-roundups.webp",
+     "quest.progress": 3,
+     "quest.target": 4,
+     "quest.what": "عمليات شراء",
+     "quest.reward": 350,
+     "quest.endsAt": "2026-10-31T20:00:00.000Z",
+     "quest.status": "active",
+     "quest.statusLabel": "جارٍ",
+     "quest.stage": 2,
+     "quest.stepOne": "فعّل تقريب المبالغ",
+     "quest.stepTwo": "قرّب مبالغ 4 عمليات شراء",
+     "quest.stepThree": "احصل على مكافأتك",
+     "quest.noteOne": "تمّ · 5 أكتوبر",
+     "quest.noteTwo": "3 من 4 · تُحتسب كل عملية شراء",
+     "quest.noteThree": "تُضاف 350 نقطة فوراً"
+    }
+   ],
+   "activity": [
+    {
+     "entry.title": "أسبوع القهوة",
+     "entry.label": "خطوة في التحدي",
+     "entry.icon": "coffee",
+     "entry.date": "2026-10-11T08:40:00.000Z",
+     "entry.points": 40
+    },
+    {
+     "entry.title": "تذكرتا سينما",
+     "entry.label": "مكافأة",
+     "entry.icon": "ticket",
+     "entry.date": "2026-10-09T18:05:00.000Z",
+     "entry.points": -900
+    },
+    {
+     "entry.title": "الدفع بالبطاقة",
+     "entry.label": "مكافأة الأسبوع",
+     "entry.icon": "credit-card",
+     "entry.date": "2026-10-07T12:30:00.000Z",
+     "entry.points": 120
+    },
+    {
+     "entry.title": "دعوة صديق",
+     "entry.label": "دعوة",
+     "entry.icon": "users",
+     "entry.date": "2026-10-03T16:20:00.000Z",
+     "entry.points": 250
+    },
+    {
+     "entry.title": "سلسلة سبتمبر",
+     "entry.label": "مكافأة السلسلة",
+     "entry.icon": "flame",
+     "entry.date": "2026-09-30T09:00:00.000Z",
+     "entry.points": 100
+    }
+   ],
+   "rewards": [
+    {
+     "reward.id": "coffee",
+     "reward.title": "قسيمة قهوة",
+     "reward.note": "أي مقهى شريك",
+     "reward.icon": "coffee",
+     "reward.price": 400
+    },
+    {
+     "reward.id": "cinema",
+     "reward.title": "تذكرتا سينما",
+     "reward.note": "تذكرتان لأي فيلم",
+     "reward.icon": "popcorn",
+     "reward.price": 900
+    },
+    {
+     "reward.id": "boost",
+     "reward.title": "استرداد نقدي إضافي",
+     "reward.note": "استرداد مضاعف لمدة أسبوع",
+     "reward.icon": "badge-percent",
+     "reward.price": 1200
+    },
+    {
+     "reward.id": "tree",
+     "reward.title": "ازرع شجرة",
+     "reward.note": "نزرعها ونرسل لك الصورة",
+     "reward.icon": "tree-pine",
+     "reward.price": 250
+    }
+   ]
+  }
+ }
+}

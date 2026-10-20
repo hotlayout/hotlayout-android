@@ -1,0 +1,372 @@
+{
+ "themeContractVersion": "4.0.1",
+ "defaultThemeId": "obsidian",
+ "themes": {
+  "obsidian": {
+   "id": "obsidian",
+   "name": "Obsidian",
+   "source": "Palette of the second landing demo document. Invented for the demo, belongs to no brand.",
+   "brightness": "dark",
+   "provisional": [],
+   "origins": {},
+   "fontFamilies": {
+    "body": {
+     "primary": "Geist Variable",
+     "fallback": [
+      "Geist",
+      "system-ui",
+      "-apple-system",
+      "Segoe UI",
+      "Roboto",
+      "sans-serif"
+     ]
+    },
+    "heading": {
+     "primary": "Geist Variable",
+     "fallback": [
+      "Geist",
+      "system-ui",
+      "-apple-system",
+      "Segoe UI",
+      "Roboto",
+      "sans-serif"
+     ]
+    }
+   },
+   "spacing": {
+    "none": 0,
+    "xs": 4,
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 24,
+    "hair": 2,
+    "gutter": 20,
+    "tile": 14,
+    "card": 18,
+    "hero": 22,
+    "peek": 69
+   },
+   "radius": {
+    "none": 0,
+    "sm": 12,
+    "md": 18,
+    "lg": 24,
+    "pill": 72,
+    "xl": 28,
+    "glyph": 11,
+    "stat": 20
+   },
+   "color": {
+    "primary": "#c6f432",
+    "onPrimary": "#0a0a0c",
+    "secondary": "#1f1f25",
+    "accent": "#7b61ff",
+    "surface": "#151518",
+    "onSurface": "#f4f4f5",
+    "muted": "#8b8b94",
+    "border": "#1e1e20",
+    "success": "#c6f432",
+    "warning": "#e9c98a",
+    "danger": "#ff6b6b",
+    "locked": "#8b8b94",
+    "inProgress": "#c6f432",
+    "completed": "#c6f432",
+    "canvas": "#0a0a0c",
+    "raised": "#1f1f25",
+    "gold": "#e9c98a",
+    "white": "#ffffff",
+    "black": "#000000"
+   },
+   "typography": {
+    "displayL": {
+     "fontSize": 36,
+     "letterSpacing": -1.2,
+     "lineHeight": 1.1111,
+     "fontWeight": 600,
+     "role": "heading"
+    },
+    "titleM": {
+     "fontSize": 22,
+     "letterSpacing": -0.5,
+     "lineHeight": 1.2727,
+     "fontWeight": 600,
+     "role": "heading"
+    },
+    "titleS": {
+     "fontSize": 18,
+     "letterSpacing": -0.2,
+     "lineHeight": 1.3333,
+     "fontWeight": 600,
+     "role": "heading"
+    },
+    "bodyM": {
+     "fontSize": 15,
+     "lineHeight": 1.4667,
+     "fontWeight": 400,
+     "role": "body"
+    },
+    "bodyS": {
+     "fontSize": 13,
+     "lineHeight": 1.3846,
+     "fontWeight": 400,
+     "role": "body"
+    },
+    "caption": {
+     "fontSize": 12,
+     "lineHeight": 1.3333,
+     "fontWeight": 400,
+     "role": "body"
+    },
+    "numericL": {
+     "fontSize": 40,
+     "letterSpacing": -1.4,
+     "lineHeight": 1.1,
+     "fontWeight": 600,
+     "role": "heading"
+    },
+    "displayXL": {
+     "fontSize": 60,
+     "letterSpacing": -2,
+     "lineHeight": 1.0667,
+     "fontWeight": 600,
+     "role": "heading"
+    },
+    "cardTitle": {
+     "fontSize": 17,
+     "letterSpacing": -0.2,
+     "lineHeight": 1.2941,
+     "fontWeight": 600,
+     "role": "heading"
+    },
+    "rowTitle": {
+     "fontSize": 15,
+     "lineHeight": 1.3333,
+     "fontWeight": 500,
+     "role": "body"
+    },
+    "unit": {
+     "fontSize": 18,
+     "lineHeight": 1.3333,
+     "fontWeight": 500,
+     "role": "body"
+    },
+    "cta": {
+     "fontSize": 17,
+     "lineHeight": 1.4118,
+     "fontWeight": 600,
+     "role": "body"
+    },
+    "link": {
+     "fontSize": 14,
+     "lineHeight": 1.4286,
+     "fontWeight": 500,
+     "role": "body"
+    },
+    "label": {
+     "fontSize": 13,
+     "lineHeight": 1.3846,
+     "fontWeight": 600,
+     "role": "body"
+    },
+    "labelS": {
+     "fontSize": 11,
+     "lineHeight": 1.2727,
+     "fontWeight": 600,
+     "role": "body"
+    },
+    "eyebrow": {
+     "fontSize": 11,
+     "letterSpacing": 0.8,
+     "lineHeight": 1.2727,
+     "fontWeight": 600,
+     "role": "body"
+    },
+    "tick": {
+     "fontSize": 11,
+     "lineHeight": 1.2727,
+     "fontWeight": 500,
+     "role": "body"
+    },
+    "action": {
+     "fontSize": 12,
+     "lineHeight": 1.3333,
+     "fontWeight": 500,
+     "role": "body"
+    }
+   },
+   "elevation": {
+    "none": [],
+    "low": [
+     {
+      "offsetX": 0,
+      "offsetY": 8,
+      "blur": 16,
+      "spread": 0,
+      "color": "#000000",
+      "opacity": 0.35
+     }
+    ],
+    "medium": [
+     {
+      "offsetX": 0,
+      "offsetY": 16,
+      "blur": 32,
+      "spread": -4,
+      "color": "#000000",
+      "opacity": 0.5
+     }
+    ],
+    "cardDeep": [
+     {
+      "offsetX": 0,
+      "offsetY": 24,
+      "blur": 48,
+      "spread": -8,
+      "color": "#000000",
+      "opacity": 0.6
+     }
+    ]
+   },
+   "roles": {
+    "badgeTone": {
+     "neutral": {
+      "background": "raised",
+      "foreground": "onSurface"
+     },
+     "success": {
+      "background": "primary",
+      "foreground": "onPrimary"
+     },
+     "warning": {
+      "background": "raised",
+      "foreground": "gold"
+     },
+     "danger": {
+      "background": "raised",
+      "foreground": "danger"
+     },
+     "accent": {
+      "background": "primary",
+      "foreground": "onPrimary"
+     }
+    },
+    "buttonVariant": {
+     "primary": {
+      "background": "primary",
+      "foreground": "onPrimary"
+     },
+     "secondary": {
+      "background": "surface",
+      "foreground": "onSurface",
+      "border": "border"
+     },
+     "ghost": {
+      "foreground": "primary"
+     }
+    }
+   },
+   "gradient": {
+    "brandBackdrop": {
+     "angle": 180,
+     "stops": [
+      {
+       "color": "#151518",
+       "position": 0
+      },
+      {
+       "color": "#0a0a0c",
+       "position": 1
+      }
+     ]
+    },
+    "cardMetal": {
+     "angle": 135,
+     "stops": [
+      {
+       "color": "#2b2b33",
+       "position": 0
+      },
+      {
+       "color": "#17171b",
+       "position": 0.5
+      },
+      {
+       "color": "#0e0e11",
+       "position": 1
+      }
+     ]
+    },
+    "progressGlow": {
+     "angle": 90,
+     "stops": [
+      {
+       "color": "#7b61ff",
+       "position": 0
+      },
+      {
+       "color": "#c6f432",
+       "position": 1
+      }
+     ]
+    },
+    "heroFade": {
+     "angle": 180,
+     "stops": [
+      {
+       "color": "#0a0a0c00",
+       "position": 0
+      },
+      {
+       "color": "#0a0a0c00",
+       "position": 0.6
+      },
+      {
+       "color": "#0a0a0c",
+       "position": 1
+      }
+     ]
+    },
+    "barCoffee": {
+     "angle": 180,
+     "stops": [
+      {
+       "color": "#6a52f2",
+       "position": 0
+      },
+      {
+       "color": "#4634ae",
+       "position": 1
+      }
+     ]
+    },
+    "barRides": {
+     "angle": 180,
+     "stops": [
+      {
+       "color": "#1f9c80",
+       "position": 0
+      },
+      {
+       "color": "#146654",
+       "position": 1
+      }
+     ]
+    },
+    "barRoundups": {
+     "angle": 180,
+     "stops": [
+      {
+       "color": "#c44fa9",
+       "position": 0
+      },
+      {
+       "color": "#802f77",
+       "position": 1
+      }
+     ]
+    }
+   }
+  }
+ }
+}

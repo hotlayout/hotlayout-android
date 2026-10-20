@@ -1,0 +1,6768 @@
+{
+ "schemaVersion": "9.19.0",
+ "documentId": "landing-demo-sunny",
+ "name": "Rewards — Sunny",
+ "initialScreenId": "home",
+ "entryPoints": {
+  "home": "home",
+  "rewards": "rewards",
+  "profile": "profile"
+ },
+ "screens": [
+  {
+   "screenId": "home",
+   "name": "Home",
+   "root": {
+    "id": "home-root",
+    "type": "Screen",
+    "props": {
+     "gap": 18
+    },
+    "style": {
+     "padding": {
+      "top": "xs",
+      "end": "none",
+      "bottom": "xl",
+      "start": "none"
+     },
+     "background": {
+      "kind": "color",
+      "color": "canvas"
+     }
+    },
+    "children": [
+     {
+      "id": "hello",
+      "type": "Row",
+      "props": {
+       "gap": "md",
+       "align": "center",
+       "justify": "start",
+       "wrap": false,
+       "scrollable": false
+      },
+      "style": {
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       }
+      },
+      "children": [
+       {
+        "id": "me",
+        "type": "Stack",
+        "props": {
+         "alignHorizontal": "start",
+         "alignVertical": "start"
+        },
+        "children": [
+         {
+          "id": "avatar",
+          "type": "Image",
+          "props": {
+           "source": {
+            "kind": "binding",
+            "path": "user.avatar",
+            "fallback": "placeholder"
+           },
+           "aspectRatio": "1:1",
+           "fit": "cover"
+          },
+          "style": {
+           "width": 48,
+           "height": 48,
+           "radius": "pill",
+           "border": {
+            "width": 2.5,
+            "color": "white"
+           },
+           "shadow": "popSun"
+          }
+         },
+         {
+          "id": "level",
+          "type": "Container",
+          "props": {
+           "direction": "row",
+           "gap": "none",
+           "align": "center",
+           "justify": "center"
+          },
+          "style": {
+           "width": 22,
+           "height": 22,
+           "radius": "pill",
+           "border": {
+            "width": 2,
+            "color": "white"
+           },
+           "background": {
+            "kind": "color",
+            "color": "primary"
+           }
+          },
+          "layer": {
+           "alignHorizontal": "end",
+           "alignVertical": "end",
+           "offset": {
+            "x": {
+             "toward": "end",
+             "by": 4
+            },
+            "y": {
+             "toward": "bottom",
+             "by": 4
+            }
+           }
+          },
+          "children": [
+           {
+            "id": "level-number",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "binding",
+              "path": "user.level",
+              "fallback": "0",
+              "format": "number"
+             },
+             "align": "center",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "onPrimary",
+             "typography": "eyebrow"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "id": "hello-text",
+        "type": "Column",
+        "props": {
+         "gap": "hair",
+         "align": "start"
+        },
+        "weight": 1,
+        "children": [
+         {
+          "id": "hello-hi",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "template",
+            "template": "Hey, {name}!",
+            "values": {
+             "name": {
+              "kind": "binding",
+              "path": "user.firstName",
+              "fallback": "—"
+             }
+            }
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "typography": "titleM"
+          }
+         },
+         {
+          "id": "hello-level",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "template",
+            "template": "Level {level} · {title}",
+            "values": {
+             "level": {
+              "kind": "binding",
+              "path": "user.level",
+              "fallback": "0",
+              "format": "number"
+             },
+             "title": {
+              "kind": "binding",
+              "path": "user.title",
+              "fallback": "—"
+             }
+            }
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "color": "muted",
+           "typography": "bodyS"
+          }
+         }
+        ]
+       },
+       {
+        "id": "streak-count",
+        "type": "Container",
+        "props": {
+         "direction": "row",
+         "gap": "xs",
+         "align": "center"
+        },
+        "style": {
+         "padding": {
+          "top": "sm",
+          "end": "md",
+          "bottom": "sm",
+          "start": 10
+         },
+         "radius": "pill",
+         "border": {
+          "width": 2,
+          "color": "border"
+         },
+         "background": {
+          "kind": "color",
+          "color": "surface"
+         },
+         "shadow": "popLineS"
+        },
+        "children": [
+         {
+          "id": "streak-count-icon",
+          "type": "Icon",
+          "props": {
+           "name": "flame",
+           "size": "md",
+           "glyphSize": 16
+          },
+          "style": {
+           "color": "secondary"
+          }
+         },
+         {
+          "id": "streak-count-days",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "binding",
+            "path": "streak.days",
+            "fallback": "0",
+            "format": "number"
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "typography": "count"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "level-stack",
+      "type": "Stack",
+      "props": {
+       "alignHorizontal": "start",
+       "alignVertical": "start"
+      },
+      "style": {
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       }
+      },
+      "children": [
+       {
+        "id": "level-card",
+        "type": "Container",
+        "props": {
+         "direction": "column",
+         "gap": "none"
+        },
+        "style": {
+         "radius": "xl",
+         "background": {
+          "kind": "gradient",
+          "gradient": "heroSunset"
+         },
+         "shadow": "heroGlow"
+        },
+        "children": [
+         {
+          "id": "level-layers",
+          "type": "Stack",
+          "props": {
+           "alignHorizontal": "start",
+           "alignVertical": "start"
+          },
+          "children": [
+           {
+            "id": "level-art",
+            "type": "Image",
+            "props": {
+             "source": {
+              "kind": "binding",
+              "path": "art.confetti",
+              "fallback": "placeholder"
+             },
+             "aspectRatio": {
+              "width": 353,
+              "height": 236
+             },
+             "fit": "cover"
+            },
+            "style": {
+             "height": 236
+            }
+           },
+           {
+            "id": "level-content",
+            "type": "Column",
+            "props": {
+             "gap": "none",
+             "align": "start",
+             "justify": "between"
+            },
+            "style": {
+             "padding": "hero"
+            },
+            "fill": true,
+            "children": [
+             {
+              "id": "level-top",
+              "type": "Row",
+              "props": {
+               "gap": "none",
+               "align": "center",
+               "justify": "start",
+               "wrap": false,
+               "scrollable": false
+              },
+              "children": [
+               {
+                "id": "tier",
+                "type": "Badge",
+                "props": {
+                 "label": {
+                  "kind": "template",
+                  "template": "LEVEL {level} · {tier}",
+                  "values": {
+                   "level": {
+                    "kind": "binding",
+                    "path": "user.level",
+                    "fallback": "0",
+                    "format": "number"
+                   },
+                   "tier": {
+                    "kind": "binding",
+                    "path": "user.tier",
+                    "fallback": "—"
+                   }
+                  }
+                 },
+                 "tone": "neutral",
+                 "icon": "crown"
+                },
+                "style": {
+                 "color": "white",
+                 "typography": "eyebrow",
+                 "padding": {
+                  "top": 6,
+                  "end": 11,
+                  "bottom": 6,
+                  "start": 9
+                 },
+                 "radius": "pill",
+                 "border": {
+                  "width": 1.5,
+                  "color": {
+                   "token": "white",
+                   "opacity": 0.4
+                  }
+                 },
+                 "background": {
+                  "kind": "color",
+                  "color": {
+                   "token": "white",
+                   "opacity": 0.22
+                  }
+                 }
+                }
+               }
+              ]
+             },
+             {
+              "id": "level-main",
+              "type": "Column",
+              "props": {
+               "gap": "none",
+               "align": "start"
+              },
+              "children": [
+               {
+                "id": "level-label",
+                "type": "Text",
+                "props": {
+                 "content": {
+                  "kind": "literal",
+                  "value": "Your points"
+                 },
+                 "align": "start",
+                 "maxLines": 1,
+                 "overflow": "ellipsis"
+                },
+                "style": {
+                 "color": {
+                  "token": "white",
+                  "opacity": 0.9
+                 },
+                 "typography": "label"
+                }
+               },
+               {
+                "id": "points",
+                "type": "Text",
+                "props": {
+                 "content": {
+                  "kind": "template",
+                  "template": "{points} {unit}",
+                  "values": {
+                   "points": {
+                    "kind": "binding",
+                    "path": "user.points",
+                    "fallback": "0",
+                    "format": "number"
+                   },
+                   "unit": {
+                    "kind": "plural",
+                    "of": "points",
+                    "forms": {
+                     "one": "pt",
+                     "other": "pts"
+                    }
+                   }
+                  }
+                 },
+                 "align": "start",
+                 "maxLines": 1,
+                 "overflow": "visible",
+                 "spans": {
+                  "points": {
+                   "color": "white",
+                   "typography": "displayXL"
+                  }
+                 }
+                },
+                "style": {
+                 "color": {
+                  "token": "white",
+                  "opacity": 0.9
+                 },
+                 "typography": "unit"
+                }
+               }
+              ]
+             },
+             {
+              "id": "level-progress",
+              "type": "Column",
+              "props": {
+               "gap": "sm",
+               "align": "start"
+              },
+              "children": [
+               {
+                "id": "tier-bar",
+                "type": "ProgressBar",
+                "props": {
+                 "value": {
+                  "kind": "binding",
+                  "path": "user.tierProgress",
+                  "fallback": 0
+                 },
+                 "max": {
+                  "kind": "literal",
+                  "value": 100
+                 },
+                 "color": "accent",
+                 "labelFormat": "none",
+                 "thickness": 14,
+                 "trackColor": {
+                  "token": "white",
+                  "opacity": 0.28
+                 },
+                 "gradient": "sunFill"
+                }
+               },
+               {
+                "id": "tier-foot",
+                "type": "Row",
+                "props": {
+                 "gap": "sm",
+                 "align": "center",
+                 "justify": "between",
+                 "wrap": false,
+                 "scrollable": false
+                },
+                "children": [
+                 {
+                  "id": "to-next",
+                  "type": "Text",
+                  "props": {
+                   "content": {
+                    "kind": "template",
+                    "template": "{left} {unit} to {next}",
+                    "values": {
+                     "left": {
+                      "kind": "binding",
+                      "path": "user.pointsToNext",
+                      "fallback": "0",
+                      "format": "number"
+                     },
+                     "unit": {
+                      "kind": "plural",
+                      "of": "left",
+                      "forms": {
+                       "one": "pt",
+                       "other": "pts"
+                      }
+                     },
+                     "next": {
+                      "kind": "binding",
+                      "path": "user.nextTier",
+                      "fallback": "—"
+                     }
+                    }
+                   },
+                   "align": "start",
+                   "maxLines": 1,
+                   "overflow": "ellipsis"
+                  },
+                  "style": {
+                   "color": "white",
+                   "typography": "label"
+                  },
+                  "weight": 1
+                 },
+                 {
+                  "id": "tier-percent",
+                  "type": "Text",
+                  "props": {
+                   "content": {
+                    "kind": "template",
+                    "template": "{percent}%",
+                    "values": {
+                     "percent": {
+                      "kind": "binding",
+                      "path": "user.tierProgress",
+                      "fallback": "0",
+                      "format": "number"
+                     }
+                    }
+                   },
+                   "align": "start",
+                   "maxLines": 1,
+                   "overflow": "ellipsis"
+                  },
+                  "style": {
+                   "color": "white",
+                   "typography": "label"
+                  }
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "id": "level-emblem",
+        "type": "Image",
+        "props": {
+         "source": {
+          "kind": "binding",
+          "path": "art.emblem",
+          "fallback": "placeholder"
+         },
+         "aspectRatio": "1:1",
+         "fit": "contain"
+        },
+        "style": {
+         "width": 134,
+         "height": 134
+        },
+        "layer": {
+         "alignHorizontal": "end",
+         "alignVertical": "start",
+         "offset": {
+          "x": {
+           "toward": "start",
+           "by": 6
+          },
+          "y": {
+           "toward": "top",
+           "by": 14
+          }
+         },
+         "rotate": 10
+        }
+       }
+      ]
+     },
+     {
+      "id": "actions",
+      "type": "Row",
+      "props": {
+       "gap": "md",
+       "align": "center",
+       "justify": "start",
+       "wrap": false,
+       "scrollable": false
+      },
+      "style": {
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       }
+      },
+      "children": [
+       {
+        "id": "redeem",
+        "type": "Button",
+        "props": {
+         "label": {
+          "kind": "literal",
+          "value": "Redeem"
+         },
+         "variant": "primary",
+         "action": {
+          "type": "navigate.section",
+          "params": {
+           "screenId": "rewards"
+          },
+          "track": {
+           "event": "redeem_shortcut"
+          }
+         },
+         "fullWidth": true,
+         "icon": "gift",
+         "size": "lg"
+        },
+        "style": {
+         "typography": "cta",
+         "height": 52,
+         "radius": "button",
+         "shadow": "popGrape"
+        },
+        "weight": 1
+       },
+       {
+        "id": "scan",
+        "type": "Button",
+        "props": {
+         "label": {
+          "kind": "literal",
+          "value": "Scan & earn"
+         },
+         "variant": "secondary",
+         "action": {
+          "type": "scan.open",
+          "track": {
+           "event": "scan_opened"
+          }
+         },
+         "fullWidth": true,
+         "icon": "qr-code",
+         "size": "lg"
+        },
+        "style": {
+         "typography": "cta",
+         "height": 52,
+         "radius": "button",
+         "border": {
+          "width": 2,
+          "color": "border"
+         },
+         "shadow": "popLine"
+        },
+        "weight": 1
+       }
+      ]
+     },
+     {
+      "id": "streak",
+      "type": "Container",
+      "props": {
+       "direction": "column",
+       "gap": "lg"
+      },
+      "style": {
+       "padding": "card",
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       },
+       "radius": "lg",
+       "border": {
+        "width": 2,
+        "color": "border"
+       },
+       "background": {
+        "kind": "color",
+        "color": "surface"
+       },
+       "shadow": "popLine"
+      },
+      "children": [
+       {
+        "id": "streak-head",
+        "type": "Row",
+        "props": {
+         "gap": "md",
+         "align": "center",
+         "justify": "start",
+         "wrap": false,
+         "scrollable": false
+        },
+        "children": [
+         {
+          "id": "streak-tile",
+          "type": "Container",
+          "props": {
+           "direction": "row",
+           "gap": "none",
+           "align": "center",
+           "justify": "center"
+          },
+          "style": {
+           "width": 44,
+           "height": 44,
+           "radius": "sm",
+           "background": {
+            "kind": "gradient",
+            "gradient": "coralFill"
+           },
+           "shadow": "popCoral"
+          },
+          "children": [
+           {
+            "id": "streak-icon",
+            "type": "Icon",
+            "props": {
+             "name": "flame",
+             "size": "md",
+             "glyphSize": 22
+            },
+            "style": {
+             "color": "white"
+            }
+           }
+          ]
+         },
+         {
+          "id": "streak-text",
+          "type": "Column",
+          "props": {
+           "gap": "hair",
+           "align": "start"
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "streak-title",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "template",
+              "template": "{days}-day streak",
+              "values": {
+               "days": {
+                "kind": "binding",
+                "path": "streak.days",
+                "fallback": "0",
+                "format": "number"
+               },
+               "unit": {
+                "kind": "plural",
+                "of": "days",
+                "forms": {
+                 "one": "day",
+                 "other": "days"
+                }
+               }
+              }
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "typography": "titleS"
+            }
+           },
+           {
+            "id": "streak-hint",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "template",
+              "template": "{left} more {unit} to open the chest",
+              "values": {
+               "left": {
+                "kind": "binding",
+                "path": "streak.left",
+                "fallback": "0",
+                "format": "number"
+               },
+               "unit": {
+                "kind": "plural",
+                "of": "left",
+                "forms": {
+                 "one": "day",
+                 "other": "days"
+                }
+               }
+              }
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "bodyS"
+            }
+           }
+          ]
+         },
+         {
+          "id": "streak-bonus",
+          "type": "Badge",
+          "props": {
+           "label": {
+            "kind": "binding",
+            "path": "streak.bonus",
+            "fallback": "0",
+            "format": "number",
+            "sign": "always"
+           },
+           "tone": "warning"
+          },
+          "style": {
+           "typography": "label",
+           "padding": {
+            "top": 6,
+            "end": 11,
+            "bottom": 6,
+            "start": 11
+           },
+           "radius": "pill"
+          }
+         }
+        ]
+       },
+       {
+        "id": "streak-week",
+        "type": "Row",
+        "props": {
+         "gap": "none",
+         "align": "start",
+         "justify": "start",
+         "wrap": false,
+         "scrollable": false
+        },
+        "children": [
+         {
+          "id": "day-1",
+          "type": "Column",
+          "props": {
+           "gap": "sm",
+           "align": "center"
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "day-1-mark",
+            "type": "Container",
+            "props": {
+             "direction": "row",
+             "gap": "none",
+             "align": "center",
+             "justify": "center"
+            },
+            "style": {
+             "width": 38,
+             "height": 38,
+             "radius": "pill",
+             "background": {
+              "kind": "color",
+              "color": "sand"
+             }
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 0
+              },
+              "style": {
+               "background": {
+                "kind": "gradient",
+                "gradient": "sunFill"
+               },
+               "shadow": "popSun"
+              }
+             },
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 0
+              },
+              "style": {
+               "border": {
+                "width": 2.5,
+                "color": "primary"
+               },
+               "background": {
+                "kind": "color",
+                "color": "surface"
+               }
+              }
+             }
+            ],
+            "children": [
+             {
+              "id": "day-1-check",
+              "type": "Icon",
+              "props": {
+               "name": "check",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 0
+              },
+              "style": {
+               "color": "onSurface"
+              }
+             },
+             {
+              "id": "day-1-flame",
+              "type": "Icon",
+              "props": {
+               "name": "flame",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 0
+              },
+              "style": {
+               "color": "primary"
+              }
+             },
+             {
+              "id": "day-1-dot",
+              "type": "Container",
+              "props": {
+               "direction": "row",
+               "gap": "none",
+               "align": "center",
+               "justify": "center"
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "lt",
+               "value": 0
+              },
+              "style": {
+               "width": 6,
+               "height": 6,
+               "radius": "pill",
+               "background": {
+                "kind": "color",
+                "color": "sandDeep"
+               }
+              },
+              "children": []
+             }
+            ]
+           },
+           {
+            "id": "day-1-label",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "literal",
+              "value": "M"
+             },
+             "align": "center",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "tick"
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 0
+              },
+              "style": {
+               "color": "primary",
+               "typography": "tickNow"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "day-2",
+          "type": "Column",
+          "props": {
+           "gap": "sm",
+           "align": "center"
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "day-2-mark",
+            "type": "Container",
+            "props": {
+             "direction": "row",
+             "gap": "none",
+             "align": "center",
+             "justify": "center"
+            },
+            "style": {
+             "width": 38,
+             "height": 38,
+             "radius": "pill",
+             "background": {
+              "kind": "color",
+              "color": "sand"
+             }
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 1
+              },
+              "style": {
+               "background": {
+                "kind": "gradient",
+                "gradient": "sunFill"
+               },
+               "shadow": "popSun"
+              }
+             },
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 1
+              },
+              "style": {
+               "border": {
+                "width": 2.5,
+                "color": "primary"
+               },
+               "background": {
+                "kind": "color",
+                "color": "surface"
+               }
+              }
+             }
+            ],
+            "children": [
+             {
+              "id": "day-2-check",
+              "type": "Icon",
+              "props": {
+               "name": "check",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 1
+              },
+              "style": {
+               "color": "onSurface"
+              }
+             },
+             {
+              "id": "day-2-flame",
+              "type": "Icon",
+              "props": {
+               "name": "flame",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 1
+              },
+              "style": {
+               "color": "primary"
+              }
+             },
+             {
+              "id": "day-2-dot",
+              "type": "Container",
+              "props": {
+               "direction": "row",
+               "gap": "none",
+               "align": "center",
+               "justify": "center"
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "lt",
+               "value": 1
+              },
+              "style": {
+               "width": 6,
+               "height": 6,
+               "radius": "pill",
+               "background": {
+                "kind": "color",
+                "color": "sandDeep"
+               }
+              },
+              "children": []
+             }
+            ]
+           },
+           {
+            "id": "day-2-label",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "literal",
+              "value": "T"
+             },
+             "align": "center",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "tick"
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 1
+              },
+              "style": {
+               "color": "primary",
+               "typography": "tickNow"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "day-3",
+          "type": "Column",
+          "props": {
+           "gap": "sm",
+           "align": "center"
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "day-3-mark",
+            "type": "Container",
+            "props": {
+             "direction": "row",
+             "gap": "none",
+             "align": "center",
+             "justify": "center"
+            },
+            "style": {
+             "width": 38,
+             "height": 38,
+             "radius": "pill",
+             "background": {
+              "kind": "color",
+              "color": "sand"
+             }
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 2
+              },
+              "style": {
+               "background": {
+                "kind": "gradient",
+                "gradient": "sunFill"
+               },
+               "shadow": "popSun"
+              }
+             },
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 2
+              },
+              "style": {
+               "border": {
+                "width": 2.5,
+                "color": "primary"
+               },
+               "background": {
+                "kind": "color",
+                "color": "surface"
+               }
+              }
+             }
+            ],
+            "children": [
+             {
+              "id": "day-3-check",
+              "type": "Icon",
+              "props": {
+               "name": "check",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 2
+              },
+              "style": {
+               "color": "onSurface"
+              }
+             },
+             {
+              "id": "day-3-flame",
+              "type": "Icon",
+              "props": {
+               "name": "flame",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 2
+              },
+              "style": {
+               "color": "primary"
+              }
+             },
+             {
+              "id": "day-3-dot",
+              "type": "Container",
+              "props": {
+               "direction": "row",
+               "gap": "none",
+               "align": "center",
+               "justify": "center"
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "lt",
+               "value": 2
+              },
+              "style": {
+               "width": 6,
+               "height": 6,
+               "radius": "pill",
+               "background": {
+                "kind": "color",
+                "color": "sandDeep"
+               }
+              },
+              "children": []
+             }
+            ]
+           },
+           {
+            "id": "day-3-label",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "literal",
+              "value": "W"
+             },
+             "align": "center",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "tick"
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 2
+              },
+              "style": {
+               "color": "primary",
+               "typography": "tickNow"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "day-4",
+          "type": "Column",
+          "props": {
+           "gap": "sm",
+           "align": "center"
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "day-4-mark",
+            "type": "Container",
+            "props": {
+             "direction": "row",
+             "gap": "none",
+             "align": "center",
+             "justify": "center"
+            },
+            "style": {
+             "width": 38,
+             "height": 38,
+             "radius": "pill",
+             "background": {
+              "kind": "color",
+              "color": "sand"
+             }
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 3
+              },
+              "style": {
+               "background": {
+                "kind": "gradient",
+                "gradient": "sunFill"
+               },
+               "shadow": "popSun"
+              }
+             },
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 3
+              },
+              "style": {
+               "border": {
+                "width": 2.5,
+                "color": "primary"
+               },
+               "background": {
+                "kind": "color",
+                "color": "surface"
+               }
+              }
+             }
+            ],
+            "children": [
+             {
+              "id": "day-4-check",
+              "type": "Icon",
+              "props": {
+               "name": "check",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 3
+              },
+              "style": {
+               "color": "onSurface"
+              }
+             },
+             {
+              "id": "day-4-flame",
+              "type": "Icon",
+              "props": {
+               "name": "flame",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 3
+              },
+              "style": {
+               "color": "primary"
+              }
+             },
+             {
+              "id": "day-4-dot",
+              "type": "Container",
+              "props": {
+               "direction": "row",
+               "gap": "none",
+               "align": "center",
+               "justify": "center"
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "lt",
+               "value": 3
+              },
+              "style": {
+               "width": 6,
+               "height": 6,
+               "radius": "pill",
+               "background": {
+                "kind": "color",
+                "color": "sandDeep"
+               }
+              },
+              "children": []
+             }
+            ]
+           },
+           {
+            "id": "day-4-label",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "literal",
+              "value": "T"
+             },
+             "align": "center",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "tick"
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 3
+              },
+              "style": {
+               "color": "primary",
+               "typography": "tickNow"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "day-5",
+          "type": "Column",
+          "props": {
+           "gap": "sm",
+           "align": "center"
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "day-5-mark",
+            "type": "Container",
+            "props": {
+             "direction": "row",
+             "gap": "none",
+             "align": "center",
+             "justify": "center"
+            },
+            "style": {
+             "width": 38,
+             "height": 38,
+             "radius": "pill",
+             "background": {
+              "kind": "color",
+              "color": "sand"
+             }
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 4
+              },
+              "style": {
+               "background": {
+                "kind": "gradient",
+                "gradient": "sunFill"
+               },
+               "shadow": "popSun"
+              }
+             },
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 4
+              },
+              "style": {
+               "border": {
+                "width": 2.5,
+                "color": "primary"
+               },
+               "background": {
+                "kind": "color",
+                "color": "surface"
+               }
+              }
+             }
+            ],
+            "children": [
+             {
+              "id": "day-5-check",
+              "type": "Icon",
+              "props": {
+               "name": "check",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 4
+              },
+              "style": {
+               "color": "onSurface"
+              }
+             },
+             {
+              "id": "day-5-flame",
+              "type": "Icon",
+              "props": {
+               "name": "flame",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 4
+              },
+              "style": {
+               "color": "primary"
+              }
+             },
+             {
+              "id": "day-5-dot",
+              "type": "Container",
+              "props": {
+               "direction": "row",
+               "gap": "none",
+               "align": "center",
+               "justify": "center"
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "lt",
+               "value": 4
+              },
+              "style": {
+               "width": 6,
+               "height": 6,
+               "radius": "pill",
+               "background": {
+                "kind": "color",
+                "color": "sandDeep"
+               }
+              },
+              "children": []
+             }
+            ]
+           },
+           {
+            "id": "day-5-label",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "literal",
+              "value": "F"
+             },
+             "align": "center",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "tick"
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 4
+              },
+              "style": {
+               "color": "primary",
+               "typography": "tickNow"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "day-6",
+          "type": "Column",
+          "props": {
+           "gap": "sm",
+           "align": "center"
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "day-6-mark",
+            "type": "Container",
+            "props": {
+             "direction": "row",
+             "gap": "none",
+             "align": "center",
+             "justify": "center"
+            },
+            "style": {
+             "width": 38,
+             "height": 38,
+             "radius": "pill",
+             "background": {
+              "kind": "color",
+              "color": "sand"
+             }
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 5
+              },
+              "style": {
+               "background": {
+                "kind": "gradient",
+                "gradient": "sunFill"
+               },
+               "shadow": "popSun"
+              }
+             },
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 5
+              },
+              "style": {
+               "border": {
+                "width": 2.5,
+                "color": "primary"
+               },
+               "background": {
+                "kind": "color",
+                "color": "surface"
+               }
+              }
+             }
+            ],
+            "children": [
+             {
+              "id": "day-6-check",
+              "type": "Icon",
+              "props": {
+               "name": "check",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 5
+              },
+              "style": {
+               "color": "onSurface"
+              }
+             },
+             {
+              "id": "day-6-flame",
+              "type": "Icon",
+              "props": {
+               "name": "flame",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 5
+              },
+              "style": {
+               "color": "primary"
+              }
+             },
+             {
+              "id": "day-6-dot",
+              "type": "Container",
+              "props": {
+               "direction": "row",
+               "gap": "none",
+               "align": "center",
+               "justify": "center"
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "lt",
+               "value": 5
+              },
+              "style": {
+               "width": 6,
+               "height": 6,
+               "radius": "pill",
+               "background": {
+                "kind": "color",
+                "color": "sandDeep"
+               }
+              },
+              "children": []
+             }
+            ]
+           },
+           {
+            "id": "day-6-label",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "literal",
+              "value": "S"
+             },
+             "align": "center",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "tick"
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 5
+              },
+              "style": {
+               "color": "primary",
+               "typography": "tickNow"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "day-7",
+          "type": "Column",
+          "props": {
+           "gap": "sm",
+           "align": "center"
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "day-7-mark",
+            "type": "Container",
+            "props": {
+             "direction": "row",
+             "gap": "none",
+             "align": "center",
+             "justify": "center"
+            },
+            "style": {
+             "width": 38,
+             "height": 38,
+             "radius": "pill",
+             "background": {
+              "kind": "color",
+              "color": "pinkSoft"
+             }
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 6
+              },
+              "style": {
+               "background": {
+                "kind": "gradient",
+                "gradient": "sunFill"
+               },
+               "shadow": "popSun"
+              }
+             },
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 6
+              },
+              "style": {
+               "border": {
+                "width": 2.5,
+                "color": "primary"
+               },
+               "background": {
+                "kind": "color",
+                "color": "surface"
+               }
+              }
+             }
+            ],
+            "children": [
+             {
+              "id": "day-7-check",
+              "type": "Icon",
+              "props": {
+               "name": "check",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "gt",
+               "value": 6
+              },
+              "style": {
+               "color": "onSurface"
+              }
+             },
+             {
+              "id": "day-7-flame",
+              "type": "Icon",
+              "props": {
+               "name": "flame",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 6
+              },
+              "style": {
+               "color": "primary"
+              }
+             },
+             {
+              "id": "day-7-gift",
+              "type": "Icon",
+              "props": {
+               "name": "gift",
+               "size": "md",
+               "glyphSize": 17
+              },
+              "visibleIf": {
+               "path": "streak.days",
+               "op": "lt",
+               "value": 6
+              },
+              "style": {
+               "color": "pinkDeep"
+              }
+             }
+            ]
+           },
+           {
+            "id": "day-7-label",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "literal",
+              "value": "S"
+             },
+             "align": "center",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "tick"
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "streak.days",
+               "op": "eq",
+               "value": 6
+              },
+              "style": {
+               "color": "primary",
+               "typography": "tickNow"
+              }
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "quests-head",
+      "type": "Row",
+      "props": {
+       "gap": "sm",
+       "align": "center",
+       "justify": "between",
+       "wrap": false,
+       "scrollable": false
+      },
+      "style": {
+       "margin": {
+        "top": 6,
+        "end": "gutter",
+        "bottom": "none",
+        "start": "gutter"
+       }
+      },
+      "children": [
+       {
+        "id": "quests-title",
+        "type": "Text",
+        "props": {
+         "content": {
+          "kind": "literal",
+          "value": "Quests"
+         },
+         "align": "start",
+         "maxLines": 1,
+         "overflow": "ellipsis"
+        },
+        "style": {
+         "typography": "section"
+        }
+       },
+       {
+        "id": "quests-active",
+        "type": "Badge",
+        "props": {
+         "label": {
+          "kind": "template",
+          "template": "{count} active",
+          "values": {
+           "count": {
+            "kind": "binding",
+            "path": "user.activeQuests",
+            "fallback": "0",
+            "format": "number"
+           }
+          }
+         },
+         "tone": "neutral"
+        },
+        "style": {
+         "color": "primary",
+         "typography": "chip",
+         "padding": {
+          "top": 6,
+          "end": 11,
+          "bottom": 6,
+          "start": 11
+         },
+         "radius": "pill",
+         "background": {
+          "kind": "color",
+          "color": "grapeSoft"
+         }
+        }
+       }
+      ]
+     },
+     {
+      "id": "quests",
+      "type": "Repeater",
+      "props": {
+       "source": "quests",
+       "item": "quest",
+       "direction": "row",
+       "gap": "slide",
+       "carousel": {
+        "perView": 1,
+        "peek": "peek",
+        "indicator": "dots"
+       }
+      },
+      "style": {
+       "padding": {
+        "top": "none",
+        "end": "gutter",
+        "bottom": "sm",
+        "start": "gutter"
+       }
+      },
+      "children": [
+       {
+        "id": "quest-card",
+        "type": "Container",
+        "props": {
+         "direction": "column",
+         "gap": "none",
+         "action": {
+          "type": "navigate",
+          "params": {
+           "screenId": "quest"
+          },
+          "carryRecord": true,
+          "track": {
+           "event": "quest_opened"
+          }
+         },
+         "label": {
+          "kind": "template",
+          "template": "Quest: {title}",
+          "values": {
+           "title": {
+            "kind": "binding",
+            "path": "quest.title",
+            "fallback": "—"
+           }
+          }
+         }
+        },
+        "style": {
+         "radius": "card",
+         "background": {
+          "kind": "gradient",
+          "gradient": "fillGrape"
+         },
+         "shadow": "popQuestGrape"
+        },
+        "styleWhen": [
+         {
+          "when": {
+           "path": "quest.color",
+           "op": "eq",
+           "value": "mint"
+          },
+          "style": {
+           "background": {
+            "kind": "gradient",
+            "gradient": "fillMint"
+           },
+           "shadow": "popQuestMint"
+          }
+         },
+         {
+          "when": {
+           "path": "quest.color",
+           "op": "eq",
+           "value": "sky"
+          },
+          "style": {
+           "background": {
+            "kind": "gradient",
+            "gradient": "fillSky"
+           },
+           "shadow": "popQuestSky"
+          }
+         }
+        ],
+        "children": [
+         {
+          "id": "quest-stack",
+          "type": "Stack",
+          "props": {
+           "alignHorizontal": "start",
+           "alignVertical": "start"
+          },
+          "children": [
+           {
+            "id": "quest-art",
+            "type": "Image",
+            "props": {
+             "source": {
+              "kind": "binding",
+              "path": "quest.art",
+              "fallback": "placeholder"
+             },
+             "aspectRatio": {
+              "width": 276,
+              "height": 252
+             },
+             "fit": "cover"
+            }
+           },
+           {
+            "id": "quest-object",
+            "type": "Image",
+            "props": {
+             "source": {
+              "kind": "binding",
+              "path": "quest.object",
+              "fallback": "placeholder"
+             },
+             "aspectRatio": "1:1",
+             "fit": "contain"
+            },
+            "style": {
+             "width": 100,
+             "height": 100
+            },
+            "layer": {
+             "alignHorizontal": "end",
+             "alignVertical": "start",
+             "offset": {
+              "x": {
+               "toward": "start",
+               "by": 10
+              },
+              "y": {
+               "toward": "bottom",
+               "by": 18
+              }
+             },
+             "rotate": -9
+            }
+           },
+           {
+            "id": "quest-content",
+            "type": "Column",
+            "props": {
+             "gap": "none",
+             "align": "start",
+             "justify": "between"
+            },
+            "style": {
+             "padding": "card"
+            },
+            "fill": true,
+            "children": [
+             {
+              "id": "quest-top",
+              "type": "Row",
+              "props": {
+               "gap": "none",
+               "align": "center",
+               "justify": "start",
+               "wrap": false,
+               "scrollable": false
+              },
+              "children": [
+               {
+                "id": "quest-reward",
+                "type": "Badge",
+                "props": {
+                 "label": {
+                  "kind": "binding",
+                  "path": "quest.reward",
+                  "fallback": "0",
+                  "format": "number",
+                  "sign": "always"
+                 },
+                 "tone": "warning",
+                 "icon": "coins"
+                },
+                "style": {
+                 "typography": "label",
+                 "padding": {
+                  "top": 6,
+                  "end": 11,
+                  "bottom": 6,
+                  "start": 9
+                 },
+                 "radius": "pill"
+                }
+               }
+              ]
+             },
+             {
+              "id": "quest-main",
+              "type": "Column",
+              "props": {
+               "gap": "md",
+               "align": "start"
+              },
+              "children": [
+               {
+                "id": "quest-text",
+                "type": "Column",
+                "props": {
+                 "gap": "hair",
+                 "align": "start"
+                },
+                "children": [
+                 {
+                  "id": "quest-title",
+                  "type": "Text",
+                  "props": {
+                   "content": {
+                    "kind": "binding",
+                    "path": "quest.title",
+                    "fallback": ""
+                   },
+                   "align": "start",
+                   "maxLines": 1,
+                   "overflow": "ellipsis"
+                  },
+                  "style": {
+                   "color": "white",
+                   "typography": "titleM"
+                  }
+                 },
+                 {
+                  "id": "quest-summary",
+                  "type": "Text",
+                  "props": {
+                   "content": {
+                    "kind": "template",
+                    "template": "{done} of {total} {what}",
+                    "values": {
+                     "done": {
+                      "kind": "binding",
+                      "path": "quest.progress",
+                      "fallback": "0",
+                      "format": "number"
+                     },
+                     "total": {
+                      "kind": "binding",
+                      "path": "quest.target",
+                      "fallback": "0",
+                      "format": "number"
+                     },
+                     "what": {
+                      "kind": "binding",
+                      "path": "quest.what",
+                      "fallback": ""
+                     }
+                    }
+                   },
+                   "align": "start",
+                   "maxLines": 1,
+                   "overflow": "ellipsis"
+                  },
+                  "style": {
+                   "color": {
+                    "token": "white",
+                    "opacity": 0.9
+                   },
+                   "typography": "bodyS"
+                  }
+                 }
+                ]
+               },
+               {
+                "id": "quest-steps-3",
+                "type": "ProgressBar",
+                "props": {
+                 "value": {
+                  "kind": "binding",
+                  "path": "quest.progress",
+                  "fallback": 0
+                 },
+                 "max": {
+                  "kind": "literal",
+                  "value": 3
+                 },
+                 "color": "white",
+                 "labelFormat": "none",
+                 "thickness": 10,
+                 "trackColor": {
+                  "token": "white",
+                  "opacity": 0.3
+                 },
+                 "segments": 3,
+                 "currentColor": {
+                  "token": "white",
+                  "opacity": 0.3
+                 }
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "eq",
+                 "value": 3
+                }
+               },
+               {
+                "id": "quest-steps-4",
+                "type": "ProgressBar",
+                "props": {
+                 "value": {
+                  "kind": "binding",
+                  "path": "quest.progress",
+                  "fallback": 0
+                 },
+                 "max": {
+                  "kind": "literal",
+                  "value": 4
+                 },
+                 "color": "white",
+                 "labelFormat": "none",
+                 "thickness": 10,
+                 "trackColor": {
+                  "token": "white",
+                  "opacity": 0.3
+                 },
+                 "segments": 4,
+                 "currentColor": {
+                  "token": "white",
+                  "opacity": 0.3
+                 }
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "eq",
+                 "value": 4
+                }
+               },
+               {
+                "id": "quest-steps-5",
+                "type": "ProgressBar",
+                "props": {
+                 "value": {
+                  "kind": "binding",
+                  "path": "quest.progress",
+                  "fallback": 0
+                 },
+                 "max": {
+                  "kind": "literal",
+                  "value": 5
+                 },
+                 "color": "white",
+                 "labelFormat": "none",
+                 "thickness": 10,
+                 "trackColor": {
+                  "token": "white",
+                  "opacity": 0.3
+                 },
+                 "segments": 5,
+                 "currentColor": {
+                  "token": "white",
+                  "opacity": 0.3
+                 }
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "eq",
+                 "value": 5
+                }
+               },
+               {
+                "id": "quest-foot",
+                "type": "Row",
+                "props": {
+                 "gap": "sm",
+                 "align": "center",
+                 "justify": "between",
+                 "wrap": false,
+                 "scrollable": false
+                },
+                "children": [
+                 {
+                  "id": "quest-left",
+                  "type": "Row",
+                  "props": {
+                   "gap": 5,
+                   "align": "center",
+                   "justify": "start",
+                   "wrap": false,
+                   "scrollable": false
+                  },
+                  "weight": 1,
+                  "children": [
+                   {
+                    "id": "quest-clock",
+                    "type": "Icon",
+                    "props": {
+                     "name": "clock",
+                     "size": "md",
+                     "glyphSize": 14
+                    },
+                    "style": {
+                     "color": "white"
+                    }
+                   },
+                   {
+                    "id": "quest-days",
+                    "type": "Text",
+                    "props": {
+                     "content": {
+                      "kind": "template",
+                      "template": "{days} {unit} left",
+                      "values": {
+                       "days": {
+                        "kind": "binding",
+                        "path": "quest.endsAt",
+                        "fallback": "—",
+                        "format": "daysUntil"
+                       },
+                       "unit": {
+                        "kind": "plural",
+                        "of": "days",
+                        "forms": {
+                         "one": "day",
+                         "other": "days"
+                        }
+                       }
+                      }
+                     },
+                     "align": "start",
+                     "maxLines": 1,
+                     "overflow": "ellipsis"
+                    },
+                    "style": {
+                     "color": "white",
+                     "typography": "label"
+                    }
+                   }
+                  ]
+                 },
+                 {
+                  "id": "quest-go",
+                  "type": "Container",
+                  "props": {
+                   "direction": "row",
+                   "gap": "none",
+                   "align": "center",
+                   "justify": "center"
+                  },
+                  "style": {
+                   "padding": {
+                    "top": "none",
+                    "end": "lg",
+                    "bottom": "none",
+                    "start": "lg"
+                   },
+                   "height": 36,
+                   "radius": "chip",
+                   "background": {
+                    "kind": "color",
+                    "color": "white"
+                   },
+                   "shadow": "low"
+                  },
+                  "children": [
+                   {
+                    "id": "quest-go-label",
+                    "type": "Text",
+                    "props": {
+                     "content": {
+                      "kind": "binding",
+                      "path": "quest.cta",
+                      "fallback": "—"
+                     },
+                     "align": "start",
+                     "maxLines": 1,
+                     "overflow": "ellipsis"
+                    },
+                    "style": {
+                     "color": "grapeDeep",
+                     "typography": "button"
+                    },
+                    "styleWhen": [
+                     {
+                      "when": {
+                       "path": "quest.color",
+                       "op": "eq",
+                       "value": "mint"
+                      },
+                      "style": {
+                       "color": "mintDeep"
+                      }
+                     },
+                     {
+                      "when": {
+                       "path": "quest.color",
+                       "op": "eq",
+                       "value": "sky"
+                      },
+                      "style": {
+                       "color": "skyDeep"
+                      }
+                     }
+                    ]
+                   }
+                  ]
+                 }
+                ]
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "chest",
+      "type": "Container",
+      "props": {
+       "direction": "row",
+       "gap": "md",
+       "align": "center"
+      },
+      "style": {
+       "padding": "tile",
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       },
+       "radius": "lg",
+       "border": {
+        "width": 2,
+        "color": "accent"
+       },
+       "background": {
+        "kind": "color",
+        "color": "sunSoft"
+       }
+      },
+      "children": [
+       {
+        "id": "chest-image",
+        "type": "Image",
+        "props": {
+         "source": {
+          "kind": "binding",
+          "path": "art.chest",
+          "fallback": "placeholder"
+         },
+         "aspectRatio": "1:1",
+         "fit": "contain"
+        },
+        "style": {
+         "width": 52,
+         "height": 52
+        }
+       },
+       {
+        "id": "chest-text",
+        "type": "Column",
+        "props": {
+         "gap": "hair",
+         "align": "start"
+        },
+        "weight": 1,
+        "children": [
+         {
+          "id": "chest-title",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "literal",
+            "value": "Daily chest"
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "typography": "rowTitle"
+          }
+         },
+         {
+          "id": "chest-note",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "binding",
+            "path": "chest.opensIn",
+            "fallback": "—"
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "color": "sunInk",
+           "typography": "bodyS"
+          }
+         }
+        ]
+       },
+       {
+        "id": "chest-remind",
+        "type": "Button",
+        "props": {
+         "label": {
+          "kind": "literal",
+          "value": "Remind me"
+         },
+         "variant": "secondary",
+         "action": {
+          "type": "chest.remind",
+          "track": {
+           "event": "chest_reminder"
+          }
+         },
+         "fullWidth": false,
+         "size": "sm"
+        },
+        "style": {
+         "typography": "button",
+         "padding": {
+          "top": "none",
+          "end": "tile",
+          "bottom": "none",
+          "start": "tile"
+         },
+         "height": 36,
+         "radius": "chip",
+         "shadow": "popChest"
+        }
+       }
+      ]
+     },
+     {
+      "id": "recent-head",
+      "type": "Row",
+      "props": {
+       "gap": "sm",
+       "align": "center",
+       "justify": "between",
+       "wrap": false,
+       "scrollable": false
+      },
+      "style": {
+       "margin": {
+        "top": 6,
+        "end": "gutter",
+        "bottom": "none",
+        "start": "gutter"
+       }
+      },
+      "children": [
+       {
+        "id": "recent-title",
+        "type": "Text",
+        "props": {
+         "content": {
+          "kind": "literal",
+          "value": "Recent activity"
+         },
+         "align": "start",
+         "maxLines": 1,
+         "overflow": "ellipsis"
+        },
+        "style": {
+         "typography": "section"
+        }
+       }
+      ]
+     },
+     {
+      "id": "recent",
+      "type": "Repeater",
+      "props": {
+       "source": "activity",
+       "item": "entry",
+       "direction": "column",
+       "gap": 10,
+       "limit": 3
+      },
+      "style": {
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       }
+      },
+      "children": [
+       {
+        "id": "recent-row",
+        "type": "Container",
+        "props": {
+         "direction": "row",
+         "gap": "md",
+         "align": "center"
+        },
+        "style": {
+         "padding": "md",
+         "radius": "md",
+         "border": {
+          "width": 2,
+          "color": "border"
+         },
+         "background": {
+          "kind": "color",
+          "color": "surface"
+         }
+        },
+        "children": [
+         {
+          "id": "recent-row-tile",
+          "type": "Container",
+          "props": {
+           "direction": "row",
+           "gap": "none",
+           "align": "center",
+           "justify": "center"
+          },
+          "style": {
+           "width": 42,
+           "height": 42,
+           "radius": "sm",
+           "background": {
+            "kind": "color",
+            "color": "grapeSoft"
+           }
+          },
+          "styleWhen": [
+           {
+            "when": {
+             "path": "entry.tone",
+             "op": "eq",
+             "value": "coral"
+            },
+            "style": {
+             "background": {
+              "kind": "color",
+              "color": "coralSoft"
+             }
+            }
+           },
+           {
+            "when": {
+             "path": "entry.tone",
+             "op": "eq",
+             "value": "sky"
+            },
+            "style": {
+             "background": {
+              "kind": "color",
+              "color": "skySoft"
+             }
+            }
+           },
+           {
+            "when": {
+             "path": "entry.tone",
+             "op": "eq",
+             "value": "mint"
+            },
+            "style": {
+             "background": {
+              "kind": "color",
+              "color": "mintSoft"
+             }
+            }
+           }
+          ],
+          "children": [
+           {
+            "id": "recent-row-icon",
+            "type": "Icon",
+            "props": {
+             "name": "coins",
+             "iconPath": "entry.icon",
+             "size": "md",
+             "glyphSize": 20
+            },
+            "style": {
+             "color": "primary"
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "entry.tone",
+               "op": "eq",
+               "value": "coral"
+              },
+              "style": {
+               "color": "coralDeep"
+              }
+             },
+             {
+              "when": {
+               "path": "entry.tone",
+               "op": "eq",
+               "value": "sky"
+              },
+              "style": {
+               "color": "skyDeep"
+              }
+             },
+             {
+              "when": {
+               "path": "entry.tone",
+               "op": "eq",
+               "value": "mint"
+              },
+              "style": {
+               "color": "mintDeep"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "recent-row-text",
+          "type": "Column",
+          "props": {
+           "gap": "hair",
+           "align": "start"
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "recent-row-title",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "binding",
+              "path": "entry.title",
+              "fallback": ""
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "typography": "bodyM"
+            }
+           },
+           {
+            "id": "recent-row-note",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "template",
+              "template": "{label} · {date}",
+              "values": {
+               "label": {
+                "kind": "binding",
+                "path": "entry.label",
+                "fallback": ""
+               },
+               "date": {
+                "kind": "binding",
+                "path": "entry.date",
+                "fallback": "",
+                "format": "date",
+                "dateParts": "dayMonth"
+               }
+              }
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "caption"
+            }
+           }
+          ]
+         },
+         {
+          "id": "recent-row-earned",
+          "type": "Badge",
+          "props": {
+           "label": {
+            "kind": "binding",
+            "path": "entry.points",
+            "fallback": "0",
+            "format": "number",
+            "sign": "always"
+           },
+           "tone": "success"
+          },
+          "visibleIf": {
+           "path": "entry.points",
+           "op": "gt",
+           "value": 0
+          },
+          "style": {
+           "typography": "button",
+           "padding": {
+            "top": 5,
+            "end": 10,
+            "bottom": 5,
+            "start": 10
+           },
+           "radius": "pill"
+          }
+         },
+         {
+          "id": "recent-row-spent",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "binding",
+            "path": "entry.points",
+            "fallback": "0",
+            "format": "number",
+            "sign": "always"
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "visibleIf": {
+           "path": "entry.points",
+           "op": "lt",
+           "value": 0
+          },
+          "style": {
+           "typography": "count"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "nav",
+      "type": "NavBar",
+      "props": {},
+      "style": {
+       "background": {
+        "kind": "color",
+        "color": "surface"
+       }
+      },
+      "children": [
+       {
+        "id": "nav-home",
+        "type": "NavItem",
+        "props": {
+         "icon": "house",
+         "label": {
+          "kind": "literal",
+          "value": "Home"
+         },
+         "action": {
+          "type": "navigate.section",
+          "params": {
+           "screenId": "home"
+          },
+          "track": {
+           "event": "section_opened",
+           "params": {
+            "section": "home"
+           }
+          }
+         }
+        }
+       },
+       {
+        "id": "nav-rewards",
+        "type": "NavItem",
+        "props": {
+         "icon": "gift",
+         "label": {
+          "kind": "literal",
+          "value": "Rewards"
+         },
+         "action": {
+          "type": "navigate.section",
+          "params": {
+           "screenId": "rewards"
+          },
+          "track": {
+           "event": "section_opened",
+           "params": {
+            "section": "rewards"
+           }
+          }
+         }
+        }
+       },
+       {
+        "id": "nav-profile",
+        "type": "NavItem",
+        "props": {
+         "icon": "circle-user",
+         "label": {
+          "kind": "literal",
+          "value": "Profile"
+         },
+         "action": {
+          "type": "navigate.section",
+          "params": {
+           "screenId": "profile"
+          },
+          "track": {
+           "event": "section_opened",
+           "params": {
+            "section": "profile"
+           }
+          }
+         }
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "screenId": "quest",
+   "name": "Quest",
+   "statusBarIcons": "light",
+   "root": {
+    "id": "quest-root",
+    "type": "Screen",
+    "props": {
+     "gap": 16
+    },
+    "style": {
+     "padding": {
+      "top": "none",
+      "end": "none",
+      "bottom": "xl",
+      "start": "none"
+     },
+     "background": {
+      "kind": "color",
+      "color": "canvas"
+     }
+    },
+    "children": [
+     {
+      "id": "quest-bar",
+      "type": "AppBar",
+      "props": {
+       "title": {
+        "kind": "literal",
+        "value": "Quest"
+       },
+       "showBack": true
+      },
+      "style": {
+       "color": {
+        "token": "white",
+        "opacity": 0
+       },
+       "padding": {
+        "top": "xs",
+        "end": "lg",
+        "bottom": "sm",
+        "start": "lg"
+       },
+       "background": {
+        "kind": "gradient",
+        "gradient": "barGrape"
+       }
+      },
+      "styleWhen": [
+       {
+        "when": {
+         "path": "quest.color",
+         "op": "eq",
+         "value": "mint"
+        },
+        "style": {
+         "background": {
+          "kind": "gradient",
+          "gradient": "barMint"
+         }
+        }
+       },
+       {
+        "when": {
+         "path": "quest.color",
+         "op": "eq",
+         "value": "sky"
+        },
+        "style": {
+         "background": {
+          "kind": "gradient",
+          "gradient": "barSky"
+         }
+        }
+       }
+      ],
+      "children": [
+       {
+        "id": "share",
+        "type": "IconButton",
+        "props": {
+         "icon": "share-2",
+         "label": {
+          "kind": "literal",
+          "value": "Share"
+         },
+         "variant": "secondary",
+         "size": "md",
+         "glyphSize": 20,
+         "action": {
+          "type": "quest.share",
+          "params": {
+           "questId": "unknown"
+          },
+          "paramBindings": {
+           "questId": "quest.id"
+          },
+          "track": {
+           "event": "quest_shared"
+          }
+         }
+        },
+        "style": {
+         "color": "onSurface",
+         "width": 42,
+         "height": 42,
+         "background": {
+          "kind": "color",
+          "color": "surface"
+         },
+         "shadow": "low"
+        }
+       },
+       {
+        "id": "back",
+        "type": "IconButton",
+        "props": {
+         "icon": "chevron-left",
+         "label": {
+          "kind": "literal",
+          "value": "Back"
+         },
+         "variant": "secondary",
+         "size": "md",
+         "glyphSize": 20,
+         "action": {
+          "type": "navigate.back"
+         }
+        },
+        "style": {
+         "color": "onSurface",
+         "width": 42,
+         "height": 42,
+         "background": {
+          "kind": "color",
+          "color": "surface"
+         },
+         "shadow": "low"
+        },
+        "zone": "leading"
+       }
+      ]
+     },
+     {
+      "id": "hero-image",
+      "type": "Image",
+      "props": {
+       "source": {
+        "kind": "binding",
+        "path": "quest.hero",
+        "fallback": "placeholder"
+       },
+       "aspectRatio": {
+        "width": 393,
+        "height": 226
+       },
+       "fit": "cover"
+      },
+      "pull": 16
+     },
+     {
+      "id": "title-card",
+      "type": "Container",
+      "props": {
+       "direction": "column",
+       "gap": "md"
+      },
+      "style": {
+       "padding": "hero",
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       },
+       "radius": "card",
+       "border": {
+        "width": 2,
+        "color": "border"
+       },
+       "background": {
+        "kind": "color",
+        "color": "surface"
+       },
+       "shadow": "popLine"
+      },
+      "pull": 86,
+      "children": [
+       {
+        "id": "title-chips",
+        "type": "Row",
+        "props": {
+         "gap": "sm",
+         "align": "center",
+         "justify": "start",
+         "wrap": true,
+         "scrollable": false
+        },
+        "children": [
+         {
+          "id": "status",
+          "type": "Badge",
+          "props": {
+           "label": {
+            "kind": "binding",
+            "path": "quest.statusLabel",
+            "fallback": "—"
+           },
+           "tone": "neutral",
+           "icon": "zap"
+          },
+          "style": {
+           "color": "primary",
+           "typography": "chip",
+           "padding": {
+            "top": 6,
+            "end": 11,
+            "bottom": 6,
+            "start": 9
+           },
+           "radius": "pill",
+           "background": {
+            "kind": "color",
+            "color": "grapeSoft"
+           }
+          }
+         },
+         {
+          "id": "ends",
+          "type": "Badge",
+          "props": {
+           "label": {
+            "kind": "template",
+            "template": "{days} {unit} left",
+            "values": {
+             "days": {
+              "kind": "binding",
+              "path": "quest.endsAt",
+              "fallback": "—",
+              "format": "daysUntil"
+             },
+             "unit": {
+              "kind": "plural",
+              "of": "days",
+              "forms": {
+               "one": "day",
+               "other": "days"
+              }
+             }
+            }
+           },
+           "tone": "neutral",
+           "icon": "clock"
+          },
+          "style": {
+           "color": "coralDeep",
+           "typography": "chip",
+           "padding": {
+            "top": 6,
+            "end": 11,
+            "bottom": 6,
+            "start": 9
+           },
+           "radius": "pill",
+           "background": {
+            "kind": "color",
+            "color": "coralSoft"
+           }
+          }
+         }
+        ]
+       },
+       {
+        "id": "title",
+        "type": "Text",
+        "props": {
+         "content": {
+          "kind": "binding",
+          "path": "quest.title",
+          "fallback": ""
+         },
+         "align": "start",
+         "maxLines": 2,
+         "overflow": "ellipsis"
+        },
+        "style": {
+         "typography": "displayL"
+        }
+       },
+       {
+        "id": "about",
+        "type": "Text",
+        "props": {
+         "content": {
+          "kind": "binding",
+          "path": "quest.description",
+          "fallback": ""
+         },
+         "align": "start",
+         "overflow": "visible"
+        },
+        "style": {
+         "color": "muted",
+         "typography": "body"
+        }
+       },
+       {
+        "id": "reward",
+        "type": "Container",
+        "props": {
+         "direction": "row",
+         "gap": 10,
+         "align": "center"
+        },
+        "style": {
+         "padding": "md",
+         "radius": "button",
+         "background": {
+          "kind": "color",
+          "color": "sunSoft"
+         }
+        },
+        "children": [
+         {
+          "id": "reward-coin",
+          "type": "Image",
+          "props": {
+           "source": {
+            "kind": "binding",
+            "path": "art.coin",
+            "fallback": "placeholder"
+           },
+           "aspectRatio": "1:1",
+           "fit": "contain"
+          },
+          "style": {
+           "width": 40,
+           "height": 40
+          }
+         },
+         {
+          "id": "reward-text",
+          "type": "Column",
+          "props": {
+           "gap": "none",
+           "align": "start"
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "reward-label",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "literal",
+              "value": "Reward"
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "sunInk",
+             "typography": "chip"
+            }
+           },
+           {
+            "id": "reward-value",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "template",
+              "template": "{reward} {unit}",
+              "values": {
+               "reward": {
+                "kind": "binding",
+                "path": "quest.reward",
+                "fallback": "0",
+                "format": "number",
+                "sign": "always"
+               },
+               "unit": {
+                "kind": "plural",
+                "of": "reward",
+                "forms": {
+                 "one": "pt",
+                 "other": "pts"
+                }
+               }
+              }
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "typography": "titleS"
+            }
+           }
+          ]
+         },
+         {
+          "id": "reward-perk",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "binding",
+            "path": "quest.perk",
+            "fallback": ""
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "color": "sunInk",
+           "typography": "chip"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "stamps",
+      "type": "Container",
+      "props": {
+       "direction": "column",
+       "gap": "tile"
+      },
+      "style": {
+       "padding": "card",
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       },
+       "radius": "card",
+       "border": {
+        "width": 2,
+        "color": "border"
+       },
+       "background": {
+        "kind": "color",
+        "color": "surface"
+       },
+       "shadow": "popLine"
+      },
+      "children": [
+       {
+        "id": "stamps-head",
+        "type": "Row",
+        "props": {
+         "gap": "sm",
+         "align": "center",
+         "justify": "between",
+         "wrap": false,
+         "scrollable": false
+        },
+        "children": [
+         {
+          "id": "stamps-title",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "literal",
+            "value": "Stamp card"
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "typography": "titleS"
+          },
+          "weight": 1
+         },
+         {
+          "id": "stamps-count",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "template",
+            "template": "{done} of {total}",
+            "values": {
+             "done": {
+              "kind": "binding",
+              "path": "quest.progress",
+              "fallback": "0",
+              "format": "number"
+             },
+             "total": {
+              "kind": "binding",
+              "path": "quest.target",
+              "fallback": "0",
+              "format": "number"
+             }
+            }
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "ellipsis",
+           "spans": {
+            "done": {
+             "color": "primary",
+             "weight": "bold"
+            }
+           }
+          },
+          "style": {
+           "color": "muted",
+           "typography": "cta"
+          }
+         }
+        ]
+       },
+       {
+        "id": "stamps-row",
+        "type": "Row",
+        "props": {
+         "gap": "none",
+         "align": "center",
+         "justify": "start",
+         "wrap": false,
+         "scrollable": false
+        },
+        "style": {
+         "padding": {
+          "top": "none",
+          "end": "none",
+          "bottom": "xs",
+          "start": "none"
+         }
+        },
+        "children": [
+         {
+          "id": "stamp-1",
+          "type": "Column",
+          "props": {
+           "gap": "none",
+           "align": "center"
+          },
+          "visibleIf": {
+           "path": "quest.target",
+           "op": "gt",
+           "value": 0
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "stamp-1-mark",
+            "type": "Container",
+            "props": {
+             "direction": "row",
+             "gap": "none",
+             "align": "center",
+             "justify": "center"
+            },
+            "style": {
+             "width": 52,
+             "height": 52,
+             "radius": "pill",
+             "background": {
+              "kind": "color",
+              "color": "sand"
+             }
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "quest.progress",
+               "op": "gt",
+               "value": 0
+              },
+              "style": {
+               "background": {
+                "kind": "gradient",
+                "gradient": "fillGrape"
+               },
+               "shadow": "popGrape"
+              }
+             },
+             {
+              "when": {
+               "path": "quest.progress",
+               "op": "eq",
+               "value": 0
+              },
+              "style": {
+               "border": {
+                "width": 2.5,
+                "color": "primary"
+               },
+               "background": {
+                "kind": "color",
+                "color": "surface"
+               }
+              }
+             },
+             {
+              "when": {
+               "path": "quest.target",
+               "op": "eq",
+               "value": 1
+              },
+              "style": {
+               "border": {
+                "width": 2,
+                "color": "accent"
+               },
+               "background": {
+                "kind": "color",
+                "color": "sunSoft"
+               }
+              }
+             }
+            ],
+            "children": [
+             {
+              "id": "stamp-1-icon",
+              "type": "Icon",
+              "props": {
+               "name": "check",
+               "iconPath": "quest.icon",
+               "size": "md",
+               "glyphSize": 24
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "gt",
+               "value": 0
+              },
+              "style": {
+               "color": "white"
+              }
+             },
+             {
+              "id": "stamp-1-digit",
+              "type": "Text",
+              "props": {
+               "content": {
+                "kind": "literal",
+                "value": "1"
+               },
+               "align": "center",
+               "maxLines": 1,
+               "overflow": "ellipsis"
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "eq",
+               "value": 0
+              },
+              "style": {
+               "color": "primary",
+               "typography": "titleS"
+              }
+             },
+             {
+              "id": "stamp-1-ahead",
+              "type": "Container",
+              "props": {
+               "direction": "row",
+               "gap": "none",
+               "align": "center",
+               "justify": "center"
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "lt",
+               "value": 0
+              },
+              "children": [
+               {
+                "id": "stamp-1-gift",
+                "type": "Icon",
+                "props": {
+                 "name": "gift",
+                 "size": "md",
+                 "glyphSize": 22
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "eq",
+                 "value": 1
+                },
+                "style": {
+                 "color": "sunDeep"
+                }
+               },
+               {
+                "id": "stamp-1-dot",
+                "type": "Container",
+                "props": {
+                 "direction": "row",
+                 "gap": "none",
+                 "align": "center",
+                 "justify": "center"
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "gt",
+                 "value": 1
+                },
+                "style": {
+                 "width": 6,
+                 "height": 6,
+                 "radius": "pill",
+                 "background": {
+                  "kind": "color",
+                  "color": "sandDeep"
+                 }
+                },
+                "children": []
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "stamp-2",
+          "type": "Column",
+          "props": {
+           "gap": "none",
+           "align": "center"
+          },
+          "visibleIf": {
+           "path": "quest.target",
+           "op": "gt",
+           "value": 1
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "stamp-2-mark",
+            "type": "Container",
+            "props": {
+             "direction": "row",
+             "gap": "none",
+             "align": "center",
+             "justify": "center"
+            },
+            "style": {
+             "width": 52,
+             "height": 52,
+             "radius": "pill",
+             "background": {
+              "kind": "color",
+              "color": "sand"
+             }
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "quest.progress",
+               "op": "gt",
+               "value": 1
+              },
+              "style": {
+               "background": {
+                "kind": "gradient",
+                "gradient": "fillGrape"
+               },
+               "shadow": "popGrape"
+              }
+             },
+             {
+              "when": {
+               "path": "quest.progress",
+               "op": "eq",
+               "value": 1
+              },
+              "style": {
+               "border": {
+                "width": 2.5,
+                "color": "primary"
+               },
+               "background": {
+                "kind": "color",
+                "color": "surface"
+               }
+              }
+             },
+             {
+              "when": {
+               "path": "quest.target",
+               "op": "eq",
+               "value": 2
+              },
+              "style": {
+               "border": {
+                "width": 2,
+                "color": "accent"
+               },
+               "background": {
+                "kind": "color",
+                "color": "sunSoft"
+               }
+              }
+             }
+            ],
+            "children": [
+             {
+              "id": "stamp-2-icon",
+              "type": "Icon",
+              "props": {
+               "name": "check",
+               "iconPath": "quest.icon",
+               "size": "md",
+               "glyphSize": 24
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "gt",
+               "value": 1
+              },
+              "style": {
+               "color": "white"
+              }
+             },
+             {
+              "id": "stamp-2-digit",
+              "type": "Text",
+              "props": {
+               "content": {
+                "kind": "literal",
+                "value": "2"
+               },
+               "align": "center",
+               "maxLines": 1,
+               "overflow": "ellipsis"
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "eq",
+               "value": 1
+              },
+              "style": {
+               "color": "primary",
+               "typography": "titleS"
+              }
+             },
+             {
+              "id": "stamp-2-ahead",
+              "type": "Container",
+              "props": {
+               "direction": "row",
+               "gap": "none",
+               "align": "center",
+               "justify": "center"
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "lt",
+               "value": 1
+              },
+              "children": [
+               {
+                "id": "stamp-2-gift",
+                "type": "Icon",
+                "props": {
+                 "name": "gift",
+                 "size": "md",
+                 "glyphSize": 22
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "eq",
+                 "value": 2
+                },
+                "style": {
+                 "color": "sunDeep"
+                }
+               },
+               {
+                "id": "stamp-2-dot",
+                "type": "Container",
+                "props": {
+                 "direction": "row",
+                 "gap": "none",
+                 "align": "center",
+                 "justify": "center"
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "gt",
+                 "value": 2
+                },
+                "style": {
+                 "width": 6,
+                 "height": 6,
+                 "radius": "pill",
+                 "background": {
+                  "kind": "color",
+                  "color": "sandDeep"
+                 }
+                },
+                "children": []
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "stamp-3",
+          "type": "Column",
+          "props": {
+           "gap": "none",
+           "align": "center"
+          },
+          "visibleIf": {
+           "path": "quest.target",
+           "op": "gt",
+           "value": 2
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "stamp-3-mark",
+            "type": "Container",
+            "props": {
+             "direction": "row",
+             "gap": "none",
+             "align": "center",
+             "justify": "center"
+            },
+            "style": {
+             "width": 52,
+             "height": 52,
+             "radius": "pill",
+             "background": {
+              "kind": "color",
+              "color": "sand"
+             }
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "quest.progress",
+               "op": "gt",
+               "value": 2
+              },
+              "style": {
+               "background": {
+                "kind": "gradient",
+                "gradient": "fillGrape"
+               },
+               "shadow": "popGrape"
+              }
+             },
+             {
+              "when": {
+               "path": "quest.progress",
+               "op": "eq",
+               "value": 2
+              },
+              "style": {
+               "border": {
+                "width": 2.5,
+                "color": "primary"
+               },
+               "background": {
+                "kind": "color",
+                "color": "surface"
+               }
+              }
+             },
+             {
+              "when": {
+               "path": "quest.target",
+               "op": "eq",
+               "value": 3
+              },
+              "style": {
+               "border": {
+                "width": 2,
+                "color": "accent"
+               },
+               "background": {
+                "kind": "color",
+                "color": "sunSoft"
+               }
+              }
+             }
+            ],
+            "children": [
+             {
+              "id": "stamp-3-icon",
+              "type": "Icon",
+              "props": {
+               "name": "check",
+               "iconPath": "quest.icon",
+               "size": "md",
+               "glyphSize": 24
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "gt",
+               "value": 2
+              },
+              "style": {
+               "color": "white"
+              }
+             },
+             {
+              "id": "stamp-3-digit",
+              "type": "Text",
+              "props": {
+               "content": {
+                "kind": "literal",
+                "value": "3"
+               },
+               "align": "center",
+               "maxLines": 1,
+               "overflow": "ellipsis"
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "eq",
+               "value": 2
+              },
+              "style": {
+               "color": "primary",
+               "typography": "titleS"
+              }
+             },
+             {
+              "id": "stamp-3-ahead",
+              "type": "Container",
+              "props": {
+               "direction": "row",
+               "gap": "none",
+               "align": "center",
+               "justify": "center"
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "lt",
+               "value": 2
+              },
+              "children": [
+               {
+                "id": "stamp-3-gift",
+                "type": "Icon",
+                "props": {
+                 "name": "gift",
+                 "size": "md",
+                 "glyphSize": 22
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "eq",
+                 "value": 3
+                },
+                "style": {
+                 "color": "sunDeep"
+                }
+               },
+               {
+                "id": "stamp-3-dot",
+                "type": "Container",
+                "props": {
+                 "direction": "row",
+                 "gap": "none",
+                 "align": "center",
+                 "justify": "center"
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "gt",
+                 "value": 3
+                },
+                "style": {
+                 "width": 6,
+                 "height": 6,
+                 "radius": "pill",
+                 "background": {
+                  "kind": "color",
+                  "color": "sandDeep"
+                 }
+                },
+                "children": []
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "stamp-4",
+          "type": "Column",
+          "props": {
+           "gap": "none",
+           "align": "center"
+          },
+          "visibleIf": {
+           "path": "quest.target",
+           "op": "gt",
+           "value": 3
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "stamp-4-mark",
+            "type": "Container",
+            "props": {
+             "direction": "row",
+             "gap": "none",
+             "align": "center",
+             "justify": "center"
+            },
+            "style": {
+             "width": 52,
+             "height": 52,
+             "radius": "pill",
+             "background": {
+              "kind": "color",
+              "color": "sand"
+             }
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "quest.progress",
+               "op": "gt",
+               "value": 3
+              },
+              "style": {
+               "background": {
+                "kind": "gradient",
+                "gradient": "fillGrape"
+               },
+               "shadow": "popGrape"
+              }
+             },
+             {
+              "when": {
+               "path": "quest.progress",
+               "op": "eq",
+               "value": 3
+              },
+              "style": {
+               "border": {
+                "width": 2.5,
+                "color": "primary"
+               },
+               "background": {
+                "kind": "color",
+                "color": "surface"
+               }
+              }
+             },
+             {
+              "when": {
+               "path": "quest.target",
+               "op": "eq",
+               "value": 4
+              },
+              "style": {
+               "border": {
+                "width": 2,
+                "color": "accent"
+               },
+               "background": {
+                "kind": "color",
+                "color": "sunSoft"
+               }
+              }
+             }
+            ],
+            "children": [
+             {
+              "id": "stamp-4-icon",
+              "type": "Icon",
+              "props": {
+               "name": "check",
+               "iconPath": "quest.icon",
+               "size": "md",
+               "glyphSize": 24
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "gt",
+               "value": 3
+              },
+              "style": {
+               "color": "white"
+              }
+             },
+             {
+              "id": "stamp-4-digit",
+              "type": "Text",
+              "props": {
+               "content": {
+                "kind": "literal",
+                "value": "4"
+               },
+               "align": "center",
+               "maxLines": 1,
+               "overflow": "ellipsis"
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "eq",
+               "value": 3
+              },
+              "style": {
+               "color": "primary",
+               "typography": "titleS"
+              }
+             },
+             {
+              "id": "stamp-4-ahead",
+              "type": "Container",
+              "props": {
+               "direction": "row",
+               "gap": "none",
+               "align": "center",
+               "justify": "center"
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "lt",
+               "value": 3
+              },
+              "children": [
+               {
+                "id": "stamp-4-gift",
+                "type": "Icon",
+                "props": {
+                 "name": "gift",
+                 "size": "md",
+                 "glyphSize": 22
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "eq",
+                 "value": 4
+                },
+                "style": {
+                 "color": "sunDeep"
+                }
+               },
+               {
+                "id": "stamp-4-dot",
+                "type": "Container",
+                "props": {
+                 "direction": "row",
+                 "gap": "none",
+                 "align": "center",
+                 "justify": "center"
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "gt",
+                 "value": 4
+                },
+                "style": {
+                 "width": 6,
+                 "height": 6,
+                 "radius": "pill",
+                 "background": {
+                  "kind": "color",
+                  "color": "sandDeep"
+                 }
+                },
+                "children": []
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "stamp-5",
+          "type": "Column",
+          "props": {
+           "gap": "none",
+           "align": "center"
+          },
+          "visibleIf": {
+           "path": "quest.target",
+           "op": "gt",
+           "value": 4
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "stamp-5-mark",
+            "type": "Container",
+            "props": {
+             "direction": "row",
+             "gap": "none",
+             "align": "center",
+             "justify": "center"
+            },
+            "style": {
+             "width": 52,
+             "height": 52,
+             "radius": "pill",
+             "background": {
+              "kind": "color",
+              "color": "sand"
+             }
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "quest.progress",
+               "op": "gt",
+               "value": 4
+              },
+              "style": {
+               "background": {
+                "kind": "gradient",
+                "gradient": "fillGrape"
+               },
+               "shadow": "popGrape"
+              }
+             },
+             {
+              "when": {
+               "path": "quest.progress",
+               "op": "eq",
+               "value": 4
+              },
+              "style": {
+               "border": {
+                "width": 2.5,
+                "color": "primary"
+               },
+               "background": {
+                "kind": "color",
+                "color": "surface"
+               }
+              }
+             },
+             {
+              "when": {
+               "path": "quest.target",
+               "op": "eq",
+               "value": 5
+              },
+              "style": {
+               "border": {
+                "width": 2,
+                "color": "accent"
+               },
+               "background": {
+                "kind": "color",
+                "color": "sunSoft"
+               }
+              }
+             }
+            ],
+            "children": [
+             {
+              "id": "stamp-5-icon",
+              "type": "Icon",
+              "props": {
+               "name": "check",
+               "iconPath": "quest.icon",
+               "size": "md",
+               "glyphSize": 24
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "gt",
+               "value": 4
+              },
+              "style": {
+               "color": "white"
+              }
+             },
+             {
+              "id": "stamp-5-digit",
+              "type": "Text",
+              "props": {
+               "content": {
+                "kind": "literal",
+                "value": "5"
+               },
+               "align": "center",
+               "maxLines": 1,
+               "overflow": "ellipsis"
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "eq",
+               "value": 4
+              },
+              "style": {
+               "color": "primary",
+               "typography": "titleS"
+              }
+             },
+             {
+              "id": "stamp-5-ahead",
+              "type": "Container",
+              "props": {
+               "direction": "row",
+               "gap": "none",
+               "align": "center",
+               "justify": "center"
+              },
+              "visibleIf": {
+               "path": "quest.progress",
+               "op": "lt",
+               "value": 4
+              },
+              "children": [
+               {
+                "id": "stamp-5-gift",
+                "type": "Icon",
+                "props": {
+                 "name": "gift",
+                 "size": "md",
+                 "glyphSize": 22
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "eq",
+                 "value": 5
+                },
+                "style": {
+                 "color": "sunDeep"
+                }
+               },
+               {
+                "id": "stamp-5-dot",
+                "type": "Container",
+                "props": {
+                 "direction": "row",
+                 "gap": "none",
+                 "align": "center",
+                 "justify": "center"
+                },
+                "visibleIf": {
+                 "path": "quest.target",
+                 "op": "gt",
+                 "value": 5
+                },
+                "style": {
+                 "width": 6,
+                 "height": 6,
+                 "radius": "pill",
+                 "background": {
+                  "kind": "color",
+                  "color": "sandDeep"
+                 }
+                },
+                "children": []
+               }
+              ]
+             }
+            ]
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "id": "stamps-hint",
+        "type": "Text",
+        "props": {
+         "content": {
+          "kind": "binding",
+          "path": "quest.stampHint",
+          "fallback": ""
+         },
+         "align": "start",
+         "overflow": "visible"
+        },
+        "style": {
+         "color": "muted",
+         "typography": "bodyS"
+        }
+       }
+      ]
+     },
+     {
+      "id": "steps-title",
+      "type": "Text",
+      "props": {
+       "content": {
+        "kind": "literal",
+        "value": "How it works"
+       },
+       "align": "start",
+       "maxLines": 1,
+       "overflow": "ellipsis"
+      },
+      "style": {
+       "typography": "titleM",
+       "margin": {
+        "top": "xs",
+        "end": "gutter",
+        "bottom": "none",
+        "start": "gutter"
+       }
+      }
+     },
+     {
+      "id": "step-1",
+      "type": "Container",
+      "props": {
+       "direction": "row",
+       "gap": "md",
+       "align": "center"
+      },
+      "style": {
+       "padding": "tile",
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       },
+       "radius": "md",
+       "border": {
+        "width": 2,
+        "color": "border"
+       },
+       "background": {
+        "kind": "color",
+        "color": "surface"
+       }
+      },
+      "styleWhen": [
+       {
+        "when": {
+         "path": "quest.stage",
+         "op": "eq",
+         "value": 1
+        },
+        "style": {
+         "border": {
+          "width": 2,
+          "color": "primary"
+         }
+        }
+       }
+      ],
+      "children": [
+       {
+        "id": "step-1-mark",
+        "type": "Container",
+        "props": {
+         "direction": "row",
+         "gap": "none",
+         "align": "center",
+         "justify": "center"
+        },
+        "style": {
+         "width": 34,
+         "height": 34,
+         "radius": "pill",
+         "background": {
+          "kind": "color",
+          "color": "sand"
+         }
+        },
+        "styleWhen": [
+         {
+          "when": {
+           "path": "quest.stage",
+           "op": "gt",
+           "value": 1
+          },
+          "style": {
+           "background": {
+            "kind": "color",
+            "color": "success"
+           }
+          }
+         },
+         {
+          "when": {
+           "path": "quest.stage",
+           "op": "eq",
+           "value": 1
+          },
+          "style": {
+           "background": {
+            "kind": "color",
+            "color": "primary"
+           }
+          }
+         }
+        ],
+        "children": [
+         {
+          "id": "step-1-check",
+          "type": "Icon",
+          "props": {
+           "name": "check",
+           "size": "md",
+           "glyphSize": 16
+          },
+          "visibleIf": {
+           "path": "quest.stage",
+           "op": "gt",
+           "value": 1
+          },
+          "style": {
+           "color": "white"
+          }
+         },
+         {
+          "id": "step-1-digit",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "literal",
+            "value": "1"
+           },
+           "align": "center",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "visibleIf": {
+           "path": "quest.stage",
+           "op": "eq",
+           "value": 1
+          },
+          "style": {
+           "color": "onPrimary",
+           "typography": "count"
+          }
+         },
+         {
+          "id": "step-1-lock",
+          "type": "Icon",
+          "props": {
+           "name": "lock",
+           "size": "md",
+           "glyphSize": 15
+          },
+          "visibleIf": {
+           "path": "quest.stage",
+           "op": "lt",
+           "value": 1
+          },
+          "style": {
+           "color": "sandInk"
+          }
+         }
+        ]
+       },
+       {
+        "id": "step-1-text",
+        "type": "Column",
+        "props": {
+         "gap": "hair",
+         "align": "start"
+        },
+        "weight": 1,
+        "children": [
+         {
+          "id": "step-1-title",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "binding",
+            "path": "quest.stepOne",
+            "fallback": ""
+           },
+           "align": "start",
+           "maxLines": 2,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "typography": "bodyM"
+          },
+          "styleWhen": [
+           {
+            "when": {
+             "path": "quest.stage",
+             "op": "lt",
+             "value": 1
+            },
+            "style": {
+             "color": "muted"
+            }
+           }
+          ]
+         },
+         {
+          "id": "step-1-note",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "binding",
+            "path": "quest.noteOne",
+            "fallback": ""
+           },
+           "align": "start",
+           "maxLines": 2,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "color": "muted",
+           "typography": "caption"
+          }
+         }
+        ]
+       },
+       {
+        "id": "step-1-now",
+        "type": "Badge",
+        "props": {
+         "label": {
+          "kind": "literal",
+          "value": "Now"
+         },
+         "tone": "accent"
+        },
+        "visibleIf": {
+         "path": "quest.stage",
+         "op": "eq",
+         "value": 1
+        },
+        "style": {
+         "typography": "chip",
+         "radius": "pill"
+        }
+       }
+      ]
+     },
+     {
+      "id": "step-2",
+      "type": "Container",
+      "props": {
+       "direction": "row",
+       "gap": "md",
+       "align": "center"
+      },
+      "style": {
+       "padding": "tile",
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       },
+       "radius": "md",
+       "border": {
+        "width": 2,
+        "color": "border"
+       },
+       "background": {
+        "kind": "color",
+        "color": "surface"
+       }
+      },
+      "styleWhen": [
+       {
+        "when": {
+         "path": "quest.stage",
+         "op": "eq",
+         "value": 2
+        },
+        "style": {
+         "border": {
+          "width": 2,
+          "color": "primary"
+         }
+        }
+       }
+      ],
+      "children": [
+       {
+        "id": "step-2-mark",
+        "type": "Container",
+        "props": {
+         "direction": "row",
+         "gap": "none",
+         "align": "center",
+         "justify": "center"
+        },
+        "style": {
+         "width": 34,
+         "height": 34,
+         "radius": "pill",
+         "background": {
+          "kind": "color",
+          "color": "sand"
+         }
+        },
+        "styleWhen": [
+         {
+          "when": {
+           "path": "quest.stage",
+           "op": "gt",
+           "value": 2
+          },
+          "style": {
+           "background": {
+            "kind": "color",
+            "color": "success"
+           }
+          }
+         },
+         {
+          "when": {
+           "path": "quest.stage",
+           "op": "eq",
+           "value": 2
+          },
+          "style": {
+           "background": {
+            "kind": "color",
+            "color": "primary"
+           }
+          }
+         }
+        ],
+        "children": [
+         {
+          "id": "step-2-check",
+          "type": "Icon",
+          "props": {
+           "name": "check",
+           "size": "md",
+           "glyphSize": 16
+          },
+          "visibleIf": {
+           "path": "quest.stage",
+           "op": "gt",
+           "value": 2
+          },
+          "style": {
+           "color": "white"
+          }
+         },
+         {
+          "id": "step-2-digit",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "literal",
+            "value": "2"
+           },
+           "align": "center",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "visibleIf": {
+           "path": "quest.stage",
+           "op": "eq",
+           "value": 2
+          },
+          "style": {
+           "color": "onPrimary",
+           "typography": "count"
+          }
+         },
+         {
+          "id": "step-2-lock",
+          "type": "Icon",
+          "props": {
+           "name": "lock",
+           "size": "md",
+           "glyphSize": 15
+          },
+          "visibleIf": {
+           "path": "quest.stage",
+           "op": "lt",
+           "value": 2
+          },
+          "style": {
+           "color": "sandInk"
+          }
+         }
+        ]
+       },
+       {
+        "id": "step-2-text",
+        "type": "Column",
+        "props": {
+         "gap": "hair",
+         "align": "start"
+        },
+        "weight": 1,
+        "children": [
+         {
+          "id": "step-2-title",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "binding",
+            "path": "quest.stepTwo",
+            "fallback": ""
+           },
+           "align": "start",
+           "maxLines": 2,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "typography": "bodyM"
+          },
+          "styleWhen": [
+           {
+            "when": {
+             "path": "quest.stage",
+             "op": "lt",
+             "value": 2
+            },
+            "style": {
+             "color": "muted"
+            }
+           }
+          ]
+         },
+         {
+          "id": "step-2-note",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "binding",
+            "path": "quest.noteTwo",
+            "fallback": ""
+           },
+           "align": "start",
+           "maxLines": 2,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "color": "muted",
+           "typography": "caption"
+          }
+         }
+        ]
+       },
+       {
+        "id": "step-2-now",
+        "type": "Badge",
+        "props": {
+         "label": {
+          "kind": "literal",
+          "value": "Now"
+         },
+         "tone": "accent"
+        },
+        "visibleIf": {
+         "path": "quest.stage",
+         "op": "eq",
+         "value": 2
+        },
+        "style": {
+         "typography": "chip",
+         "radius": "pill"
+        }
+       }
+      ]
+     },
+     {
+      "id": "step-3",
+      "type": "Container",
+      "props": {
+       "direction": "row",
+       "gap": "md",
+       "align": "center"
+      },
+      "style": {
+       "padding": "tile",
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       },
+       "radius": "md",
+       "border": {
+        "width": 2,
+        "color": "border"
+       },
+       "background": {
+        "kind": "color",
+        "color": "surface"
+       }
+      },
+      "styleWhen": [
+       {
+        "when": {
+         "path": "quest.stage",
+         "op": "eq",
+         "value": 3
+        },
+        "style": {
+         "border": {
+          "width": 2,
+          "color": "primary"
+         }
+        }
+       }
+      ],
+      "children": [
+       {
+        "id": "step-3-mark",
+        "type": "Container",
+        "props": {
+         "direction": "row",
+         "gap": "none",
+         "align": "center",
+         "justify": "center"
+        },
+        "style": {
+         "width": 34,
+         "height": 34,
+         "radius": "pill",
+         "background": {
+          "kind": "color",
+          "color": "sand"
+         }
+        },
+        "styleWhen": [
+         {
+          "when": {
+           "path": "quest.stage",
+           "op": "gt",
+           "value": 3
+          },
+          "style": {
+           "background": {
+            "kind": "color",
+            "color": "success"
+           }
+          }
+         },
+         {
+          "when": {
+           "path": "quest.stage",
+           "op": "eq",
+           "value": 3
+          },
+          "style": {
+           "background": {
+            "kind": "color",
+            "color": "primary"
+           }
+          }
+         }
+        ],
+        "children": [
+         {
+          "id": "step-3-check",
+          "type": "Icon",
+          "props": {
+           "name": "check",
+           "size": "md",
+           "glyphSize": 16
+          },
+          "visibleIf": {
+           "path": "quest.stage",
+           "op": "gt",
+           "value": 3
+          },
+          "style": {
+           "color": "white"
+          }
+         },
+         {
+          "id": "step-3-digit",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "literal",
+            "value": "3"
+           },
+           "align": "center",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "visibleIf": {
+           "path": "quest.stage",
+           "op": "eq",
+           "value": 3
+          },
+          "style": {
+           "color": "onPrimary",
+           "typography": "count"
+          }
+         },
+         {
+          "id": "step-3-lock",
+          "type": "Icon",
+          "props": {
+           "name": "lock",
+           "size": "md",
+           "glyphSize": 15
+          },
+          "visibleIf": {
+           "path": "quest.stage",
+           "op": "lt",
+           "value": 3
+          },
+          "style": {
+           "color": "sandInk"
+          }
+         }
+        ]
+       },
+       {
+        "id": "step-3-text",
+        "type": "Column",
+        "props": {
+         "gap": "hair",
+         "align": "start"
+        },
+        "weight": 1,
+        "children": [
+         {
+          "id": "step-3-title",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "binding",
+            "path": "quest.stepThree",
+            "fallback": ""
+           },
+           "align": "start",
+           "maxLines": 2,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "typography": "bodyM"
+          },
+          "styleWhen": [
+           {
+            "when": {
+             "path": "quest.stage",
+             "op": "lt",
+             "value": 3
+            },
+            "style": {
+             "color": "muted"
+            }
+           }
+          ]
+         },
+         {
+          "id": "step-3-note",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "binding",
+            "path": "quest.noteThree",
+            "fallback": ""
+           },
+           "align": "start",
+           "maxLines": 2,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "color": "muted",
+           "typography": "caption"
+          }
+         }
+        ]
+       },
+       {
+        "id": "step-3-now",
+        "type": "Badge",
+        "props": {
+         "label": {
+          "kind": "literal",
+          "value": "Now"
+         },
+         "tone": "accent"
+        },
+        "visibleIf": {
+         "path": "quest.stage",
+         "op": "eq",
+         "value": 3
+        },
+        "style": {
+         "typography": "chip",
+         "radius": "pill"
+        }
+       }
+      ]
+     },
+     {
+      "id": "cta-zone",
+      "type": "Column",
+      "props": {
+       "gap": "none",
+       "align": "start"
+      },
+      "style": {
+       "background": {
+        "kind": "color",
+        "color": "canvas"
+       }
+      },
+      "pin": "bottom",
+      "children": [
+       {
+        "id": "cta-line",
+        "type": "Divider",
+        "props": {
+         "color": "border",
+         "spacing": "none",
+         "orientation": "horizontal"
+        }
+       },
+       {
+        "id": "cta-box",
+        "type": "Container",
+        "props": {
+         "direction": "column",
+         "gap": "none"
+        },
+        "style": {
+         "padding": {
+          "top": "md",
+          "end": "gutter",
+          "bottom": "sm",
+          "start": "gutter"
+         }
+        },
+        "children": [
+         {
+          "id": "quest-cta",
+          "type": "Button",
+          "props": {
+           "label": {
+            "kind": "literal",
+            "value": "Continue quest"
+           },
+           "variant": "primary",
+           "action": {
+            "type": "quest.continue",
+            "params": {
+             "questId": "unknown"
+            },
+            "paramBindings": {
+             "questId": "quest.id"
+            },
+            "track": {
+             "event": "quest_continued"
+            }
+           },
+           "fullWidth": true,
+           "icon": "arrow-right",
+           "iconPosition": "end",
+           "size": "lg"
+          },
+          "style": {
+           "typography": "ctaL",
+           "height": 58,
+           "radius": "md",
+           "shadow": "popGrapeL"
+          }
+         }
+        ]
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "screenId": "rewards",
+   "name": "Rewards",
+   "root": {
+    "id": "rewards-root",
+    "type": "Screen",
+    "props": {
+     "gap": 18
+    },
+    "style": {
+     "padding": {
+      "top": "lg",
+      "end": "none",
+      "bottom": "xl",
+      "start": "none"
+     },
+     "background": {
+      "kind": "color",
+      "color": "canvas"
+     }
+    },
+    "children": [
+     {
+      "id": "rewards-title",
+      "type": "Text",
+      "props": {
+       "content": {
+        "kind": "literal",
+        "value": "Rewards"
+       },
+       "align": "start",
+       "maxLines": 1,
+       "overflow": "ellipsis"
+      },
+      "style": {
+       "typography": "displayL",
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       }
+      }
+     },
+     {
+      "id": "rewards-balance",
+      "type": "Container",
+      "props": {
+       "direction": "row",
+       "gap": "md",
+       "align": "center",
+       "justify": "between"
+      },
+      "style": {
+       "padding": "hero",
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       },
+       "radius": "card",
+       "background": {
+        "kind": "gradient",
+        "gradient": "heroSunset"
+       },
+       "shadow": "heroGlow"
+      },
+      "children": [
+       {
+        "id": "rewards-balance-text",
+        "type": "Column",
+        "props": {
+         "gap": "none",
+         "align": "start"
+        },
+        "weight": 1,
+        "children": [
+         {
+          "id": "rewards-balance-label",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "literal",
+            "value": "Your points"
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "color": {
+            "token": "white",
+            "opacity": 0.9
+           },
+           "typography": "label"
+          }
+         },
+         {
+          "id": "rewards-points",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "template",
+            "template": "{points} {unit}",
+            "values": {
+             "points": {
+              "kind": "binding",
+              "path": "user.points",
+              "fallback": "0",
+              "format": "number"
+             },
+             "unit": {
+              "kind": "plural",
+              "of": "points",
+              "forms": {
+               "one": "pt",
+               "other": "pts"
+              }
+             }
+            }
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "visible",
+           "spans": {
+            "points": {
+             "color": "white",
+             "typography": "numericL"
+            }
+           }
+          },
+          "style": {
+           "color": {
+            "token": "white",
+            "opacity": 0.9
+           },
+           "typography": "unit"
+          }
+         }
+        ]
+       },
+       {
+        "id": "rewards-coin",
+        "type": "Image",
+        "props": {
+         "source": {
+          "kind": "binding",
+          "path": "art.coin",
+          "fallback": "placeholder"
+         },
+         "aspectRatio": "1:1",
+         "fit": "contain"
+        },
+        "style": {
+         "width": 56,
+         "height": 56
+        }
+       }
+      ]
+     },
+     {
+      "id": "rewards-list-title",
+      "type": "Text",
+      "props": {
+       "content": {
+        "kind": "literal",
+        "value": "Spend your points"
+       },
+       "align": "start",
+       "maxLines": 1,
+       "overflow": "ellipsis"
+      },
+      "style": {
+       "typography": "section",
+       "margin": {
+        "top": 6,
+        "end": "gutter",
+        "bottom": "none",
+        "start": "gutter"
+       }
+      }
+     },
+     {
+      "id": "rewards-list",
+      "type": "Repeater",
+      "props": {
+       "source": "rewards",
+       "item": "reward",
+       "direction": "column",
+       "gap": 10
+      },
+      "style": {
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       }
+      },
+      "children": [
+       {
+        "id": "reward-row",
+        "type": "Container",
+        "props": {
+         "direction": "row",
+         "gap": "md",
+         "align": "center",
+         "action": {
+          "type": "reward.open",
+          "params": {
+           "rewardId": "unknown"
+          },
+          "paramBindings": {
+           "rewardId": "reward.id"
+          },
+          "track": {
+           "event": "reward_opened"
+          }
+         },
+         "label": {
+          "kind": "template",
+          "template": "Reward: {title}",
+          "values": {
+           "title": {
+            "kind": "binding",
+            "path": "reward.title",
+            "fallback": "—"
+           }
+          }
+         }
+        },
+        "style": {
+         "padding": "md",
+         "radius": "md",
+         "border": {
+          "width": 2,
+          "color": "border"
+         },
+         "background": {
+          "kind": "color",
+          "color": "surface"
+         }
+        },
+        "children": [
+         {
+          "id": "reward-tile",
+          "type": "Container",
+          "props": {
+           "direction": "row",
+           "gap": "none",
+           "align": "center",
+           "justify": "center"
+          },
+          "style": {
+           "width": 42,
+           "height": 42,
+           "radius": "sm",
+           "background": {
+            "kind": "color",
+            "color": "grapeSoft"
+           }
+          },
+          "styleWhen": [
+           {
+            "when": {
+             "path": "reward.tone",
+             "op": "eq",
+             "value": "coral"
+            },
+            "style": {
+             "background": {
+              "kind": "color",
+              "color": "coralSoft"
+             }
+            }
+           },
+           {
+            "when": {
+             "path": "reward.tone",
+             "op": "eq",
+             "value": "sky"
+            },
+            "style": {
+             "background": {
+              "kind": "color",
+              "color": "skySoft"
+             }
+            }
+           },
+           {
+            "when": {
+             "path": "reward.tone",
+             "op": "eq",
+             "value": "mint"
+            },
+            "style": {
+             "background": {
+              "kind": "color",
+              "color": "mintSoft"
+             }
+            }
+           }
+          ],
+          "children": [
+           {
+            "id": "reward-icon",
+            "type": "Icon",
+            "props": {
+             "name": "gift",
+             "iconPath": "reward.icon",
+             "size": "md",
+             "glyphSize": 20
+            },
+            "style": {
+             "color": "primary"
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "reward.tone",
+               "op": "eq",
+               "value": "coral"
+              },
+              "style": {
+               "color": "coralDeep"
+              }
+             },
+             {
+              "when": {
+               "path": "reward.tone",
+               "op": "eq",
+               "value": "sky"
+              },
+              "style": {
+               "color": "skyDeep"
+              }
+             },
+             {
+              "when": {
+               "path": "reward.tone",
+               "op": "eq",
+               "value": "mint"
+              },
+              "style": {
+               "color": "mintDeep"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "reward-row-text",
+          "type": "Column",
+          "props": {
+           "gap": "hair",
+           "align": "start"
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "reward-row-title",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "binding",
+              "path": "reward.title",
+              "fallback": ""
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "typography": "bodyM"
+            }
+           },
+           {
+            "id": "reward-row-note",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "binding",
+              "path": "reward.note",
+              "fallback": ""
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "caption"
+            }
+           }
+          ]
+         },
+         {
+          "id": "reward-price",
+          "type": "Badge",
+          "props": {
+           "label": {
+            "kind": "binding",
+            "path": "reward.price",
+            "fallback": "0",
+            "format": "number"
+           },
+           "tone": "warning",
+           "icon": "coins"
+          },
+          "style": {
+           "typography": "label",
+           "padding": {
+            "top": 6,
+            "end": 11,
+            "bottom": 6,
+            "start": 9
+           },
+           "radius": "pill"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "nav",
+      "type": "NavBar",
+      "props": {},
+      "style": {
+       "background": {
+        "kind": "color",
+        "color": "surface"
+       }
+      },
+      "children": [
+       {
+        "id": "nav-home",
+        "type": "NavItem",
+        "props": {
+         "icon": "house",
+         "label": {
+          "kind": "literal",
+          "value": "Home"
+         },
+         "action": {
+          "type": "navigate.section",
+          "params": {
+           "screenId": "home"
+          },
+          "track": {
+           "event": "section_opened",
+           "params": {
+            "section": "home"
+           }
+          }
+         }
+        }
+       },
+       {
+        "id": "nav-rewards",
+        "type": "NavItem",
+        "props": {
+         "icon": "gift",
+         "label": {
+          "kind": "literal",
+          "value": "Rewards"
+         },
+         "action": {
+          "type": "navigate.section",
+          "params": {
+           "screenId": "rewards"
+          },
+          "track": {
+           "event": "section_opened",
+           "params": {
+            "section": "rewards"
+           }
+          }
+         }
+        }
+       },
+       {
+        "id": "nav-profile",
+        "type": "NavItem",
+        "props": {
+         "icon": "circle-user",
+         "label": {
+          "kind": "literal",
+          "value": "Profile"
+         },
+         "action": {
+          "type": "navigate.section",
+          "params": {
+           "screenId": "profile"
+          },
+          "track": {
+           "event": "section_opened",
+           "params": {
+            "section": "profile"
+           }
+          }
+         }
+        }
+       }
+      ]
+     }
+    ]
+   }
+  },
+  {
+   "screenId": "profile",
+   "name": "Profile",
+   "root": {
+    "id": "profile-root",
+    "type": "Screen",
+    "props": {
+     "gap": 18
+    },
+    "style": {
+     "padding": {
+      "top": "lg",
+      "end": "none",
+      "bottom": "xl",
+      "start": "none"
+     },
+     "background": {
+      "kind": "color",
+      "color": "canvas"
+     }
+    },
+    "children": [
+     {
+      "id": "profile-head",
+      "type": "Row",
+      "props": {
+       "gap": "lg",
+       "align": "center",
+       "justify": "start",
+       "wrap": false,
+       "scrollable": false
+      },
+      "style": {
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       }
+      },
+      "children": [
+       {
+        "id": "profile-avatar",
+        "type": "Image",
+        "props": {
+         "source": {
+          "kind": "binding",
+          "path": "user.avatar",
+          "fallback": "placeholder"
+         },
+         "aspectRatio": "1:1",
+         "fit": "cover"
+        },
+        "style": {
+         "width": 64,
+         "height": 64,
+         "radius": "pill",
+         "border": {
+          "width": 3,
+          "color": "white"
+         },
+         "shadow": "popSun"
+        }
+       },
+       {
+        "id": "profile-who",
+        "type": "Column",
+        "props": {
+         "gap": "sm",
+         "align": "start"
+        },
+        "weight": 1,
+        "children": [
+         {
+          "id": "profile-name",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "binding",
+            "path": "user.fullName",
+            "fallback": "—"
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "style": {
+           "typography": "titleM"
+          }
+         },
+         {
+          "id": "profile-tier",
+          "type": "Badge",
+          "props": {
+           "label": {
+            "kind": "template",
+            "template": "Level {level} · {title}",
+            "values": {
+             "level": {
+              "kind": "binding",
+              "path": "user.level",
+              "fallback": "0",
+              "format": "number"
+             },
+             "title": {
+              "kind": "binding",
+              "path": "user.title",
+              "fallback": "—"
+             }
+            }
+           },
+           "tone": "neutral",
+           "icon": "crown"
+          },
+          "style": {
+           "color": "primary",
+           "typography": "chip",
+           "padding": {
+            "top": 6,
+            "end": 11,
+            "bottom": 6,
+            "start": 9
+           },
+           "radius": "pill",
+           "background": {
+            "kind": "color",
+            "color": "grapeSoft"
+           }
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "profile-stats",
+      "type": "Grid",
+      "props": {
+       "columns": 2,
+       "gap": "md"
+      },
+      "style": {
+       "padding": {
+        "top": "none",
+        "end": "none",
+        "bottom": "xs",
+        "start": "none"
+       },
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       }
+      },
+      "children": [
+       {
+        "id": "stat-quests",
+        "type": "Container",
+        "props": {
+         "direction": "column",
+         "gap": 10
+        },
+        "style": {
+         "padding": "tile",
+         "radius": "md",
+         "border": {
+          "width": 2,
+          "color": "border"
+         },
+         "background": {
+          "kind": "color",
+          "color": "surface"
+         },
+         "shadow": "popLine"
+        },
+        "children": [
+         {
+          "id": "stat-quests-tile",
+          "type": "Container",
+          "props": {
+           "direction": "row",
+           "gap": "none",
+           "align": "center",
+           "justify": "center"
+          },
+          "style": {
+           "width": 38,
+           "height": 38,
+           "radius": "sm",
+           "background": {
+            "kind": "color",
+            "color": "grapeSoft"
+           }
+          },
+          "children": [
+           {
+            "id": "stat-quests-icon",
+            "type": "Icon",
+            "props": {
+             "name": "trophy",
+             "size": "md",
+             "glyphSize": 18
+            },
+            "style": {
+             "color": "primary"
+            }
+           }
+          ]
+         },
+         {
+          "id": "stat-quests-text",
+          "type": "Column",
+          "props": {
+           "gap": "none",
+           "align": "start"
+          },
+          "children": [
+           {
+            "id": "stat-quests-label",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "literal",
+              "value": "Quests completed"
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "caption"
+            }
+           },
+           {
+            "id": "stat-quests-value",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "binding",
+              "path": "user.questsDone",
+              "fallback": "0",
+              "format": "number"
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "typography": "titleS"
+            }
+           }
+          ]
+         }
+        ]
+       },
+       {
+        "id": "stat-lifetime",
+        "type": "Container",
+        "props": {
+         "direction": "column",
+         "gap": 10
+        },
+        "style": {
+         "padding": "tile",
+         "radius": "md",
+         "border": {
+          "width": 2,
+          "color": "border"
+         },
+         "background": {
+          "kind": "color",
+          "color": "surface"
+         },
+         "shadow": "popLine"
+        },
+        "children": [
+         {
+          "id": "stat-lifetime-tile",
+          "type": "Container",
+          "props": {
+           "direction": "row",
+           "gap": "none",
+           "align": "center",
+           "justify": "center"
+          },
+          "style": {
+           "width": 38,
+           "height": 38,
+           "radius": "sm",
+           "background": {
+            "kind": "color",
+            "color": "sunSoft"
+           }
+          },
+          "children": [
+           {
+            "id": "stat-lifetime-icon",
+            "type": "Icon",
+            "props": {
+             "name": "coins",
+             "size": "md",
+             "glyphSize": 18
+            },
+            "style": {
+             "color": "sunInk"
+            }
+           }
+          ]
+         },
+         {
+          "id": "stat-lifetime-text",
+          "type": "Column",
+          "props": {
+           "gap": "none",
+           "align": "start"
+          },
+          "children": [
+           {
+            "id": "stat-lifetime-label",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "literal",
+              "value": "Points earned"
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "caption"
+            }
+           },
+           {
+            "id": "stat-lifetime-value",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "binding",
+              "path": "user.lifetimePoints",
+              "fallback": "0",
+              "format": "number"
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "typography": "titleS"
+            }
+           }
+          ]
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "profile-activity-title",
+      "type": "Text",
+      "props": {
+       "content": {
+        "kind": "literal",
+        "value": "Activity"
+       },
+       "align": "start",
+       "maxLines": 1,
+       "overflow": "ellipsis"
+      },
+      "style": {
+       "typography": "section",
+       "margin": {
+        "top": 6,
+        "end": "gutter",
+        "bottom": "none",
+        "start": "gutter"
+       }
+      }
+     },
+     {
+      "id": "profile-activity",
+      "type": "Repeater",
+      "props": {
+       "source": "activity",
+       "item": "entry",
+       "direction": "column",
+       "gap": 10
+      },
+      "style": {
+       "margin": {
+        "end": "gutter",
+        "start": "gutter"
+       }
+      },
+      "children": [
+       {
+        "id": "profile-activity-row",
+        "type": "Container",
+        "props": {
+         "direction": "row",
+         "gap": "md",
+         "align": "center"
+        },
+        "style": {
+         "padding": "md",
+         "radius": "md",
+         "border": {
+          "width": 2,
+          "color": "border"
+         },
+         "background": {
+          "kind": "color",
+          "color": "surface"
+         }
+        },
+        "children": [
+         {
+          "id": "profile-activity-row-tile",
+          "type": "Container",
+          "props": {
+           "direction": "row",
+           "gap": "none",
+           "align": "center",
+           "justify": "center"
+          },
+          "style": {
+           "width": 42,
+           "height": 42,
+           "radius": "sm",
+           "background": {
+            "kind": "color",
+            "color": "grapeSoft"
+           }
+          },
+          "styleWhen": [
+           {
+            "when": {
+             "path": "entry.tone",
+             "op": "eq",
+             "value": "coral"
+            },
+            "style": {
+             "background": {
+              "kind": "color",
+              "color": "coralSoft"
+             }
+            }
+           },
+           {
+            "when": {
+             "path": "entry.tone",
+             "op": "eq",
+             "value": "sky"
+            },
+            "style": {
+             "background": {
+              "kind": "color",
+              "color": "skySoft"
+             }
+            }
+           },
+           {
+            "when": {
+             "path": "entry.tone",
+             "op": "eq",
+             "value": "mint"
+            },
+            "style": {
+             "background": {
+              "kind": "color",
+              "color": "mintSoft"
+             }
+            }
+           }
+          ],
+          "children": [
+           {
+            "id": "profile-activity-row-icon",
+            "type": "Icon",
+            "props": {
+             "name": "coins",
+             "iconPath": "entry.icon",
+             "size": "md",
+             "glyphSize": 20
+            },
+            "style": {
+             "color": "primary"
+            },
+            "styleWhen": [
+             {
+              "when": {
+               "path": "entry.tone",
+               "op": "eq",
+               "value": "coral"
+              },
+              "style": {
+               "color": "coralDeep"
+              }
+             },
+             {
+              "when": {
+               "path": "entry.tone",
+               "op": "eq",
+               "value": "sky"
+              },
+              "style": {
+               "color": "skyDeep"
+              }
+             },
+             {
+              "when": {
+               "path": "entry.tone",
+               "op": "eq",
+               "value": "mint"
+              },
+              "style": {
+               "color": "mintDeep"
+              }
+             }
+            ]
+           }
+          ]
+         },
+         {
+          "id": "profile-activity-row-text",
+          "type": "Column",
+          "props": {
+           "gap": "hair",
+           "align": "start"
+          },
+          "weight": 1,
+          "children": [
+           {
+            "id": "profile-activity-row-title",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "binding",
+              "path": "entry.title",
+              "fallback": ""
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "typography": "bodyM"
+            }
+           },
+           {
+            "id": "profile-activity-row-note",
+            "type": "Text",
+            "props": {
+             "content": {
+              "kind": "template",
+              "template": "{label} · {date}",
+              "values": {
+               "label": {
+                "kind": "binding",
+                "path": "entry.label",
+                "fallback": ""
+               },
+               "date": {
+                "kind": "binding",
+                "path": "entry.date",
+                "fallback": "",
+                "format": "date",
+                "dateParts": "dayMonth"
+               }
+              }
+             },
+             "align": "start",
+             "maxLines": 1,
+             "overflow": "ellipsis"
+            },
+            "style": {
+             "color": "muted",
+             "typography": "caption"
+            }
+           }
+          ]
+         },
+         {
+          "id": "profile-activity-row-earned",
+          "type": "Badge",
+          "props": {
+           "label": {
+            "kind": "binding",
+            "path": "entry.points",
+            "fallback": "0",
+            "format": "number",
+            "sign": "always"
+           },
+           "tone": "success"
+          },
+          "visibleIf": {
+           "path": "entry.points",
+           "op": "gt",
+           "value": 0
+          },
+          "style": {
+           "typography": "button",
+           "padding": {
+            "top": 5,
+            "end": 10,
+            "bottom": 5,
+            "start": 10
+           },
+           "radius": "pill"
+          }
+         },
+         {
+          "id": "profile-activity-row-spent",
+          "type": "Text",
+          "props": {
+           "content": {
+            "kind": "binding",
+            "path": "entry.points",
+            "fallback": "0",
+            "format": "number",
+            "sign": "always"
+           },
+           "align": "start",
+           "maxLines": 1,
+           "overflow": "ellipsis"
+          },
+          "visibleIf": {
+           "path": "entry.points",
+           "op": "lt",
+           "value": 0
+          },
+          "style": {
+           "typography": "count"
+          }
+         }
+        ]
+       }
+      ]
+     },
+     {
+      "id": "nav",
+      "type": "NavBar",
+      "props": {},
+      "style": {
+       "background": {
+        "kind": "color",
+        "color": "surface"
+       }
+      },
+      "children": [
+       {
+        "id": "nav-home",
+        "type": "NavItem",
+        "props": {
+         "icon": "house",
+         "label": {
+          "kind": "literal",
+          "value": "Home"
+         },
+         "action": {
+          "type": "navigate.section",
+          "params": {
+           "screenId": "home"
+          },
+          "track": {
+           "event": "section_opened",
+           "params": {
+            "section": "home"
+           }
+          }
+         }
+        }
+       },
+       {
+        "id": "nav-rewards",
+        "type": "NavItem",
+        "props": {
+         "icon": "gift",
+         "label": {
+          "kind": "literal",
+          "value": "Rewards"
+         },
+         "action": {
+          "type": "navigate.section",
+          "params": {
+           "screenId": "rewards"
+          },
+          "track": {
+           "event": "section_opened",
+           "params": {
+            "section": "rewards"
+           }
+          }
+         }
+        }
+       },
+       {
+        "id": "nav-profile",
+        "type": "NavItem",
+        "props": {
+         "icon": "circle-user",
+         "label": {
+          "kind": "literal",
+          "value": "Profile"
+         },
+         "action": {
+          "type": "navigate.section",
+          "params": {
+           "screenId": "profile"
+          },
+          "track": {
+           "event": "section_opened",
+           "params": {
+            "section": "profile"
+           }
+          }
+         }
+        }
+       }
+      ]
+     }
+    ]
+   }
+  }
+ ],
+ "localization": {
+  "defaultLocale": "en",
+  "locales": [
+   "en",
+   "uk",
+   "ar"
+  ],
+  "strings": {
+   "uk": {
+    "home/hello-hi/content.template": "Привіт, {name}!",
+    "home/hello-level/content.template": "Рівень {level} · {title}",
+    "home/tier/label.template": "РІВЕНЬ {level} · {tier}",
+    "home/level-label/content": "Ваші бали",
+    "home/points/content.template": "{points} {unit}",
+    "home/points/content.values.unit.forms.one": "бал",
+    "home/points/content.values.unit.forms.few": "бали",
+    "home/points/content.values.unit.forms.many": "балів",
+    "home/points/content.values.unit.forms.other": "бала",
+    "home/to-next/content.template": "Ще {left} {unit} до «{next}»",
+    "home/to-next/content.values.unit.forms.one": "бал",
+    "home/to-next/content.values.unit.forms.few": "бали",
+    "home/to-next/content.values.unit.forms.many": "балів",
+    "home/to-next/content.values.unit.forms.other": "бала",
+    "home/tier-percent/content.template": "{percent}%",
+    "home/redeem/label": "Обміняти",
+    "home/scan/label": "Сканувати",
+    "home/streak-title/content.template": "{days} {unit} поспіль",
+    "home/streak-title/content.values.unit.forms.one": "день",
+    "home/streak-title/content.values.unit.forms.few": "дні",
+    "home/streak-title/content.values.unit.forms.many": "днів",
+    "home/streak-title/content.values.unit.forms.other": "дня",
+    "home/streak-hint/content.template": "Ще {left} {unit} до скрині",
+    "home/streak-hint/content.values.unit.forms.one": "день",
+    "home/streak-hint/content.values.unit.forms.few": "дні",
+    "home/streak-hint/content.values.unit.forms.many": "днів",
+    "home/streak-hint/content.values.unit.forms.other": "дня",
+    "home/day-1-label/content": "Пн",
+    "home/day-2-label/content": "Вт",
+    "home/day-3-label/content": "Ср",
+    "home/day-4-label/content": "Чт",
+    "home/day-5-label/content": "Пт",
+    "home/day-6-label/content": "Сб",
+    "home/day-7-label/content": "Нд",
+    "home/quests-title/content": "Квести",
+    "home/quests-active/label.template": "Активних: {count}",
+    "home/quest-card/label.template": "Квест: {title}",
+    "home/quest-summary/content.template": "{done} із {total} {what}",
+    "home/quest-days/content.template": "Ще {days} {unit}",
+    "home/quest-days/content.values.unit.forms.one": "день",
+    "home/quest-days/content.values.unit.forms.few": "дні",
+    "home/quest-days/content.values.unit.forms.many": "днів",
+    "home/quest-days/content.values.unit.forms.other": "дня",
+    "home/chest-title/content": "Скриня дня",
+    "home/chest-remind/label": "Нагадати",
+    "home/recent-title/content": "Останні операції",
+    "home/recent-row-note/content.template": "{label} · {date}",
+    "home/nav-home/label": "Головна",
+    "home/nav-rewards/label": "Нагороди",
+    "home/nav-profile/label": "Профіль",
+    "quest/quest-bar/title": "Квест",
+    "quest/share/label": "Поділитися",
+    "quest/back/label": "Назад",
+    "quest/ends/label.template": "Ще {days} {unit}",
+    "quest/ends/label.values.unit.forms.one": "день",
+    "quest/ends/label.values.unit.forms.few": "дні",
+    "quest/ends/label.values.unit.forms.many": "днів",
+    "quest/ends/label.values.unit.forms.other": "дня",
+    "quest/reward-label/content": "Нагорода",
+    "quest/reward-value/content.template": "{reward} {unit}",
+    "quest/reward-value/content.values.unit.forms.one": "бал",
+    "quest/reward-value/content.values.unit.forms.few": "бали",
+    "quest/reward-value/content.values.unit.forms.many": "балів",
+    "quest/reward-value/content.values.unit.forms.other": "бала",
+    "quest/stamps-title/content": "Картка штампів",
+    "quest/stamps-count/content.template": "{done} із {total}",
+    "quest/stamp-1-digit/content": "1",
+    "quest/stamp-2-digit/content": "2",
+    "quest/stamp-3-digit/content": "3",
+    "quest/stamp-4-digit/content": "4",
+    "quest/stamp-5-digit/content": "5",
+    "quest/steps-title/content": "Як це працює",
+    "quest/step-1-digit/content": "1",
+    "quest/step-1-now/label": "Зараз",
+    "quest/step-2-digit/content": "2",
+    "quest/step-2-now/label": "Зараз",
+    "quest/step-3-digit/content": "3",
+    "quest/step-3-now/label": "Зараз",
+    "quest/quest-cta/label": "Продовжити квест",
+    "rewards/rewards-title/content": "Нагороди",
+    "rewards/rewards-balance-label/content": "Ваші бали",
+    "rewards/rewards-points/content.template": "{points} {unit}",
+    "rewards/rewards-points/content.values.unit.forms.one": "бал",
+    "rewards/rewards-points/content.values.unit.forms.few": "бали",
+    "rewards/rewards-points/content.values.unit.forms.many": "балів",
+    "rewards/rewards-points/content.values.unit.forms.other": "бала",
+    "rewards/rewards-list-title/content": "На що обміняти",
+    "rewards/reward-row/label.template": "Нагорода: {title}",
+    "rewards/nav-home/label": "Головна",
+    "rewards/nav-rewards/label": "Нагороди",
+    "rewards/nav-profile/label": "Профіль",
+    "profile/profile-tier/label.template": "Рівень {level} · {title}",
+    "profile/stat-quests-label/content": "Квестів пройдено",
+    "profile/stat-lifetime-label/content": "Зароблено балів",
+    "profile/profile-activity-title/content": "Операції",
+    "profile/profile-activity-row-note/content.template": "{label} · {date}",
+    "profile/nav-home/label": "Головна",
+    "profile/nav-rewards/label": "Нагороди",
+    "profile/nav-profile/label": "Профіль"
+   },
+   "ar": {
+    "home/hello-hi/content.template": "مرحباً {name}!",
+    "home/hello-level/content.template": "المستوى {level} · {title}",
+    "home/tier/label.template": "المستوى {level} · {tier}",
+    "home/level-label/content": "نقاطك",
+    "home/points/content.template": "{points} {unit}",
+    "home/points/content.values.unit.forms.zero": "نقطة",
+    "home/points/content.values.unit.forms.one": "نقطة",
+    "home/points/content.values.unit.forms.two": "نقطتان",
+    "home/points/content.values.unit.forms.few": "نقاط",
+    "home/points/content.values.unit.forms.many": "نقطة",
+    "home/points/content.values.unit.forms.other": "نقطة",
+    "home/to-next/content.template": "{left} {unit} لبلوغ الفئة {next}",
+    "home/to-next/content.values.unit.forms.zero": "نقطة",
+    "home/to-next/content.values.unit.forms.one": "نقطة",
+    "home/to-next/content.values.unit.forms.two": "نقطتان",
+    "home/to-next/content.values.unit.forms.few": "نقاط",
+    "home/to-next/content.values.unit.forms.many": "نقطة",
+    "home/to-next/content.values.unit.forms.other": "نقطة",
+    "home/tier-percent/content.template": "{percent}٪",
+    "home/redeem/label": "استبدال",
+    "home/scan/label": "امسح واكسب",
+    "home/streak-title/content.template": "سلسلة الأيام: {days}",
+    "home/streak-title/content.values.unit.forms.zero": "يوم",
+    "home/streak-title/content.values.unit.forms.one": "يوم",
+    "home/streak-title/content.values.unit.forms.two": "يومان",
+    "home/streak-title/content.values.unit.forms.few": "أيام",
+    "home/streak-title/content.values.unit.forms.many": "يوماً",
+    "home/streak-title/content.values.unit.forms.other": "يوم",
+    "home/streak-hint/content.template": "الأيام المتبقية لفتح الصندوق: {left}",
+    "home/streak-hint/content.values.unit.forms.zero": "يوم",
+    "home/streak-hint/content.values.unit.forms.one": "يوم",
+    "home/streak-hint/content.values.unit.forms.two": "يومان",
+    "home/streak-hint/content.values.unit.forms.few": "أيام",
+    "home/streak-hint/content.values.unit.forms.many": "يوماً",
+    "home/streak-hint/content.values.unit.forms.other": "يوم",
+    "home/day-1-label/content": "ن",
+    "home/day-2-label/content": "ث",
+    "home/day-3-label/content": "ر",
+    "home/day-4-label/content": "خ",
+    "home/day-5-label/content": "ج",
+    "home/day-6-label/content": "س",
+    "home/day-7-label/content": "ح",
+    "home/quests-title/content": "التحديات",
+    "home/quests-active/label.template": "النشطة: {count}",
+    "home/quest-card/label.template": "التحدي: {title}",
+    "home/quest-summary/content.template": "{done} من {total} {what}",
+    "home/quest-days/content.template": "الأيام المتبقية: {days}",
+    "home/quest-days/content.values.unit.forms.zero": "يوم",
+    "home/quest-days/content.values.unit.forms.one": "يوم",
+    "home/quest-days/content.values.unit.forms.two": "يومان",
+    "home/quest-days/content.values.unit.forms.few": "أيام",
+    "home/quest-days/content.values.unit.forms.many": "يوماً",
+    "home/quest-days/content.values.unit.forms.other": "يوم",
+    "home/chest-title/content": "صندوق اليوم",
+    "home/chest-remind/label": "ذكّرني",
+    "home/recent-title/content": "آخر العمليات",
+    "home/recent-row-note/content.template": "{label} · {date}",
+    "home/nav-home/label": "الرئيسية",
+    "home/nav-rewards/label": "المكافآت",
+    "home/nav-profile/label": "ملفي",
+    "quest/quest-bar/title": "التحدي",
+    "quest/share/label": "مشاركة",
+    "quest/back/label": "رجوع",
+    "quest/ends/label.template": "الأيام المتبقية: {days}",
+    "quest/ends/label.values.unit.forms.zero": "يوم",
+    "quest/ends/label.values.unit.forms.one": "يوم",
+    "quest/ends/label.values.unit.forms.two": "يومان",
+    "quest/ends/label.values.unit.forms.few": "أيام",
+    "quest/ends/label.values.unit.forms.many": "يوماً",
+    "quest/ends/label.values.unit.forms.other": "يوم",
+    "quest/reward-label/content": "المكافأة",
+    "quest/reward-value/content.template": "{reward} {unit}",
+    "quest/reward-value/content.values.unit.forms.zero": "نقطة",
+    "quest/reward-value/content.values.unit.forms.one": "نقطة",
+    "quest/reward-value/content.values.unit.forms.two": "نقطتان",
+    "quest/reward-value/content.values.unit.forms.few": "نقاط",
+    "quest/reward-value/content.values.unit.forms.many": "نقطة",
+    "quest/reward-value/content.values.unit.forms.other": "نقطة",
+    "quest/stamps-title/content": "بطاقة الأختام",
+    "quest/stamps-count/content.template": "{done} من {total}",
+    "quest/stamp-1-digit/content": "1",
+    "quest/stamp-2-digit/content": "2",
+    "quest/stamp-3-digit/content": "3",
+    "quest/stamp-4-digit/content": "4",
+    "quest/stamp-5-digit/content": "5",
+    "quest/steps-title/content": "كيف يعمل",
+    "quest/step-1-digit/content": "1",
+    "quest/step-1-now/label": "الآن",
+    "quest/step-2-digit/content": "2",
+    "quest/step-2-now/label": "الآن",
+    "quest/step-3-digit/content": "3",
+    "quest/step-3-now/label": "الآن",
+    "quest/quest-cta/label": "متابعة التحدي",
+    "rewards/rewards-title/content": "المكافآت",
+    "rewards/rewards-balance-label/content": "نقاطك",
+    "rewards/rewards-points/content.template": "{points} {unit}",
+    "rewards/rewards-points/content.values.unit.forms.zero": "نقطة",
+    "rewards/rewards-points/content.values.unit.forms.one": "نقطة",
+    "rewards/rewards-points/content.values.unit.forms.two": "نقطتان",
+    "rewards/rewards-points/content.values.unit.forms.few": "نقاط",
+    "rewards/rewards-points/content.values.unit.forms.many": "نقطة",
+    "rewards/rewards-points/content.values.unit.forms.other": "نقطة",
+    "rewards/rewards-list-title/content": "استبدل نقاطك",
+    "rewards/reward-row/label.template": "المكافأة: {title}",
+    "rewards/nav-home/label": "الرئيسية",
+    "rewards/nav-rewards/label": "المكافآت",
+    "rewards/nav-profile/label": "ملفي",
+    "profile/profile-tier/label.template": "المستوى {level} · {title}",
+    "profile/stat-quests-label/content": "التحديات المكتملة",
+    "profile/stat-lifetime-label/content": "النقاط المكتسبة",
+    "profile/profile-activity-title/content": "العمليات",
+    "profile/profile-activity-row-note/content.template": "{label} · {date}",
+    "profile/nav-home/label": "الرئيسية",
+    "profile/nav-rewards/label": "المكافآت",
+    "profile/nav-profile/label": "ملفي"
+   }
+  }
+ }
+}

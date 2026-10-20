@@ -1,0 +1,446 @@
+{
+  "description": "Free composition (schema 9.19.0): cases shared by every reader of the contract. Data — `x-style.layout.composition`. Six tables. `nestingCases`: may `child` be a direct child of `parent` (the widget registry; since 9.19.0 a column, a row and a container accept their own type). `depthCases`: `chain` is a chain of containers under the screen root, `leaf` its innermost node; `depth` is the level of the leaf (the root is 0, its children 1); `valid` — whether the builder publishes the document (`max` levels below the root at most); the JSON Schema does not know the depth (`schema` is always true), and a reader draws any of these trees. `documentCases`: `children` are the children of the screen root of a two-screen document (`home` with these children and an empty `details`); `schema` — the verdict of the JSON Schema (Zod and ajv agree; the rows omit properties that have a default, as an author does — the JSON Schema describes the document after the defaults are filled in), `codes` — the codes of the validator (empty: publishable). `pressableCases`: is `node` a pressable container (`pressable`), a control that takes a press (`ownsPress`), a button on the finished screen (`acts`). `pressCases`: `tree` is a child of the screen root; a press lands on the box of the node `press` (the innermost node under the point); `receiver` is the node that takes the press — the innermost control on the way from the root (null: nobody); `runs` — the node whose action and analytics event are executed (null: nothing happens — the receiver is not a button, or `disabled` names it as a disabled button). No ancestor of the receiver gets anything. `instances` (optional): the tree is the template of a Repeater over this many records, the press lands in the instance number `instance` (from 0) and the action carries the record of THAT instance. `nameCases`: `tree` is a pressable container; `hasName` — whether it is heard without data (its `label`, or a text of a descendant that is not a control itself; since 9.19.0 the description `alt` of a picture or an icon is such a text — rows `9.19.0 …`, and `described` there lists the names of the images inside the card on a finished screen); `startsWith` — the accessible name of the button on a finished screen starts with this text (the label goes first); `heard` — texts the name must contain. The text of a control inside the container is not promised to be part of the name. Nor does the text of a control of the widget itself name the card — the header of an accordion, the titles of the tab strip (`pressable.semantics.ownControlTextWidgets`), — and the rule does not go into a list from data: its template is drawn once per record, so without data that text is not on the screen. What is silent is the class `x-accessibleName.silentCharacters`: a name is empty when nothing is left after the characters of the class are removed (rows `a description of …`).",
+  "maxDepth": 8,
+  "nestingCases": [
+    { "name": "a column in a column", "parent": "Column", "child": "Column", "allowed": true },
+    { "name": "a row in a row", "parent": "Row", "child": "Row", "allowed": true },
+    { "name": "a container in a container: a card with an icon tile", "parent": "Container", "child": "Container", "allowed": true },
+    { "name": "a row in a column", "parent": "Column", "child": "Row", "allowed": true },
+    { "name": "a column in a row", "parent": "Row", "child": "Column", "allowed": true },
+    { "name": "a container in a row: the icon tile of a list row", "parent": "Row", "child": "Container", "allowed": true },
+    { "name": "a row in a container", "parent": "Container", "child": "Row", "allowed": true },
+    { "name": "a column in the template of a list", "parent": "Repeater", "child": "Column", "allowed": true },
+    { "name": "a container in a tab", "parent": "Tab", "child": "Container", "allowed": true },
+    { "name": "a list in a tab", "parent": "Tab", "child": "Repeater", "allowed": true },
+    { "name": "a container in a stack", "parent": "Stack", "child": "Container", "allowed": true },
+    { "name": "a grid in a grid stays forbidden", "parent": "Grid", "child": "Grid", "allowed": false },
+    { "name": "an accordion in a row stays forbidden", "parent": "Row", "child": "Accordion", "allowed": false },
+    { "name": "a container in an accordion stays forbidden", "parent": "Accordion", "child": "Container", "allowed": false },
+    { "name": "tabs in a tab stay forbidden", "parent": "Tab", "child": "Tabs", "allowed": false },
+    { "name": "a stack in a stack stays forbidden", "parent": "Stack", "child": "Stack", "allowed": false },
+    { "name": "a container in a choice group stays forbidden", "parent": "ChoiceGroup", "child": "Container", "allowed": false },
+    { "name": "a grid in a row stays forbidden", "parent": "Row", "child": "Grid", "allowed": false },
+    { "name": "a list in a row stays forbidden", "parent": "Row", "child": "Repeater", "allowed": false },
+    { "name": "a text holds nothing", "parent": "Text", "child": "Text", "allowed": false }
+  ],
+  "depthCases": [
+    { "name": "a leaf on the screen", "chain": [], "leaf": "Text", "depth": 1, "valid": true, "schema": true },
+    { "name": "the old limit: five levels", "chain": ["Column", "Row", "Column", "Container"], "leaf": "Text", "depth": 5, "valid": true, "schema": true },
+    { "name": "the sixth level, not buildable before 9.19.0", "chain": ["Column", "Row", "Column", "Row", "Container"], "leaf": "Text", "depth": 6, "valid": true, "schema": true },
+    { "name": "the row of a transaction list in tabs: tile with an icon", "chain": ["Tabs", "Tab", "Repeater", "Column", "Row", "Container"], "leaf": "Icon", "depth": 7, "valid": true, "schema": true },
+    { "name": "the same row inside a card: the limit", "chain": ["Tabs", "Tab", "Repeater", "Container", "Column", "Row", "Container"], "leaf": "Icon", "depth": 8, "valid": true, "schema": true },
+    { "name": "eight levels of one type", "chain": ["Column", "Column", "Column", "Column", "Column", "Column", "Column"], "leaf": "Text", "depth": 8, "valid": true, "schema": true },
+    { "name": "the ninth level", "chain": ["Column", "Row", "Column", "Row", "Column", "Row", "Column", "Container"], "leaf": "Text", "depth": 9, "valid": false, "schema": true },
+    { "name": "the ninth level of one type", "chain": ["Container", "Container", "Container", "Container", "Container", "Container", "Container", "Container"], "leaf": "Text", "depth": 9, "valid": false, "schema": true },
+    { "name": "twelve levels: still read by the schema", "chain": ["Column", "Row", "Column", "Row", "Column", "Row", "Column", "Row", "Column", "Row", "Column"], "leaf": "Text", "depth": 12, "valid": false, "schema": true }
+  ],
+  "documentCases": [
+    {
+      "name": "a card with an icon tile",
+      "children": [{ "id": "card", "type": "Container", "props": {}, "children": [{ "id": "tile", "type": "Container", "props": {}, "children": [{ "id": "icon", "type": "Icon", "props": { "name": "gift" } }] }, { "id": "t", "type": "Text", "props": { "content": { "kind": "literal", "value": "+50 points" } } }] }],
+      "schema": true,
+      "codes": []
+    },
+    {
+      "name": "a pressable card with a text",
+      "children": [{ "id": "card", "type": "Container", "props": { "action": { "type": "navigate", "params": { "screenId": "details" } } }, "children": [{ "id": "t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }] }],
+      "schema": true,
+      "codes": []
+    },
+    {
+      "name": "a pressable row, a pressable column, a pressable stack",
+      "children": [
+        { "id": "row", "type": "Row", "props": { "action": { "type": "submit" } }, "children": [{ "id": "t1", "type": "Text", "props": { "content": { "kind": "literal", "value": "One" } } }] },
+        { "id": "col", "type": "Column", "props": { "action": { "type": "submit" } }, "children": [{ "id": "t2", "type": "Text", "props": { "content": { "kind": "literal", "value": "Two" } } }] },
+        { "id": "stack", "type": "Stack", "props": { "action": { "type": "submit" } }, "children": [{ "id": "t3", "type": "Text", "props": { "content": { "kind": "literal", "value": "Three" } } }] }
+      ],
+      "schema": true,
+      "codes": []
+    },
+    {
+      "name": "a pressable card with a button inside",
+      "children": [{ "id": "card", "type": "Container", "props": { "action": { "type": "navigate", "params": { "screenId": "details" } } }, "children": [{ "id": "t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }, { "id": "buy", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "submit" } } }] }],
+      "schema": true,
+      "codes": []
+    },
+    {
+      "name": "a pressable card in a pressable card",
+      "children": [{ "id": "outer", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Outer" } } }, { "id": "inner", "type": "Container", "props": { "action": { "type": "share" } }, "children": [{ "id": "t2", "type": "Text", "props": { "content": { "kind": "literal", "value": "Inner" } } }] }] }],
+      "schema": true,
+      "codes": ["pressable_inside_pressable"]
+    },
+    {
+      "name": "a pressable row deep inside a pressable column",
+      "children": [{ "id": "outer", "type": "Column", "props": { "action": { "type": "submit" } }, "children": [{ "id": "mid", "type": "Container", "props": {}, "children": [{ "id": "inner", "type": "Row", "props": { "action": { "type": "share" } }, "children": [{ "id": "t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Inner" } } }] }] }, { "id": "t0", "type": "Text", "props": { "content": { "kind": "literal", "value": "Outer" } } }] }],
+      "schema": true,
+      "codes": ["pressable_inside_pressable"]
+    },
+    {
+      "name": "an action that does nothing does not make a container pressable: nesting is fine",
+      "children": [{ "id": "outer", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "inner", "type": "Container", "props": { "action": { "type": "none" } }, "children": [{ "id": "t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Text" } } }] }] }],
+      "schema": true,
+      "codes": []
+    },
+    {
+      "name": "a pressable card with only an icon: no name",
+      "children": [{ "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "icon", "type": "Icon", "props": { "name": "gift" } }] }],
+      "schema": true,
+      "codes": ["accessible_name_required"]
+    },
+    {
+      "name": "a pressable card with only a button inside: the button is a control of its own, the card has no name",
+      "children": [{ "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "buy", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "share" } } }] }],
+      "schema": true,
+      "codes": ["accessible_name_required"]
+    },
+    {
+      "name": "a pressable card with only an icon and a label",
+      "children": [{ "id": "card", "type": "Container", "props": { "action": { "type": "submit" }, "label": { "kind": "literal", "value": "Open the gift" } }, "children": [{ "id": "icon", "type": "Icon", "props": { "name": "gift" } }] }],
+      "schema": true,
+      "codes": []
+    },
+    {
+      "name": "a label of spaces is not a name",
+      "children": [{ "id": "card", "type": "Container", "props": { "action": { "type": "submit" }, "label": { "kind": "literal", "value": "   " } }, "children": [{ "id": "icon", "type": "Icon", "props": { "name": "gift" } }] }],
+      "schema": true,
+      "codes": ["accessible_name_required"]
+    },
+    {
+      "name": "a text that is empty without data is not a name",
+      "children": [{ "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "t", "type": "Text", "props": { "content": { "kind": "binding", "path": "offer.title", "fallback": "" } } }] }],
+      "schema": true,
+      "codes": ["accessible_name_required"]
+    },
+    {
+      "name": "a container with no action needs no name",
+      "children": [{ "id": "card", "type": "Container", "props": {}, "children": [{ "id": "icon", "type": "Icon", "props": { "name": "gift" } }] }],
+      "schema": true,
+      "codes": []
+    },
+    {
+      "name": "the action of a container has the form of a button action: a type is required",
+      "children": [{ "id": "card", "type": "Container", "props": { "direction": "column", "gap": "none", "action": { "params": { "screenId": "details" } } }, "children": [] }],
+      "schema": false,
+      "codes": []
+    },
+    {
+      "name": "the action of a container is checked by the action catalog: navigate needs an existing screen",
+      "children": [{ "id": "card", "type": "Container", "props": { "action": { "type": "navigate", "params": { "screenId": "nowhere" } } }, "children": [{ "id": "t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }] }],
+      "schema": true,
+      "codes": ["unknown_screen_ref"]
+    },
+    {
+      "name": "a grid takes no action: an unknown field",
+      "children": [{ "id": "grid", "type": "Grid", "props": { "columns": 2, "gap": "sm", "action": { "type": "submit" } }, "children": [] }],
+      "schema": false,
+      "codes": []
+    }
+  ],
+  "pressableCases": [
+    { "name": "a container with navigate", "node": { "id": "n", "type": "Container", "props": { "action": { "type": "navigate", "params": { "screenId": "details" } } }, "children": [] }, "pressable": true, "ownsPress": true, "acts": true },
+    { "name": "a row with a host action", "node": { "id": "n", "type": "Row", "props": { "action": { "type": "submit" } }, "children": [] }, "pressable": true, "ownsPress": true, "acts": true },
+    { "name": "a column with a host action", "node": { "id": "n", "type": "Column", "props": { "action": { "type": "submit" } }, "children": [] }, "pressable": true, "ownsPress": true, "acts": true },
+    { "name": "a stack with a host action", "node": { "id": "n", "type": "Stack", "props": { "action": { "type": "submit" } }, "children": [] }, "pressable": true, "ownsPress": true, "acts": true },
+    { "name": "a container without the field", "node": { "id": "n", "type": "Container", "props": {}, "children": [] }, "pressable": false, "ownsPress": false, "acts": false },
+    { "name": "a container whose action is none", "node": { "id": "n", "type": "Container", "props": { "action": { "type": "none" } }, "children": [] }, "pressable": false, "ownsPress": false, "acts": false },
+    { "name": "a container whose action is none but carries track: the event is a consequence of the press", "node": { "id": "n", "type": "Container", "props": { "action": { "type": "none", "track": { "event": "card_tap" } } }, "children": [] }, "pressable": true, "ownsPress": true, "acts": true },
+    { "name": "a container with a label and no action", "node": { "id": "n", "type": "Container", "props": { "label": { "kind": "literal", "value": "Name" } }, "children": [] }, "pressable": false, "ownsPress": false, "acts": false },
+    { "name": "a grid with the field (not readable by the schema): not pressable", "node": { "id": "n", "type": "Grid", "props": { "action": { "type": "submit" } }, "children": [] }, "pressable": false, "ownsPress": false, "acts": false },
+    { "name": "a button whose action is none is still a control", "node": { "id": "n", "type": "Button", "props": { "label": { "kind": "literal", "value": "Go" }, "action": { "type": "none" } } }, "pressable": false, "ownsPress": true, "acts": true },
+    { "name": "a list row without an action is content", "node": { "id": "n", "type": "ListTile", "props": { "title": { "kind": "literal", "value": "Row" } } }, "pressable": false, "ownsPress": false, "acts": false },
+    { "name": "a list row with an action is a control", "node": { "id": "n", "type": "ListTile", "props": { "title": { "kind": "literal", "value": "Row" }, "action": { "type": "submit" } } }, "pressable": false, "ownsPress": true, "acts": true },
+    { "name": "a choice option is a control", "node": { "id": "n", "type": "ListTile", "props": { "title": { "kind": "literal", "value": "Option" }, "trailing": { "kind": "radio", "optionValue": "a" } } }, "pressable": false, "ownsPress": true, "acts": false },
+    { "name": "a text field takes the press and is not a button", "node": { "id": "n", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" }, "value": { "kind": "binding", "path": "user.firstName" } } }, "pressable": false, "ownsPress": true, "acts": false },
+    { "name": "a switch takes the press", "node": { "id": "n", "type": "Switch", "props": { "label": { "kind": "literal", "value": "Push" }, "value": { "kind": "binding", "path": "user.isPremium" } } }, "pressable": false, "ownsPress": true, "acts": false },
+    { "name": "the tab strip is a control of the tabs widget", "node": { "id": "n", "type": "Tabs", "props": {}, "children": [] }, "pressable": false, "ownsPress": true, "acts": false },
+    { "name": "the header of an accordion is its own control", "node": { "id": "n", "type": "Accordion", "props": { "title": { "kind": "literal", "value": "Question" } }, "children": [] }, "pressable": false, "ownsPress": true, "acts": false },
+    { "name": "a text is content", "node": { "id": "n", "type": "Text", "props": { "content": { "kind": "literal", "value": "Text" } } }, "pressable": false, "ownsPress": false, "acts": false },
+    { "name": "an image is content", "node": { "id": "n", "type": "Image", "props": { "source": { "kind": "url", "url": "https://example.com/a.png" } } }, "pressable": false, "ownsPress": false, "acts": false }
+  ],
+  "pressCases": [
+    {
+      "name": "the text of a pressable card: the card",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }] },
+      "press": "title", "receiver": "card", "runs": "card"
+    },
+    {
+      "name": "the card itself (its padding): the card",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }] },
+      "press": "card", "receiver": "card", "runs": "card"
+    },
+    {
+      "name": "a text three levels deep: the card",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "row", "type": "Row", "props": {}, "children": [{ "id": "tile", "type": "Container", "props": {}, "children": [{ "id": "icon", "type": "Icon", "props": { "name": "gift" } }] }, { "id": "texts", "type": "Column", "props": {}, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Coffee" } } }] }] }] },
+      "press": "title", "receiver": "card", "runs": "card"
+    },
+    {
+      "name": "the icon in the tile of the same card: the card",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "row", "type": "Row", "props": {}, "children": [{ "id": "tile", "type": "Container", "props": {}, "children": [{ "id": "icon", "type": "Icon", "props": { "name": "gift" } }] }, { "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Coffee" } } }] }] },
+      "press": "icon", "receiver": "card", "runs": "card"
+    },
+    {
+      "name": "a button inside the card: the button, the card gets nothing",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }, { "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "share" } } }] },
+      "press": "start", "receiver": "start", "runs": "start"
+    },
+    {
+      "name": "a button whose action is none inside the card: the button swallows the press",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }, { "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "none" } } }] },
+      "press": "start", "receiver": "start", "runs": "start"
+    },
+    {
+      "name": "a disabled button inside the card: nothing happens, the card gets nothing",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }, { "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "share" }, "disabledIf": { "path": "user.isPremium", "op": "isFalse" } } }] },
+      "press": "start", "receiver": "start", "runs": null, "disabled": ["start"]
+    },
+    {
+      "name": "an icon button inside the card: the icon button",
+      "tree": { "id": "card", "type": "Row", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }, { "id": "more", "type": "IconButton", "props": { "icon": "info", "label": { "kind": "literal", "value": "More" }, "action": { "type": "share" } } }] },
+      "press": "more", "receiver": "more", "runs": "more"
+    },
+    {
+      "name": "a list row with an action inside the card: the row",
+      "tree": { "id": "card", "type": "Column", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Settings" } } }, { "id": "tile", "type": "ListTile", "props": { "title": { "kind": "literal", "value": "Profile" }, "action": { "type": "share" } } }] },
+      "press": "tile", "receiver": "tile", "runs": "tile"
+    },
+    {
+      "name": "a list row without an action inside the card: the card",
+      "tree": { "id": "card", "type": "Column", "props": { "action": { "type": "submit" } }, "children": [{ "id": "tile", "type": "ListTile", "props": { "title": { "kind": "literal", "value": "Profile" } } }] },
+      "press": "tile", "receiver": "card", "runs": "card"
+    },
+    {
+      "name": "a switch inside the card: the switch toggles, the card gets nothing",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Notifications" } } }, { "id": "push", "type": "Switch", "props": { "label": { "kind": "literal", "value": "Push" }, "value": { "kind": "binding", "path": "user.isPremium" } } }] },
+      "press": "push", "receiver": "push", "runs": null
+    },
+    {
+      "name": "a text field inside the card: the field takes the press",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Your name" } } }, { "id": "name", "type": "TextField", "props": { "label": { "kind": "literal", "value": "Name" }, "value": { "kind": "binding", "path": "user.firstName" } } }] },
+      "press": "name", "receiver": "name", "runs": null
+    },
+    {
+      "name": "the body of an accordion inside the card: the card",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "faq", "type": "Accordion", "props": { "title": { "kind": "literal", "value": "Question" } }, "children": [{ "id": "answer", "type": "Text", "props": { "content": { "kind": "literal", "value": "Answer" } } }] }] },
+      "press": "answer", "receiver": "card", "runs": "card"
+    },
+    {
+      "name": "the header of an accordion inside the card: the accordion",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "faq", "type": "Accordion", "props": { "title": { "kind": "literal", "value": "Question" } }, "children": [{ "id": "answer", "type": "Text", "props": { "content": { "kind": "literal", "value": "Answer" } } }] }] },
+      "press": "faq", "receiver": "faq", "runs": null
+    },
+    {
+      "name": "a card with no action: a press on its text is nobody's",
+      "tree": { "id": "card", "type": "Container", "props": {}, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }] },
+      "press": "title", "receiver": null, "runs": null
+    },
+    {
+      "name": "a card whose action is none: not a control, the press is nobody's",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "none" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }] },
+      "press": "title", "receiver": null, "runs": null
+    },
+    {
+      "name": "a card whose action is none with track: the event goes, so the card takes the press",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "none", "track": { "event": "card_tap" } } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }] },
+      "press": "title", "receiver": "card", "runs": "card"
+    },
+    {
+      "name": "a plain card inside a pressable card: the outer one",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "tile", "type": "Container", "props": {}, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }] }] },
+      "press": "tile", "receiver": "card", "runs": "card"
+    },
+    {
+      "name": "a pressable card inside a pressable card (not published): the innermost",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "inner", "type": "Container", "props": { "action": { "type": "share" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }] }] },
+      "press": "title", "receiver": "inner", "runs": "inner"
+    },
+    {
+      "name": "the template of a list is a pressable card: the second row carries the second record",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "navigate", "params": { "screenId": "details" } } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "binding", "path": "item.name", "fallback": "Item" } } }] },
+      "instances": 3, "instance": 1,
+      "press": "title", "receiver": "card", "runs": "card"
+    },
+    {
+      "name": "a button in the template card: the button carries the record of ITS row, the card gets nothing",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "navigate", "params": { "screenId": "details" } } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "binding", "path": "item.name", "fallback": "Item" } } }, { "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "share" } } }] },
+      "instances": 3, "instance": 2,
+      "press": "start", "receiver": "start", "runs": "start"
+    }
+  ],
+  "nameCases": [
+    {
+      "name": "a card with a title: the name is its text",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Morning quest" } } }] },
+      "hasName": true, "startsWith": "Morning quest", "heard": ["Morning quest"]
+    },
+    {
+      "name": "two texts in a nested row: both are heard, in document order",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "row", "type": "Row", "props": {}, "children": [{ "id": "a", "type": "Text", "props": { "content": { "kind": "literal", "value": "Coffee" } } }, { "id": "b", "type": "Text", "props": { "content": { "kind": "literal", "value": "120 UAH" } } }] }] },
+      "hasName": true, "startsWith": "Coffee", "heard": ["Coffee", "120 UAH"]
+    },
+    {
+      "name": "a label goes first, the content follows",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" }, "label": { "kind": "literal", "value": "Open the quest" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Morning quest" } } }] },
+      "hasName": true, "startsWith": "Open the quest", "heard": ["Open the quest", "Morning quest"]
+    },
+    {
+      "name": "only an icon and a label: the label is the name",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" }, "label": { "kind": "literal", "value": "Open the gift" } }, "children": [{ "id": "icon", "type": "Icon", "props": { "name": "gift" } }] },
+      "hasName": true, "startsWith": "Open the gift", "heard": ["Open the gift"]
+    },
+    {
+      "name": "only an icon: silent",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "icon", "type": "Icon", "props": { "name": "gift" } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "only a picture: silent",
+      "tree": { "id": "card", "type": "Stack", "props": { "action": { "type": "submit" } }, "children": [{ "id": "banner", "type": "Image", "props": { "source": { "kind": "url", "url": "https://example.com/banner.png" } } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a picture with a description: the description names the card",
+      "tree": { "id": "card", "type": "Stack", "props": { "action": { "type": "submit" } }, "children": [{ "id": "banner", "type": "Image", "props": { "source": { "kind": "url", "url": "https://example.com/banner.png" }, "alt": "Summer sale" } }] },
+      "hasName": true, "startsWith": null, "heard": [], "described": ["Summer sale"]
+    },
+    {
+      "name": "9.19.0 an icon with a description names the card",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "icon", "type": "Icon", "props": { "name": "gift", "alt": "Gifts" } }] },
+      "hasName": true, "startsWith": null, "heard": [], "described": ["Gifts"]
+    },
+    {
+      "name": "9.19.0 a picture whose description is empty or blank: silent",
+      "tree": { "id": "card", "type": "Stack", "props": { "action": { "type": "submit" } }, "children": [{ "id": "banner", "type": "Image", "props": { "source": { "kind": "url", "url": "https://example.com/banner.png" }, "alt": "  " } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description from data: its fallback is what is heard without data",
+      "tree": { "id": "card", "type": "Stack", "props": { "action": { "type": "submit" } }, "children": [{ "id": "banner", "type": "Image", "props": { "source": { "kind": "url", "url": "https://example.com/banner.png" }, "alt": { "kind": "binding", "path": "offer.title", "fallback": "Offer" } } }] },
+      "hasName": true, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description from data with an empty fallback: silent",
+      "tree": { "id": "card", "type": "Stack", "props": { "action": { "type": "submit" } }, "children": [{ "id": "banner", "type": "Image", "props": { "source": { "kind": "url", "url": "https://example.com/banner.png" }, "alt": { "kind": "binding", "path": "offer.title", "fallback": "" } } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "only a button inside: the text of a control of its own does not name the card",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "share" } } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "a badge names the card",
+      "tree": { "id": "card", "type": "Row", "props": { "action": { "type": "submit" } }, "children": [{ "id": "icon", "type": "Icon", "props": { "name": "gift" } }, { "id": "badge", "type": "Badge", "props": { "label": { "kind": "literal", "value": "New" } } }] },
+      "hasName": true, "startsWith": "New", "heard": ["New"]
+    },
+    {
+      "name": "a list row without an action names the card with its title",
+      "tree": { "id": "card", "type": "Column", "props": { "action": { "type": "submit" } }, "children": [{ "id": "tile", "type": "ListTile", "props": { "title": { "kind": "literal", "value": "Profile" } } }] },
+      "hasName": true, "startsWith": "Profile", "heard": ["Profile"]
+    },
+    {
+      "name": "a bound text with a fallback is heard without data",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "binding", "path": "offer.title", "fallback": "Offer" } } }] },
+      "hasName": true, "startsWith": null, "heard": []
+    },
+    {
+      "name": "a bound text with an empty fallback is silent without data",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "binding", "path": "offer.title", "fallback": "" } } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "a text of invisible characters is silent",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": " ​ " } } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 the only text is the template of a list from data: silent without data, a label is required",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "list", "type": "Repeater", "props": { "source": "items", "item": "item" }, "children": [{ "id": "row-title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Task" } } }] }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a list from data and a label: the label is the name",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" }, "label": { "kind": "literal", "value": "Open tasks" } }, "children": [{ "id": "list", "type": "Repeater", "props": { "source": "items", "item": "item" }, "children": [{ "id": "row-title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Task" } } }] }] },
+      "hasName": true, "startsWith": "Open tasks", "heard": ["Open tasks"]
+    },
+    {
+      "name": "9.19.0 a text next to a list from data names the card",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Tasks" } } }, { "id": "list", "type": "Repeater", "props": { "source": "items", "item": "item" }, "children": [{ "id": "row-title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Task" } } }] }] },
+      "hasName": true, "startsWith": "Tasks", "heard": ["Tasks"]
+    },
+    {
+      "name": "9.19.0 only an accordion inside: its header is a control of its own and does not name the card",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "acc", "type": "Accordion", "props": { "title": { "kind": "literal", "value": "Details" } }, "children": [] }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 an accordion with a text in its content: the content names the card",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "acc", "type": "Accordion", "props": { "title": { "kind": "literal", "value": "Details" } }, "children": [{ "id": "body", "type": "Text", "props": { "content": { "kind": "literal", "value": "Free delivery" } } }] }] },
+      "hasName": true, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 only tabs inside: the tab strip is a control of its own and does not name the card",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "tabs", "type": "Tabs", "props": {}, "children": [{ "id": "tab", "type": "Tab", "props": { "title": { "kind": "literal", "value": "Week" } }, "children": [] }] }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 tabs with a text in a panel: the panel names the card",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "tabs", "type": "Tabs", "props": {}, "children": [{ "id": "tab", "type": "Tab", "props": { "title": { "kind": "literal", "value": "Week" } }, "children": [{ "id": "body", "type": "Text", "props": { "content": { "kind": "literal", "value": "Seven days" } } }] }] }] },
+      "hasName": true, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description of a Hangul filler U+3164: silent",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "picture", "type": "Image", "props": { "alt": "\u3164" } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description of a Hangul filler U+115F: silent",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "picture", "type": "Image", "props": { "alt": "\u115f" } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description of a Hangul filler U+1160: silent",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "picture", "type": "Image", "props": { "alt": "\u1160" } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description of a halfwidth Hangul filler U+FFA0: silent",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "picture", "type": "Image", "props": { "alt": "\uffa0" } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description of a blank Braille cell U+2800: silent",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "picture", "type": "Image", "props": { "alt": "\u2800" } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description of a variation selector U+FE0F alone: silent",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "picture", "type": "Image", "props": { "alt": "\ufe0f" } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description of a grapheme joiner U+034F alone: silent",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "picture", "type": "Image", "props": { "alt": "\u034f" } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description of a control character U+0001: silent",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "picture", "type": "Image", "props": { "alt": "\u0001" } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description of an enclosing mark U+20DD alone: silent",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "picture", "type": "Image", "props": { "alt": "\u20dd" } }] },
+      "hasName": false, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description of a letter with a combining accent is heard: the base is left",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "picture", "type": "Image", "props": { "alt": "e\u0301" } }] },
+      "hasName": true, "startsWith": null, "heard": []
+    },
+    {
+      "name": "9.19.0 a description of a symbol with a variation selector is heard",
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "picture", "type": "Image", "props": { "alt": "\u2764\ufe0f" } }] },
+      "hasName": true, "startsWith": null, "heard": []
+    }
+  ]
+}

@@ -1,0 +1,794 @@
+{
+  "schemaVersion": "9.0.0",
+  "documentId": "full-catalog",
+  "name": "Усі віджети",
+  "initialScreenId": "full-catalog",
+  "screens": [
+    {
+      "screenId": "full-catalog",
+      "name": "Усі віджети",
+      "root": {
+        "id": "screen-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "gradient",
+            "gradient": "brandBackdrop"
+          }
+        },
+        "children": [
+          {
+            "id": "app-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Усі віджети"
+              },
+              "subtitle": {
+                "kind": "binding",
+                "path": "campaign.title",
+                "fallback": "—"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "root-column",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "badge-row",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": true
+                },
+                "children": [
+                  {
+                    "id": "icon-1",
+                    "type": "Icon",
+                    "props": {
+                      "name": "trophy",
+                      "size": "md",
+                      "alt": "Кубок переможця"
+                    },
+                    "style": {
+                      "color": "primary"
+                    }
+                  },
+                  {
+                    "id": "divider-in-row",
+                    "type": "Divider",
+                    "props": {
+                      "color": "muted",
+                      "spacing": "sm",
+                      "orientation": "vertical"
+                    }
+                  },
+                  {
+                    "id": "spacer-in-row",
+                    "type": "Spacer",
+                    "props": {
+                      "size": "sm",
+                      "orientation": "vertical"
+                    }
+                  },
+                  {
+                    "id": "badge-1",
+                    "type": "Badge",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Рівень 3"
+                      },
+                      "tone": "accent"
+                    },
+                    "visibleIf": {
+                      "path": "task.completed",
+                      "op": "isTrue"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "weight-row",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false
+                },
+                "children": [
+                  {
+                    "id": "weighted-wide",
+                    "type": "Container",
+                    "props": {
+                      "direction": "column",
+                      "gap": "none"
+                    },
+                    "style": {
+                      "padding": "sm",
+                      "radius": "md",
+                      "background": {
+                        "kind": "color",
+                        "color": "surface"
+                      },
+                      "shadow": "low"
+                    },
+                    "weight": 3,
+                    "children": [
+                      {
+                        "id": "weighted-wide-text",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "Три частки"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "id": "weighted-narrow",
+                    "type": "Container",
+                    "props": {
+                      "direction": "column",
+                      "gap": "none"
+                    },
+                    "style": {
+                      "padding": "sm",
+                      "radius": "md",
+                      "background": {
+                        "kind": "color",
+                        "color": "surface"
+                      },
+                      "shadow": "low"
+                    },
+                    "weight": 1,
+                    "children": [
+                      {
+                        "id": "weighted-narrow-text",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "Одна"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "card-1",
+                "type": "Container",
+                "props": {
+                  "gap": "none"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "children": [
+                  {
+                    "id": "text-1",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "task.description",
+                        "fallback": "0 / 0"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  },
+                  {
+                    "id": "image-1",
+                    "type": "Image",
+                    "props": {
+                      "source": {
+                        "kind": "asset",
+                        "asset": "banner"
+                      },
+                      "aspectRatio": "16:9",
+                      "fit": "contain"
+                    },
+                    "style": {
+                      "radius": "md"
+                    }
+                  },
+                  {
+                    "id": "divider-1",
+                    "type": "Divider",
+                    "props": {
+                      "color": "muted",
+                      "spacing": "sm",
+                      "orientation": "horizontal"
+                    }
+                  },
+                  {
+                    "id": "spacer-1",
+                    "type": "Spacer",
+                    "props": {
+                      "size": "sm",
+                      "orientation": "horizontal"
+                    }
+                  },
+                  {
+                    "id": "tile-1",
+                    "type": "ListTile",
+                    "props": {
+                      "leading": {
+                        "kind": "icon",
+                        "icon": "target"
+                      },
+                      "title": {
+                        "kind": "literal",
+                        "value": "Ціль задачі"
+                      },
+                      "trailing": {
+                        "kind": "text",
+                        "text": {
+                          "kind": "binding",
+                          "path": "user.points",
+                          "fallback": "0"
+                        },
+                        "icon": "star"
+                      }
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "sm",
+                        "bottom": "sm"
+                      }
+                    }
+                  },
+                  {
+                    "id": "tile-photo",
+                    "type": "ListTile",
+                    "props": {
+                      "leading": {
+                        "kind": "image",
+                        "source": {
+                          "kind": "url",
+                          "url": "https://cdn.example.com/items/headphones.png"
+                        }
+                      },
+                      "title": {
+                        "kind": "literal",
+                        "value": "Смартфон"
+                      },
+                      "subtitle": {
+                        "kind": "literal",
+                        "value": "256 ГБ, синій"
+                      },
+                      "trailing": {
+                        "kind": "chevron"
+                      }
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "sm",
+                        "bottom": "sm"
+                      }
+                    }
+                  },
+                  {
+                    "id": "tile-asset",
+                    "type": "ListTile",
+                    "props": {
+                      "leading": {
+                        "kind": "image",
+                        "source": {
+                          "kind": "asset",
+                          "asset": "banner"
+                        }
+                      },
+                      "title": {
+                        "kind": "literal",
+                        "value": "Банер кампанії"
+                      },
+                      "trailing": {
+                        "kind": "none"
+                      }
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "sm",
+                        "bottom": "sm"
+                      }
+                    }
+                  },
+                  {
+                    "id": "tile-bare",
+                    "type": "ListTile",
+                    "props": {
+                      "leading": {
+                        "kind": "none"
+                      },
+                      "title": {
+                        "kind": "literal",
+                        "value": "Рядок без оздоблення"
+                      },
+                      "trailing": {
+                        "kind": "chevron"
+                      }
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "sm",
+                        "bottom": "sm"
+                      }
+                    }
+                  },
+                  {
+                    "id": "progress-1",
+                    "type": "ProgressBar",
+                    "props": {
+                      "value": {
+                        "kind": "literal",
+                        "value": 75
+                      },
+                      "max": {
+                        "kind": "literal",
+                        "value": 100
+                      },
+                      "color": "primary",
+                      "labelFormat": "valueOfMax"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "item-choice",
+                "type": "ChoiceGroup",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": "iphone"
+                  },
+                  "gap": "none"
+                },
+                "children": [
+                  {
+                    "id": "choice-iphone",
+                    "type": "ListTile",
+                    "props": {
+                      "leading": {
+                        "kind": "image",
+                        "source": {
+                          "kind": "url",
+                          "url": "https://cdn.example.com/items/headphones.png"
+                        }
+                      },
+                      "title": {
+                        "kind": "literal",
+                        "value": "iPhone 17"
+                      },
+                      "subtitle": {
+                        "kind": "literal",
+                        "value": "256 ГБ"
+                      },
+                      "trailing": {
+                        "kind": "radio",
+                        "optionValue": "iphone"
+                      }
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "sm",
+                        "bottom": "sm"
+                      }
+                    }
+                  },
+                  {
+                    "id": "choice-sep-1",
+                    "type": "Divider",
+                    "props": {
+                      "color": "muted",
+                      "spacing": "sm",
+                      "orientation": "horizontal"
+                    }
+                  },
+                  {
+                    "id": "choice-airpods",
+                    "type": "ListTile",
+                    "props": {
+                      "leading": {
+                        "kind": "image",
+                        "source": {
+                          "kind": "asset",
+                          "asset": "placeholder"
+                        }
+                      },
+                      "title": {
+                        "kind": "literal",
+                        "value": "AirPods Pro"
+                      },
+                      "trailing": {
+                        "kind": "radio",
+                        "optionValue": "airpods"
+                      }
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "sm",
+                        "bottom": "sm"
+                      }
+                    }
+                  },
+                  {
+                    "id": "choice-sep-2",
+                    "type": "Divider",
+                    "props": {
+                      "color": "muted",
+                      "spacing": "sm",
+                      "orientation": "horizontal"
+                    }
+                  },
+                  {
+                    "id": "choice-cert",
+                    "type": "ListTile",
+                    "props": {
+                      "leading": {
+                        "kind": "icon",
+                        "icon": "gift"
+                      },
+                      "title": {
+                        "kind": "literal",
+                        "value": "Сертифікат 5000 ₴"
+                      },
+                      "trailing": {
+                        "kind": "radio",
+                        "optionValue": "certificate"
+                      }
+                    },
+                    "style": {
+                      "padding": {
+                        "top": "sm",
+                        "bottom": "sm"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "faq-1",
+                "type": "Accordion",
+                "props": {
+                  "title": {
+                    "kind": "literal",
+                    "value": "Як обирають переможців?"
+                  },
+                  "initiallyExpanded": false
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "shadow": "low"
+                },
+                "visibleIf": {
+                  "path": "campaign.title",
+                  "op": "eq",
+                  "value": "Autumn rewards"
+                },
+                "children": [
+                  {
+                    "id": "faq-answer",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Випадковим чином серед усіх, хто виконав завдання."
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted",
+                      "typography": "bodyS"
+                    }
+                  },
+                  {
+                    "id": "faq-image",
+                    "type": "Image",
+                    "props": {
+                      "source": {
+                        "kind": "url",
+                        "url": "https://cdn.example.com/campaign-rules.png"
+                      },
+                      "aspectRatio": "16:9"
+                    },
+                    "style": {
+                      "radius": "md"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "button-1",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Забрати нагороду"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "submit"
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "button-nav",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Оновити екран"
+                  },
+                  "variant": "ghost",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "full-catalog"
+                    }
+                  },
+                  "fullWidth": true
+                },
+                "visibleIf": {
+                  "path": "task.progress",
+                  "op": "gte",
+                  "value": 3
+                }
+              }
+            ]
+          },
+          {
+            "id": "task-list",
+            "type": "Repeater",
+            "props": {
+              "source": "tasks",
+              "direction": "column",
+              "gap": "sm",
+              "item": "task",
+              "columns": 2
+            },
+            "children": [
+              {
+                "id": "task-row",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "none"
+                  },
+                  "title": {
+                    "kind": "binding",
+                    "path": "task.title",
+                    "fallback": "Задача"
+                  },
+                  "subtitle": {
+                    "kind": "binding",
+                    "path": "task.description",
+                    "fallback": "—"
+                  },
+                  "trailing": {
+                    "kind": "none"
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "badge-grid",
+            "type": "Grid",
+            "props": {
+              "columns": 3,
+              "gap": "sm"
+            },
+            "children": [
+              {
+                "id": "badge-cell-1",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Січень"
+                  },
+                  "tone": "success"
+                }
+              },
+              {
+                "id": "badge-cell-2",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Лютий"
+                  },
+                  "tone": "neutral"
+                }
+              },
+              {
+                "id": "badge-cell-gap",
+                "type": "Spacer",
+                "props": {
+                  "size": "md",
+                  "orientation": "horizontal"
+                }
+              },
+              {
+                "id": "badge-cell-4",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Квітень"
+                  },
+                  "tone": "accent"
+                }
+              }
+            ]
+          },
+          {
+            "id": "cover-stack",
+            "type": "Stack",
+            "props": {
+              "alignHorizontal": "end",
+              "alignVertical": "start"
+            },
+            "children": [
+              {
+                "id": "cover-image",
+                "type": "Image",
+                "props": {
+                  "source": {
+                    "kind": "asset",
+                    "asset": "placeholder"
+                  },
+                  "alt": "Обкладинка кампанії",
+                  "aspectRatio": "16:9"
+                },
+                "style": {
+                  "radius": "md"
+                }
+              },
+              {
+                "id": "cover-ring",
+                "type": "CircularProgress",
+                "props": {
+                  "value": {
+                    "kind": "binding",
+                    "path": "task.progress",
+                    "fallback": 0
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "size": "lg"
+                },
+                "fill": true
+              },
+              {
+                "id": "cover-badge",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Новий"
+                  },
+                  "tone": "accent"
+                }
+              }
+            ]
+          },
+          {
+            "id": "task-tabs",
+            "type": "Tabs",
+            "props": {
+              "initialTab": 0
+            },
+            "children": [
+              {
+                "id": "tab-tasks",
+                "type": "Tab",
+                "props": {
+                  "title": {
+                    "kind": "literal",
+                    "value": "Завдання"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "tab-tasks-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Три завдання цього тижня"
+                      },
+                      "align": "start",
+                      "overflow": "clip"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "tab-collection",
+                "type": "Tab",
+                "props": {
+                  "title": {
+                    "kind": "literal",
+                    "value": "Колекція"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "tab-collection-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Зібрано 7 із 14 бейджів"
+                      },
+                      "align": "start",
+                      "overflow": "clip"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

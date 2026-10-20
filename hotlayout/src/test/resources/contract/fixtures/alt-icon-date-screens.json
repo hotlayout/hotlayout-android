@@ -1,0 +1,426 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "alt-icon-date",
+  "name": "Alt text, icon from data, date parts",
+  "initialScreenId": "operation",
+  "screens": [
+    {
+      "screenId": "operation",
+      "name": "Operation",
+      "root": {
+        "id": "operation-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md",
+          "contentMaxWidth": 560
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Last operation"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "banner",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none",
+              "action": {
+                "type": "submit"
+              }
+            },
+            "style": {
+              "radius": "md"
+            },
+            "children": [
+              {
+                "id": "banner-image",
+                "type": "Image",
+                "props": {
+                  "source": {
+                    "kind": "binding",
+                    "path": "offer.image",
+                    "fallback": "placeholder"
+                  },
+                  "aspectRatio": {
+                    "width": 21,
+                    "height": 9
+                  },
+                  "fit": "cover",
+                  "alt": "Autumn offers from partner shops"
+                },
+                "style": {
+                  "radius": "md"
+                }
+              }
+            ]
+          },
+          {
+            "id": "card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "md"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              },
+              "shadow": "low",
+              "maxWidth": 420
+            },
+            "children": [
+              {
+                "id": "merchant",
+                "type": "Row",
+                "props": {
+                  "gap": "md",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "operation-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "receipt",
+                      "size": "lg",
+                      "iconPath": "account.lastIcon",
+                      "alt": "Kind of the operation"
+                    }
+                  },
+                  {
+                    "id": "merchant-text",
+                    "type": "Column",
+                    "props": {
+                      "gap": "xs",
+                      "align": "start"
+                    },
+                    "children": [
+                      {
+                        "id": "merchant-name",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "binding",
+                            "path": "account.lastMerchant",
+                            "fallback": "Merchant"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "typography": "titleM"
+                        }
+                      },
+                      {
+                        "id": "merchant-day",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "template",
+                            "template": "{day}",
+                            "values": {
+                              "day": {
+                                "kind": "binding",
+                                "path": "account.lastAt",
+                                "fallback": "—",
+                                "format": "date",
+                                "dateParts": "weekdayDayMonth"
+                              }
+                            }
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "muted",
+                          "typography": "bodyM"
+                        }
+                      }
+                    ],
+                    "weight": 1
+                  },
+                  {
+                    "id": "merchant-logo",
+                    "type": "Image",
+                    "props": {
+                      "source": {
+                        "kind": "binding",
+                        "path": "task.image",
+                        "fallback": "placeholder"
+                      },
+                      "aspectRatio": "1:1",
+                      "fit": "cover",
+                      "alt": {
+                        "kind": "template",
+                        "template": "Logo of {name}",
+                        "values": {
+                          "name": {
+                            "kind": "binding",
+                            "path": "account.lastMerchant",
+                            "fallback": "the merchant"
+                          }
+                        }
+                      }
+                    },
+                    "style": {
+                      "width": 48,
+                      "height": 48,
+                      "radius": "md"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "status",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "status-badge",
+                    "type": "Badge",
+                    "props": {
+                      "label": {
+                        "kind": "binding",
+                        "path": "account.lastStatus",
+                        "fallback": "Pending"
+                      },
+                      "tone": "success",
+                      "icon": "clock",
+                      "iconPath": "account.lastIcon"
+                    }
+                  },
+                  {
+                    "id": "repeat",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Repeat"
+                      },
+                      "variant": "secondary",
+                      "action": {
+                        "type": "submit"
+                      },
+                      "fullWidth": false,
+                      "size": "sm",
+                      "icon": "refresh-cw",
+                      "iconPath": "account.lastIcon"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "rule",
+                "type": "Divider",
+                "props": {
+                  "color": "border",
+                  "spacing": "sm",
+                  "orientation": "horizontal"
+                }
+              },
+              {
+                "id": "dates",
+                "type": "Column",
+                "props": {
+                  "gap": "xs",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "dates-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "The same day, four ways"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "date-default",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "template",
+                        "template": "As before: {date}",
+                        "values": {
+                          "date": {
+                            "kind": "binding",
+                            "path": "account.lastAt",
+                            "fallback": "—",
+                            "format": "date"
+                          }
+                        }
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  },
+                  {
+                    "id": "date-day-month",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "template",
+                        "template": "Until {date}",
+                        "values": {
+                          "date": {
+                            "kind": "binding",
+                            "path": "account.lastAt",
+                            "fallback": "—",
+                            "format": "date",
+                            "dateParts": "dayMonth"
+                          }
+                        }
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  },
+                  {
+                    "id": "date-weekday",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "template",
+                        "template": "{date}",
+                        "values": {
+                          "date": {
+                            "kind": "binding",
+                            "path": "account.lastAt",
+                            "fallback": "—",
+                            "format": "date",
+                            "dateParts": "weekdayDayMonth"
+                          }
+                        }
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  },
+                  {
+                    "id": "date-year",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "template",
+                        "template": "Signed on {date}",
+                        "values": {
+                          "date": {
+                            "kind": "binding",
+                            "path": "account.lastAt",
+                            "fallback": "—",
+                            "format": "date",
+                            "dateParts": "dayMonthYear"
+                          }
+                        }
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ]
+              }
+            ],
+            "styleOn": {
+              "expanded": {
+                "padding": "none"
+              },
+              "unset": {
+                "expanded": [
+                  "background",
+                  "shadow",
+                  "maxWidth"
+                ]
+              }
+            }
+          }
+        ],
+        "propsOn": {
+          "unset": {
+            "expanded": [
+              "contentMaxWidth"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "operation/bar/title": "Остання операція",
+        "operation/banner-image/alt": "Осінні пропозиції магазинів-партнерів",
+        "operation/operation-icon/alt": "Вид операції",
+        "operation/merchant-day/content.template": "{day}",
+        "operation/merchant-logo/alt.template": "Логотип: {name}",
+        "operation/repeat/label": "Повторити",
+        "operation/dates-title/content": "Той самий день чотирма способами",
+        "operation/date-default/content.template": "Як було: {date}",
+        "operation/date-day-month/content.template": "До {date}",
+        "operation/date-weekday/content.template": "{date}",
+        "operation/date-year/content.template": "Підписано {date}"
+      },
+      "ar": {
+        "operation/bar/title": "آخر عملية",
+        "operation/banner-image/alt": "عروض الخريف من المتاجر الشريكة",
+        "operation/operation-icon/alt": "نوع العملية",
+        "operation/merchant-day/content.template": "{day}",
+        "operation/merchant-logo/alt.template": "شعار {name}",
+        "operation/repeat/label": "تكرار",
+        "operation/dates-title/content": "اليوم نفسه بأربع طرق",
+        "operation/date-default/content.template": "كما كان: {date}",
+        "operation/date-day-month/content.template": "حتى {date}",
+        "operation/date-weekday/content.template": "{date}",
+        "operation/date-year/content.template": "تم التوقيع في {date}"
+      }
+    }
+  }
+}

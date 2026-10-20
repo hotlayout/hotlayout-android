@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "9.0.0",
+  "documentId": "minimal",
+  "name": "Мінімальний екран",
+  "initialScreenId": "minimal",
+  "screens": [
+    {
+      "screenId": "minimal",
+      "name": "Мінімальний екран",
+      "root": {
+        "id": "screen-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "text-1",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Привіт"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,161 @@
+{
+  "about": "A text that paints nothing is not part of the name of a pressable card (x-silentText). Every row is a card: a Container with id «card», direction column and the action navigate to the screen «details», whose children are «children». «heard» are the texts the name of the card contains, «silent» the texts it must not contain. «data» is the host data of the row, path to value (a state of styleWhen reads it; the builder preview reads the same values as samples). Written by hand.",
+  "silentCases": [
+    {
+      "name": "two visible texts are both heard",
+      "children": [
+        { "id": "a", "type": "Text", "props": { "content": { "kind": "literal", "value": "Show offer" } } },
+        { "id": "b", "type": "Text", "props": { "content": { "kind": "literal", "value": "Confirm transfer" } } }
+      ],
+      "heard": ["Show offer", "Confirm transfer"],
+      "silent": []
+    },
+    {
+      "name": "a text with opacity 0 is silent",
+      "children": [
+        { "id": "a", "type": "Text", "props": { "content": { "kind": "literal", "value": "Show offer" } } },
+        { "id": "b", "type": "Text", "props": { "content": { "kind": "literal", "value": "Confirm transfer" } }, "style": { "opacity": 0 } }
+      ],
+      "heard": ["Show offer"],
+      "silent": ["Confirm transfer"]
+    },
+    {
+      "name": "a text with opacity 0.01 is seen and heard",
+      "children": [
+        { "id": "a", "type": "Text", "props": { "content": { "kind": "literal", "value": "Show offer" } } },
+        { "id": "b", "type": "Text", "props": { "content": { "kind": "literal", "value": "Fine print" } }, "style": { "opacity": 0.01 } }
+      ],
+      "heard": ["Show offer", "Fine print"],
+      "silent": []
+    },
+    {
+      "name": "a column with opacity 0 silences every text in it",
+      "children": [
+        { "id": "a", "type": "Text", "props": { "content": { "kind": "literal", "value": "Show offer" } } },
+        {
+          "id": "hidden-column",
+          "type": "Column",
+          "props": {},
+          "style": { "opacity": 0 },
+          "children": [
+            { "id": "b", "type": "Text", "props": { "content": { "kind": "literal", "value": "Confirm transfer" } } },
+            { "id": "c", "type": "Text", "props": { "content": { "kind": "literal", "value": "To account 42" } } }
+          ]
+        }
+      ],
+      "heard": ["Show offer"],
+      "silent": ["Confirm transfer", "To account 42"]
+    },
+    {
+      "name": "an own colour with opacity 0 is silent",
+      "children": [
+        { "id": "a", "type": "Text", "props": { "content": { "kind": "literal", "value": "Show offer" } } },
+        { "id": "b", "type": "Text", "props": { "content": { "kind": "literal", "value": "Confirm transfer" } }, "style": { "color": { "value": "#ff0000", "opacity": 0 } } }
+      ],
+      "heard": ["Show offer"],
+      "silent": ["Confirm transfer"]
+    },
+    {
+      "name": "a token with opacity 0 is silent",
+      "children": [
+        { "id": "a", "type": "Text", "props": { "content": { "kind": "literal", "value": "Show offer" } } },
+        { "id": "b", "type": "Text", "props": { "content": { "kind": "literal", "value": "Confirm transfer" } }, "style": { "color": { "token": "onSurface", "opacity": 0 } } }
+      ],
+      "heard": ["Show offer"],
+      "silent": ["Confirm transfer"]
+    },
+    {
+      "name": "a token at half opacity is heard",
+      "children": [
+        { "id": "a", "type": "Text", "props": { "content": { "kind": "literal", "value": "Show offer" } } },
+        { "id": "b", "type": "Text", "props": { "content": { "kind": "literal", "value": "Terms apply" } }, "style": { "color": { "token": "primary", "opacity": 0.5 } } }
+      ],
+      "heard": ["Show offer", "Terms apply"],
+      "silent": []
+    },
+    {
+      "name": "a colour with opacity 0 inherited from a column is silent",
+      "children": [
+        { "id": "a", "type": "Text", "props": { "content": { "kind": "literal", "value": "Show offer" } } },
+        {
+          "id": "tinted",
+          "type": "Column",
+          "props": {},
+          "style": { "color": { "token": "onSurface", "opacity": 0 } },
+          "children": [{ "id": "b", "type": "Text", "props": { "content": { "kind": "literal", "value": "Confirm transfer" } } }]
+        }
+      ],
+      "heard": ["Show offer"],
+      "silent": ["Confirm transfer"]
+    },
+    {
+      "name": "a text that names its own colour under a transparent inherited one is heard",
+      "children": [
+        {
+          "id": "tinted",
+          "type": "Column",
+          "props": {},
+          "style": { "color": { "token": "onSurface", "opacity": 0 } },
+          "children": [{ "id": "b", "type": "Text", "props": { "content": { "kind": "literal", "value": "Daily bonus" } }, "style": { "color": "primary" } }]
+        }
+      ],
+      "heard": ["Daily bonus"],
+      "silent": []
+    },
+    {
+      "name": "a state whose condition holds makes the text silent",
+      "data": { "user.firstName": "Alex" },
+      "children": [
+        { "id": "a", "type": "Text", "props": { "content": { "kind": "literal", "value": "Show offer" } } },
+        {
+          "id": "b",
+          "type": "Text",
+          "props": { "content": { "kind": "literal", "value": "Confirm transfer" } },
+          "styleWhen": [{ "when": { "path": "user.firstName", "op": "eq", "value": "Alex" }, "style": { "opacity": 0 } }]
+        }
+      ],
+      "heard": ["Show offer"],
+      "silent": ["Confirm transfer"]
+    },
+    {
+      "name": "a state whose condition does not hold leaves the text heard",
+      "data": { "user.firstName": "Alex" },
+      "children": [
+        { "id": "a", "type": "Text", "props": { "content": { "kind": "literal", "value": "Show offer" } } },
+        {
+          "id": "b",
+          "type": "Text",
+          "props": { "content": { "kind": "literal", "value": "Bonus waiting" } },
+          "styleWhen": [{ "when": { "path": "user.firstName", "op": "eq", "value": "Sam" }, "style": { "opacity": 0 } }]
+        }
+      ],
+      "heard": ["Show offer", "Bonus waiting"],
+      "silent": []
+    },
+    {
+      "name": "a transparent text in a row beside a visible one",
+      "children": [
+        {
+          "id": "line",
+          "type": "Row",
+          "props": {},
+          "children": [
+            { "id": "a", "type": "Text", "props": { "content": { "kind": "literal", "value": "Show offer" } } },
+            { "id": "b", "type": "Text", "props": { "content": { "kind": "literal", "value": "Confirm transfer" } }, "style": { "opacity": 0 } }
+          ]
+        }
+      ],
+      "heard": ["Show offer"],
+      "silent": ["Confirm transfer"]
+    }
+  ],
+  "paintNote": "The rule as a function of the resolved paint (paintsNothing): the opacities of the nodes between the card and the text, and the opacity of the resolved colour of the text.",
+  "paintCases": [
+    { "name": "nothing transparent", "opacities": [null, null], "colorOpacity": 1, "paintsNothing": false },
+    { "name": "the text itself at zero", "opacities": [null, 0], "colorOpacity": 1, "paintsNothing": true },
+    { "name": "an ancestor at zero", "opacities": [0, null], "colorOpacity": 1, "paintsNothing": true },
+    { "name": "small but not zero", "opacities": [0.01], "colorOpacity": 0.01, "paintsNothing": false },
+    { "name": "the colour at zero", "opacities": [], "colorOpacity": 0, "paintsNothing": true },
+    { "name": "a colour that did not resolve", "opacities": [], "colorOpacity": null, "paintsNothing": false }
+  ]
+}

@@ -1,0 +1,536 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "parts",
+  "name": "Parts of a list row and of a text field",
+  "initialScreenId": "card",
+  "screens": [
+    {
+      "screenId": "card",
+      "name": "Card",
+      "root": {
+        "id": "card-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "card-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Card"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "operations-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Operations"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "operations",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": {
+                "top": "xs",
+                "bottom": "xs",
+                "start": "lg",
+                "end": "lg"
+              },
+              "radius": 16,
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "income",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "banknote",
+                    "color": "success",
+                    "tile": {
+                      "color": {
+                        "token": "success",
+                        "opacity": 0.12
+                      },
+                      "radius": "md"
+                    }
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Salary · Northwind Trading Company"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "binding",
+                      "path": "account.income",
+                      "fallback": "—",
+                      "format": "currency",
+                      "currency": "UAH",
+                      "currencyDisplay": "symbol",
+                      "sign": "always"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    },
+                    "styleWhen": [
+                      {
+                        "when": {
+                          "path": "account.income",
+                          "op": "gt",
+                          "value": 0
+                        },
+                        "style": {
+                          "color": "success"
+                        }
+                      }
+                    ],
+                    "caption": {
+                      "kind": "literal",
+                      "value": "Credited"
+                    }
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Today, 09:12"
+                  },
+                  "titleMaxLines": 1,
+                  "subtitleMaxLines": 1
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "line-1",
+                "type": "Divider",
+                "props": {
+                  "color": "border",
+                  "spacing": "sm",
+                  "orientation": "horizontal"
+                }
+              },
+              {
+                "id": "spent",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "shopping-cart",
+                    "color": "primary",
+                    "tile": {
+                      "color": {
+                        "token": "primary",
+                        "opacity": 0.12
+                      },
+                      "radius": "md"
+                    }
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Groceries · Green Market on the Embankment"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "binding",
+                      "path": "account.spent",
+                      "fallback": "—",
+                      "format": "currency",
+                      "currency": "UAH",
+                      "currencyDisplay": "symbol",
+                      "sign": "always"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    },
+                    "styleWhen": [
+                      {
+                        "when": {
+                          "path": "account.spent",
+                          "op": "gt",
+                          "value": 0
+                        },
+                        "style": {
+                          "color": "success"
+                        }
+                      }
+                    ],
+                    "caption": {
+                      "kind": "template",
+                      "template": "{cashback} cashback",
+                      "values": {
+                        "cashback": {
+                          "kind": "binding",
+                          "path": "account.limit",
+                          "fallback": "—",
+                          "format": "currency",
+                          "currency": "UAH",
+                          "currencyDisplay": "symbol",
+                          "sign": "always"
+                        }
+                      }
+                    },
+                    "captionStyle": {
+                      "color": "accent"
+                    }
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Yesterday, 18:40"
+                  },
+                  "titleMaxLines": 1,
+                  "subtitleMaxLines": 1
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "line-2",
+                "type": "Divider",
+                "props": {
+                  "color": "border",
+                  "spacing": "sm",
+                  "orientation": "horizontal"
+                }
+              },
+              {
+                "id": "coffee",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "coffee",
+                    "color": "accent",
+                    "tile": {
+                      "color": {
+                        "token": "accent",
+                        "opacity": 0.12
+                      },
+                      "radius": "pill",
+                      "size": 48
+                    }
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Coffee and a croissant at the corner bakery near the office"
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "literal",
+                      "value": "3 visits"
+                    },
+                    "icon": "chevron-right",
+                    "caption": {
+                      "kind": "literal",
+                      "value": "this week"
+                    }
+                  },
+                  "titleMaxLines": 2
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "all",
+            "type": "ListTile",
+            "props": {
+              "leading": {
+                "kind": "icon",
+                "icon": "wallet"
+              },
+              "title": {
+                "kind": "literal",
+                "value": "All operations"
+              },
+              "trailing": {
+                "kind": "chevron"
+              },
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "form"
+                }
+              }
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "form",
+      "name": "Application",
+      "root": {
+        "id": "form-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "secondary"
+          }
+        },
+        "children": [
+          {
+            "id": "form-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Application"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "name",
+            "type": "TextField",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Full name"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "form.fullName"
+              },
+              "fieldRadius": 16,
+              "prefix": {
+                "kind": "icon",
+                "icon": "user"
+              }
+            }
+          },
+          {
+            "id": "sum",
+            "type": "TextField",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Amount"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "account.limit"
+              },
+              "fieldRadius": 16,
+              "valueType": "number",
+              "suffix": {
+                "kind": "text",
+                "text": {
+                  "kind": "literal",
+                  "value": "₴"
+                }
+              },
+              "fieldHeight": 56,
+              "helper": {
+                "kind": "literal",
+                "value": "From 100 to 50,000"
+              }
+            }
+          },
+          {
+            "id": "email",
+            "type": "TextField",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Email"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "form.email"
+              },
+              "fieldRadius": 16,
+              "keyboard": "email",
+              "prefix": {
+                "kind": "icon",
+                "icon": "mail"
+              },
+              "fieldBackground": "surface",
+              "fieldBorderColor": "primary",
+              "fieldBorderWidth": 2
+            }
+          },
+          {
+            "id": "comment",
+            "type": "TextField",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Comment"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "survey.comment"
+              },
+              "fieldRadius": 16,
+              "lines": 3,
+              "maxLength": 280,
+              "counter": true,
+              "helper": {
+                "kind": "literal",
+                "value": "What should we know before the call"
+              }
+            }
+          },
+          {
+            "id": "phone",
+            "type": "TextField",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Phone"
+              },
+              "value": {
+                "kind": "binding",
+                "path": "form.phone"
+              },
+              "keyboard": "phone",
+              "maxLength": 16,
+              "counter": true
+            }
+          },
+          {
+            "id": "send",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Send"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "submit"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "card/card-bar/title": "Картка",
+        "card/operations-title/content": "Операції",
+        "card/income/title": "Зарплата · Торгова компанія «Північний вітер»",
+        "card/income/subtitle": "Сьогодні, 09:12",
+        "card/income/trailing.caption": "Зараховано",
+        "card/spent/title": "Продукти · «Зелений ринок» на набережній",
+        "card/spent/subtitle": "Учора, 18:40",
+        "card/spent/trailing.caption.template": "{cashback} кешбеку",
+        "card/coffee/title": "Кава й круасан у пекарні на розі біля офісу",
+        "card/coffee/trailing.text": "3 візити",
+        "card/coffee/trailing.caption": "цього тижня",
+        "card/all/title": "Усі операції",
+        "form/form-bar/title": "Анкета",
+        "form/name/label": "Ім’я та прізвище",
+        "form/sum/label": "Сума",
+        "form/sum/helper": "Від 100 до 50 000",
+        "form/sum/suffix.text": "₴",
+        "form/email/label": "Електронна пошта",
+        "form/comment/label": "Коментар",
+        "form/comment/helper": "Що нам варто знати перед дзвінком",
+        "form/phone/label": "Телефон",
+        "form/send/label": "Надіслати"
+      },
+      "ar": {
+        "card/card-bar/title": "البطاقة",
+        "card/operations-title/content": "العمليات",
+        "card/income/title": "الراتب · شركة نورثويند التجارية",
+        "card/income/subtitle": "اليوم، 09:12",
+        "card/income/trailing.caption": "تمت الإضافة",
+        "card/spent/title": "البقالة · السوق الأخضر على الكورنيش",
+        "card/spent/subtitle": "أمس، 18:40",
+        "card/spent/trailing.caption.template": "استرداد {cashback}",
+        "card/coffee/title": "قهوة وكرواسون في المخبز المجاور للمكتب",
+        "card/coffee/trailing.text": "3 زيارات",
+        "card/coffee/trailing.caption": "هذا الأسبوع",
+        "card/all/title": "كل العمليات",
+        "form/form-bar/title": "الطلب",
+        "form/name/label": "الاسم الكامل",
+        "form/sum/label": "المبلغ",
+        "form/sum/helper": "من 100 إلى 50,000",
+        "form/sum/suffix.text": "₴",
+        "form/email/label": "البريد الإلكتروني",
+        "form/comment/label": "تعليق",
+        "form/comment/helper": "ما الذي يجب أن نعرفه قبل الاتصال",
+        "form/phone/label": "الهاتف",
+        "form/send/label": "إرسال"
+      }
+    }
+  }
+}

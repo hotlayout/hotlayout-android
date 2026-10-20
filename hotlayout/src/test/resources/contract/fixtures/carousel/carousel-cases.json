@@ -1,0 +1,163 @@
+{
+  "description": "One table of cases for every reader (schema 9.11.0): the carousel — the «carousel» field on a Row with «scrollable» and on a Repeater laid out in a row. Rules: x-style.layout.carousel; policy rows carouselOutsideHost, unreadableCarousel, carouselCardWidth, carouselNested, carouselState, carouselGestures, carouselIndicator, carouselReducedMotion. Numbers are logical pixels under the theme below (the values of the built-in theme). Nothing is rounded: 85.33333333333333 is the expected width, compare with a tolerance of 1e-9. Offsets are distances from the LOGICAL start: in a right-to-left language the same numbers are measured from the right edge. «readerOnly» — a value the builder does not produce or does not publish; a reader may still receive it. «dotCases.viewport» is the width of the carousel area (the viewport of the stops): the row of dots is «stops × dotSize + (stops − 1) × dotGap» wide and is not drawn, with no room, when it is wider than the area. Written by hand, not generated.",
+  "theme": {
+    "spacing": { "none": 0, "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24 },
+    "radius": { "pill": 72 },
+    "color": { "primary": "#4f46e5" }
+  },
+  "defaults": {
+    "peek": "lg",
+    "indicator": "dots",
+    "maxDots": 10,
+    "stopMerge": 0.5,
+    "minCard": 1,
+    "perViewMin": 1,
+    "perViewMax": 6,
+    "indicatorGap": "sm",
+    "dotSize": "sm",
+    "dotGap": "sm",
+    "dotRadius": "pill",
+    "activeColor": "primary",
+    "inactiveColor": "primary",
+    "inactiveOpacity": 0.3
+  },
+  "hostCases": [
+    { "name": "a row that scrolls sideways", "type": "Row", "props": { "scrollable": true }, "expect": true },
+    { "name": "a row with «scrollable: false»", "type": "Row", "props": { "scrollable": false }, "expect": false },
+    { "name": "a row without the «scrollable» field", "type": "Row", "props": {}, "expect": false },
+    { "name": "a data list laid out in a row", "type": "Repeater", "props": { "direction": "row" }, "expect": true },
+    { "name": "a data list laid out in a column", "type": "Repeater", "props": { "direction": "column" }, "expect": false },
+    { "name": "a data list without the «direction» field: a column", "type": "Repeater", "props": {}, "expect": false },
+    { "name": "a data list with «columns»: the direction is not read at all", "type": "Repeater", "props": { "direction": "row", "columns": 2 }, "readerOnly": true, "expect": false },
+    { "name": "a container laid out in a row is not a host", "type": "Container", "props": { "direction": "row" }, "readerOnly": true, "expect": false }
+  ],
+  "readCases": [
+    { "name": "an empty object: a carousel with natural widths and dots", "value": {}, "expect": { "perView": null, "peek": null, "indicator": "dots" } },
+    { "name": "one card in view, the peek by a token", "value": { "perView": 1, "peek": "xl" }, "expect": { "perView": 1, "peek": "xl", "indicator": "dots" } },
+    { "name": "two cards, the peek by a number, no dots", "value": { "perView": 2, "peek": 20, "indicator": "none" }, "expect": { "perView": 2, "peek": 20, "indicator": "none" } },
+    { "name": "the upper bound of «perView»", "value": { "perView": 6 }, "expect": { "perView": 6, "peek": null, "indicator": "dots" } },
+    { "name": "«perView» below the bound: natural widths", "value": { "perView": 0 }, "readerOnly": true, "expect": { "perView": null, "peek": null, "indicator": "dots" } },
+    { "name": "«perView» above the bound: natural widths", "value": { "perView": 7 }, "readerOnly": true, "expect": { "perView": null, "peek": null, "indicator": "dots" } },
+    { "name": "a fractional «perView» is not «two and a half cards»: natural widths", "value": { "perView": 2.5 }, "readerOnly": true, "expect": { "perView": null, "peek": null, "indicator": "dots" } },
+    { "name": "«perView» as a string: natural widths", "value": { "perView": "2" }, "readerOnly": true, "expect": { "perView": null, "peek": null, "indicator": "dots" } },
+    { "name": "a negative peek: the default; the rest of the field is kept", "value": { "perView": 1, "peek": -4 }, "readerOnly": true, "expect": { "perView": 1, "peek": null, "indicator": "dots" } },
+    { "name": "a peek that is not a spacing reference: the default", "value": { "perView": 1, "peek": true }, "readerOnly": true, "expect": { "perView": 1, "peek": null, "indicator": "dots" } },
+    { "name": "an unknown indicator word (a newer minor): the default, dots", "value": { "indicator": "bars" }, "readerOnly": true, "expect": { "perView": null, "peek": null, "indicator": "dots" } },
+    { "name": "a key of a newer minor is skipped", "value": { "perView": 1, "loop": true }, "readerOnly": true, "expect": { "perView": 1, "peek": null, "indicator": "dots" } },
+    { "name": "«true» is not a carousel: the row scrolls as before", "value": true, "readerOnly": true, "expect": null },
+    { "name": "a string is not a carousel", "value": "cards", "readerOnly": true, "expect": null },
+    { "name": "a number is not a carousel", "value": 3, "readerOnly": true, "expect": null },
+    { "name": "null is not a carousel", "value": null, "readerOnly": true, "expect": null },
+    { "name": "an array is not a carousel", "value": [], "readerOnly": true, "expect": null }
+  ],
+  "cardCases": [
+    { "name": "320: one card, padding lg, gap md, peek xl", "viewport": 320, "paddingStart": "lg", "gap": "md", "peek": "xl", "perView": 1, "expect": 268 },
+    { "name": "393: the same carousel", "viewport": 393, "paddingStart": "lg", "gap": "md", "peek": "xl", "perView": 1, "expect": 341 },
+    { "name": "768: the same carousel — the peek stays 24, the card grows", "viewport": 768, "paddingStart": "lg", "gap": "md", "peek": "xl", "perView": 1, "expect": 716 },
+    { "name": "393: two cards", "viewport": 393, "paddingStart": "lg", "gap": "md", "peek": "xl", "perView": 2, "expect": 164.5 },
+    { "name": "320: three cards, gap sm — a width that is not a whole pixel, not rounded", "viewport": 320, "paddingStart": "lg", "gap": "sm", "peek": "xl", "perView": 3, "expect": 85.33333333333333 },
+    { "name": "393: three cards, gap sm", "viewport": 393, "paddingStart": "lg", "gap": "sm", "peek": "xl", "perView": 3, "expect": 109.66666666666667 },
+    { "name": "768: three cards, gap sm", "viewport": 768, "paddingStart": "lg", "gap": "sm", "peek": "xl", "perView": 3, "expect": 234.66666666666666 },
+    { "name": "no «peek» field: the default token lg", "viewport": 320, "paddingStart": "lg", "gap": "md", "peek": null, "perView": 1, "expect": 276 },
+    { "name": "a peek token the theme does not declare: the default token lg", "viewport": 320, "paddingStart": "lg", "gap": "md", "peek": "brandPeek", "perView": 1, "readerOnly": true, "expect": 276 },
+    { "name": "the peek by a number", "viewport": 320, "paddingStart": "lg", "gap": "md", "peek": 40, "perView": 1, "expect": 252 },
+    { "name": "peek none: the gap after the last whole card still shows", "viewport": 320, "paddingStart": "none", "gap": "md", "peek": "none", "perView": 1, "expect": 308 },
+    { "name": "no padding, no gap, no peek: the card is the viewport", "viewport": 320, "paddingStart": "none", "gap": "none", "peek": "none", "perView": 1, "expect": 320 },
+    { "name": "the end padding does not enter the width", "viewport": 320, "paddingStart": "none", "paddingEnd": "xl", "gap": "md", "peek": "xl", "perView": 1, "expect": 284 },
+    { "name": "six cards on 320", "viewport": 320, "paddingStart": "lg", "gap": "xs", "peek": "lg", "perView": 6, "expect": 44 },
+    { "name": "exactly the smallest card", "viewport": 53, "paddingStart": "lg", "gap": "md", "peek": "xl", "perView": 1, "expect": 1 },
+    { "name": "narrower than the smallest card: «perView» is not read, natural widths", "viewport": 52.5, "paddingStart": "lg", "gap": "md", "peek": "xl", "perView": 1, "expect": null },
+    { "name": "a negative width: natural widths", "viewport": 100, "paddingStart": "lg", "gap": "md", "peek": "xl", "perView": 6, "expect": null }
+  ],
+  "stopCases": [
+    {
+      "name": "320, three cards of 268: the last card stops at the end of the scroll, not at its own start",
+      "viewport": 320, "paddingStart": 16, "paddingEnd": 16, "gap": 12, "cards": [268, 268, 268],
+      "expect": { "maxScroll": 540, "stops": [0, 280, 540], "stopOfCard": [0, 1, 2] }
+    },
+    {
+      "name": "393, three cards of 341",
+      "viewport": 393, "paddingStart": 16, "paddingEnd": 16, "gap": 12, "cards": [341, 341, 341],
+      "expect": { "maxScroll": 686, "stops": [0, 353, 686], "stopOfCard": [0, 1, 2] }
+    },
+    {
+      "name": "393, six cards, three in view: four stops for six cards — the last three share the end",
+      "viewport": 393, "paddingStart": 16, "paddingEnd": 16, "gap": 8,
+      "cards": [109.66666666666667, 109.66666666666667, 109.66666666666667, 109.66666666666667, 109.66666666666667, 109.66666666666667],
+      "expect": { "maxScroll": 337, "stops": [0, 117.66666666666667, 235.33333333333334, 337], "stopOfCard": [0, 1, 2, 3, 3, 3] }
+    },
+    {
+      "name": "the content fits: one stop",
+      "viewport": 393, "paddingStart": 16, "paddingEnd": 16, "gap": 8, "cards": [100, 100],
+      "expect": { "maxScroll": 0, "stops": [0], "stopOfCard": [0, 0] }
+    },
+    {
+      "name": "no cards (an empty data list): one stop",
+      "viewport": 393, "paddingStart": 16, "paddingEnd": 16, "gap": 8, "cards": [],
+      "expect": { "maxScroll": 0, "stops": [0], "stopOfCard": [] }
+    },
+    {
+      "name": "natural widths, no padding: every card start is a stop until the end of the scroll",
+      "viewport": 320, "paddingStart": 0, "paddingEnd": 0, "gap": 8, "cards": [120, 200, 80, 160],
+      "expect": { "maxScroll": 264, "stops": [0, 128, 264], "stopOfCard": [0, 1, 2, 2] }
+    },
+    {
+      "name": "a card start within half a pixel of the end is the end",
+      "viewport": 300, "paddingStart": 0, "paddingEnd": 0, "gap": 0, "cards": [100, 100, 100.25, 100],
+      "expect": { "maxScroll": 100.25, "stops": [0, 100.25], "stopOfCard": [0, 1, 1, 1] }
+    },
+    {
+      "name": "a single card wider than the viewport: its start and the end of the scroll",
+      "viewport": 320, "paddingStart": 16, "paddingEnd": 16, "gap": 12, "cards": [400],
+      "expect": { "maxScroll": 112, "stops": [0, 112], "stopOfCard": [0] }
+    },
+    {
+      "name": "the last card wider than the viewport: the end of the scroll is one more stop",
+      "viewport": 320, "paddingStart": 0, "paddingEnd": 0, "gap": 10, "cards": [100, 500],
+      "expect": { "maxScroll": 290, "stops": [0, 110, 290], "stopOfCard": [0, 1] }
+    },
+    {
+      "name": "the end padding lengthens the scroll",
+      "viewport": 320, "paddingStart": 0, "paddingEnd": 40, "gap": 0, "cards": [200, 200],
+      "expect": { "maxScroll": 120, "stops": [0, 120], "stopOfCard": [0, 1] }
+    }
+  ],
+  "activeCases": [
+    { "name": "at the start", "stops": [0, 280, 540], "offset": 0, "expect": 0 },
+    { "name": "closer to the first stop", "stops": [0, 280, 540], "offset": 139, "expect": 0 },
+    { "name": "exactly between two stops: the earlier one", "stops": [0, 280, 540], "offset": 140, "expect": 0 },
+    { "name": "just past the middle", "stops": [0, 280, 540], "offset": 141, "expect": 1 },
+    { "name": "on the second stop", "stops": [0, 280, 540], "offset": 280, "expect": 1 },
+    { "name": "between the second and the last, a tie: the earlier one", "stops": [0, 280, 540], "offset": 410, "expect": 1 },
+    { "name": "at the end", "stops": [0, 280, 540], "offset": 540, "expect": 2 },
+    { "name": "overscroll past the end", "stops": [0, 280, 540], "offset": 600, "expect": 2 },
+    { "name": "overscroll before the start", "stops": [0, 280, 540], "offset": -50, "expect": 0 },
+    { "name": "a single stop", "stops": [0], "offset": 0, "expect": 0 }
+  ],
+  "dotCases": [
+    { "name": "three stops: three dots", "indicator": "dots", "stops": 3, "viewport": 360, "expect": { "dots": 3, "block": 16 } },
+    { "name": "two stops", "indicator": "dots", "stops": 2, "viewport": 360, "expect": { "dots": 2, "block": 16 } },
+    { "name": "one stop: no dots and no room for them", "indicator": "dots", "stops": 1, "viewport": 360, "expect": { "dots": 0, "block": 0 } },
+    { "name": "ten stops: the most dots drawn", "indicator": "dots", "stops": 10, "viewport": 360, "expect": { "dots": 10, "block": 16 } },
+    { "name": "eleven stops: no dots and no room for them", "indicator": "dots", "stops": 11, "viewport": 360, "expect": { "dots": 0, "block": 0 } },
+    { "name": "ten stops in an area of exactly 152 (10 × 8 + 9 × 8): the row fits, the dots are drawn", "indicator": "dots", "stops": 10, "viewport": 152, "expect": { "dots": 10, "block": 16 } },
+    { "name": "ten stops in an area of 151: the row of 152 does not fit, no dots and no room for them", "indicator": "dots", "stops": 10, "viewport": 151, "expect": { "dots": 0, "block": 0 } },
+    { "name": "three stops in an area of 30: the row of 40 does not fit, no dots and no room for them", "indicator": "dots", "stops": 3, "viewport": 30, "expect": { "dots": 0, "block": 0 } },
+    { "name": "two stops in an area of exactly 24 (2 × 8 + 8): the row fits, the dots are drawn", "indicator": "dots", "stops": 2, "viewport": 24, "expect": { "dots": 2, "block": 16 } },
+    { "name": "the indicator is off", "indicator": "none", "stops": 3, "viewport": 360, "expect": { "dots": 0, "block": 0 } }
+  ],
+  "areaCases": [
+    { "name": "337: a carousel in a row container next to a sibling — the place gives it 252 (a 360 container, a sibling of 100, a gap of 8); with dots", "place": 252, "indicator": "dots", "paddingStart": 16, "paddingEnd": 16, "gap": 12, "cards": [200, 200, 200], "expect": { "viewport": 252, "stops": [0, 212, 404], "dots": 3 } },
+    { "name": "337: the same place, the same carousel WITHOUT dots: the area and the stops do not change because the dots are not drawn", "place": 252, "indicator": "none", "paddingStart": 16, "paddingEnd": 16, "gap": 12, "cards": [200, 200, 200], "expect": { "viewport": 252, "stops": [0, 212, 404], "dots": 0 } },
+    { "name": "337: a place of 36: the dots row (4 stops → 56) is wider than the area, so it is not drawn — the area stays 36 and the stops are the same as without dots", "place": 36, "indicator": "dots", "paddingStart": 0, "paddingEnd": 0, "gap": 12, "cards": [200, 200, 200], "expect": { "viewport": 36, "stops": [0, 212, 424, 588], "dots": 0 } },
+    { "name": "337: the same place of 36 with dots off: the same stops", "place": 36, "indicator": "none", "paddingStart": 0, "paddingEnd": 0, "gap": 12, "cards": [200, 200, 200], "expect": { "viewport": 36, "stops": [0, 212, 424, 588], "dots": 0 } }
+  ],
+  "stateCases": [
+    { "name": "340: the same node, no list: one state", "a": { "node": "strip", "instance": [] }, "b": { "node": "strip", "instance": [] }, "sameState": true },
+    { "name": "340: the same node in two rows of a list from data: two states, each row keeps its own stop", "a": { "node": "strip", "instance": [0] }, "b": { "node": "strip", "instance": [1] }, "sameState": false },
+    { "name": "340: the same row of the list: one state", "a": { "node": "strip", "instance": [2] }, "b": { "node": "strip", "instance": [2] }, "sameState": true },
+    { "name": "340: two different nodes of the same row: two states", "a": { "node": "strip", "instance": [1] }, "b": { "node": "other", "instance": [1] }, "sameState": false },
+    { "name": "340: a list inside a list: the whole chain of instances counts, not the last index", "a": { "node": "strip", "instance": [0, 1] }, "b": { "node": "strip", "instance": [1, 1] }, "sameState": false },
+    { "name": "340: the chain [1] is not the chain [0, 1]", "a": { "node": "strip", "instance": [1] }, "b": { "node": "strip", "instance": [0, 1] }, "sameState": false }
+  ]
+}

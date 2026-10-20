@@ -1,0 +1,1113 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "appear-swipe-dot",
+  "name": "Appear, busy swipe, dot and top zone",
+  "initialScreenId": "home",
+  "screens": [
+    {
+      "screenId": "home",
+      "name": "Home",
+      "root": {
+        "id": "home-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "home-hello",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "home-hi",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Good evening, Mira"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              }
+            ],
+            "pin": "top"
+          },
+          {
+            "id": "home-chips",
+            "type": "Row",
+            "props": {
+              "gap": "xs",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": true
+            },
+            "children": [
+              {
+                "id": "chip-all",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "xs",
+                  "align": "center"
+                },
+                "style": {
+                  "padding": {
+                    "top": "xs",
+                    "bottom": "xs",
+                    "start": "md",
+                    "end": "md"
+                  },
+                  "radius": "pill",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "primary",
+                      "opacity": 0.12
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "chip-all-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "All"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "chip-coffee",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "xs",
+                  "align": "center"
+                },
+                "style": {
+                  "padding": {
+                    "top": "xs",
+                    "bottom": "xs",
+                    "start": "md",
+                    "end": "md"
+                  },
+                  "radius": "pill",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "primary",
+                      "opacity": 0.12
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "chip-coffee-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Coffee"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "chip-travel",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "xs",
+                  "align": "center"
+                },
+                "style": {
+                  "padding": {
+                    "top": "xs",
+                    "bottom": "xs",
+                    "start": "md",
+                    "end": "md"
+                  },
+                  "radius": "pill",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "primary",
+                      "opacity": 0.12
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "chip-travel-text",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Travel"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ]
+              }
+            ],
+            "pin": "top"
+          },
+          {
+            "id": "home-balance",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "home-balance-text",
+                "type": "Column",
+                "props": {
+                  "gap": "xs",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "home-balance-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Balance"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "color": "muted"
+                    }
+                  },
+                  {
+                    "id": "home-balance-value",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "user.points",
+                        "fallback": "0",
+                        "format": "number"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis",
+                      "animateIn": true,
+                      "animateChanges": true
+                    },
+                    "style": {
+                      "typography": "displayL"
+                    }
+                  }
+                ],
+                "weight": 1
+              },
+              {
+                "id": "home-ring",
+                "type": "CircularProgress",
+                "props": {
+                  "value": {
+                    "kind": "binding",
+                    "path": "task.progress",
+                    "fallback": 0
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 5
+                  },
+                  "color": "primary",
+                  "size": "lg",
+                  "labelFormat": "valueOfMax",
+                  "animateIn": true,
+                  "animateChanges": true
+                }
+              }
+            ]
+          },
+          {
+            "id": "home-card-1",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-card-1-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Coffee week"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "home-card-1-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 87
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "percent",
+                  "animateIn": true
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            }
+          },
+          {
+            "id": "home-card-2",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-card-2-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Weekend double"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "home-card-2-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 40
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "percent",
+                  "animateIn": true
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            }
+          },
+          {
+            "id": "home-card-3",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-card-3-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "First trip"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "home-card-3-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 65
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "percent",
+                  "animateIn": true
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            }
+          },
+          {
+            "id": "home-card-4",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-card-4-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Grocery run"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "home-card-4-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 20
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "percent",
+                  "animateIn": true
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            }
+          },
+          {
+            "id": "home-card-5",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-card-5-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Night owl"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "home-card-5-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 95
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "percent",
+                  "animateIn": true
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            }
+          },
+          {
+            "id": "home-card-6",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-card-6-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Streak"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "home-card-6-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 55
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "percent",
+                  "animateIn": true
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            }
+          },
+          {
+            "id": "nav",
+            "type": "NavBar",
+            "props": {},
+            "children": [
+              {
+                "id": "nav-home",
+                "type": "NavItem",
+                "props": {
+                  "icon": "house",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Home"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "home"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-missions",
+                "type": "NavItem",
+                "props": {
+                  "icon": "target",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Missions"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "missions"
+                    }
+                  },
+                  "badgeWhen": {
+                    "path": "task.progress",
+                    "op": "gt",
+                    "value": 0
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "missions",
+      "name": "Missions",
+      "root": {
+        "id": "missions-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "missions-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Missions"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL"
+            },
+            "pin": "top"
+          },
+          {
+            "id": "missions-card-1",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "missions-card-1-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Coffee week"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "missions-card-1-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 87
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "percent",
+                  "animateIn": true
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            }
+          },
+          {
+            "id": "missions-card-2",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "missions-card-2-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Weekend double"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "missions-card-2-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 40
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "percent",
+                  "animateIn": true
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            }
+          },
+          {
+            "id": "missions-card-3",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "missions-card-3-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "First trip"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "missions-card-3-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 65
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "percent",
+                  "animateIn": true
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            }
+          },
+          {
+            "id": "missions-card-4",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "missions-card-4-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Grocery run"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "missions-card-4-bar",
+                "type": "ProgressBar",
+                "props": {
+                  "value": {
+                    "kind": "literal",
+                    "value": 20
+                  },
+                  "max": {
+                    "kind": "literal",
+                    "value": 100
+                  },
+                  "color": "primary",
+                  "labelFormat": "percent",
+                  "animateIn": true
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            }
+          },
+          {
+            "id": "missions-open",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Open the reward"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "redeem"
+                }
+              },
+              "fullWidth": true
+            },
+            "pin": "bottom"
+          },
+          {
+            "id": "nav",
+            "type": "NavBar",
+            "props": {},
+            "children": [
+              {
+                "id": "nav-home",
+                "type": "NavItem",
+                "props": {
+                  "icon": "house",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Home"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "home"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-missions",
+                "type": "NavItem",
+                "props": {
+                  "icon": "target",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Missions"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "missions"
+                    }
+                  },
+                  "badgeWhen": {
+                    "path": "task.progress",
+                    "op": "gt",
+                    "value": 0
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "redeem",
+      "name": "Redeem",
+      "presentation": "modal",
+      "root": {
+        "id": "redeem-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg",
+          "align": "center"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "radius": {
+            "topStart": "lg",
+            "topEnd": "lg",
+            "bottomStart": "none",
+            "bottomEnd": "none"
+          }
+        },
+        "children": [
+          {
+            "id": "redeem-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Cinema for two"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "redeem-swipe",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Swipe to redeem"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "done"
+                }
+              },
+              "fullWidth": true,
+              "size": "lg",
+              "confirm": "swipe"
+            }
+          },
+          {
+            "id": "redeem-later",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Not now"
+              },
+              "variant": "ghost",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "done",
+      "name": "Done",
+      "root": {
+        "id": "done-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg",
+          "align": "center",
+          "justify": "center"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "done-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "It’s yours!"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL"
+            }
+          },
+          {
+            "id": "done-back",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Back home"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.section",
+                "params": {
+                  "screenId": "home"
+                }
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "home/home-hi/content": "Добрий вечір, Міро",
+        "home/chip-all-text/content": "Усе",
+        "home/chip-coffee-text/content": "Кава",
+        "home/chip-travel-text/content": "Подорожі",
+        "home/home-balance-label/content": "Баланс",
+        "home/home-card-1-title/content": "Кавовий тиждень",
+        "home/home-card-2-title/content": "Подвійні вихідні",
+        "home/home-card-3-title/content": "Перша поїздка",
+        "home/home-card-4-title/content": "По продукти",
+        "home/home-card-5-title/content": "Сова",
+        "home/home-card-6-title/content": "Серія",
+        "home/nav-home/label": "Головна",
+        "home/nav-missions/label": "Місії",
+        "missions/missions-title/content": "Місії",
+        "missions/missions-card-1-title/content": "Кавовий тиждень",
+        "missions/missions-card-2-title/content": "Подвійні вихідні",
+        "missions/missions-card-3-title/content": "Перша поїздка",
+        "missions/missions-card-4-title/content": "По продукти",
+        "missions/missions-open/label": "Відкрити нагороду",
+        "missions/nav-home/label": "Головна",
+        "missions/nav-missions/label": "Місії",
+        "redeem/redeem-title/content": "Кіно для двох",
+        "redeem/redeem-swipe/label": "Проведи, щоб обміняти",
+        "redeem/redeem-later/label": "Не зараз",
+        "done/done-title/content": "Нагорода твоя!",
+        "done/done-back/label": "На головну"
+      }
+    }
+  }
+}

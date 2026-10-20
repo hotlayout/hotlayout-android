@@ -1,0 +1,983 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "composition",
+  "name": "Free composition",
+  "initialScreenId": "home",
+  "screens": [
+    {
+      "screenId": "home",
+      "name": "Home",
+      "root": {
+        "id": "home-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "padding": "md"
+        },
+        "children": [
+          {
+            "id": "home-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Free composition"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL"
+            }
+          },
+          {
+            "id": "insight",
+            "type": "Container",
+            "props": {
+              "direction": "row",
+              "gap": "md",
+              "align": "center"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "insight-tile",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "justify": "center"
+                },
+                "style": {
+                  "width": 40,
+                  "height": 40,
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "success",
+                      "opacity": 0.12
+                    }
+                  },
+                  "color": "success"
+                },
+                "children": [
+                  {
+                    "id": "insight-tile-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "sparkles",
+                      "size": "md"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "insight-texts",
+                "type": "Column",
+                "props": {
+                  "gap": "none",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "insight-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "+50 points"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "insight-note",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "For the survey you finished yesterday"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption",
+                      "color": "muted"
+                    }
+                  }
+                ],
+                "weight": 1
+              }
+            ]
+          },
+          {
+            "id": "quest",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "bonus"
+                }
+              }
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "quest-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Daily bonus"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "quest-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Come back every day: the reward grows"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "quest-foot",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "between",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "quest-badge",
+                    "type": "Badge",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Day 5"
+                      },
+                      "tone": "accent"
+                    }
+                  },
+                  {
+                    "id": "quest-start",
+                    "type": "Button",
+                    "props": {
+                      "label": {
+                        "kind": "literal",
+                        "value": "Start"
+                      },
+                      "variant": "primary",
+                      "action": {
+                        "type": "submit",
+                        "track": {
+                          "event": "bonus_start"
+                        }
+                      },
+                      "fullWidth": false,
+                      "size": "sm"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "banner",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none",
+              "action": {
+                "type": "share"
+              },
+              "label": {
+                "kind": "literal",
+                "value": "Open the offer of the week"
+              }
+            },
+            "style": {
+              "radius": "md"
+            },
+            "children": [
+              {
+                "id": "banner-image",
+                "type": "Image",
+                "props": {
+                  "source": {
+                    "kind": "binding",
+                    "path": "offer.image",
+                    "fallback": "placeholder"
+                  },
+                  "aspectRatio": "16:9",
+                  "fit": "cover"
+                },
+                "style": {
+                  "radius": "md"
+                }
+              }
+            ]
+          },
+          {
+            "id": "activity-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Activity"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "activity",
+            "type": "Tabs",
+            "props": {
+              "initialTab": 0
+            },
+            "children": [
+              {
+                "id": "tab-rewards",
+                "type": "Tab",
+                "props": {
+                  "title": {
+                    "kind": "literal",
+                    "value": "Rewards"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "rewards-list",
+                    "type": "Repeater",
+                    "props": {
+                      "source": "items",
+                      "item": "item",
+                      "direction": "column",
+                      "gap": "none"
+                    },
+                    "children": [
+                      {
+                        "id": "op",
+                        "type": "Column",
+                        "props": {
+                          "gap": "none",
+                          "align": "start"
+                        },
+                        "children": [
+                          {
+                            "id": "op-row",
+                            "type": "Row",
+                            "props": {
+                              "gap": "md",
+                              "align": "center",
+                              "justify": "start",
+                              "wrap": false,
+                              "scrollable": false,
+                              "action": {
+                                "type": "navigate",
+                                "params": {
+                                  "screenId": "details"
+                                },
+                                "track": {
+                                  "event": "operation_open"
+                                }
+                              }
+                            },
+                            "children": [
+                              {
+                                "id": "op-tile",
+                                "type": "Container",
+                                "props": {
+                                  "direction": "column",
+                                  "gap": "none",
+                                  "align": "center",
+                                  "justify": "center"
+                                },
+                                "style": {
+                                  "width": 40,
+                                  "height": 40,
+                                  "radius": "md",
+                                  "background": {
+                                    "kind": "color",
+                                    "color": {
+                                      "token": "primary",
+                                      "opacity": 0.12
+                                    }
+                                  },
+                                  "color": "primary"
+                                },
+                                "children": [
+                                  {
+                                    "id": "op-tile-icon",
+                                    "type": "Icon",
+                                    "props": {
+                                      "name": "gift",
+                                      "size": "md"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "id": "op-texts",
+                                "type": "Column",
+                                "props": {
+                                  "gap": "none",
+                                  "align": "start"
+                                },
+                                "children": [
+                                  {
+                                    "id": "op-name",
+                                    "type": "Text",
+                                    "props": {
+                                      "content": {
+                                        "kind": "binding",
+                                        "path": "item.name",
+                                        "fallback": "Reward"
+                                      },
+                                      "align": "start",
+                                      "overflow": "ellipsis"
+                                    },
+                                    "style": {
+                                      "typography": "bodyM"
+                                    }
+                                  },
+                                  {
+                                    "id": "op-note",
+                                    "type": "Text",
+                                    "props": {
+                                      "content": {
+                                        "kind": "binding",
+                                        "path": "item.description",
+                                        "fallback": "Details"
+                                      },
+                                      "align": "start",
+                                      "overflow": "ellipsis"
+                                    },
+                                    "style": {
+                                      "typography": "caption",
+                                      "color": "muted"
+                                    }
+                                  }
+                                ],
+                                "weight": 1
+                              },
+                              {
+                                "id": "op-amount",
+                                "type": "Text",
+                                "props": {
+                                  "content": {
+                                    "kind": "template",
+                                    "template": "{price} pts",
+                                    "values": {
+                                      "price": {
+                                        "kind": "binding",
+                                        "path": "item.price",
+                                        "fallback": "0",
+                                        "format": "number"
+                                      }
+                                    }
+                                  },
+                                  "align": "start",
+                                  "overflow": "ellipsis"
+                                },
+                                "style": {
+                                  "typography": "titleS"
+                                }
+                              }
+                            ],
+                            "style": {
+                              "padding": {
+                                "top": "sm",
+                                "bottom": "sm"
+                              }
+                            }
+                          },
+                          {
+                            "id": "op-line",
+                            "type": "Divider",
+                            "props": {
+                              "color": "border",
+                              "spacing": "sm",
+                              "orientation": "horizontal"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "tab-tasks",
+                "type": "Tab",
+                "props": {
+                  "title": {
+                    "kind": "literal",
+                    "value": "Tasks"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "tasks-list",
+                    "type": "Repeater",
+                    "props": {
+                      "source": "tasks",
+                      "item": "task",
+                      "direction": "column",
+                      "gap": "none"
+                    },
+                    "children": [
+                      {
+                        "id": "task",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "sm"
+                        },
+                        "style": {
+                          "padding": "md",
+                          "radius": "md",
+                          "background": {
+                            "kind": "color",
+                            "color": "surface"
+                          },
+                          "shadow": "low",
+                          "margin": {
+                            "bottom": "sm"
+                          }
+                        },
+                        "children": [
+                          {
+                            "id": "task-row",
+                            "type": "Row",
+                            "props": {
+                              "gap": "md",
+                              "align": "center",
+                              "justify": "start",
+                              "wrap": false,
+                              "scrollable": false
+                            },
+                            "children": [
+                              {
+                                "id": "task-tile",
+                                "type": "Container",
+                                "props": {
+                                  "direction": "column",
+                                  "gap": "none",
+                                  "align": "center",
+                                  "justify": "center"
+                                },
+                                "style": {
+                                  "width": 40,
+                                  "height": 40,
+                                  "radius": "md",
+                                  "background": {
+                                    "kind": "color",
+                                    "color": {
+                                      "token": "accent",
+                                      "opacity": 0.12
+                                    }
+                                  },
+                                  "color": "accent"
+                                },
+                                "children": [
+                                  {
+                                    "id": "task-tile-icon",
+                                    "type": "Icon",
+                                    "props": {
+                                      "name": "target",
+                                      "size": "md"
+                                    }
+                                  }
+                                ]
+                              },
+                              {
+                                "id": "task-texts",
+                                "type": "Column",
+                                "props": {
+                                  "gap": "none",
+                                  "align": "start"
+                                },
+                                "children": [
+                                  {
+                                    "id": "task-title",
+                                    "type": "Text",
+                                    "props": {
+                                      "content": {
+                                        "kind": "binding",
+                                        "path": "task.title",
+                                        "fallback": "Task"
+                                      },
+                                      "align": "start",
+                                      "overflow": "ellipsis"
+                                    },
+                                    "style": {
+                                      "typography": "bodyM"
+                                    }
+                                  },
+                                  {
+                                    "id": "task-points",
+                                    "type": "Text",
+                                    "props": {
+                                      "content": {
+                                        "kind": "template",
+                                        "template": "+{points} pts",
+                                        "values": {
+                                          "points": {
+                                            "kind": "binding",
+                                            "path": "task.rewardPoints",
+                                            "fallback": "0",
+                                            "format": "number"
+                                          }
+                                        }
+                                      },
+                                      "align": "start",
+                                      "overflow": "ellipsis"
+                                    },
+                                    "style": {
+                                      "typography": "caption",
+                                      "color": "muted"
+                                    }
+                                  }
+                                ],
+                                "weight": 1
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "details",
+      "name": "Details",
+      "root": {
+        "id": "details-root",
+        "type": "Screen",
+        "props": {
+          "gap": "none"
+        },
+        "style": {
+          "background": {
+            "kind": "color",
+            "color": "muted"
+          },
+          "padding": {
+            "top": "xl"
+          }
+        },
+        "children": [
+          {
+            "id": "sheet",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "md"
+            },
+            "style": {
+              "padding": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "radius": {
+                "topStart": "lg",
+                "topEnd": "lg"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "sheet-name",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "item.name",
+                    "fallback": "Reward"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "displayL"
+                }
+              },
+              {
+                "id": "sheet-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "item.description",
+                    "fallback": "Details"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyM",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "scale",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "sm"
+                },
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "muted",
+                      "opacity": 0.1
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "scale-head",
+                    "type": "Row",
+                    "props": {
+                      "gap": "md",
+                      "align": "center",
+                      "justify": "start",
+                      "wrap": false,
+                      "scrollable": false
+                    },
+                    "children": [
+                      {
+                        "id": "scale-tile",
+                        "type": "Container",
+                        "props": {
+                          "direction": "column",
+                          "gap": "none",
+                          "align": "center",
+                          "justify": "center"
+                        },
+                        "style": {
+                          "width": 40,
+                          "height": 40,
+                          "radius": "md",
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "token": "primary",
+                              "opacity": 0.12
+                            }
+                          },
+                          "color": "primary"
+                        },
+                        "children": [
+                          {
+                            "id": "scale-tile-icon",
+                            "type": "Icon",
+                            "props": {
+                              "name": "trophy",
+                              "size": "md"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "id": "scale-texts",
+                        "type": "Column",
+                        "props": {
+                          "gap": "none",
+                          "align": "start"
+                        },
+                        "children": [
+                          {
+                            "id": "scale-title",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "Your progress"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "typography": "bodyM"
+                            }
+                          },
+                          {
+                            "id": "scale-note",
+                            "type": "Text",
+                            "props": {
+                              "content": {
+                                "kind": "literal",
+                                "value": "1,850 of 2,400 points"
+                              },
+                              "align": "start",
+                              "overflow": "ellipsis"
+                            },
+                            "style": {
+                              "typography": "caption",
+                              "color": "muted"
+                            }
+                          }
+                        ],
+                        "weight": 1
+                      }
+                    ]
+                  },
+                  {
+                    "id": "scale-bar",
+                    "type": "ProgressBar",
+                    "props": {
+                      "value": {
+                        "kind": "literal",
+                        "value": 1850
+                      },
+                      "max": {
+                        "kind": "literal",
+                        "value": 2400
+                      },
+                      "color": "primary",
+                      "labelFormat": "none"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "sheet-back",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back to the list"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "navigate.back"
+                  },
+                  "fullWidth": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "bonus",
+      "name": "Daily bonus",
+      "presentation": "modal",
+      "root": {
+        "id": "bonus-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "radius": {
+            "topStart": "lg",
+            "topEnd": "lg"
+          }
+        },
+        "children": [
+          {
+            "id": "bonus-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Daily bonus"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "bonus-card",
+            "type": "Container",
+            "props": {
+              "direction": "row",
+              "gap": "md",
+              "align": "center"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "bonus-tile",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "justify": "center"
+                },
+                "style": {
+                  "width": 40,
+                  "height": 40,
+                  "radius": "md",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "accent",
+                      "opacity": 0.12
+                    }
+                  },
+                  "color": "accent"
+                },
+                "children": [
+                  {
+                    "id": "bonus-tile-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "flame",
+                      "size": "md"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "bonus-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Day 5 of 7: twenty points today"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyM"
+                }
+              }
+            ]
+          },
+          {
+            "id": "bonus-close",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Close"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "home/home-title/content": "Вільна композиція",
+        "home/insight-title/content": "+50 балів",
+        "home/insight-note/content": "За опитування, яке ви пройшли вчора",
+        "home/quest-title/content": "Щоденний бонус",
+        "home/quest-note/content": "Повертайтеся щодня: нагорода росте",
+        "home/quest-badge/label": "День 5",
+        "home/quest-start/label": "Почати",
+        "home/banner/label": "Відкрити пропозицію тижня",
+        "home/activity-title/content": "Активність",
+        "home/tab-rewards/title": "Нагороди",
+        "home/op-amount/content.template": "{price} балів",
+        "home/tab-tasks/title": "Задачі",
+        "home/task-points/content.template": "+{points} балів",
+        "details/scale-title/content": "Ваш поступ",
+        "details/scale-note/content": "1 850 із 2 400 балів",
+        "details/sheet-back/label": "Назад до списку",
+        "bonus/bonus-title/content": "Щоденний бонус",
+        "bonus/bonus-note/content": "День 5 із 7: сьогодні двадцять балів",
+        "bonus/bonus-close/label": "Закрити"
+      }
+    }
+  }
+}

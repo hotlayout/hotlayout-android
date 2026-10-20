@@ -1,0 +1,188 @@
+{
+  "about": "The list budget of one screen (x-listBudget): at most perScreen drawn instances of Repeater templates, nested lists included, counted in document order depth first. A list is given abstractly: «records» is how many records it draws after where and limit, «inside» the lists in its template (each instance of the outer list draws them with the same records, since a collection is named, not nested). «budget» replaces perScreen in a row that shows the order on a small screen; a row without it uses perScreen. Expected: «drawn» per list summed over every instance of the outer lists, «total», and «notDrawn» (instances the lists would draw without the budget, minus the drawn ones). Written by hand.",
+  "budgetCases": [
+    { "name": "one list far below the budget", "lists": [{ "name": "a", "records": 50 }], "drawn": { "a": 50 }, "total": 50, "notDrawn": 0 },
+    {
+      "name": "a worst case of exactly the budget, two nested lists of fifty, is drawn whole",
+      "lists": [{ "name": "outer", "records": 50, "inside": [{ "name": "inner", "records": 50 }] }],
+      "drawn": { "outer": 50, "inner": 2500 },
+      "total": 2550,
+      "notDrawn": 0
+    },
+    {
+      "name": "one instance over the budget is cut",
+      "lists": [{ "name": "outer", "records": 50, "inside": [{ "name": "inner", "records": 50 }] }, { "name": "extra", "records": 1 }],
+      "drawn": { "outer": 50, "inner": 2500, "extra": 0 },
+      "total": 2550,
+      "notDrawn": 1
+    },
+    {
+      "name": "three levels of fifty stop inside the first outer instance",
+      "lists": [{ "name": "outer", "records": 50, "inside": [{ "name": "middle", "records": 50, "inside": [{ "name": "inner", "records": 50 }] }] }],
+      "drawn": { "outer": 1, "middle": 50, "inner": 2499 },
+      "total": 2550,
+      "notDrawn": 125000
+    },
+    {
+      "name": "a later list gets what the first one left",
+      "lists": [{ "name": "first", "records": 50, "inside": [{ "name": "firstInner", "records": 48 }] }, { "name": "second", "records": 50 }],
+      "drawn": { "first": 50, "firstInner": 2400, "second": 50 },
+      "total": 2500,
+      "notDrawn": 0
+    },
+    {
+      "name": "a later list gets nothing when the first one took all",
+      "lists": [{ "name": "first", "records": 50, "inside": [{ "name": "firstInner", "records": 50 }] }, { "name": "second", "records": 50 }],
+      "drawn": { "first": 50, "firstInner": 2500, "second": 0 },
+      "total": 2550,
+      "notDrawn": 50
+    },
+    {
+      "name": "two nested pairs on one screen: the second pair is not drawn",
+      "lists": [
+        { "name": "p", "records": 50, "inside": [{ "name": "pInner", "records": 50 }] },
+        { "name": "q", "records": 50, "inside": [{ "name": "qInner", "records": 50 }] }
+      ],
+      "drawn": { "p": 50, "pInner": 2500, "q": 0, "qInner": 0 },
+      "total": 2550,
+      "notDrawn": 2550
+    },
+    { "name": "the cut falls in the middle of the third list", "budget": 10, "lists": [{ "name": "a", "records": 4 }, { "name": "b", "records": 4 }, { "name": "c", "records": 4 }], "drawn": { "a": 4, "b": 4, "c": 2 }, "total": 10, "notDrawn": 2 },
+    {
+      "name": "an instance counts before the lists inside it",
+      "budget": 5,
+      "lists": [{ "name": "outer", "records": 3, "inside": [{ "name": "inner", "records": 3 }] }],
+      "drawn": { "outer": 2, "inner": 3 },
+      "total": 5,
+      "notDrawn": 7
+    },
+    { "name": "the budget reached exactly at the last instance", "budget": 6, "lists": [{ "name": "a", "records": 6 }], "drawn": { "a": 6 }, "total": 6, "notDrawn": 0 },
+    { "name": "an empty list costs nothing", "budget": 3, "lists": [{ "name": "empty", "records": 0 }, { "name": "a", "records": 3 }], "drawn": { "empty": 0, "a": 3 }, "total": 3, "notDrawn": 0 },
+    {
+      "name": "a list after the cut draws nothing, nor the list inside it",
+      "budget": 4,
+      "lists": [
+        { "name": "a", "records": 2, "inside": [{ "name": "aInner", "records": 1 }] },
+        { "name": "b", "records": 2, "inside": [{ "name": "bInner", "records": 1 }] }
+      ],
+      "drawn": { "a": 2, "aInner": 2, "b": 0, "bInner": 0 },
+      "total": 4,
+      "notDrawn": 4
+    },
+    {
+      "name": "two lists inside one template, all fit",
+      "budget": 10,
+      "lists": [{ "name": "o", "records": 2, "inside": [{ "name": "x", "records": 2 }, { "name": "y", "records": 2 }] }],
+      "drawn": { "o": 2, "x": 4, "y": 4 },
+      "total": 10,
+      "notDrawn": 0
+    },
+    {
+      "name": "two lists inside one template, the last instance of the second is cut",
+      "budget": 9,
+      "lists": [{ "name": "o", "records": 2, "inside": [{ "name": "x", "records": 2 }, { "name": "y", "records": 2 }] }],
+      "drawn": { "o": 2, "x": 4, "y": 3 },
+      "total": 9,
+      "notDrawn": 1
+    }
+  ],
+  "validatorNote": "The worst case of one screen that the builder checks before publishing (x-listBudget.worstCase): every list draws its «limit» (without it 50), nested lists multiply, every record starts a group, a hidden node counts. «children» are the children of the root of the screen; «worst» is the number, «publishes» whether it is at most perScreen; otherwise «at» is the outer list on whose «limit» the validator says list_budget_exceeded: the one that gives the most.",
+  "validatorCases": [
+    {
+      "name": "a worst case of exactly the budget publishes",
+      "children": [
+        { "id": "outer", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 50 }, "children": [
+          { "id": "outer-row", "type": "Column", "props": {}, "children": [
+            { "id": "inner", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 50 }, "children": [{ "id": "inner-row", "type": "Text", "props": { "content": { "kind": "literal", "value": "Row" } } }] }
+          ] }
+        ] }
+      ],
+      "worst": 2550,
+      "publishes": true,
+      "at": null
+    },
+    {
+      "name": "one more instance does not publish",
+      "children": [
+        { "id": "outer", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 50 }, "children": [
+          { "id": "outer-row", "type": "Column", "props": {}, "children": [
+            { "id": "inner", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 50 }, "children": [{ "id": "inner-row", "type": "Text", "props": { "content": { "kind": "literal", "value": "Row" } } }] }
+          ] }
+        ] },
+        { "id": "extra", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 1 }, "children": [{ "id": "extra-row", "type": "Text", "props": { "content": { "kind": "literal", "value": "Row" } } }] }
+      ],
+      "worst": 2551,
+      "publishes": false,
+      "at": "outer"
+    },
+    {
+      "name": "two nested lists without a limit publish: fifty each is exactly the budget",
+      "children": [
+        { "id": "outer", "type": "Repeater", "props": { "source": "items", "item": "item" }, "children": [
+          { "id": "outer-row", "type": "Column", "props": {}, "children": [
+            { "id": "inner", "type": "Repeater", "props": { "source": "items", "item": "item" }, "children": [{ "id": "inner-row", "type": "Text", "props": { "content": { "kind": "literal", "value": "Row" } } }] }
+          ] }
+        ] }
+      ],
+      "worst": 2550,
+      "publishes": true,
+      "at": null
+    },
+    {
+      "name": "a list without a limit counts fifty",
+      "children": [{ "id": "alone", "type": "Repeater", "props": { "source": "items", "item": "item" }, "children": [{ "id": "alone-row", "type": "Text", "props": { "content": { "kind": "literal", "value": "Row" } } }] }],
+      "worst": 50,
+      "publishes": true,
+      "at": null
+    },
+    {
+      "name": "a hidden list counts the same",
+      "children": [
+        { "id": "outer", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 50 }, "children": [
+          { "id": "outer-row", "type": "Column", "props": {}, "children": [
+            { "id": "inner", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 50 }, "children": [{ "id": "inner-row", "type": "Text", "props": { "content": { "kind": "literal", "value": "Row" } } }] }
+          ] }
+        ] },
+        { "id": "hidden", "type": "Column", "props": {}, "visibleIf": { "path": "user.isPremium", "op": "isTrue" }, "children": [
+          { "id": "hidden-list", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 1 }, "children": [{ "id": "hidden-row", "type": "Text", "props": { "content": { "kind": "literal", "value": "Row" } } }] }
+        ] }
+      ],
+      "worst": 2551,
+      "publishes": false,
+      "at": "outer"
+    },
+    {
+      "name": "lists inside a group header count with every record",
+      "children": [
+        { "id": "grouped", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 10, "groupBy": "item.title" }, "children": [
+          { "id": "grouped-row", "type": "Text", "props": { "content": { "kind": "literal", "value": "Row" } } },
+          { "id": "grouped-header", "type": "Column", "props": {}, "children": [
+            { "id": "header-list", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 10 }, "children": [{ "id": "header-row", "type": "Text", "props": { "content": { "kind": "literal", "value": "Row" } } }] }
+          ] }
+        ] }
+      ],
+      "worst": 110,
+      "publishes": true,
+      "at": null
+    },
+    {
+      "name": "the remark goes to the outer list that gives the most",
+      "children": [
+        { "id": "small", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 5 }, "children": [{ "id": "small-row", "type": "Text", "props": { "content": { "kind": "literal", "value": "Row" } } }] },
+        { "id": "big", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 50 }, "children": [
+          { "id": "big-row", "type": "Column", "props": {}, "children": [
+            { "id": "big-inner", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 50 }, "children": [{ "id": "big-inner-row", "type": "Text", "props": { "content": { "kind": "literal", "value": "Row" } } }] }
+          ] }
+        ] },
+        { "id": "middle", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 2 }, "children": [
+          { "id": "middle-row", "type": "Column", "props": {}, "children": [
+            { "id": "middle-inner", "type": "Repeater", "props": { "source": "items", "item": "item", "limit": 2 }, "children": [{ "id": "middle-inner-row", "type": "Text", "props": { "content": { "kind": "literal", "value": "Row" } } }] }
+          ] }
+        ] }
+      ],
+      "worst": 2561,
+      "publishes": false,
+      "at": "big"
+    }
+  ]
+}

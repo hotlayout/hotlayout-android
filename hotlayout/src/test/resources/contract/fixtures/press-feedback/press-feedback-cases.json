@@ -1,0 +1,27 @@
+{
+  "description": "Schema 9.25.0 — the feedback of a pressable node to the finger (rules: x-pressFeedback). «kindCases»: a node that performs the action of a press, whether it is disabled and whether it confirms by a drag; «expect» — the kind of feedback (card scales to 0.97, button to 0.96, fade goes to opacity 0.7) or null. Which node performs the press is the rule of x-style.layout.composition; the rows here are such nodes. «poseCases» — the pressed pose of every kind and of every kind under «reduce motion». Written by hand.",
+  "kindCases": [
+    {"name": "a pressable card", "node": {"id": "card", "type": "Container", "props": {"direction": "column", "gap": "sm", "action": {"type": "navigate", "params": {"screenId": "mission"}}}}, "disabled": false, "swipe": false, "expect": "card"},
+    {"name": "a list row with an action", "node": {"id": "row", "type": "ListTile", "props": {"title": {"kind": "literal", "value": "Coffee"}, "action": {"type": "navigate", "params": {"screenId": "mission"}}}}, "disabled": false, "swipe": false, "expect": "card"},
+    {"name": "a primary button", "node": {"id": "go", "type": "Button", "props": {"label": {"kind": "literal", "value": "Go"}, "variant": "primary", "action": {"type": "none"}}}, "disabled": false, "swipe": false, "expect": "button"},
+    {"name": "a secondary button", "node": {"id": "go", "type": "Button", "props": {"label": {"kind": "literal", "value": "Go"}, "variant": "secondary", "action": {"type": "none"}}}, "disabled": false, "swipe": false, "expect": "button"},
+    {"name": "a ghost button fades", "node": {"id": "later", "type": "Button", "props": {"label": {"kind": "literal", "value": "Later"}, "variant": "ghost", "action": {"type": "navigate.back"}}}, "disabled": false, "swipe": false, "expect": "fade"},
+    {"name": "an icon button fades", "node": {"id": "share", "type": "IconButton", "props": {"icon": "share-2", "label": {"kind": "literal", "value": "Share"}, "variant": "secondary", "action": {"type": "share"}}}, "disabled": false, "swipe": false, "expect": "fade"},
+    {"name": "a navigation item fades", "node": {"id": "home", "type": "NavItem", "props": {"icon": "house", "label": {"kind": "literal", "value": "Home"}, "action": {"type": "navigate.section", "params": {"screenId": "home"}}}}, "disabled": false, "swipe": false, "expect": "fade"},
+    {"name": "«none» on the node — no feedback", "node": {"id": "card", "type": "Container", "pressFeedback": "none", "props": {"direction": "column", "gap": "sm", "action": {"type": "navigate", "params": {"screenId": "mission"}}}}, "disabled": false, "swipe": false, "expect": null},
+    {"name": "a disabled button — no feedback", "node": {"id": "go", "type": "Button", "props": {"label": {"kind": "literal", "value": "Go"}, "variant": "primary", "action": {"type": "none"}}}, "disabled": true, "swipe": false, "expect": null},
+    {"name": "drag to confirm — the gesture has its own", "node": {"id": "redeem", "type": "Button", "props": {"label": {"kind": "literal", "value": "Swipe to redeem"}, "variant": "primary", "confirm": "swipe", "action": {"type": "redeem"}}}, "disabled": false, "swipe": true, "expect": null}
+  ],
+  "poseCases": [
+    {"name": "card", "kind": "card", "expect": {"scale": 0.97, "opacity": 1}},
+    {"name": "button", "kind": "button", "expect": {"scale": 0.96, "opacity": 1}},
+    {"name": "fade", "kind": "fade", "expect": {"scale": 1, "opacity": 0.7}}
+  ],
+  "ruleCases": [
+    {"name": "down: 80 ms", "rule": "down.durationMs", "expect": 80},
+    {"name": "up: 160 ms", "rule": "up.durationMs", "expect": 160},
+    {"name": "up: the curve passes 1", "rule": "up.curve", "expect": [0.34, 1.56, 0.64, 1]},
+    {"name": "down: the curve", "rule": "down.curve", "expect": [0.2, 0, 0, 1]},
+    {"name": "the word that turns it off", "rule": "words", "expect": ["none"]}
+  ]
+}

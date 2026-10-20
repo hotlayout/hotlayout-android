@@ -1,0 +1,465 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "live-record",
+  "name": "Live record of a page",
+  "initialScreenId": "tasks",
+  "screens": [
+    {
+      "screenId": "tasks",
+      "name": "Tasks",
+      "root": {
+        "id": "tasks-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "tasks-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Tasks"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "active-list",
+            "type": "Repeater",
+            "props": {
+              "source": "tasks",
+              "item": "task",
+              "direction": "column",
+              "gap": "xs"
+            },
+            "children": [
+              {
+                "id": "active-list-row",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "list-checks"
+                  },
+                  "title": {
+                    "kind": "binding",
+                    "path": "task.title",
+                    "fallback": ""
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "binding",
+                      "path": "task.progress",
+                      "fallback": "0"
+                    }
+                  },
+                  "subtitle": {
+                    "kind": "binding",
+                    "path": "task.status",
+                    "fallback": ""
+                  },
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "task"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "done-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Completed"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "done-list",
+            "type": "Repeater",
+            "props": {
+              "source": "doneTasks",
+              "item": "task",
+              "direction": "column",
+              "gap": "xs"
+            },
+            "children": [
+              {
+                "id": "done-list-row",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "list-checks"
+                  },
+                  "title": {
+                    "kind": "binding",
+                    "path": "task.title",
+                    "fallback": ""
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "binding",
+                      "path": "task.progress",
+                      "fallback": "0"
+                    }
+                  },
+                  "subtitle": {
+                    "kind": "binding",
+                    "path": "task.status",
+                    "fallback": ""
+                  },
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "task"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "task",
+      "name": "Task",
+      "root": {
+        "id": "task-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "task-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "binding",
+                "path": "task.title",
+                "fallback": ""
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "task-status",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "binding",
+                "path": "task.status",
+                "fallback": ""
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "task-bar",
+            "type": "ProgressBar",
+            "props": {
+              "value": {
+                "kind": "binding",
+                "path": "task.progress",
+                "fallback": 0
+              },
+              "max": {
+                "kind": "binding",
+                "path": "task.target",
+                "fallback": 5
+              },
+              "color": "primary",
+              "labelFormat": "none",
+              "animateChanges": true,
+              "thickness": "sm"
+            }
+          },
+          {
+            "id": "task-count",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "{done} / {total}",
+                "values": {
+                  "done": {
+                    "kind": "binding",
+                    "path": "task.progress",
+                    "fallback": "0"
+                  },
+                  "total": {
+                    "kind": "binding",
+                    "path": "task.target",
+                    "fallback": "5"
+                  }
+                }
+              },
+              "align": "start",
+              "overflow": "ellipsis",
+              "animateChanges": true
+            },
+            "style": {
+              "typography": "displayL"
+            }
+          },
+          {
+            "id": "task-peek",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Details"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "peek"
+                }
+              },
+              "fullWidth": true
+            }
+          },
+          {
+            "id": "task-back",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Back"
+              },
+              "variant": "ghost",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          },
+          {
+            "id": "more-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "More tasks"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "more-list",
+            "type": "Repeater",
+            "props": {
+              "source": "tasks",
+              "item": "task",
+              "direction": "column",
+              "gap": "xs"
+            },
+            "children": [
+              {
+                "id": "more-list-row",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "list-checks"
+                  },
+                  "title": {
+                    "kind": "binding",
+                    "path": "task.title",
+                    "fallback": ""
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "binding",
+                      "path": "task.progress",
+                      "fallback": "0"
+                    }
+                  },
+                  "subtitle": {
+                    "kind": "binding",
+                    "path": "task.status",
+                    "fallback": ""
+                  },
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "task"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "peek",
+      "name": "Task details",
+      "presentation": "modal",
+      "root": {
+        "id": "peek-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "radius": "lg"
+        },
+        "children": [
+          {
+            "id": "peek-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "binding",
+                "path": "task.title",
+                "fallback": ""
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "peek-count",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "{done} / {total}",
+                "values": {
+                  "done": {
+                    "kind": "binding",
+                    "path": "task.progress",
+                    "fallback": "0"
+                  },
+                  "total": {
+                    "kind": "binding",
+                    "path": "task.target",
+                    "fallback": "5"
+                  }
+                }
+              },
+              "align": "start",
+              "overflow": "ellipsis",
+              "animateChanges": true
+            },
+            "style": {
+              "typography": "bodyM"
+            }
+          },
+          {
+            "id": "peek-close",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Close"
+              },
+              "variant": "ghost",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "tasks/tasks-title/content": "Задачі",
+        "tasks/done-title/content": "Виконані",
+        "task/task-count/content.template": "{done} / {total}",
+        "task/task-peek/label": "Докладніше",
+        "task/task-back/label": "Назад",
+        "task/more-title/content": "Інші задачі",
+        "peek/peek-count/content.template": "{done} / {total}",
+        "peek/peek-close/label": "Закрити"
+      }
+    }
+  }
+}

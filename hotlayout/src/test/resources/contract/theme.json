@@ -1,0 +1,1133 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hotlayout.com/schema/theme.json",
+  "title": "ThemeContract",
+  "x-themeContractVersion": "4.0.1",
+  "x-generatedFrom": "src/entities/theme — generated, do not edit by hand",
+  "x-compatibility": {
+    "policy": {
+      "majorMustMatch": true,
+      "minorAdditionsAreOptional": true,
+      "schemaDescribesExactVersion": true,
+      "newerMinor": "read-known-fields-only",
+      "unreadableTheme": "fallback-and-report",
+      "unknownThemeId": "use-default",
+      "customTokens": "declared-by-theme",
+      "missingCustomToken": "treat-as-unknown-token",
+      "partialTheme": "resolve-missing-to-defaults",
+      "partialThemeDefaults": "built-in-theme-of-same-brightness",
+      "zeroScaleToken": "none-is-zero",
+      "missingRole": "render-neutral",
+      "incompleteThemeAppliesTo": "reader-without-validation",
+      "protoKeyWithoutValidation": "drop-entry",
+      "unknownRoleColor": "neutral-slot",
+      "shadowOrder": "first-is-nearest",
+      "lengthUnit": "logical-pixels",
+      "lineHeightUnit": "font-size-multiple",
+      "missingLetterSpacing": "zero",
+      "colorAlpha": "rrggbbaa-alpha-last",
+      "gradientAngleSpace": "axis-as-css-diagonal-css-to-corner",
+      "diagonalGradientGeometry": "css-to-corner",
+      "gradientStopOrder": "non-descending",
+      "unorderedGradient": "do-not-draw"
+    }
+  },
+  "x-optionalColors": {
+    "tokens": [
+      "locked",
+      "inProgress",
+      "completed"
+    ],
+    "fallbacks": {
+      "locked": "muted",
+      "inProgress": "accent",
+      "completed": "success"
+    }
+  },
+  "x-rules": [
+    {
+      "id": "defaultThemeExists",
+      "description": "«defaultThemeId» names a theme that is present in «themes»."
+    },
+    {
+      "id": "themeKeyMatchesId",
+      "description": "The key of a theme in «themes» equals the «id» inside it."
+    },
+    {
+      "id": "sameTokenNamesAcrossThemes",
+      "description": "Every theme of the set declares the same token names in each of the six dictionaries. A document refers to a name, not to a theme: a name missing in one theme would make the screen look right until that theme is switched on. The three optional state colors are exempt — they have declared fallbacks («x-optionalColors»)."
+    },
+    {
+      "id": "roleColorsExist",
+      "description": "Every color named by a role («roles.badgeTone», «roles.buttonVariant») is declared in the «color» dictionary of the same theme, or is an optional state color."
+    },
+    {
+      "id": "tokenKeysExist",
+      "description": "Every key of «origins» and every entry of «provisional» addresses a value the same theme declares («color.primary», «fontFamilies.body»)."
+    },
+    {
+      "id": "gradientStopsAscending",
+      "description": "Gradient stops go in non-descending order of «position»: every position is not less than the previous one. Equal positions are ordered — that is a hard color stop."
+    },
+    {
+      "id": "documentTokensExist",
+      "description": "A token named by a screen document is declared by the project theme. The document schema checks only the shape of the name; this rule is checked by the document validator against the active theme."
+    }
+  ],
+  "x-gradientGeometry": {
+    "coordinates": "normalized box: (0,0) top-left, (1,1) bottom-right, y grows downwards",
+    "axis": "as CSS: 0 — to top, 90 — to right, 180 — to bottom, 270 — to left; from the middle of one edge to the middle of the opposite edge",
+    "diagonal": "exactly CSS «to <corner>»: 45 — to top right, 135 — to bottom right, 225 — to bottom left, 315 — to top left. The gradient line passes through the center perpendicular to the diagonal joining the two OTHER corners, so the 50% isoline passes through those two corners and the target corner gets position 1",
+    "formula": "for a box w×h and direction signs (sx, sy): end = (0.5 + sx·h²/(w²+h²), 0.5 + sy·w²/(w²+h²)), start is symmetric about the center; in Flutter: Alignment(2x−1, 2y−1)",
+    "direction": "physical: not mirrored in right-to-left scripts",
+    "equalStops": "ordered"
+  },
+  "x-schema": {
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$ref": "#/$defs/ThemeContract",
+    "$defs": {
+      "ThemeFontFamily": {
+        "type": "object",
+        "properties": {
+          "primary": {
+            "type": "string",
+            "minLength": 1
+          },
+          "fallback": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          }
+        },
+        "required": [
+          "primary",
+          "fallback"
+        ],
+        "additionalProperties": false
+      },
+      "ThemeTypography": {
+        "type": "object",
+        "properties": {
+          "fontSize": {
+            "type": "number",
+            "minimum": 8,
+            "maximum": 96
+          },
+          "letterSpacing": {
+            "type": "number",
+            "minimum": -2,
+            "maximum": 8
+          },
+          "lineHeight": {
+            "type": "number",
+            "minimum": 0.8,
+            "maximum": 3
+          },
+          "fontWeight": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 900,
+            "multipleOf": 100
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "body",
+              "heading"
+            ]
+          }
+        },
+        "required": [
+          "fontSize",
+          "lineHeight",
+          "fontWeight",
+          "role"
+        ],
+        "additionalProperties": false
+      },
+      "ThemeShadow": {
+        "type": "object",
+        "properties": {
+          "offsetX": {
+            "type": "number",
+            "minimum": -64,
+            "maximum": 64
+          },
+          "offsetY": {
+            "type": "number",
+            "minimum": -64,
+            "maximum": 64
+          },
+          "blur": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 128
+          },
+          "spread": {
+            "type": "number",
+            "minimum": -64,
+            "maximum": 64
+          },
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-f]{6}$"
+          },
+          "opacity": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "offsetX",
+          "offsetY",
+          "blur",
+          "spread",
+          "color",
+          "opacity"
+        ],
+        "additionalProperties": false
+      },
+      "ThemeRoles": {
+        "type": "object",
+        "properties": {
+          "badgeTone": {
+            "type": "object",
+            "properties": {
+              "neutral": {
+                "$ref": "#/$defs/ThemeRoleColors"
+              },
+              "success": {
+                "$ref": "#/$defs/ThemeRoleColors"
+              },
+              "warning": {
+                "$ref": "#/$defs/ThemeRoleColors"
+              },
+              "danger": {
+                "$ref": "#/$defs/ThemeRoleColors"
+              },
+              "accent": {
+                "$ref": "#/$defs/ThemeRoleColors"
+              }
+            },
+            "required": [
+              "neutral",
+              "success",
+              "warning",
+              "danger",
+              "accent"
+            ],
+            "additionalProperties": false
+          },
+          "buttonVariant": {
+            "type": "object",
+            "properties": {
+              "primary": {
+                "$ref": "#/$defs/ThemeRoleColors"
+              },
+              "secondary": {
+                "$ref": "#/$defs/ThemeRoleColors"
+              },
+              "ghost": {
+                "$ref": "#/$defs/ThemeRoleColors"
+              }
+            },
+            "required": [
+              "primary",
+              "secondary",
+              "ghost"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "required": [
+          "badgeTone",
+          "buttonVariant"
+        ],
+        "additionalProperties": false
+      },
+      "ThemeRoleColors": {
+        "type": "object",
+        "properties": {
+          "background": {
+            "type": "string",
+            "pattern": "^[a-z][a-zA-Z0-9]{0,39}$"
+          },
+          "foreground": {
+            "type": "string",
+            "pattern": "^[a-z][a-zA-Z0-9]{0,39}$"
+          },
+          "border": {
+            "type": "string",
+            "pattern": "^[a-z][a-zA-Z0-9]{0,39}$"
+          }
+        },
+        "required": [
+          "foreground"
+        ],
+        "additionalProperties": false
+      },
+      "ThemeGradientStop": {
+        "type": "object",
+        "properties": {
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+          },
+          "position": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "color",
+          "position"
+        ],
+        "additionalProperties": false
+      },
+      "ThemeGradient": {
+        "type": "object",
+        "properties": {
+          "angle": {
+            "type": "number",
+            "enum": [
+              0,
+              90,
+              180,
+              270,
+              45,
+              135,
+              225,
+              315
+            ]
+          },
+          "stops": {
+            "minItems": 2,
+            "maxItems": 8,
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/ThemeGradientStop"
+            }
+          }
+        },
+        "required": [
+          "angle",
+          "stops"
+        ],
+        "additionalProperties": false
+      },
+      "Theme": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64
+          },
+          "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          },
+          "source": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "brightness": {
+            "type": "string",
+            "enum": [
+              "light",
+              "dark"
+            ]
+          },
+          "provisional": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^(?:fontFamilies\\.(?:body|heading)|(?:color|gradient|spacing|radius|elevation|typography)\\.[a-z][a-zA-Z0-9]{0,39})$"
+            }
+          },
+          "origins": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string",
+              "pattern": "^(?:fontFamilies\\.(?:body|heading)|(?:color|gradient|spacing|radius|elevation|typography)\\.[a-z][a-zA-Z0-9]{0,39})$"
+            },
+            "additionalProperties": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "fontFamilies": {
+            "type": "object",
+            "properties": {
+              "body": {
+                "$ref": "#/$defs/ThemeFontFamily"
+              },
+              "heading": {
+                "$ref": "#/$defs/ThemeFontFamily"
+              }
+            },
+            "required": [
+              "body",
+              "heading"
+            ],
+            "additionalProperties": false
+          },
+          "spacing": {
+            "type": "object",
+            "properties": {
+              "none": {
+                "type": "number",
+                "const": 0
+              },
+              "xs": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 128
+              },
+              "sm": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 128
+              },
+              "md": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 128
+              },
+              "lg": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 128
+              },
+              "xl": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 128
+              }
+            },
+            "required": [
+              "none",
+              "xs",
+              "sm",
+              "md",
+              "lg",
+              "xl"
+            ],
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 128
+            },
+            "propertyNames": {
+              "pattern": "^[a-z][a-zA-Z0-9]{0,39}$"
+            },
+            "maxProperties": 70
+          },
+          "radius": {
+            "type": "object",
+            "properties": {
+              "none": {
+                "type": "number",
+                "const": 0
+              },
+              "sm": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 256
+              },
+              "md": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 256
+              },
+              "lg": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 256
+              },
+              "pill": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 256
+              }
+            },
+            "required": [
+              "none",
+              "sm",
+              "md",
+              "lg",
+              "pill"
+            ],
+            "additionalProperties": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 256
+            },
+            "propertyNames": {
+              "pattern": "^[a-z][a-zA-Z0-9]{0,39}$"
+            },
+            "maxProperties": 69
+          },
+          "color": {
+            "type": "object",
+            "properties": {
+              "primary": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "onPrimary": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "secondary": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "accent": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "surface": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "onSurface": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "muted": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "border": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "success": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "warning": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "danger": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "locked": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "inProgress": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              },
+              "completed": {
+                "type": "string",
+                "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+              }
+            },
+            "required": [
+              "primary",
+              "onPrimary",
+              "secondary",
+              "accent",
+              "surface",
+              "onSurface",
+              "muted",
+              "border",
+              "success",
+              "warning",
+              "danger"
+            ],
+            "additionalProperties": {
+              "type": "string",
+              "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+            },
+            "propertyNames": {
+              "pattern": "^[a-z][a-zA-Z0-9]{0,39}$"
+            },
+            "maxProperties": 78
+          },
+          "typography": {
+            "type": "object",
+            "properties": {
+              "displayL": {
+                "$ref": "#/$defs/ThemeTypography"
+              },
+              "titleM": {
+                "$ref": "#/$defs/ThemeTypography"
+              },
+              "titleS": {
+                "$ref": "#/$defs/ThemeTypography"
+              },
+              "bodyM": {
+                "$ref": "#/$defs/ThemeTypography"
+              },
+              "bodyS": {
+                "$ref": "#/$defs/ThemeTypography"
+              },
+              "caption": {
+                "$ref": "#/$defs/ThemeTypography"
+              },
+              "numericL": {
+                "$ref": "#/$defs/ThemeTypography"
+              }
+            },
+            "required": [
+              "displayL",
+              "titleM",
+              "titleS",
+              "bodyM",
+              "bodyS",
+              "caption",
+              "numericL"
+            ],
+            "additionalProperties": {
+              "$ref": "#/$defs/ThemeTypography"
+            },
+            "propertyNames": {
+              "pattern": "^[a-z][a-zA-Z0-9]{0,39}$"
+            },
+            "maxProperties": 71
+          },
+          "elevation": {
+            "type": "object",
+            "properties": {
+              "none": {
+                "maxItems": 0,
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ThemeShadow"
+                }
+              },
+              "low": {
+                "maxItems": 4,
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ThemeShadow"
+                }
+              },
+              "medium": {
+                "maxItems": 4,
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/ThemeShadow"
+                }
+              }
+            },
+            "required": [
+              "none",
+              "low",
+              "medium"
+            ],
+            "additionalProperties": {
+              "maxItems": 4,
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ThemeShadow"
+              }
+            },
+            "propertyNames": {
+              "pattern": "^[a-z][a-zA-Z0-9]{0,39}$"
+            },
+            "maxProperties": 67
+          },
+          "roles": {
+            "$ref": "#/$defs/ThemeRoles"
+          },
+          "gradient": {
+            "type": "object",
+            "properties": {
+              "brandBackdrop": {
+                "$ref": "#/$defs/ThemeGradient"
+              }
+            },
+            "required": [
+              "brandBackdrop"
+            ],
+            "additionalProperties": {
+              "$ref": "#/$defs/ThemeGradient"
+            },
+            "propertyNames": {
+              "pattern": "^[a-z][a-zA-Z0-9]{0,39}$"
+            },
+            "maxProperties": 65
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "source",
+          "brightness",
+          "provisional",
+          "origins",
+          "fontFamilies",
+          "spacing",
+          "radius",
+          "color",
+          "typography",
+          "elevation",
+          "roles",
+          "gradient"
+        ],
+        "additionalProperties": false
+      },
+      "ThemeContract": {
+        "type": "object",
+        "properties": {
+          "themeContractVersion": {
+            "type": "string",
+            "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$"
+          },
+          "defaultThemeId": {
+            "type": "string",
+            "minLength": 1
+          },
+          "themes": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string",
+              "minLength": 1,
+              "pattern": "^(?!__proto__$)"
+            },
+            "additionalProperties": {
+              "$ref": "#/$defs/Theme"
+            }
+          }
+        },
+        "required": [
+          "themeContractVersion",
+          "defaultThemeId",
+          "themes"
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "contract": {
+    "themeContractVersion": "4.0.1",
+    "defaultThemeId": "light",
+    "themes": {
+      "light": {
+        "id": "light",
+        "name": "Default",
+        "source": "Built-in starter palette. Replace it with the values of your own brand.",
+        "brightness": "light",
+        "provisional": [
+          "color.primary",
+          "color.onPrimary",
+          "color.secondary",
+          "color.accent",
+          "color.surface",
+          "color.onSurface",
+          "color.muted",
+          "color.border",
+          "color.success",
+          "color.warning",
+          "color.danger",
+          "color.locked",
+          "color.inProgress",
+          "color.completed",
+          "typography.displayL",
+          "typography.titleM",
+          "typography.titleS",
+          "typography.bodyM",
+          "typography.bodyS",
+          "typography.caption",
+          "typography.numericL",
+          "elevation.low",
+          "elevation.medium",
+          "gradient.brandBackdrop",
+          "fontFamilies.body",
+          "fontFamilies.heading"
+        ],
+        "fontFamilies": {
+          "body": {
+            "primary": "Inter",
+            "fallback": [
+              "system-ui",
+              "-apple-system",
+              "Segoe UI",
+              "Roboto",
+              "sans-serif"
+            ]
+          },
+          "heading": {
+            "primary": "Inter",
+            "fallback": [
+              "system-ui",
+              "-apple-system",
+              "sans-serif"
+            ]
+          }
+        },
+        "spacing": {
+          "none": 0,
+          "xs": 4,
+          "sm": 8,
+          "md": 12,
+          "lg": 16,
+          "xl": 24
+        },
+        "radius": {
+          "none": 0,
+          "sm": 8,
+          "md": 12,
+          "lg": 20,
+          "pill": 72
+        },
+        "color": {
+          "primary": "#4f46e5",
+          "onPrimary": "#ffffff",
+          "secondary": "#eef0f6",
+          "accent": "#0369a1",
+          "surface": "#ffffff",
+          "onSurface": "#111827",
+          "muted": "#6b7280",
+          "border": "#e5e7eb",
+          "success": "#15803d",
+          "warning": "#b45309",
+          "danger": "#dc2626",
+          "locked": "#9ca3af",
+          "inProgress": "#0369a1",
+          "completed": "#166534"
+        },
+        "typography": {
+          "displayL": {
+            "fontSize": 24,
+            "lineHeight": 1.1667,
+            "fontWeight": 700,
+            "role": "heading"
+          },
+          "titleM": {
+            "fontSize": 18,
+            "lineHeight": 1.3333,
+            "fontWeight": 700,
+            "role": "heading"
+          },
+          "titleS": {
+            "fontSize": 16,
+            "lineHeight": 1.5,
+            "fontWeight": 500,
+            "role": "body"
+          },
+          "bodyM": {
+            "fontSize": 14,
+            "lineHeight": 1.4286,
+            "fontWeight": 400,
+            "role": "body"
+          },
+          "bodyS": {
+            "fontSize": 12,
+            "lineHeight": 1.3333,
+            "fontWeight": 400,
+            "role": "body"
+          },
+          "caption": {
+            "fontSize": 10,
+            "lineHeight": 1.2,
+            "fontWeight": 500,
+            "role": "body"
+          },
+          "numericL": {
+            "fontSize": 20,
+            "lineHeight": 1.2,
+            "fontWeight": 600,
+            "role": "body"
+          }
+        },
+        "origins": {},
+        "elevation": {
+          "none": [],
+          "low": [
+            {
+              "offsetX": 0,
+              "offsetY": 1,
+              "blur": 2,
+              "spread": 0,
+              "color": "#111827",
+              "opacity": 0.12
+            }
+          ],
+          "medium": [
+            {
+              "offsetX": 0,
+              "offsetY": 8,
+              "blur": 20,
+              "spread": 0,
+              "color": "#111827",
+              "opacity": 0.18
+            }
+          ]
+        },
+        "gradient": {
+          "brandBackdrop": {
+            "angle": 90,
+            "stops": [
+              {
+                "color": "#eef2ff",
+                "position": 0
+              },
+              {
+                "color": "#f0f9ff",
+                "position": 1
+              }
+            ]
+          }
+        },
+        "roles": {
+          "badgeTone": {
+            "neutral": {
+              "background": "secondary",
+              "foreground": "onSurface"
+            },
+            "success": {
+              "background": "success",
+              "foreground": "onPrimary"
+            },
+            "warning": {
+              "background": "warning",
+              "foreground": "onPrimary"
+            },
+            "danger": {
+              "background": "danger",
+              "foreground": "onPrimary"
+            },
+            "accent": {
+              "background": "accent",
+              "foreground": "onPrimary"
+            }
+          },
+          "buttonVariant": {
+            "primary": {
+              "background": "primary",
+              "foreground": "onPrimary"
+            },
+            "secondary": {
+              "background": "surface",
+              "foreground": "primary",
+              "border": "primary"
+            },
+            "ghost": {
+              "foreground": "primary"
+            }
+          }
+        }
+      },
+      "dark": {
+        "id": "dark",
+        "name": "Default dark",
+        "source": "Built-in starter palette. Replace it with the values of your own brand.",
+        "brightness": "dark",
+        "provisional": [
+          "color.primary",
+          "color.onPrimary",
+          "color.secondary",
+          "color.accent",
+          "color.surface",
+          "color.onSurface",
+          "color.muted",
+          "color.border",
+          "color.success",
+          "color.warning",
+          "color.danger",
+          "color.locked",
+          "color.inProgress",
+          "color.completed",
+          "typography.displayL",
+          "typography.titleM",
+          "typography.titleS",
+          "typography.bodyM",
+          "typography.bodyS",
+          "typography.caption",
+          "typography.numericL",
+          "elevation.low",
+          "elevation.medium",
+          "gradient.brandBackdrop",
+          "fontFamilies.body",
+          "fontFamilies.heading"
+        ],
+        "fontFamilies": {
+          "body": {
+            "primary": "Inter",
+            "fallback": [
+              "system-ui",
+              "-apple-system",
+              "Segoe UI",
+              "Roboto",
+              "sans-serif"
+            ]
+          },
+          "heading": {
+            "primary": "Inter",
+            "fallback": [
+              "system-ui",
+              "-apple-system",
+              "sans-serif"
+            ]
+          }
+        },
+        "spacing": {
+          "none": 0,
+          "xs": 4,
+          "sm": 8,
+          "md": 12,
+          "lg": 16,
+          "xl": 24
+        },
+        "radius": {
+          "none": 0,
+          "sm": 8,
+          "md": 12,
+          "lg": 20,
+          "pill": 72
+        },
+        "color": {
+          "primary": "#5b55ea",
+          "onPrimary": "#ffffff",
+          "secondary": "#1f2937",
+          "accent": "#0b74b0",
+          "surface": "#111827",
+          "onSurface": "#f3f4f6",
+          "muted": "#9ca3af",
+          "border": "#374151",
+          "success": "#15803d",
+          "warning": "#b45309",
+          "danger": "#dc2626",
+          "locked": "#4b5563",
+          "inProgress": "#0b74b0",
+          "completed": "#166534"
+        },
+        "typography": {
+          "displayL": {
+            "fontSize": 24,
+            "lineHeight": 1.1667,
+            "fontWeight": 700,
+            "role": "heading"
+          },
+          "titleM": {
+            "fontSize": 18,
+            "lineHeight": 1.3333,
+            "fontWeight": 700,
+            "role": "heading"
+          },
+          "titleS": {
+            "fontSize": 16,
+            "lineHeight": 1.5,
+            "fontWeight": 500,
+            "role": "body"
+          },
+          "bodyM": {
+            "fontSize": 14,
+            "lineHeight": 1.4286,
+            "fontWeight": 400,
+            "role": "body"
+          },
+          "bodyS": {
+            "fontSize": 12,
+            "lineHeight": 1.3333,
+            "fontWeight": 400,
+            "role": "body"
+          },
+          "caption": {
+            "fontSize": 10,
+            "lineHeight": 1.2,
+            "fontWeight": 500,
+            "role": "body"
+          },
+          "numericL": {
+            "fontSize": 20,
+            "lineHeight": 1.2,
+            "fontWeight": 600,
+            "role": "body"
+          }
+        },
+        "origins": {},
+        "elevation": {
+          "none": [],
+          "low": [
+            {
+              "offsetX": 0,
+              "offsetY": 1,
+              "blur": 2,
+              "spread": 0,
+              "color": "#05070b",
+              "opacity": 0.45
+            }
+          ],
+          "medium": [
+            {
+              "offsetX": 0,
+              "offsetY": 8,
+              "blur": 20,
+              "spread": 0,
+              "color": "#05070b",
+              "opacity": 0.6
+            }
+          ]
+        },
+        "gradient": {
+          "brandBackdrop": {
+            "angle": 90,
+            "stops": [
+              {
+                "color": "#1e1b4b",
+                "position": 0
+              },
+              {
+                "color": "#0c2a3f",
+                "position": 1
+              }
+            ]
+          }
+        },
+        "roles": {
+          "badgeTone": {
+            "neutral": {
+              "background": "secondary",
+              "foreground": "onSurface"
+            },
+            "success": {
+              "background": "success",
+              "foreground": "onPrimary"
+            },
+            "warning": {
+              "background": "warning",
+              "foreground": "onPrimary"
+            },
+            "danger": {
+              "background": "danger",
+              "foreground": "onPrimary"
+            },
+            "accent": {
+              "background": "accent",
+              "foreground": "onPrimary"
+            }
+          },
+          "buttonVariant": {
+            "primary": {
+              "background": "primary",
+              "foreground": "onPrimary"
+            },
+            "secondary": {
+              "background": "surface",
+              "foreground": "onSurface",
+              "border": "primary"
+            },
+            "ghost": {
+              "foreground": "onSurface"
+            }
+          }
+        }
+      }
+    }
+  }
+}

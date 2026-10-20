@@ -1,0 +1,309 @@
+{
+  "description": "The bottom zone of a screen (schema 9.12.0): a block pinned to the bottom and the navigation bar. Cases shared by every reader of the contract, written by hand. `childrenCases`: which child of the screen root stands in which zone — `children` are the children of the root in document order (`pin` is the raw value of the field, anything may stand there), `expect` names them by id; `body` is everything that scrolls. Document order counts, not visibility: a hidden node has no zone, and no other node takes its place. `pinCases`: how the field `pin` is read. `zoneCases`: geometry of the zones in screen coordinates from the top of the screen, in logical pixels — the input is what a reader knows after measuring (`appBarHeight`, `pinnedHeight`, `navBarHeight` are absent when that node is absent, hidden or not drawn; `bodyContentHeight` is absent when the body has no visible children), `shrink` is a modal layer as tall as its content. The bottom zone from top to bottom: the pinned block, the bottom padding of the root under it, the navigation bar, the safe inset; the background of the bar reaches the physical bottom, so `navBar.height` includes the inset and `navBar.contentHeight` does not. With a pinned block the body ends with the gap of the screen instead of the bottom padding of the root. `navHeightCases`: the height of the bar from theme numbers. `navShareCases`: the shares of the items — `start` from the LEFT edge of the bar; a hidden item has no share (`null`); only the first five visible items are drawn. `activeCases`: which item is active on the shown screen. `sectionCases`: the stack after `navigate.section` — `null` means nothing happens and no screen-shown event is sent. `ruleCases`: a key of `x-style.layout.bottomZone` or `x-style.layout.navBar` and its value. `documentCases`: documents and what the validator of the builder says (`sentences` are keys of its messages; a reader does not need them, but the rows show which documents the builder never publishes). Flows of switching sections live in `flowCases` of `contract/fixtures/actions/action-cases.json` (rows named `9.12 sections: …`).",
+
+  "childrenCases": [
+    { "name": "no bottom zone: every child but the app bar is the body", "children": [{ "id": "bar", "type": "AppBar" }, { "id": "a", "type": "Text" }, { "id": "b", "type": "Button" }], "expect": { "appBar": "bar", "body": ["a", "b"], "pinned": null, "navBar": null } },
+    { "name": "the navigation bar is the last child of the root", "children": [{ "id": "bar", "type": "AppBar" }, { "id": "a", "type": "Text" }, { "id": "nav", "type": "NavBar" }], "expect": { "appBar": "bar", "body": ["a"], "pinned": null, "navBar": "nav" } },
+    { "name": "a navigation bar that is not last is an ordinary child of the body", "children": [{ "id": "nav", "type": "NavBar" }, { "id": "a", "type": "Text" }], "expect": { "appBar": null, "body": ["nav", "a"], "pinned": null, "navBar": null } },
+    { "name": "two navigation bars: only the last one is the zone, the other stays in the body", "children": [{ "id": "a", "type": "Text" }, { "id": "nav-1", "type": "NavBar" }, { "id": "nav-2", "type": "NavBar" }], "expect": { "appBar": null, "body": ["a", "nav-1"], "pinned": null, "navBar": "nav-2" } },
+    { "name": "the pinned block is the last child with pin: bottom", "children": [{ "id": "a", "type": "Text" }, { "id": "cta", "type": "Button", "pin": "bottom" }], "expect": { "appBar": null, "body": ["a"], "pinned": "cta", "navBar": null } },
+    { "name": "both: the pinned block is the last child not counting the navigation bar", "children": [{ "id": "bar", "type": "AppBar" }, { "id": "a", "type": "Text" }, { "id": "cta", "type": "Container", "pin": "bottom" }, { "id": "nav", "type": "NavBar" }], "expect": { "appBar": "bar", "body": ["a"], "pinned": "cta", "navBar": "nav" } },
+    { "name": "pin on a child that is not last is not read", "children": [{ "id": "cta", "type": "Button", "pin": "bottom" }, { "id": "a", "type": "Text" }], "expect": { "appBar": null, "body": ["cta", "a"], "pinned": null, "navBar": null } },
+    { "name": "two children with pin: only the last one is pinned, the other scrolls with the body", "children": [{ "id": "a", "type": "Text" }, { "id": "cta-1", "type": "Button", "pin": "bottom" }, { "id": "cta-2", "type": "Button", "pin": "bottom" }], "expect": { "appBar": null, "body": ["a", "cta-1"], "pinned": "cta-2", "navBar": null } },
+    { "name": "pin on the navigation bar means nothing: it is a zone already", "children": [{ "id": "a", "type": "Text" }, { "id": "nav", "type": "NavBar", "pin": "bottom" }], "expect": { "appBar": null, "body": ["a"], "pinned": null, "navBar": "nav" } },
+    { "name": "the app bar is never pinned, even when it is the only child", "children": [{ "id": "bar", "type": "AppBar", "pin": "bottom" }], "expect": { "appBar": "bar", "body": [], "pinned": null, "navBar": null } },
+    { "name": "an app bar that is not first is an ordinary child, so as the last child it can be pinned", "children": [{ "id": "a", "type": "Text" }, { "id": "bar", "type": "AppBar", "pin": "bottom" }], "expect": { "appBar": null, "body": ["a"], "pinned": "bar", "navBar": null } },
+    { "name": "a word of pin the reader does not know: as if there were no field", "children": [{ "id": "a", "type": "Text" }, { "id": "cta", "type": "Button", "pin": "top" }], "expect": { "appBar": null, "body": ["a", "cta"], "pinned": null, "navBar": null }, "refinedIn": "9.24.0", "refinedNote": "From 9.24.0 «top» is a word of the contract; here it stands after a child without the word, so it is still not read (x-style.layout.topZone.run)." },
+    { "name": "only a pinned block and a navigation bar: the body is empty", "children": [{ "id": "cta", "type": "Button", "pin": "bottom" }, { "id": "nav", "type": "NavBar" }], "expect": { "appBar": null, "body": [], "pinned": "cta", "navBar": "nav" } },
+    { "name": "an empty root: nothing anywhere", "children": [], "expect": { "appBar": null, "body": [], "pinned": null, "navBar": null } }
+  ],
+
+  "pinCases": [
+    { "name": "bottom", "pin": "bottom", "expect": "bottom" },
+    { "name": "a word of a newer minor", "pin": "top", "expect": null, "refinedIn": "9.24.0", "refinedNote": "From 9.24.0 «top» is the word of the top zone (x-style.layout.topZone, contract/fixtures/top-zone/top-zone-cases.json). The bottom zone still does not read it: this row stays true for the bottom zone." },
+    { "name": "true is not a word", "pin": true, "expect": null },
+    { "name": "null", "pin": null, "expect": null },
+    { "name": "a number", "pin": 1, "expect": null },
+    { "name": "an object", "pin": { "edge": "bottom" }, "expect": null },
+    { "name": "another case of the word", "pin": "Bottom", "expect": null },
+    { "name": "the empty string", "pin": "", "expect": null }
+  ],
+
+  "zoneCases": [
+    {
+      "name": "320 × 568, an app bar and a navigation bar, short content: the bar is at the bottom of the screen, not after the content",
+      "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 200, "bottom": { "navBarHeight": 61 },
+      "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 435 }, "contentTop": 84, "contentHeight": 228, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": { "top": 507, "height": 61, "pinned": null, "navBar": { "top": 507, "height": 61, "contentHeight": 61 }, "safeBottom": 0 } }
+    },
+    {
+      "name": "the same on a phone with a 34 safe inset: the items stand 34 higher, the background of the bar reaches the physical bottom",
+      "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 200, "bottom": { "navBarHeight": 61, "safeBottom": 34 },
+      "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 401 }, "contentTop": 84, "contentHeight": 228, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": { "top": 473, "height": 95, "pinned": null, "navBar": { "top": 473, "height": 95, "contentHeight": 61 }, "safeBottom": 34 } }
+    },
+    {
+      "name": "320 × 568, an app bar and a navigation bar, long content, not scrolled: the body is what is left between the two",
+      "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 900, "bottom": { "navBarHeight": 61 },
+      "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 435 }, "contentTop": 84, "contentHeight": 928, "maxScroll": 493, "scrollTop": 0, "scrolls": true, "bottom": { "top": 507, "height": 61, "pinned": null, "navBar": { "top": 507, "height": 61, "contentHeight": 61 }, "safeBottom": 0 } }
+    },
+    {
+      "name": "the same scrolled past the end: the bar has not moved; the content ends at 491 and the bottom padding of the root ends exactly at the top of the bar (507)",
+      "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 900, "scrollTop": 1000, "bottom": { "navBarHeight": 61 },
+      "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 435 }, "contentTop": -409, "contentHeight": 928, "maxScroll": 493, "scrollTop": 493, "scrolls": true, "bottom": { "top": 507, "height": 61, "pinned": null, "navBar": { "top": 507, "height": 61, "contentHeight": 61 }, "safeBottom": 0 } }
+    },
+    {
+      "name": "320 × 568, no app bar, a pinned block of 48, long content: the block has the bottom padding of the root under it, the body ends with the gap of the screen",
+      "height": 568, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 900, "bottom": { "pinnedHeight": 48 },
+      "expect": { "height": 568, "appBar": null, "body": { "top": 0, "height": 504 }, "contentTop": 16, "contentHeight": 928, "maxScroll": 424, "scrollTop": 0, "scrolls": true, "bottom": { "top": 504, "height": 64, "pinned": { "top": 504, "height": 48 }, "navBar": null, "safeBottom": 0 } }
+    },
+    {
+      "name": "the same scrolled to the end: the last line of the content ends at 492, twelve above the block — it is never hidden under it",
+      "height": 568, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 900, "scrollTop": 424, "bottom": { "pinnedHeight": 48 },
+      "expect": { "height": 568, "appBar": null, "body": { "top": 0, "height": 504 }, "contentTop": -408, "contentHeight": 928, "maxScroll": 424, "scrollTop": 424, "scrolls": true, "bottom": { "top": 504, "height": 64, "pinned": { "top": 504, "height": 48 }, "navBar": null, "safeBottom": 0 } }
+    },
+    {
+      "name": "the same with a 34 safe inset and no navigation bar: the inset is transparent room under the bottom padding of the root",
+      "height": 568, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 900, "bottom": { "pinnedHeight": 48, "safeBottom": 34 },
+      "expect": { "height": 568, "appBar": null, "body": { "top": 0, "height": 470 }, "contentTop": 16, "contentHeight": 928, "maxScroll": 458, "scrollTop": 0, "scrolls": true, "bottom": { "top": 470, "height": 98, "pinned": { "top": 470, "height": 48 }, "navBar": null, "safeBottom": 34 } }
+    },
+    {
+      "name": "393 × 852, an app bar, a pinned block AND a navigation bar, a 34 safe inset: the block is above the bar",
+      "height": 852, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1200, "bottom": { "pinnedHeight": 48, "navBarHeight": 61, "safeBottom": 34 },
+      "expect": { "height": 852, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 621 }, "contentTop": 84, "contentHeight": 1224, "maxScroll": 603, "scrollTop": 0, "scrolls": true, "bottom": { "top": 693, "height": 159, "pinned": { "top": 693, "height": 48 }, "navBar": { "top": 757, "height": 95, "contentHeight": 61 }, "safeBottom": 34 } }
+    },
+    {
+      "name": "the same scrolled by 300: only the content moved",
+      "height": 852, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 1200, "scrollTop": 300, "bottom": { "pinnedHeight": 48, "navBarHeight": 61, "safeBottom": 34 },
+      "expect": { "height": 852, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 621 }, "contentTop": -216, "contentHeight": 1224, "maxScroll": 603, "scrollTop": 300, "scrolls": true, "bottom": { "top": 693, "height": 159, "pinned": { "top": 693, "height": 48 }, "navBar": { "top": 757, "height": 95, "contentHeight": 61 }, "safeBottom": 34 } }
+    },
+    {
+      "name": "393 × 852, no app bar, a pinned block, short content: the block is at the bottom of the screen, the body is not scrolled",
+      "height": 852, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 100, "bottom": { "pinnedHeight": 48 },
+      "expect": { "height": 852, "appBar": null, "body": { "top": 0, "height": 788 }, "contentTop": 16, "contentHeight": 128, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": { "top": 788, "height": 64, "pinned": { "top": 788, "height": 48 }, "navBar": null, "safeBottom": 0 } }
+    },
+    {
+      "name": "an app bar, a pinned block and no body children: no gap under the bar and none above the block",
+      "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bottom": { "pinnedHeight": 48 },
+      "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 432 }, "contentTop": 72, "contentHeight": 0, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": { "top": 504, "height": 64, "pinned": { "top": 504, "height": 48 }, "navBar": null, "safeBottom": 0 } }
+    },
+    {
+      "name": "a pinned block hidden by a condition: no zone — the same numbers as without the block, the bottom padding is back with the body, and no safe inset is added",
+      "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 200, "bottom": { "safeBottom": 34 },
+      "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 496 }, "contentTop": 84, "contentHeight": 228, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": null }
+    },
+    {
+      "name": "the first body child pulled by 40 over a gap of 12, with a navigation bar: the body area is raised by 28 at the top and ends at the bar at the bottom",
+      "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 900, "firstPull": 40, "bottom": { "navBarHeight": 61 },
+      "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 44, "height": 463 }, "contentTop": 44, "contentHeight": 916, "maxScroll": 453, "scrollTop": 0, "scrolls": true, "bottom": { "top": 507, "height": 61, "pinned": null, "navBar": { "top": 507, "height": 61, "contentHeight": 61 }, "safeBottom": 0 } }
+    },
+    {
+      "name": "a modal sheet with a pinned block of 104, short: the layer is as tall as its content plus the block",
+      "height": 548, "shrink": true, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 180, "bottom": { "pinnedHeight": 104 },
+      "expect": { "height": 328, "appBar": null, "body": { "top": 0, "height": 208 }, "contentTop": 16, "contentHeight": 208, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": { "top": 208, "height": 120, "pinned": { "top": 208, "height": 104 }, "navBar": null, "safeBottom": 0 } }
+    },
+    {
+      "name": "a modal sheet with a pinned block, taller than the available height: the layer is the available height, its BODY scrolls, the block stays at the bottom of the layer",
+      "height": 548, "shrink": true, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 700, "bottom": { "pinnedHeight": 104 },
+      "expect": { "height": 548, "appBar": null, "body": { "top": 0, "height": 428 }, "contentTop": 16, "contentHeight": 728, "maxScroll": 300, "scrollTop": 0, "scrolls": true, "bottom": { "top": 428, "height": 120, "pinned": { "top": 428, "height": 104 }, "navBar": null, "safeBottom": 0 } }
+    },
+    {
+      "name": "a modal sheet with a pinned block on a phone with a 34 safe inset: the sheet is 34 taller, the inset is under the block",
+      "height": 548, "shrink": true, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 180, "bottom": { "pinnedHeight": 104, "safeBottom": 34 },
+      "expect": { "height": 362, "appBar": null, "body": { "top": 0, "height": 208 }, "contentTop": 16, "contentHeight": 208, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": { "top": 208, "height": 154, "pinned": { "top": 208, "height": 104 }, "navBar": null, "safeBottom": 34 } }
+    },
+    {
+      "name": "a screen lower than its own app bar and bottom zone: the body area has no height and never starts above the bottom edge of the app bar",
+      "height": 150, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 300, "bottom": { "pinnedHeight": 48, "navBarHeight": 61, "safeBottom": 34 },
+      "expect": { "height": 150, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 0 }, "contentTop": 84, "contentHeight": 324, "maxScroll": 324, "scrollTop": 0, "scrolls": true, "bottom": { "top": 72, "height": 159, "pinned": { "top": 72, "height": 48 }, "navBar": { "top": 136, "height": 95, "contentHeight": 61 }, "safeBottom": 34 } }
+    },
+    {
+      "name": "no paddings and no gap: the body ends right at the pinned block, the block right at the bar",
+      "height": 568, "padding": { "top": 0, "bottom": 0 }, "gap": 0, "bodyContentHeight": 900, "bottom": { "pinnedHeight": 48, "navBarHeight": 61 },
+      "expect": { "height": 568, "appBar": null, "body": { "top": 0, "height": 459 }, "contentTop": 0, "contentHeight": 900, "maxScroll": 441, "scrollTop": 0, "scrolls": true, "bottom": { "top": 459, "height": 109, "pinned": { "top": 459, "height": 48 }, "navBar": { "top": 507, "height": 61, "contentHeight": 61 }, "safeBottom": 0 } }
+    }
+  ],
+
+  "navHeightCases": [
+    { "name": "the default theme: border 1, padding sm 8, icon box md 24, gap xs 4, label line bodyS 16, padding 8", "metrics": { "borderTop": 1, "paddingBlock": 8, "iconBox": 24, "gap": 4, "labelLine": 16 }, "expect": 61 },
+    { "name": "the node names its own border: the built-in top line is gone", "metrics": { "borderTop": 0, "paddingBlock": 8, "iconBox": 24, "gap": 4, "labelLine": 16 }, "expect": 60 },
+    { "name": "a theme with larger steps: the bar grows with them", "metrics": { "borderTop": 1, "paddingBlock": 12, "iconBox": 28, "gap": 6, "labelLine": 18 }, "expect": 77 },
+    { "name": "a theme with zero steps", "metrics": { "borderTop": 1, "paddingBlock": 0, "iconBox": 24, "gap": 0, "labelLine": 16 }, "expect": 41 }
+  ],
+
+  "navShareCases": [
+    { "name": "two items on 320", "width": 320, "visible": [true, true], "rtl": false, "expect": [{ "start": 0, "width": 160 }, { "start": 160, "width": 160 }] },
+    { "name": "three items on 320: the shares are not whole pixels and are not rounded", "width": 320, "visible": [true, true, true], "rtl": false, "expect": [{ "start": 0, "width": 106.66666666666667 }, { "start": 106.66666666666667, "width": 106.66666666666667 }, { "start": 213.33333333333334, "width": 106.66666666666667 }] },
+    { "name": "four items on 320", "width": 320, "visible": [true, true, true, true], "rtl": false, "expect": [{ "start": 0, "width": 80 }, { "start": 80, "width": 80 }, { "start": 160, "width": 80 }, { "start": 240, "width": 80 }] },
+    { "name": "five items on 320: 64 each", "width": 320, "visible": [true, true, true, true, true], "rtl": false, "expect": [{ "start": 0, "width": 64 }, { "start": 64, "width": 64 }, { "start": 128, "width": 64 }, { "start": 192, "width": 64 }, { "start": 256, "width": 64 }] },
+    { "name": "three items on 393", "width": 393, "visible": [true, true, true], "rtl": false, "expect": [{ "start": 0, "width": 131 }, { "start": 131, "width": 131 }, { "start": 262, "width": 131 }] },
+    { "name": "right to left: the first item is at the right edge", "width": 320, "visible": [true, true, true, true], "rtl": true, "expect": [{ "start": 240, "width": 80 }, { "start": 160, "width": 80 }, { "start": 80, "width": 80 }, { "start": 0, "width": 80 }] },
+    { "name": "a hidden item takes no share: the rest split the whole width", "width": 320, "visible": [true, false, true], "rtl": false, "expect": [{ "start": 0, "width": 160 }, null, { "start": 160, "width": 160 }] },
+    { "name": "one visible item: the whole bar", "width": 320, "visible": [false, true], "rtl": false, "expect": [null, { "start": 0, "width": 320 }] },
+    { "name": "six visible items (a document the builder does not publish): the first five are drawn", "width": 320, "visible": [true, true, true, true, true, true], "rtl": false, "expect": [{ "start": 0, "width": 64 }, { "start": 64, "width": 64 }, { "start": 128, "width": 64 }, { "start": 192, "width": 64 }, { "start": 256, "width": 64 }, null] },
+    { "name": "six items, the second hidden: five visible ones are drawn, the sixth too", "width": 320, "visible": [true, false, true, true, true, true], "rtl": false, "expect": [{ "start": 0, "width": 64 }, null, { "start": 64, "width": 64 }, { "start": 128, "width": 64 }, { "start": 192, "width": 64 }, { "start": 256, "width": 64 }] },
+    { "name": "no visible items: nothing is drawn", "width": 320, "visible": [false, false], "rtl": false, "expect": [null, null] },
+    { "name": "no items", "width": 320, "visible": [], "rtl": false, "expect": [] }
+  ],
+
+  "activeCases": [
+    { "name": "the item that switches to the shown screen is active", "action": { "type": "navigate.section", "params": { "screenId": "rewards" } }, "shown": "rewards", "expect": true },
+    { "name": "an item of another section is not", "action": { "type": "navigate.section", "params": { "screenId": "home" } }, "shown": "rewards", "expect": false },
+    { "name": "navigate to the shown screen is not a section: never active", "action": { "type": "navigate", "params": { "screenId": "rewards" } }, "shown": "rewards", "expect": false },
+    { "name": "an action of the app is never active", "action": { "type": "more" }, "shown": "rewards", "expect": false },
+    { "name": "no action", "action": { "type": "none" }, "shown": "rewards", "expect": false },
+    { "name": "a section action without a screen", "action": { "type": "navigate.section" }, "shown": "rewards", "expect": false },
+    { "name": "a section action with an empty screen", "action": { "type": "navigate.section", "params": { "screenId": "" } }, "shown": "", "expect": false },
+    { "name": "screen ids are compared as written", "action": { "type": "navigate.section", "params": { "screenId": "Rewards" } }, "shown": "rewards", "expect": false }
+  ],
+
+  "sectionCases": [
+    { "name": "from one section to another: the stack is the new section", "stack": ["home"], "target": "rewards", "expect": ["rewards"] },
+    { "name": "the stack is already that one screen: nothing happens", "stack": ["rewards"], "target": "rewards", "expect": null },
+    { "name": "from a deeper stack: everything above is closed", "stack": ["home", "details", "confirm"], "target": "rewards", "expect": ["rewards"] },
+    { "name": "to the screen at the bottom of a deeper stack: the stack is cut to it, and that is a switch", "stack": ["home", "details"], "target": "home", "expect": ["home"] },
+    { "name": "the section screen lies on top of another screen (it was opened by navigate): a switch to it makes it the only one", "stack": ["home", "rewards"], "target": "rewards", "expect": ["rewards"] }
+  ],
+
+  "ruleCases": [
+    { "name": "the zone from top to bottom: the pinned block, the navigation bar, the safe inset", "block": "bottomZone", "rule": "order", "expect": ["pinned", "navBar", "safeInset"] },
+    { "name": "a zone without content does not exist: no room is left for it", "block": "bottomZone", "rule": "empty", "expect": "no-zone-no-room" },
+    { "name": "the zone never scrolls", "block": "bottomZone", "rule": "scrolls", "expect": "never" },
+    { "name": "the navigation bar is the last child of the root", "block": "bottomZone", "rule": "navBar.is", "expect": "last-child-of-the-screen-root-when-it-is-a-nav-bar" },
+    { "name": "— document order, not visibility", "block": "bottomZone", "rule": "navBar.counts", "expect": "document-order-not-visibility" },
+    { "name": "— hidden by a condition, it has no zone", "block": "bottomZone", "rule": "navBar.hidden", "expect": "no-zone" },
+    { "name": "— not last, it is an ordinary child of the body", "block": "bottomZone", "rule": "navBar.notLast", "expect": "ordinary-child-of-the-body" },
+    { "name": "— on a screen shown as a modal layer it is not drawn", "block": "bottomZone", "rule": "navBar.inModalLayer", "expect": "not-drawn" },
+    { "name": "the pinned block is named by a field of the node", "block": "bottomZone", "rule": "pinned.field", "expect": "pin" },
+    { "name": "— at most one", "block": "bottomZone", "rule": "pinned.atMost", "expect": 1 },
+    { "name": "— anywhere else the field is not read", "block": "bottomZone", "rule": "pinned.elsewhere", "expect": "field-is-not-read" },
+    { "name": "— pull on the pinned node is not read", "block": "bottomZone", "rule": "pinned.pull", "expect": "not-read-on-the-pinned-node" },
+    { "name": "— it has no background unless the node names one", "block": "bottomZone", "rule": "pinned.background", "expect": "none-unless-the-node-names-one" },
+    { "name": "— in a modal layer it is drawn at the bottom of the layer", "block": "bottomZone", "rule": "pinned.inModalLayer", "expect": "drawn-at-the-bottom-of-the-layer" },
+    { "name": "the pinned block gets the side and bottom paddings of the root", "block": "bottomZone", "rule": "padding.pinned", "expect": ["start", "end", "bottom"] },
+    { "name": "— and the body ends with the gap of the screen instead", "block": "bottomZone", "rule": "padding.bodyBottomWithPinned", "expect": "screen-gap" },
+    { "name": "— the navigation bar has no paddings of the root: edge to edge", "block": "bottomZone", "rule": "padding.navBar", "expect": "none" },
+    { "name": "the body is clipped at the top edge of the zone", "block": "bottomZone", "rule": "bodyClip", "expect": "top-edge-of-the-bottom-zone" },
+    { "name": "so nothing shows through a pinned block without a background but the background of the screen", "block": "bottomZone", "rule": "contentUnderBottomZone", "expect": "never" },
+    { "name": "the reader adds the bottom safe inset itself — under the content of the zone", "block": "bottomZone", "rule": "safeArea.bottom", "expect": "reader-adds-the-platform-inset-under-the-content-of-the-bottom-zone" },
+    { "name": "— the background of the bar reaches the physical bottom", "block": "bottomZone", "rule": "safeArea.navBarBackground", "expect": "extends-under-the-inset-to-the-physical-bottom" },
+    { "name": "— a screen without a bottom zone gets nothing", "block": "bottomZone", "rule": "safeArea.withoutBottomZone", "expect": "reader-adds-nothing" },
+    { "name": "— a host that accounted for the inset gives zero", "block": "bottomZone", "rule": "safeArea.host", "expect": "may-give-zero-when-it-accounted-for-the-inset-itself" },
+    { "name": "the keyboard: the pinned block rides above it", "block": "bottomZone", "rule": "keyboard.pinned", "expect": "rides-above-the-keyboard" },
+    { "name": "— the navigation bar stays under it", "block": "bottomZone", "rule": "keyboard.navBar", "expect": "covered-by-the-keyboard" },
+    { "name": "a web block without its own height: the same switch of the host as for the app bar", "block": "bottomZone", "rule": "withoutOwnHeight.decides", "expect": "host-the-same-switch-as-the-app-bar" },
+    { "name": "— by default the zone sticks to the bottom of what scrolls", "block": "bottomZone", "rule": "withoutOwnHeight.default", "expect": "bottom-zone-sticks-to-the-bottom-of-the-scrolling-ancestor" },
+    { "name": "— a stuck pinned block paints the background of the screen root under itself", "block": "bottomZone", "rule": "withoutOwnHeight.stuckBackdrop", "expect": "screen-root-background-under-the-pinned-block" },
+    { "name": "the values of pin", "block": "bottomZone", "rule": "pinValues", "expect": ["bottom"] },
+    { "name": "the bar: items in document order, equal shares", "block": "navBar", "rule": "items.width", "expect": "equal-shares-of-the-bar-width-among-visible-items" },
+    { "name": "— at most five", "block": "navBar", "rule": "items.max", "expect": 5 },
+    { "name": "— fewer than two are drawn as they are", "block": "navBar", "rule": "items.fewer", "expect": "drawn-as-is" },
+    { "name": "— the first item at the start of the reading direction", "block": "navBar", "rule": "items.order", "expect": "reading-direction-first-item-at-the-inline-start" },
+    { "name": "an item: the icon above the label", "block": "navBar", "rule": "item.direction", "expect": "icon-above-label" },
+    { "name": "— paddings and the gap are steps of the theme", "block": "navBar", "rule": "item.paddingBlock", "expect": "sm" },
+    { "name": "— the icon is the md step", "block": "navBar", "rule": "item.iconSize", "expect": "md" },
+    { "name": "— the label is bodyS, one line, cut with an ellipsis", "block": "navBar", "rule": "item.labelOverflow", "expect": "ellipsis" },
+    { "name": "— the whole share is the touch area", "block": "navBar", "rule": "item.touchArea", "expect": "the-whole-share-at-the-full-height-of-the-bar" },
+    { "name": "the built-in look: the surface colour", "block": "navBar", "rule": "surface.background", "expect": "surface" },
+    { "name": "— a top line of one pixel in the border colour", "block": "navBar", "rule": "surface.borderTop", "expect": { "width": 1, "color": "border" } },
+    { "name": "the active item is primary, the rest muted", "block": "navBar", "rule": "color", "expect": { "active": "primary", "inactive": "muted", "named": "inherited-color-active-as-is-inactive-at-secondary-opacity", "icon": "same-as-the-label" } },
+    { "name": "which item is active", "block": "navBar", "rule": "active.is", "expect": "item-whose-action-is-navigate.section-to-the-shown-screen" },
+    { "name": "pressing the active item does nothing", "block": "navBar", "rule": "press.activeItem", "expect": "nothing-happens-no-event" },
+    { "name": "the bar is a navigation landmark, an item is a button, the active one is the current page", "block": "navBar", "rule": "semantics", "expect": { "bar": "navigation", "item": "button", "name": "label", "active": "current-page", "keyboard": "every-item-is-a-tab-stop-enter-and-space-press" } },
+    { "name": "no counter badge on an item in 9.12", "block": "navBar", "rule": "badge", "expect": "none-in-9.12" }
+  ],
+
+  "documentCases": [
+    { "name": "three sections, each carries the same bar: valid", "screens": [{ "id": "home", "nav": ["home", "rewards", "profile"] }, { "id": "rewards", "nav": ["home", "rewards", "profile"] }, { "id": "profile", "nav": ["home", "rewards", "profile"] }], "sentences": [] },
+    { "name": "an empty bar on one screen: valid — it is being assembled", "screens": [{ "id": "home", "nav": [] }], "sentences": [] },
+    { "name": "a bar with one item for its own screen: valid", "screens": [{ "id": "home", "nav": ["home"] }], "sentences": [] },
+    { "name": "a section without the bar: a dead end", "screens": [{ "id": "home", "nav": ["home", "rewards"] }, { "id": "rewards" }], "sentences": ["v.navBarMissingOnSection"] },
+    { "name": "the bars list the sections in another order: the items would jump", "screens": [{ "id": "home", "nav": ["home", "rewards"] }, { "id": "rewards", "nav": ["rewards", "home"] }], "sentences": ["v.navBarDiffers", "v.navBarDiffers"] },
+    { "name": "a bar on a screen none of its items leads to", "screens": [{ "id": "home", "nav": ["home", "rewards"] }, { "id": "rewards", "nav": ["home", "rewards"] }, { "id": "details", "nav": ["home", "rewards"] }], "sentences": ["v.navBarForeignScreen"] },
+    { "name": "two items lead to the same screen", "screens": [{ "id": "home", "nav": ["home", "home"] }], "sentences": ["v.navItemDuplicateTarget"] },
+    { "name": "an item leads to a screen the document does not have", "screens": [{ "id": "home", "nav": ["home", "elsewhere"] }], "sentences": ["v.navigateUnknownScreen"] },
+    { "name": "an item leads to a modal screen: a section is a page", "screens": [{ "id": "home", "nav": ["home", "sheet"] }, { "id": "sheet", "modal": true }], "sentences": ["v.sectionTargetModal"] },
+    { "name": "a bar on a modal screen", "screens": [{ "id": "home" }, { "id": "sheet", "modal": true, "nav": [] }], "sentences": ["v.navBarOnModal"] },
+    { "name": "the bar is not the last child", "screens": [{ "id": "home", "nav": ["home"], "after": [{ "id": "late", "type": "Text" }] }], "sentences": ["v.navBarNotLast"] },
+    { "name": "a pinned block as the last child: valid", "screens": [{ "id": "home", "children": [{ "id": "a", "type": "Text" }, { "id": "cta", "type": "Button", "pin": "bottom" }] }], "sentences": [] },
+    { "name": "a pinned block above the bar: valid", "screens": [{ "id": "home", "children": [{ "id": "a", "type": "Text" }, { "id": "cta", "type": "Button", "pin": "bottom" }], "nav": ["home"] }], "sentences": [] },
+    { "name": "pin on a child that is not last", "screens": [{ "id": "home", "children": [{ "id": "cta", "type": "Button", "pin": "bottom" }, { "id": "a", "type": "Text" }] }], "sentences": ["v.pinNotLast"] },
+    { "name": "two children with pin: the first one is misplaced", "screens": [{ "id": "home", "children": [{ "id": "cta-1", "type": "Button", "pin": "bottom" }, { "id": "cta-2", "type": "Button", "pin": "bottom" }] }], "sentences": ["v.pinNotLast"] },
+    { "name": "pin and pull on the same node", "screens": [{ "id": "home", "children": [{ "id": "a", "type": "Text" }, { "id": "cta", "type": "Button", "pin": "bottom", "pull": "md" }] }], "sentences": ["v.pullInBottomZone"] },
+    { "name": "a pinned block on a modal screen: valid — Confirm in a sheet", "screens": [{ "id": "home" }, { "id": "sheet", "modal": true, "children": [{ "id": "a", "type": "Text" }, { "id": "cta", "type": "Button", "pin": "bottom" }] }], "sentences": [] }
+  ],
+  "floatZoneNote": "9.22.0 — the floating bar («NavBar.float: true», «x-style.layout.navFloat»). Every row is screenZonesOf with «navFloat»: the body area reaches the bottom of the screen, the content gets the height of the bottom zone as an extra tail, the bar box has no safe inset (it lies under the bar, outside it). The zone arithmetic is vertical: right-to-left scripts give the same numbers. Rows without a bar in the zone or with «navFloat» false are exactly screenZonesOf.",
+  "floatZoneCases": [
+    { "name": "568, an app bar, long content, a floating bar of 61, no inset: the body reaches the bottom, the tail is the zone", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 600, "navFloat": true, "bottom": { "navBarHeight": 61 }, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 496 }, "contentTop": 84, "contentHeight": 689, "maxScroll": 193, "scrollTop": 0, "scrolls": true, "bottom": { "top": 507, "height": 61, "pinned": null, "navBar": { "top": 507, "height": 61, "contentHeight": 61 }, "safeBottom": 0 }, "float": true } },
+    { "name": "the same with a 34 safe inset: the pill hangs 34 above the bottom, its box does not take the inset", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 600, "navFloat": true, "bottom": { "navBarHeight": 61, "safeBottom": 34 }, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 496 }, "contentTop": 84, "contentHeight": 723, "maxScroll": 227, "scrollTop": 0, "scrolls": true, "bottom": { "top": 473, "height": 95, "pinned": null, "navBar": { "top": 473, "height": 61, "contentHeight": 61 }, "safeBottom": 34 }, "float": true } },
+    { "name": "the same scrolled past the end: the scroll is clamped to the same limit as without the field", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 600, "navFloat": true, "scrollTop": 1000, "bottom": { "navBarHeight": 61, "safeBottom": 34 }, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 496 }, "contentTop": -143, "contentHeight": 723, "maxScroll": 227, "scrollTop": 227, "scrolls": true, "bottom": { "top": 473, "height": 95, "pinned": null, "navBar": { "top": 473, "height": 61, "contentHeight": 61 }, "safeBottom": 34 }, "float": true } },
+    { "name": "a pinned block of 48 over a floating bar, a 34 inset: the whole zone floats, the block stands above the pill, the body ends with the screen gap plus the zone", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 600, "navFloat": true, "bottom": { "pinnedHeight": 48, "navBarHeight": 61, "safeBottom": 34 }, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 496 }, "contentTop": 84, "contentHeight": 783, "maxScroll": 287, "scrollTop": 0, "scrolls": true, "bottom": { "top": 409, "height": 159, "pinned": { "top": 409, "height": 48 }, "navBar": { "top": 473, "height": 61, "contentHeight": 61 }, "safeBottom": 34 }, "float": true } },
+    { "name": "short content under a floating bar: the tail still fits, nothing scrolls", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 200, "navFloat": true, "bottom": { "navBarHeight": 61 }, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 496 }, "contentTop": 84, "contentHeight": 289, "maxScroll": 0, "scrollTop": 0, "scrolls": false, "bottom": { "top": 507, "height": 61, "pinned": null, "navBar": { "top": 507, "height": 61, "contentHeight": 61 }, "safeBottom": 0 }, "float": true } },
+    { "name": "no app bar, a floating bar and a 34 inset: the body is the whole screen, its top padding is inside the scroll", "height": 568, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 600, "navFloat": true, "bottom": { "navBarHeight": 61, "safeBottom": 34 }, "expect": { "height": 568, "appBar": null, "body": { "top": 0, "height": 568 }, "contentTop": 16, "contentHeight": 727, "maxScroll": 159, "scrollTop": 0, "scrolls": true, "bottom": { "top": 473, "height": 95, "pinned": null, "navBar": { "top": 473, "height": 61, "contentHeight": 61 }, "safeBottom": 34 }, "float": true } },
+    { "name": "the first child pulled 28 onto the app bar under a floating bar: the body area is raised by the overlap and still reaches the bottom", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 600, "firstPull": 28, "navFloat": true, "bottom": { "navBarHeight": 61 }, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 56, "height": 512 }, "contentTop": 56, "contentHeight": 677, "maxScroll": 165, "scrollTop": 0, "scrolls": true, "bottom": { "top": 507, "height": 61, "pinned": null, "navBar": { "top": 507, "height": 61, "contentHeight": 61 }, "safeBottom": 0 }, "float": true } },
+    { "name": "the field without a bar in the zone (hidden, or a pinned block only): nothing floats, the numbers of screenZonesOf", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 600, "navFloat": true, "bottom": { "pinnedHeight": 48, "safeBottom": 34 }, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 398 }, "contentTop": 84, "contentHeight": 624, "maxScroll": 226, "scrollTop": 0, "scrolls": true, "bottom": { "top": 470, "height": 98, "pinned": { "top": 470, "height": 48 }, "navBar": null, "safeBottom": 34 }, "float": false } },
+    { "name": "the same bar without the field, a 34 inset: the body ends above the zone and the bar box takes the inset to the physical bottom", "height": 568, "appBarHeight": 56, "padding": { "top": 16, "bottom": 16 }, "gap": 12, "bodyContentHeight": 600, "bottom": { "navBarHeight": 61, "safeBottom": 34 }, "expect": { "height": 568, "appBar": { "top": 16, "height": 56 }, "body": { "top": 72, "height": 401 }, "contentTop": 84, "contentHeight": 628, "maxScroll": 227, "scrollTop": 0, "scrolls": true, "bottom": { "top": 473, "height": 95, "pinned": null, "navBar": { "top": 473, "height": 95, "contentHeight": 61 }, "safeBottom": 34 }, "float": false } }
+  ],
+  "floatPlaceCases": [
+    { "name": "the bar in the bottom zone with «float: true» floats", "navPlace": "bottom", "props": { "float": true }, "expect": true },
+    { "name": "the bar in the bottom zone without the field does not float", "navPlace": "bottom", "props": {}, "expect": false },
+    { "name": "«false» is not a word of the field: the reader reads only the literal true", "navPlace": "bottom", "props": { "float": false }, "expect": false },
+    { "name": "the string \"true\" is not the literal", "navPlace": "bottom", "props": { "float": "true" }, "expect": false },
+    { "name": "on a wide screen the bar stands in the app bar: the field is not read", "navPlace": "appBar", "props": { "float": true }, "expect": false },
+    { "name": "on a wide screen without an app bar the bar is its own top strip: the field is not read", "navPlace": "top", "props": { "float": true }, "expect": false },
+    { "name": "no bar on the screen", "navPlace": null, "props": { "float": true }, "expect": false }
+  ],
+  "navBadgeNote": "9.22.0 — the dot on a navigation item («NavItem.badgeWhen», «x-style.layout.navBadge»). «data» is the value under the path; a row without «data» has no value at all (the missing-data rule of «x-conditions»: only «isEmpty» holds). The box of the dot is in item coordinates, from the LEFT edge: its centre is on the top corner of the glyph at the end of the line.",
+  "navBadgeCases": [
+    { "name": "no field — no dot", "props": {}, "data": { "user.unread": 3 }, "expect": false },
+    { "name": "«gt 0» with 3 unread — a dot", "props": { "badgeWhen": { "path": "user.unread", "op": "gt", "value": 0 } }, "data": { "user.unread": 3 }, "expect": true },
+    { "name": "«gt 0» with 0 unread — no dot", "props": { "badgeWhen": { "path": "user.unread", "op": "gt", "value": 0 } }, "data": { "user.unread": 0 }, "expect": false },
+    { "name": "«gt 0» without data — no dot: an order operator does not hold on a missing value", "props": { "badgeWhen": { "path": "user.unread", "op": "gt", "value": 0 } }, "expect": false },
+    { "name": "«isNotEmpty» without data — no dot", "props": { "badgeWhen": { "path": "user.unread", "op": "isNotEmpty" } }, "expect": false },
+    { "name": "«isEmpty» without data — a dot: the same rule as visibleIf", "props": { "badgeWhen": { "path": "user.unread", "op": "isEmpty" } }, "expect": true },
+    { "name": "«isTrue» on a flag that is true — a dot", "props": { "badgeWhen": { "path": "user.hasNews", "op": "isTrue" } }, "data": { "user.hasNews": true }, "expect": true },
+    { "name": "an operator of a newer minor — no dot (visibleIf would show the node; a dot nobody asked for is the worse mistake)", "props": { "badgeWhen": { "path": "user.unread", "op": "between", "value": 1 } }, "data": { "user.unread": 3 }, "expect": false },
+    { "name": "a condition that is not an object — no dot", "props": { "badgeWhen": "user.unread" }, "data": { "user.unread": 3 }, "expect": false }
+  ],
+  "navBadgeBoxCases": [
+    { "name": "a 24 glyph 30 from the left, 3 from the top, left to right: the centre on its top right corner", "glyph": { "left": 30, "top": 3, "size": 24 }, "rtl": false, "expect": { "left": 50, "top": -1, "size": 8 } },
+    { "name": "the same right to left: the centre on its top left corner", "glyph": { "left": 30, "top": 3, "size": 24 }, "rtl": true, "expect": { "left": 26, "top": -1, "size": 8 } },
+    { "name": "a 16 glyph at the corner of the item: the dot may stand outside the item, it is not clipped", "glyph": { "left": 0, "top": 0, "size": 16 }, "rtl": false, "expect": { "left": 12, "top": -4, "size": 8 } },
+    { "name": "the same right to left", "glyph": { "left": 0, "top": 0, "size": 16 }, "rtl": true, "expect": { "left": -4, "top": -4, "size": 8 } }
+  ],
+  "nav922RuleCases": [
+    { "name": "the field of the floating bar is the literal true or nothing", "block": "navFloat", "rule": "value", "expect": "literal-true-or-no-field" },
+    { "name": "the whole bottom zone floats, the pinned block too", "block": "navFloat", "rule": "zone", "expect": "the-whole-bottom-zone-floats-the-pinned-block-and-the-bar" },
+    { "name": "the body area reaches the bottom of the screen", "block": "navFloat", "rule": "bodyArea", "expect": "from-the-top-of-the-body-area-to-the-bottom-of-the-screen" },
+    { "name": "the content ends with the height of the zone added", "block": "navFloat", "rule": "bodyEnd", "expect": "body-tail-plus-the-height-of-the-bottom-zone" },
+    { "name": "the safe inset is outside the box of the bar", "block": "navFloat", "rule": "safeArea", "expect": { "inset": "under-the-margin-box-of-the-bar-outside-it", "barBackground": "within-the-box-of-the-bar", "pinnedOnly": "unchanged" } },
+    { "name": "there is no built-in pill: the look is the style of the node", "block": "navFloat", "rule": "look", "expect": "style-of-the-node-no-built-in-pill" },
+    { "name": "on a wide screen with the bar at the top the field is not read", "block": "navFloat", "rule": "wideAtTop", "expect": "not-read" },
+    { "name": "the dot is the core token accent", "block": "navBadge", "rule": "color", "expect": "accent" },
+    { "name": "the dot is 8 across", "block": "navBadge", "rule": "diameter", "expect": 8 },
+    { "name": "only a dot, no number in 9.22", "block": "navBadge", "rule": "count", "expect": "none-in-9.22" },
+    { "name": "the accessible name of the item does not change", "block": "navBadge", "rule": "accessibleName", "expect": "unchanged-the-dot-is-not-announced" },
+    { "name": "a condition the reader does not understand draws no dot", "block": "navBadge", "rule": "unknownCondition", "expect": "no-dot" }
+  ],
+  "navBadgeMotionNote": "Schema 9.24.0, rules: x-style.layout.navBadgeMotion. The dot appears with a short flash and disappears by fading when its condition changes its answer on a shown screen. «navBadgeMotionCases» — whether the dot moves. «navBadgeAppearScaleCases» — the scale of the dot at t milliseconds of the appearance. «navBadgeDisappearOpacityCases» — its opacity at t milliseconds of the fading. Compare numbers with a tolerance of 1e-9.",
+  "navBadgeMotionCases": [
+    { "name": "the first show with the dot: no flash", "input": { "shownBefore": false, "before": false, "after": true }, "expect": "none" },
+    { "name": "the condition becomes true on a shown screen: the flash", "input": { "shownBefore": true, "before": false, "after": true }, "expect": "appear" },
+    { "name": "the condition becomes false: the dot fades", "input": { "shownBefore": true, "before": true, "after": false }, "expect": "disappear" },
+    { "name": "the same answer: nothing moves", "input": { "shownBefore": true, "before": true, "after": true }, "expect": "none" },
+    { "name": "reduce motion: the dot appears at once", "input": { "shownBefore": true, "before": false, "after": true, "reducedMotion": true }, "expect": "none" },
+    { "name": "reduce motion: the dot disappears at once", "input": { "shownBefore": true, "before": true, "after": false, "reducedMotion": true }, "expect": "none" }
+  ],
+  "navBadgeAppearScaleCases": [
+    { "name": "the start is a point", "t": 0, "expect": 0 },
+    { "name": "half way to the peak", "t": 96, "expect": 0.625 },
+    { "name": "the peak at six tenths of 320 ms", "t": 192, "expect": 1.25 },
+    { "name": "half way back", "t": 256, "expect": 1.125 },
+    { "name": "the end", "t": 320, "expect": 1 },
+    { "name": "after the end", "t": 1000, "expect": 1 }
+  ],
+  "navBadgeDisappearOpacityCases": [
+    { "name": "the start", "t": 0, "expect": 1 },
+    { "name": "half way", "t": 100, "expect": 0.5 },
+    { "name": "the end", "t": 200, "expect": 0 },
+    { "name": "after the end", "t": 400, "expect": 0 }
+  ]
+}

@@ -1,0 +1,528 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "longpress-groups-sheet",
+  "name": "Long press, groups and sheet dismissal",
+  "initialScreenId": "history",
+  "screens": [
+    {
+      "screenId": "history",
+      "name": "History",
+      "root": {
+        "id": "history-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "history-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "History"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "mission-card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "mission"
+                },
+                "haptic": "light"
+              },
+              "longPress": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "peek"
+                },
+                "haptic": "medium"
+              },
+              "longPressLabel": {
+                "kind": "literal",
+                "value": "Mission options"
+              }
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.12
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "mission-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Coffee week"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "mission-hint",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Hold for options"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              }
+            ]
+          },
+          {
+            "id": "history-list",
+            "type": "Repeater",
+            "props": {
+              "source": "activities",
+              "item": "activity",
+              "direction": "column",
+              "gap": "xs",
+              "groupBy": "activity.day"
+            },
+            "children": [
+              {
+                "id": "activity-row",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "history"
+                  },
+                  "title": {
+                    "kind": "binding",
+                    "path": "activity.title",
+                    "fallback": ""
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "binding",
+                      "path": "activity.points",
+                      "fallback": ""
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "activity-day",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "activity.day",
+                    "fallback": ""
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS",
+                  "color": "muted"
+                }
+              }
+            ]
+          },
+          {
+            "id": "history-actions",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "open-redeem",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Quick redeem"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "redeem"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "open-confirm",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Confirm"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "confirm"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "mission",
+      "name": "Mission",
+      "root": {
+        "id": "mission-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "mission-page-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Coffee week"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "mission-back",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Back"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "peek",
+      "name": "Mission options",
+      "presentation": "modal",
+      "modalPlacement": "center",
+      "backdropBlur": 12,
+      "root": {
+        "id": "peek-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "radius": "lg"
+        },
+        "children": [
+          {
+            "id": "peek-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Mission options"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "peek-pin",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Pin to top"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "pin",
+                "haptic": "light"
+              },
+              "fullWidth": true
+            }
+          },
+          {
+            "id": "peek-close",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Close"
+              },
+              "variant": "ghost",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "redeem",
+      "name": "Quick redeem",
+      "presentation": "modal",
+      "root": {
+        "id": "redeem-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md",
+          "align": "center"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "radius": "lg"
+        },
+        "children": [
+          {
+            "id": "redeem-grabber",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "width": 36,
+              "height": 4,
+              "radius": "pill",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "muted",
+                  "opacity": 0.4
+                }
+              }
+            },
+            "children": []
+          },
+          {
+            "id": "redeem-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Redeem 300 points"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "redeem-hint",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Drag down to close"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "redeem-go",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Redeem"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "confirm",
+      "name": "Confirm",
+      "presentation": "modal",
+      "dismissible": false,
+      "root": {
+        "id": "confirm-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "radius": "lg"
+        },
+        "children": [
+          {
+            "id": "confirm-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Confirm the transfer"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleS"
+            }
+          },
+          {
+            "id": "confirm-hint",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "This sheet waits for a button"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "confirm-go",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Confirm"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "history/history-title/content": "Історія",
+        "history/mission-card/longPressLabel": "Дії місії",
+        "history/mission-title/content": "Кавовий тиждень",
+        "history/mission-hint/content": "Утримайте, щоб побачити дії",
+        "history/open-redeem/label": "Швидкий обмін",
+        "history/open-confirm/label": "Підтвердити",
+        "mission/mission-page-title/content": "Кавовий тиждень",
+        "mission/mission-back/label": "Назад",
+        "peek/peek-title/content": "Дії місії",
+        "peek/peek-pin/label": "Закріпити вгорі",
+        "peek/peek-close/label": "Закрити",
+        "redeem/redeem-title/content": "Обміняти 300 балів",
+        "redeem/redeem-hint/content": "Потягніть униз, щоб закрити",
+        "redeem/redeem-go/label": "Обміняти",
+        "confirm/confirm-title/content": "Підтвердьте переказ",
+        "confirm/confirm-hint/content": "Цей аркуш чекає на кнопку",
+        "confirm/confirm-go/label": "Підтвердити"
+      }
+    }
+  }
+}

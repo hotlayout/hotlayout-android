@@ -1,0 +1,538 @@
+{
+  "schemaVersion": "9.4.0",
+  "documentId": "template-text",
+  "name": "Text templates, numbers and plurals",
+  "initialScreenId": "progress",
+  "screens": [
+    {
+      "screenId": "progress",
+      "name": "Progress",
+      "root": {
+        "id": "progress-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Your week"
+              },
+              "subtitle": {
+                "kind": "template",
+                "template": "Level {level} · {points} {unit}",
+                "values": {
+                  "level": {
+                    "kind": "binding",
+                    "path": "user.level",
+                    "fallback": "1"
+                  },
+                  "points": {
+                    "kind": "binding",
+                    "path": "user.points",
+                    "fallback": "0",
+                    "format": "number"
+                  },
+                  "unit": {
+                    "kind": "plural",
+                    "of": "points",
+                    "forms": {
+                      "one": "point",
+                      "other": "points"
+                    }
+                  }
+                }
+              },
+              "showBack": false
+            }
+          },
+          {
+            "id": "steps",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "{done} / {total} steps",
+                "values": {
+                  "done": {
+                    "kind": "binding",
+                    "path": "task.progress",
+                    "fallback": "—"
+                  },
+                  "total": {
+                    "kind": "binding",
+                    "path": "task.target",
+                    "fallback": "—"
+                  }
+                }
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "days",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "{days} {unit} left",
+                "values": {
+                  "days": {
+                    "kind": "binding",
+                    "path": "campaign.endsAt",
+                    "fallback": "—",
+                    "format": "daysUntil"
+                  },
+                  "unit": {
+                    "kind": "plural",
+                    "of": "days",
+                    "forms": {
+                      "one": "day",
+                      "other": "days"
+                    }
+                  }
+                }
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "balance-row",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "between",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "balance-label",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Balance"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted",
+                  "typography": "bodyS"
+                }
+              },
+              {
+                "id": "balance",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "user.points",
+                    "fallback": "0",
+                    "format": "number"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              }
+            ]
+          },
+          {
+            "id": "discount",
+            "type": "Badge",
+            "props": {
+              "label": {
+                "kind": "template",
+                "template": "−{percent}%",
+                "values": {
+                  "percent": {
+                    "kind": "binding",
+                    "path": "offer.discountPercent",
+                    "fallback": "0"
+                  }
+                }
+              },
+              "tone": "accent"
+            }
+          },
+          {
+            "id": "offer-row",
+            "type": "ListTile",
+            "props": {
+              "leading": {
+                "kind": "icon",
+                "icon": "gift"
+              },
+              "title": {
+                "kind": "binding",
+                "path": "offer.title",
+                "fallback": "Offer"
+              },
+              "subtitle": {
+                "kind": "template",
+                "template": "Ends in {days} {unit}",
+                "values": {
+                  "days": {
+                    "kind": "binding",
+                    "path": "offer.endsAt",
+                    "fallback": "—",
+                    "format": "daysUntil"
+                  },
+                  "unit": {
+                    "kind": "plural",
+                    "of": "days",
+                    "forms": {
+                      "one": "day",
+                      "other": "days"
+                    }
+                  }
+                }
+              },
+              "trailing": {
+                "kind": "text",
+                "text": {
+                  "kind": "binding",
+                  "path": "offer.price",
+                  "fallback": "—",
+                  "format": "currency",
+                  "currency": "JOD"
+                }
+              },
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "offer"
+                }
+              }
+            }
+          },
+          {
+            "id": "tasks-heading",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Missions"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "tasks",
+            "type": "Repeater",
+            "props": {
+              "source": "tasks",
+              "item": "task",
+              "direction": "column",
+              "gap": "sm"
+            },
+            "children": [
+              {
+                "id": "task-row",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "none"
+                  },
+                  "title": {
+                    "kind": "binding",
+                    "path": "task.title",
+                    "fallback": "Mission"
+                  },
+                  "subtitle": {
+                    "kind": "template",
+                    "template": "{done} of {total}",
+                    "values": {
+                      "done": {
+                        "kind": "binding",
+                        "path": "task.progress",
+                        "fallback": "0"
+                      },
+                      "total": {
+                        "kind": "binding",
+                        "path": "task.target",
+                        "fallback": "5"
+                      }
+                    }
+                  },
+                  "trailing": {
+                    "kind": "text",
+                    "text": {
+                      "kind": "template",
+                      "template": "+{reward} {unit}",
+                      "values": {
+                        "reward": {
+                          "kind": "binding",
+                          "path": "task.rewardPoints",
+                          "fallback": "0",
+                          "format": "number"
+                        },
+                        "unit": {
+                          "kind": "plural",
+                          "of": "reward",
+                          "forms": {
+                            "one": "point",
+                            "other": "points"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "offer",
+      "name": "Offer",
+      "root": {
+        "id": "offer-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "offer-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Offer"
+              },
+              "showBack": true
+            }
+          },
+          {
+            "id": "offer-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "binding",
+                "path": "offer.title",
+                "fallback": "Offer"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "offer-price",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "Only {price} until {date}",
+                "values": {
+                  "price": {
+                    "kind": "binding",
+                    "path": "offer.price",
+                    "fallback": "—",
+                    "format": "currency",
+                    "currency": "JOD"
+                  },
+                  "date": {
+                    "kind": "binding",
+                    "path": "offer.endsAt",
+                    "fallback": "—",
+                    "format": "date"
+                  }
+                }
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          },
+          {
+            "id": "offer-days",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "{days} {unit} left",
+                "values": {
+                  "days": {
+                    "kind": "binding",
+                    "path": "offer.endsAt",
+                    "fallback": "—",
+                    "format": "daysUntil"
+                  },
+                  "unit": {
+                    "kind": "plural",
+                    "of": "days",
+                    "forms": {
+                      "one": "day",
+                      "other": "days"
+                    }
+                  }
+                }
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            }
+          },
+          {
+            "id": "offer-code",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "template",
+                "template": "Use code {code} at checkout",
+                "values": {
+                  "code": {
+                    "kind": "binding",
+                    "path": "offer.code",
+                    "fallback": "CODE"
+                  }
+                }
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "progress/bar/title": "Ваш тиждень",
+        "progress/bar/subtitle.template": "Рівень {level} · {points} {unit}",
+        "progress/bar/subtitle.values.unit.forms.one": "бал",
+        "progress/bar/subtitle.values.unit.forms.few": "бали",
+        "progress/bar/subtitle.values.unit.forms.many": "балів",
+        "progress/bar/subtitle.values.unit.forms.other": "бала",
+        "progress/steps/content.template": "Кроків: {done} з {total}",
+        "progress/days/content.template": "Лишилося {days} {unit}",
+        "progress/days/content.values.unit.forms.one": "день",
+        "progress/days/content.values.unit.forms.few": "дні",
+        "progress/days/content.values.unit.forms.many": "днів",
+        "progress/days/content.values.unit.forms.other": "дня",
+        "progress/balance-label/content": "Баланс",
+        "progress/discount/label.template": "−{percent}%",
+        "progress/offer-row/subtitle.template": "Закінчиться через {days} {unit}",
+        "progress/offer-row/subtitle.values.unit.forms.one": "день",
+        "progress/offer-row/subtitle.values.unit.forms.few": "дні",
+        "progress/offer-row/subtitle.values.unit.forms.many": "днів",
+        "progress/offer-row/subtitle.values.unit.forms.other": "дня",
+        "progress/tasks-heading/content": "Місії",
+        "progress/task-row/subtitle.template": "{done} з {total}",
+        "progress/task-row/trailing.text.template": "+{reward} {unit}",
+        "progress/task-row/trailing.text.values.unit.forms.one": "бал",
+        "progress/task-row/trailing.text.values.unit.forms.few": "бали",
+        "progress/task-row/trailing.text.values.unit.forms.many": "балів",
+        "progress/task-row/trailing.text.values.unit.forms.other": "бала",
+        "offer/offer-bar/title": "Пропозиція",
+        "offer/offer-price/content.template": "Лише {price} до {date}",
+        "offer/offer-days/content.template": "Лишилося {days} {unit}",
+        "offer/offer-days/content.values.unit.forms.one": "день",
+        "offer/offer-days/content.values.unit.forms.few": "дні",
+        "offer/offer-days/content.values.unit.forms.many": "днів",
+        "offer/offer-days/content.values.unit.forms.other": "дня",
+        "offer/offer-code/content.template": "Код {code} — на касі"
+      },
+      "ar": {
+        "progress/bar/title": "أسبوعك",
+        "progress/bar/subtitle.template": "المستوى {level} · {points} {unit}",
+        "progress/bar/subtitle.values.unit.forms.zero": "نقطة",
+        "progress/bar/subtitle.values.unit.forms.one": "نقطة",
+        "progress/bar/subtitle.values.unit.forms.two": "نقطتان",
+        "progress/bar/subtitle.values.unit.forms.few": "نقاط",
+        "progress/bar/subtitle.values.unit.forms.many": "نقطة",
+        "progress/bar/subtitle.values.unit.forms.other": "نقطة",
+        "progress/steps/content.template": "{done} من {total} خطوات",
+        "progress/days/content.template": "باقي {days} {unit}",
+        "progress/days/content.values.unit.forms.zero": "يوم",
+        "progress/days/content.values.unit.forms.one": "يوم",
+        "progress/days/content.values.unit.forms.two": "يومان",
+        "progress/days/content.values.unit.forms.few": "أيام",
+        "progress/days/content.values.unit.forms.many": "يومًا",
+        "progress/days/content.values.unit.forms.other": "يوم",
+        "progress/balance-label/content": "الرصيد",
+        "progress/discount/label.template": "−{percent}%",
+        "progress/offer-row/subtitle.template": "ينتهي خلال {days} {unit}",
+        "progress/offer-row/subtitle.values.unit.forms.zero": "يوم",
+        "progress/offer-row/subtitle.values.unit.forms.one": "يوم",
+        "progress/offer-row/subtitle.values.unit.forms.two": "يومان",
+        "progress/offer-row/subtitle.values.unit.forms.few": "أيام",
+        "progress/offer-row/subtitle.values.unit.forms.many": "يومًا",
+        "progress/offer-row/subtitle.values.unit.forms.other": "يوم",
+        "progress/tasks-heading/content": "المهام",
+        "progress/task-row/subtitle.template": "{done} من {total}",
+        "progress/task-row/trailing.text.template": "+{reward} {unit}",
+        "progress/task-row/trailing.text.values.unit.forms.zero": "نقطة",
+        "progress/task-row/trailing.text.values.unit.forms.one": "نقطة",
+        "progress/task-row/trailing.text.values.unit.forms.two": "نقطتان",
+        "progress/task-row/trailing.text.values.unit.forms.few": "نقاط",
+        "progress/task-row/trailing.text.values.unit.forms.many": "نقطة",
+        "progress/task-row/trailing.text.values.unit.forms.other": "نقطة",
+        "offer/offer-bar/title": "العرض",
+        "offer/offer-price/content.template": "فقط {price} حتى {date}",
+        "offer/offer-days/content.template": "باقي {days} {unit}",
+        "offer/offer-days/content.values.unit.forms.zero": "يوم",
+        "offer/offer-days/content.values.unit.forms.one": "يوم",
+        "offer/offer-days/content.values.unit.forms.two": "يومان",
+        "offer/offer-days/content.values.unit.forms.few": "أيام",
+        "offer/offer-days/content.values.unit.forms.many": "يومًا",
+        "offer/offer-days/content.values.unit.forms.other": "يوم",
+        "offer/offer-code/content.template": "استخدم الرمز {code} عند الدفع"
+      }
+    }
+  }
+}

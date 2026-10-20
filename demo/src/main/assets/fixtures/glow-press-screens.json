@@ -1,0 +1,601 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "glow-press",
+  "name": "Glow, tinted shadow, press and haptic",
+  "initialScreenId": "progress",
+  "screens": [
+    {
+      "screenId": "progress",
+      "name": "Progress",
+      "root": {
+        "id": "progress-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "progress-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Weekly challenge"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "progress-steps",
+            "type": "ProgressBar",
+            "props": {
+              "value": {
+                "kind": "literal",
+                "value": 4
+              },
+              "max": {
+                "kind": "literal",
+                "value": 6
+              },
+              "color": "primary",
+              "labelFormat": "valueOfMax",
+              "gradient": {
+                "angle": 90,
+                "stops": [
+                  {
+                    "color": "primary",
+                    "position": 0
+                  },
+                  {
+                    "color": "accent",
+                    "position": 1
+                  }
+                ]
+              },
+              "thickness": "sm",
+              "segments": 6,
+              "currentColor": "accent",
+              "cap": "round",
+              "glow": "strong",
+              "animateIn": true,
+              "animateChanges": true
+            }
+          },
+          {
+            "id": "progress-bar",
+            "type": "ProgressBar",
+            "props": {
+              "value": {
+                "kind": "literal",
+                "value": 62
+              },
+              "max": {
+                "kind": "literal",
+                "value": 100
+              },
+              "color": "success",
+              "labelFormat": "percent",
+              "thickness": "sm",
+              "cap": "round",
+              "glow": "soft",
+              "animateIn": true,
+              "animateChanges": true
+            }
+          },
+          {
+            "id": "progress-ring",
+            "type": "CircularProgress",
+            "props": {
+              "value": {
+                "kind": "literal",
+                "value": 3
+              },
+              "max": {
+                "kind": "literal",
+                "value": 5
+              },
+              "color": "primary",
+              "size": "lg",
+              "labelFormat": "valueOfMax",
+              "cap": "round",
+              "glow": "strong",
+              "animateIn": true,
+              "animateChanges": true
+            }
+          },
+          {
+            "id": "nav",
+            "type": "NavBar",
+            "props": {},
+            "children": [
+              {
+                "id": "nav-progress",
+                "type": "NavItem",
+                "props": {
+                  "icon": "target",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Progress"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "progress"
+                    },
+                    "haptic": "selection"
+                  }
+                }
+              },
+              {
+                "id": "nav-cards",
+                "type": "NavItem",
+                "props": {
+                  "icon": "gift",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Cards"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "cards"
+                    },
+                    "haptic": "selection"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "cards",
+      "name": "Cards",
+      "root": {
+        "id": "cards-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "card-violet",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "progress"
+                },
+                "haptic": "light"
+              },
+              "label": {
+                "kind": "literal",
+                "value": "Coffee week"
+              }
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "primary"
+              },
+              "shadow": [
+                {
+                  "offsetX": 0,
+                  "offsetY": 6,
+                  "blur": 24,
+                  "spread": -2,
+                  "color": {
+                    "token": "primary",
+                    "opacity": 0.55
+                  }
+                }
+              ],
+              "shadowColor": "background"
+            },
+            "children": [
+              {
+                "id": "card-violet-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Coffee week"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS",
+                  "color": "onPrimary"
+                }
+              }
+            ]
+          },
+          {
+            "id": "card-pink",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "progress"
+                },
+                "haptic": "light"
+              },
+              "label": {
+                "kind": "literal",
+                "value": "Movie night"
+              }
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "accent"
+              },
+              "shadow": [
+                {
+                  "offsetX": 0,
+                  "offsetY": 6,
+                  "blur": 24,
+                  "spread": -2,
+                  "color": {
+                    "token": "primary",
+                    "opacity": 0.55
+                  }
+                }
+              ],
+              "shadowColor": "background"
+            },
+            "children": [
+              {
+                "id": "card-pink-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Movie night"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS",
+                  "color": "onPrimary"
+                }
+              }
+            ]
+          },
+          {
+            "id": "card-mint",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "progress"
+                },
+                "haptic": "light"
+              },
+              "label": {
+                "kind": "literal",
+                "value": "Strong week"
+              }
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "success"
+              },
+              "shadow": [
+                {
+                  "offsetX": 0,
+                  "offsetY": 6,
+                  "blur": 24,
+                  "spread": -2,
+                  "color": {
+                    "token": "primary",
+                    "opacity": 0.55
+                  }
+                }
+              ],
+              "shadowColor": "background"
+            },
+            "children": [
+              {
+                "id": "card-mint-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Strong week"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS",
+                  "color": "onPrimary"
+                }
+              }
+            ]
+          },
+          {
+            "id": "card-dawn",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "progress"
+                },
+                "haptic": "light"
+              },
+              "label": {
+                "kind": "literal",
+                "value": "Weekend trip"
+              }
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "gradient",
+                "gradient": {
+                  "angle": 135,
+                  "stops": [
+                    {
+                      "color": "primary",
+                      "position": 0
+                    },
+                    {
+                      "color": "accent",
+                      "position": 0.5
+                    },
+                    {
+                      "color": "warning",
+                      "position": 1
+                    }
+                  ]
+                }
+              },
+              "shadow": [
+                {
+                  "offsetX": 0,
+                  "offsetY": 6,
+                  "blur": 24,
+                  "spread": -2,
+                  "color": {
+                    "token": "primary",
+                    "opacity": 0.55
+                  }
+                }
+              ],
+              "shadowColor": "background"
+            },
+            "children": [
+              {
+                "id": "card-dawn-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Weekend trip"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS",
+                  "color": "onPrimary"
+                }
+              }
+            ]
+          },
+          {
+            "id": "card-still",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "progress"
+                },
+                "haptic": "light"
+              },
+              "label": {
+                "kind": "literal",
+                "value": "Still"
+              }
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.5
+                }
+              },
+              "shadow": [
+                {
+                  "offsetX": 0,
+                  "offsetY": 6,
+                  "blur": 24,
+                  "spread": -2,
+                  "color": {
+                    "token": "primary",
+                    "opacity": 0.55
+                  }
+                }
+              ],
+              "shadowColor": "background"
+            },
+            "children": [
+              {
+                "id": "card-still-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Still"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS",
+                  "color": "onPrimary"
+                }
+              }
+            ],
+            "pressFeedback": "none"
+          },
+          {
+            "id": "cards-done",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Done"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "progress"
+                },
+                "haptic": "success"
+              },
+              "fullWidth": true
+            }
+          },
+          {
+            "id": "cards-share",
+            "type": "IconButton",
+            "props": {
+              "icon": "share-2",
+              "label": {
+                "kind": "literal",
+                "value": "Share"
+              },
+              "variant": "secondary",
+              "size": "md",
+              "action": {
+                "type": "share",
+                "haptic": "light"
+              }
+            }
+          },
+          {
+            "id": "nav",
+            "type": "NavBar",
+            "props": {},
+            "children": [
+              {
+                "id": "nav-progress",
+                "type": "NavItem",
+                "props": {
+                  "icon": "target",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Progress"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "progress"
+                    },
+                    "haptic": "selection"
+                  }
+                }
+              },
+              {
+                "id": "nav-cards",
+                "type": "NavItem",
+                "props": {
+                  "icon": "gift",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Cards"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "cards"
+                    },
+                    "haptic": "selection"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "progress/progress-title/content": "Виклик тижня",
+        "progress/nav-progress/label": "Прогрес",
+        "progress/nav-cards/label": "Картки",
+        "cards/card-violet/label": "Кавовий тиждень",
+        "cards/card-violet-title/content": "Кавовий тиждень",
+        "cards/card-pink/label": "Вечір кіно",
+        "cards/card-pink-title/content": "Вечір кіно",
+        "cards/card-mint/label": "Сильний тиждень",
+        "cards/card-mint-title/content": "Сильний тиждень",
+        "cards/card-dawn/label": "Поїздка на вихідні",
+        "cards/card-dawn-title/content": "Поїздка на вихідні",
+        "cards/card-still/label": "Нерухома",
+        "cards/card-still-title/content": "Нерухома",
+        "cards/cards-done/label": "Готово",
+        "cards/cards-share/label": "Поділитися",
+        "cards/nav-progress/label": "Прогрес",
+        "cards/nav-cards/label": "Картки"
+      }
+    }
+  }
+}

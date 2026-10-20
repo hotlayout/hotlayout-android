@@ -1,0 +1,1049 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "float-nav-swipe",
+  "name": "Floating bar, dot, swipe and dashes",
+  "initialScreenId": "home",
+  "screens": [
+    {
+      "screenId": "home",
+      "name": "Home",
+      "root": {
+        "id": "home-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "home-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Orbit"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "home-lead",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Missions for you"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "home-card-1",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-card-1-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Coffee week"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "home-card-1-line",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Five coffees — 300 points."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.12
+                }
+              }
+            }
+          },
+          {
+            "id": "home-card-2",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-card-2-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Weekend double"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "home-card-2-line",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Pay on Saturday and Sunday."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.12
+                }
+              }
+            }
+          },
+          {
+            "id": "home-card-3",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-card-3-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "First trip"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "home-card-3-line",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Book any ride with the card."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.12
+                }
+              }
+            }
+          },
+          {
+            "id": "home-card-4",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-card-4-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Grocery run"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "home-card-4-line",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Three shops this week."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.12
+                }
+              }
+            }
+          },
+          {
+            "id": "home-card-5",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-card-5-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Night owl"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "home-card-5-line",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "One payment after ten."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.12
+                }
+              }
+            }
+          },
+          {
+            "id": "home-card-6",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "home-card-6-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Streak"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "home-card-6-line",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Seven days in a row."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.12
+                }
+              }
+            }
+          },
+          {
+            "id": "nav",
+            "type": "NavBar",
+            "props": {
+              "float": true
+            },
+            "children": [
+              {
+                "id": "nav-home",
+                "type": "NavItem",
+                "props": {
+                  "icon": "house",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Home"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "home"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-missions",
+                "type": "NavItem",
+                "props": {
+                  "icon": "target",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Missions"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "missions"
+                    }
+                  },
+                  "badgeWhen": {
+                    "path": "task.progress",
+                    "op": "gt",
+                    "value": 0
+                  }
+                }
+              }
+            ],
+            "style": {
+              "margin": {
+                "start": "lg",
+                "end": "lg",
+                "bottom": "sm"
+              },
+              "radius": "lg",
+              "backdropBlur": 16,
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "surface",
+                  "opacity": 0.72
+                }
+              },
+              "border": {
+                "width": 1,
+                "color": {
+                  "token": "onSurface",
+                  "opacity": 0.12
+                }
+              },
+              "shadow": "medium"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "missions",
+      "name": "Missions",
+      "root": {
+        "id": "missions-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "missions-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Missions"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "missions-card-1",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "missions-card-1-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Coffee week"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "missions-card-1-line",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Five coffees — 300 points."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.12
+                }
+              }
+            }
+          },
+          {
+            "id": "missions-card-2",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "missions-card-2-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Weekend double"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "missions-card-2-line",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Pay on Saturday and Sunday."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.12
+                }
+              }
+            }
+          },
+          {
+            "id": "missions-card-3",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "missions-card-3-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "First trip"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "missions-card-3-line",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Book any ride with the card."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.12
+                }
+              }
+            }
+          },
+          {
+            "id": "missions-card-4",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "missions-card-4-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Grocery run"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "missions-card-4-line",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Three shops this week."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.12
+                }
+              }
+            }
+          },
+          {
+            "id": "missions-open",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Swipe to open the week"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "redeem"
+                }
+              },
+              "fullWidth": true,
+              "size": "lg",
+              "confirm": "swipe"
+            },
+            "pin": "bottom"
+          },
+          {
+            "id": "nav",
+            "type": "NavBar",
+            "props": {
+              "float": true
+            },
+            "children": [
+              {
+                "id": "nav-home",
+                "type": "NavItem",
+                "props": {
+                  "icon": "house",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Home"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "home"
+                    }
+                  }
+                }
+              },
+              {
+                "id": "nav-missions",
+                "type": "NavItem",
+                "props": {
+                  "icon": "target",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Missions"
+                  },
+                  "action": {
+                    "type": "navigate.section",
+                    "params": {
+                      "screenId": "missions"
+                    }
+                  },
+                  "badgeWhen": {
+                    "path": "task.progress",
+                    "op": "gt",
+                    "value": 0
+                  }
+                }
+              }
+            ],
+            "style": {
+              "margin": {
+                "start": "lg",
+                "end": "lg",
+                "bottom": "sm"
+              },
+              "radius": "lg",
+              "backdropBlur": 16,
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "surface",
+                  "opacity": 0.72
+                }
+              },
+              "border": {
+                "width": 1,
+                "color": {
+                  "token": "onSurface",
+                  "opacity": 0.12
+                }
+              },
+              "shadow": "medium"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "redeem",
+      "name": "Redeem",
+      "presentation": "modal",
+      "root": {
+        "id": "redeem-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg",
+          "align": "center"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "radius": {
+            "topStart": "lg",
+            "topEnd": "lg",
+            "bottomStart": "none",
+            "bottomEnd": "none"
+          }
+        },
+        "children": [
+          {
+            "id": "redeem-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Cinema for two"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "redeem-text",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Two tickets to any hall. The code comes here and by email."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted"
+            }
+          },
+          {
+            "id": "redeem-swipe",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Swipe to redeem"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "done"
+                }
+              },
+              "fullWidth": true,
+              "size": "lg",
+              "confirm": "swipe",
+              "disabledIf": {
+                "path": "user.points",
+                "op": "lt",
+                "value": 1
+              }
+            },
+            "style": {
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "onSurface",
+                  "opacity": 0.08
+                }
+              },
+              "border": {
+                "width": 1,
+                "color": {
+                  "token": "onSurface",
+                  "opacity": 0.16
+                }
+              },
+              "radius": "pill"
+            }
+          },
+          {
+            "id": "redeem-later",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Not now"
+              },
+              "variant": "ghost",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "done",
+      "name": "Done",
+      "root": {
+        "id": "done-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg",
+          "align": "center",
+          "justify": "center"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "done-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "It’s yours!"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL"
+            }
+          },
+          {
+            "id": "done-code",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "onSurface",
+                  "opacity": 0.04
+                }
+              },
+              "border": {
+                "width": 1,
+                "color": {
+                  "token": "onSurface",
+                  "opacity": 0.32
+                },
+                "style": "dashed"
+              }
+            },
+            "children": [
+              {
+                "id": "done-code-label",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "CODE"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "caption",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "done-code-value",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "offer.code",
+                    "fallback": "—"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              }
+            ]
+          },
+          {
+            "id": "done-back",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Back to rewards"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.section",
+                "params": {
+                  "screenId": "home"
+                }
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "home/home-bar/title": "Orbit",
+        "home/home-lead/content": "Місії для тебе",
+        "home/home-card-1-title/content": "Кавовий тиждень",
+        "home/home-card-1-line/content": "П’ять кав — 300 балів.",
+        "home/home-card-2-title/content": "Подвійні вихідні",
+        "home/home-card-2-line/content": "Плати в суботу й неділю.",
+        "home/home-card-3-title/content": "Перша поїздка",
+        "home/home-card-3-line/content": "Будь-яка поїздка карткою.",
+        "home/home-card-4-title/content": "По продукти",
+        "home/home-card-4-line/content": "Три магазини за тиждень.",
+        "home/home-card-5-title/content": "Сова",
+        "home/home-card-5-line/content": "Одна оплата після десятої.",
+        "home/home-card-6-title/content": "Серія",
+        "home/home-card-6-line/content": "Сім днів поспіль.",
+        "home/nav-home/label": "Головна",
+        "home/nav-missions/label": "Місії",
+        "missions/missions-bar/title": "Місії",
+        "missions/missions-card-1-title/content": "Кавовий тиждень",
+        "missions/missions-card-1-line/content": "П’ять кав — 300 балів.",
+        "missions/missions-card-2-title/content": "Подвійні вихідні",
+        "missions/missions-card-2-line/content": "Плати в суботу й неділю.",
+        "missions/missions-card-3-title/content": "Перша поїздка",
+        "missions/missions-card-3-line/content": "Будь-яка поїздка карткою.",
+        "missions/missions-card-4-title/content": "По продукти",
+        "missions/missions-card-4-line/content": "Три магазини за тиждень.",
+        "missions/missions-open/label": "Проведи, щоб відкрити тиждень",
+        "missions/nav-home/label": "Головна",
+        "missions/nav-missions/label": "Місії",
+        "redeem/redeem-title/content": "Кіно для двох",
+        "redeem/redeem-text/content": "Два квитки в будь-який зал. Код прийде сюди й на пошту.",
+        "redeem/redeem-swipe/label": "Проведи, щоб обміняти",
+        "redeem/redeem-later/label": "Не зараз",
+        "done/done-title/content": "Нагорода твоя!",
+        "done/done-code-label/content": "КОД",
+        "done/done-back/label": "До нагород"
+      }
+    }
+  }
+}

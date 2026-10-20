@@ -1,0 +1,758 @@
+{
+  "schemaVersion": "9.9.0",
+  "documentId": "media-chrome",
+  "name": "Images, app bar actions, a window in the middle",
+  "initialScreenId": "badges",
+  "screens": [
+    {
+      "screenId": "badges",
+      "name": "My badges",
+      "statusBarIcons": "light",
+      "root": {
+        "id": "badges-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "gradient",
+            "gradient": {
+              "angle": 180,
+              "stops": [
+                {
+                  "color": "primary",
+                  "position": 0
+                },
+                {
+                  "color": "accent",
+                  "position": 1
+                }
+              ]
+            }
+          }
+        },
+        "children": [
+          {
+            "id": "bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "My badges"
+              },
+              "subtitle": {
+                "kind": "literal",
+                "value": "12 of 30 collected"
+              },
+              "showBack": true
+            },
+            "style": {
+              "color": "onPrimary",
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            },
+            "children": [
+              {
+                "id": "bar-info",
+                "type": "IconButton",
+                "props": {
+                  "icon": "info",
+                  "label": {
+                    "kind": "literal",
+                    "value": "About badges"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "about"
+                    }
+                  }
+                },
+                "style": {
+                  "color": "onPrimary"
+                }
+              },
+              {
+                "id": "bar-share",
+                "type": "IconButton",
+                "props": {
+                  "icon": "share-2",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Share"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "none"
+                  }
+                },
+                "style": {
+                  "color": "onPrimary"
+                }
+              }
+            ]
+          },
+          {
+            "id": "card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "md"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "children": [
+              {
+                "id": "recent-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Recent badges"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "badge-list",
+                "type": "Repeater",
+                "props": {
+                  "source": "items",
+                  "item": "item",
+                  "direction": "row",
+                  "gap": "md"
+                },
+                "children": [
+                  {
+                    "id": "badge",
+                    "type": "Image",
+                    "props": {
+                      "source": {
+                        "kind": "binding",
+                        "path": "item.image",
+                        "fallback": "placeholder"
+                      },
+                      "aspectRatio": "1:1",
+                      "fit": "cover"
+                    },
+                    "style": {
+                      "width": 56,
+                      "height": 56,
+                      "radius": "pill"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "sizes-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Size and shape come from the box"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "sizes",
+                "type": "Row",
+                "props": {
+                  "gap": "md",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "avatar-48",
+                    "type": "Image",
+                    "props": {
+                      "source": {
+                        "kind": "binding",
+                        "path": "item.image",
+                        "fallback": "placeholder"
+                      },
+                      "aspectRatio": "1:1",
+                      "fit": "cover"
+                    },
+                    "style": {
+                      "width": 48,
+                      "height": 48,
+                      "radius": "pill"
+                    }
+                  },
+                  {
+                    "id": "avatar-64",
+                    "type": "Image",
+                    "props": {
+                      "source": {
+                        "kind": "binding",
+                        "path": "item.image",
+                        "fallback": "placeholder"
+                      },
+                      "aspectRatio": "1:1",
+                      "fit": "cover"
+                    },
+                    "style": {
+                      "width": 64,
+                      "height": 64,
+                      "radius": "pill"
+                    }
+                  },
+                  {
+                    "id": "avatar-rounded",
+                    "type": "Image",
+                    "props": {
+                      "source": {
+                        "kind": "binding",
+                        "path": "item.image",
+                        "fallback": "placeholder"
+                      },
+                      "aspectRatio": "1:1",
+                      "fit": "cover"
+                    },
+                    "style": {
+                      "width": 64,
+                      "height": 64,
+                      "radius": "md"
+                    }
+                  },
+                  {
+                    "id": "avatar-contain",
+                    "type": "Image",
+                    "props": {
+                      "source": {
+                        "kind": "binding",
+                        "path": "item.image",
+                        "fallback": "placeholder"
+                      },
+                      "aspectRatio": "1:1",
+                      "fit": "contain"
+                    },
+                    "style": {
+                      "width": 96,
+                      "height": 64,
+                      "radius": "md",
+                      "background": {
+                        "kind": "color",
+                        "color": "secondary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "banner-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Any proportion"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "banner",
+                "type": "Image",
+                "props": {
+                  "source": {
+                    "kind": "asset",
+                    "asset": "banner"
+                  },
+                  "aspectRatio": {
+                    "width": 343,
+                    "height": 120
+                  },
+                  "fit": "cover"
+                },
+                "style": {
+                  "radius": "lg"
+                }
+              },
+              {
+                "id": "thumb-row",
+                "type": "Row",
+                "props": {
+                  "gap": "md",
+                  "align": "center",
+                  "justify": "start",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "thumb",
+                    "type": "Image",
+                    "props": {
+                      "source": {
+                        "kind": "binding",
+                        "path": "item.image",
+                        "fallback": "placeholder"
+                      },
+                      "aspectRatio": "4:3",
+                      "fit": "cover"
+                    },
+                    "style": {
+                      "width": 120,
+                      "radius": "md"
+                    }
+                  },
+                  {
+                    "id": "thumb-text",
+                    "type": "Column",
+                    "props": {
+                      "gap": "xs",
+                      "align": "start"
+                    },
+                    "weight": 1,
+                    "children": [
+                      {
+                        "id": "thumb-title",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "Named width, 4:3"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "typography": "bodyM"
+                        }
+                      },
+                      {
+                        "id": "thumb-note",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "The proportion gives the height only when the box does not name it."
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "color": "muted",
+                          "typography": "bodyS"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "open-done",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Complete the mission"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "done"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "open-rules",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Read the rules"
+                  },
+                  "variant": "ghost",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "rules"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "done",
+      "name": "Mission completed",
+      "presentation": "modal",
+      "modalPlacement": "center",
+      "root": {
+        "id": "done-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "radius": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "shadow": "medium"
+        },
+        "children": [
+          {
+            "id": "done-column",
+            "type": "Column",
+            "props": {
+              "gap": "md",
+              "align": "center"
+            },
+            "children": [
+              {
+                "id": "done-badge",
+                "type": "Image",
+                "props": {
+                  "source": {
+                    "kind": "binding",
+                    "path": "item.image",
+                    "fallback": "placeholder"
+                  },
+                  "aspectRatio": "1:1",
+                  "fit": "cover"
+                },
+                "style": {
+                  "width": 96,
+                  "height": 96,
+                  "radius": "pill"
+                }
+              },
+              {
+                "id": "done-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Mission completed"
+                  },
+                  "align": "center",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "done-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "You earned a new badge and 100 points."
+                  },
+                  "align": "center",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "color": "muted"
+                }
+              }
+            ]
+          },
+          {
+            "id": "done-close",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Great"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "about",
+      "name": "About badges",
+      "presentation": "modal",
+      "root": {
+        "id": "about-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "radius": {
+            "topStart": "lg",
+            "topEnd": "lg"
+          },
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "about-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "About badges"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            },
+            "children": [
+              {
+                "id": "about-close",
+                "type": "IconButton",
+                "props": {
+                  "icon": "x",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Close"
+                  },
+                  "variant": "ghost",
+                  "size": "md",
+                  "action": {
+                    "type": "navigate.back"
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "about-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "A badge is given for every completed mission. Tap a badge to see what it was for."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "rules",
+      "name": "Rules",
+      "presentation": "modal",
+      "modalPlacement": "center",
+      "root": {
+        "id": "rules-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "radius": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "rules-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Rules"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "rules-1",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "One mission gives one badge. A mission counts when every step of it is done before it ends."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          },
+          {
+            "id": "rules-2",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Points are added within a day. If they are not there after two days, write to support from the profile screen."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          },
+          {
+            "id": "rules-3",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Badges are not removed when a mission ends. A season badge can be earned only during its season."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          },
+          {
+            "id": "rules-4",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "A window is as tall as its content, but never taller than the screen: longer text scrolls inside the window, and the button below is reached by scrolling."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          },
+          {
+            "id": "rules-5",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Tapping outside the window, the system back gesture and the button all do the same thing: one step back."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            }
+          },
+          {
+            "id": "rules-close",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Got it"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "badges/bar/title": "Мої значки",
+        "badges/bar/subtitle": "Зібрано 12 із 30",
+        "badges/bar-info/label": "Про значки",
+        "badges/bar-share/label": "Поділитися",
+        "badges/recent-title/content": "Останні значки",
+        "badges/sizes-title/content": "Розмір і форму дає коробка",
+        "badges/banner-title/content": "Будь-яка пропорція",
+        "badges/thumb-title/content": "Названа ширина, 4:3",
+        "badges/thumb-note/content": "Пропорція дає висоту лише тоді, коли її не назвала коробка.",
+        "badges/open-done/label": "Завершити місію",
+        "badges/open-rules/label": "Прочитати правила",
+        "done/done-title/content": "Місію виконано",
+        "done/done-note/content": "Ви отримали новий значок і 100 балів.",
+        "done/done-close/label": "Чудово",
+        "about/about-bar/title": "Про значки",
+        "about/about-close/label": "Закрити",
+        "about/about-note/content": "Значок дають за кожну виконану місію. Торкніться значка, щоб побачити, за що він.",
+        "rules/rules-title/content": "Правила",
+        "rules/rules-1/content": "Одна місія дає один значок. Місію зараховано, коли кожен її крок виконано до завершення.",
+        "rules/rules-2/content": "Бали додаються протягом доби. Якщо їх немає через дві доби, напишіть у підтримку з екрана профілю.",
+        "rules/rules-3/content": "Значки не зникають, коли місія закінчується. Сезонний значок можна отримати лише в його сезон.",
+        "rules/rules-4/content": "Вікно має висоту свого вмісту, але не вище за екран: довший текст прокручується всередині вікна, і до кнопки внизу треба прокрутити.",
+        "rules/rules-5/content": "Дотик повз вікно, системний жест «назад» і кнопка роблять одне й те саме: один крок назад.",
+        "rules/rules-close/label": "Зрозуміло"
+      },
+      "ar": {
+        "badges/bar/title": "شاراتي",
+        "badges/bar/subtitle": "تم جمع ١٢ من ٣٠",
+        "badges/bar-info/label": "عن الشارات",
+        "badges/bar-share/label": "مشاركة",
+        "badges/recent-title/content": "أحدث الشارات",
+        "badges/sizes-title/content": "الحجم والشكل يحددهما الإطار",
+        "badges/banner-title/content": "أي نسبة أبعاد",
+        "badges/thumb-title/content": "عرض محدد، ٤:٣",
+        "badges/thumb-note/content": "النسبة تحدد الارتفاع فقط عندما لا يحدده الإطار.",
+        "badges/open-done/label": "إكمال المهمة",
+        "badges/open-rules/label": "قراءة القواعد",
+        "done/done-title/content": "اكتملت المهمة",
+        "done/done-note/content": "حصلت على شارة جديدة و١٠٠ نقطة.",
+        "done/done-close/label": "رائع",
+        "about/about-bar/title": "عن الشارات",
+        "about/about-close/label": "إغلاق",
+        "about/about-note/content": "تُمنح شارة عن كل مهمة مكتملة. اضغط على الشارة لمعرفة سببها.",
+        "rules/rules-title/content": "القواعد",
+        "rules/rules-1/content": "كل مهمة تمنح شارة واحدة. تُحتسب المهمة عند إتمام كل خطواتها قبل انتهائها.",
+        "rules/rules-2/content": "تُضاف النقاط خلال يوم واحد. إذا لم تظهر بعد يومين، راسل الدعم من شاشة الملف الشخصي.",
+        "rules/rules-3/content": "لا تُحذف الشارات عند انتهاء المهمة. شارة الموسم تُكتسب خلال موسمها فقط.",
+        "rules/rules-4/content": "ارتفاع النافذة بقدر محتواها، لكنه لا يتجاوز الشاشة: النص الأطول يُمرَّر داخل النافذة، والزر في الأسفل يُوصل إليه بالتمرير.",
+        "rules/rules-5/content": "الضغط خارج النافذة وإيماءة الرجوع والزر تفعل الشيء نفسه: خطوة واحدة إلى الخلف.",
+        "rules/rules-close/label": "فهمت"
+      }
+    }
+  }
+}

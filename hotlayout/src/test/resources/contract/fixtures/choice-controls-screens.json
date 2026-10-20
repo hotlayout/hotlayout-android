@@ -1,0 +1,2370 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "choice-controls",
+  "name": "Choice controls",
+  "initialScreenId": "wallet",
+  "screens": [
+    {
+      "screenId": "wallet",
+      "name": "Wallet",
+      "root": {
+        "id": "wallet-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "wallet-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Wallet"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "balance-card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "balance-head",
+                "type": "Row",
+                "props": {
+                  "gap": "sm",
+                  "align": "center",
+                  "justify": "between",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "balance-caption",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Balance"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "bodyS",
+                      "color": "muted"
+                    }
+                  },
+                  {
+                    "id": "eye",
+                    "type": "IconButton",
+                    "props": {
+                      "icon": "eye",
+                      "label": {
+                        "kind": "literal",
+                        "value": "Hide the balance"
+                      },
+                      "variant": "ghost",
+                      "size": "sm",
+                      "action": {
+                        "type": "toggleValue",
+                        "params": {
+                          "path": "account.balanceHidden"
+                        },
+                        "track": {
+                          "event": "balance_visibility"
+                        }
+                      }
+                    },
+                    "styleWhen": [
+                      {
+                        "when": {
+                          "path": "account.balanceHidden",
+                          "op": "isTrue"
+                        },
+                        "style": {
+                          "background": {
+                            "kind": "color",
+                            "color": {
+                              "token": "primary",
+                              "opacity": 0.12
+                            }
+                          }
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "id": "balance-stack",
+                "type": "Stack",
+                "props": {
+                  "alignHorizontal": "start",
+                  "alignVertical": "center"
+                },
+                "children": [
+                  {
+                    "id": "balance",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "binding",
+                        "path": "account.balance",
+                        "fallback": "—",
+                        "format": "currency",
+                        "currency": "UAH",
+                        "currencyDisplay": "symbol"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "displayL"
+                    }
+                  },
+                  {
+                    "id": "balance-cover",
+                    "type": "Container",
+                    "props": {
+                      "direction": "column",
+                      "gap": "none",
+                      "justify": "center"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "surface"
+                      }
+                    },
+                    "children": [
+                      {
+                        "id": "balance-dots",
+                        "type": "Text",
+                        "props": {
+                          "content": {
+                            "kind": "literal",
+                            "value": "• • • • • •"
+                          },
+                          "align": "start",
+                          "overflow": "ellipsis"
+                        },
+                        "style": {
+                          "typography": "displayL",
+                          "color": "muted"
+                        }
+                      }
+                    ],
+                    "fill": true,
+                    "visibleIf": {
+                      "path": "account.balanceHidden",
+                      "op": "isTrue"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "period",
+            "type": "Row",
+            "props": {
+              "gap": "xs",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "period-week",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "account.period",
+                      "value": "week"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "pill",
+                  "color": "muted",
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "period-week-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Week"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "account.period",
+                      "op": "eq",
+                      "value": "week"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "surface"
+                      },
+                      "shadow": "low",
+                      "color": "onSurface"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "period-month",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "account.period",
+                      "value": "month"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "pill",
+                  "color": "muted",
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "period-month-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Month"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "account.period",
+                      "op": "eq",
+                      "value": "month"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "surface"
+                      },
+                      "shadow": "low",
+                      "color": "onSurface"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "period-planned",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "account.period",
+                      "value": "planned"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "pill",
+                  "color": "muted",
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "period-planned-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Planned"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "account.period",
+                      "op": "eq",
+                      "value": "planned"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "surface"
+                      },
+                      "shadow": "low",
+                      "color": "onSurface"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "padding": "xs",
+              "radius": "pill",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "border",
+                  "opacity": 0.5
+                }
+              }
+            }
+          },
+          {
+            "id": "list-week",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": "sm",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "week-coffee",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "coffee"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Coffee"
+                  },
+                  "trailing": {
+                    "kind": "none"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Today"
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "week-taxi",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "car"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Taxi"
+                  },
+                  "trailing": {
+                    "kind": "none"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "Yesterday"
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              }
+            ],
+            "visibleIf": {
+              "path": "account.period",
+              "op": "eq",
+              "value": "week"
+            }
+          },
+          {
+            "id": "list-month",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": "sm",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "month-rent",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "house"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Rent"
+                  },
+                  "trailing": {
+                    "kind": "none"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "1 October"
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "month-salary",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "wallet"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Salary"
+                  },
+                  "trailing": {
+                    "kind": "none"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "5 October"
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              },
+              {
+                "id": "month-gym",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "dumbbell"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Gym"
+                  },
+                  "trailing": {
+                    "kind": "none"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "9 October"
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              }
+            ],
+            "visibleIf": {
+              "path": "account.period",
+              "op": "eq",
+              "value": "month"
+            }
+          },
+          {
+            "id": "list-planned",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": "sm",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "planned-insurance",
+                "type": "ListTile",
+                "props": {
+                  "leading": {
+                    "kind": "icon",
+                    "icon": "shield"
+                  },
+                  "title": {
+                    "kind": "literal",
+                    "value": "Insurance"
+                  },
+                  "trailing": {
+                    "kind": "none"
+                  },
+                  "subtitle": {
+                    "kind": "literal",
+                    "value": "In 3 days"
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  }
+                }
+              }
+            ],
+            "visibleIf": {
+              "path": "account.period",
+              "op": "eq",
+              "value": "planned"
+            }
+          },
+          {
+            "id": "period-none",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Choose a period to see the operations."
+              },
+              "align": "center",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "color": "muted",
+              "typography": "bodyS"
+            },
+            "visibleIf": {
+              "path": "account.period",
+              "op": "isEmpty"
+            }
+          },
+          {
+            "id": "to-survey",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Tell us what you like"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "survey"
+                }
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "survey",
+      "name": "Survey",
+      "root": {
+        "id": "survey-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "survey-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "About you"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "topics-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "What are you interested in? Choose any."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "topics",
+            "type": "Row",
+            "props": {
+              "gap": "xs",
+              "align": "center",
+              "justify": "start",
+              "wrap": true,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "topic-travel",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "xs",
+                  "action": {
+                    "type": "toggleValue",
+                    "params": {
+                      "path": "survey.topicTravel"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "pill",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "topic-travel-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Travel"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.topicTravel",
+                      "op": "isTrue"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "topic-food",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "xs",
+                  "action": {
+                    "type": "toggleValue",
+                    "params": {
+                      "path": "survey.topicFood"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "pill",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "topic-food-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Food and restaurants"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.topicFood",
+                      "op": "isTrue"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "topic-books",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "xs",
+                  "action": {
+                    "type": "toggleValue",
+                    "params": {
+                      "path": "survey.topicBooks"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": "sm",
+                  "radius": "pill",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "topic-books-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Books"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.topicBooks",
+                      "op": "isTrue"
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "goals-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "What is your main goal?"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "goals",
+            "type": "Grid",
+            "props": {
+              "columns": 2,
+              "gap": "sm"
+            },
+            "children": [
+              {
+                "id": "goal-rewards",
+                "type": "Column",
+                "props": {
+                  "gap": "xs",
+                  "align": "start",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.goal",
+                      "value": "rewards"
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "goal-rewards-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "gift",
+                      "size": "md"
+                    }
+                  },
+                  {
+                    "id": "goal-rewards-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Rewards"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ],
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "minHeight": 96
+                },
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.goal",
+                      "op": "eq",
+                      "value": "rewards"
+                    },
+                    "style": {
+                      "border": {
+                        "width": 2,
+                        "color": "primary"
+                      },
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "primary",
+                          "opacity": 0.08
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "goal-savings",
+                "type": "Column",
+                "props": {
+                  "gap": "xs",
+                  "align": "start",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.goal",
+                      "value": "savings"
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "goal-savings-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "wallet",
+                      "size": "md"
+                    }
+                  },
+                  {
+                    "id": "goal-savings-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Savings"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ],
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "minHeight": 96
+                },
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.goal",
+                      "op": "eq",
+                      "value": "savings"
+                    },
+                    "style": {
+                      "border": {
+                        "width": 2,
+                        "color": "primary"
+                      },
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "primary",
+                          "opacity": 0.08
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "goal-travel",
+                "type": "Column",
+                "props": {
+                  "gap": "xs",
+                  "align": "start",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.goal",
+                      "value": "travel"
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "goal-travel-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "plane",
+                      "size": "md"
+                    }
+                  },
+                  {
+                    "id": "goal-travel-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Travel"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ],
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "minHeight": 96
+                },
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.goal",
+                      "op": "eq",
+                      "value": "travel"
+                    },
+                    "style": {
+                      "border": {
+                        "width": 2,
+                        "color": "primary"
+                      },
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "primary",
+                          "opacity": 0.08
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "goal-unsure",
+                "type": "Column",
+                "props": {
+                  "gap": "xs",
+                  "align": "start",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.goal",
+                      "value": "unsure"
+                    }
+                  }
+                },
+                "children": [
+                  {
+                    "id": "goal-unsure-icon",
+                    "type": "Icon",
+                    "props": {
+                      "name": "info",
+                      "size": "md"
+                    }
+                  },
+                  {
+                    "id": "goal-unsure-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Not sure yet"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  }
+                ],
+                "style": {
+                  "padding": "md",
+                  "radius": "md",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "background": {
+                    "kind": "color",
+                    "color": "surface"
+                  },
+                  "minHeight": 96
+                },
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.goal",
+                      "op": "eq",
+                      "value": "unsure"
+                    },
+                    "style": {
+                      "border": {
+                        "width": 2,
+                        "color": "primary"
+                      },
+                      "background": {
+                        "kind": "color",
+                        "color": {
+                          "token": "primary",
+                          "opacity": 0.08
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "flags-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "How may we reach you?"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "flag-push",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "between",
+              "wrap": false,
+              "scrollable": false,
+              "action": {
+                "type": "toggleValue",
+                "params": {
+                  "path": "settings.notifications"
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "flag-push-texts",
+                "type": "Column",
+                "props": {
+                  "gap": "none",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "flag-push-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Push notifications"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "flag-push-subtitle",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "About your rewards only"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "bodyS",
+                      "color": "muted"
+                    }
+                  }
+                ],
+                "weight": 1
+              },
+              {
+                "id": "flag-push-check",
+                "type": "Icon",
+                "props": {
+                  "name": "check",
+                  "size": "md"
+                },
+                "visibleIf": {
+                  "path": "settings.notifications",
+                  "op": "isTrue"
+                },
+                "style": {
+                  "color": "primary"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "border": {
+                "width": 1,
+                "color": "border"
+              },
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "styleWhen": [
+              {
+                "when": {
+                  "path": "settings.notifications",
+                  "op": "isTrue"
+                },
+                "style": {
+                  "border": {
+                    "width": 1,
+                    "color": "primary"
+                  },
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "primary",
+                      "opacity": 0.08
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "flag-mail",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "between",
+              "wrap": false,
+              "scrollable": false,
+              "action": {
+                "type": "toggleValue",
+                "params": {
+                  "path": "settings.marketing"
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "flag-mail-texts",
+                "type": "Column",
+                "props": {
+                  "gap": "none",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "flag-mail-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Emails"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "flag-mail-subtitle",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Offers once a month"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "bodyS",
+                      "color": "muted"
+                    }
+                  }
+                ],
+                "weight": 1
+              },
+              {
+                "id": "flag-mail-check",
+                "type": "Icon",
+                "props": {
+                  "name": "check",
+                  "size": "md"
+                },
+                "visibleIf": {
+                  "path": "settings.marketing",
+                  "op": "isTrue"
+                },
+                "style": {
+                  "color": "primary"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "border": {
+                "width": 1,
+                "color": "border"
+              },
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            },
+            "styleWhen": [
+              {
+                "when": {
+                  "path": "settings.marketing",
+                  "op": "isTrue"
+                },
+                "style": {
+                  "border": {
+                    "width": 1,
+                    "color": "primary"
+                  },
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "primary",
+                      "opacity": 0.08
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "score-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "How likely are you to recommend us?"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "score",
+            "type": "Container",
+            "props": {
+              "direction": "row",
+              "gap": "xs"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "score-0",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.score",
+                      "value": "0",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  },
+                  "radius": "sm",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "score-0-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "0"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.score",
+                      "op": "eq",
+                      "value": 0
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "score-1",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.score",
+                      "value": "1",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  },
+                  "radius": "sm",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "score-1-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "1"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.score",
+                      "op": "eq",
+                      "value": 1
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "score-2",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.score",
+                      "value": "2",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  },
+                  "radius": "sm",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "score-2-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "2"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.score",
+                      "op": "eq",
+                      "value": 2
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "score-3",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.score",
+                      "value": "3",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  },
+                  "radius": "sm",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "score-3-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "3"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.score",
+                      "op": "eq",
+                      "value": 3
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "score-4",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.score",
+                      "value": "4",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  },
+                  "radius": "sm",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "score-4-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "4"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.score",
+                      "op": "eq",
+                      "value": 4
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "score-5",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.score",
+                      "value": "5",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  },
+                  "radius": "sm",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "score-5-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "5"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.score",
+                      "op": "eq",
+                      "value": 5
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "score-6",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.score",
+                      "value": "6",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  },
+                  "radius": "sm",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "score-6-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "6"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.score",
+                      "op": "eq",
+                      "value": 6
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "score-7",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.score",
+                      "value": "7",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  },
+                  "radius": "sm",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "score-7-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "7"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.score",
+                      "op": "eq",
+                      "value": 7
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "score-8",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.score",
+                      "value": "8",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  },
+                  "radius": "sm",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "score-8-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "8"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.score",
+                      "op": "eq",
+                      "value": 8
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "score-9",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.score",
+                      "value": "9",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  },
+                  "radius": "sm",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "score-9-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "9"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.score",
+                      "op": "eq",
+                      "value": 9
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "score-10",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none",
+                  "align": "center",
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "survey.score",
+                      "value": "10",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "padding": {
+                    "top": "sm",
+                    "bottom": "sm"
+                  },
+                  "radius": "sm",
+                  "border": {
+                    "width": 1,
+                    "color": "border"
+                  },
+                  "typography": "bodyS"
+                },
+                "children": [
+                  {
+                    "id": "score-10-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "10"
+                      },
+                      "align": "center",
+                      "overflow": "ellipsis"
+                    }
+                  }
+                ],
+                "weight": 1,
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "survey.score",
+                      "op": "eq",
+                      "value": 10
+                    },
+                    "style": {
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      },
+                      "color": "onPrimary",
+                      "border": {
+                        "width": 1,
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "score-ends",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "between",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "score-low",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Not at all"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "caption",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "score-high",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Certainly"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "caption",
+                  "color": "muted"
+                }
+              }
+            ]
+          },
+          {
+            "id": "continue",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Continue"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.back",
+                "track": {
+                  "event": "survey_done"
+                }
+              },
+              "fullWidth": true,
+              "disabledIf": {
+                "path": "survey.goal",
+                "op": "isEmpty"
+              }
+            },
+            "pin": "bottom"
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "wallet/wallet-bar/title": "Гаманець",
+        "wallet/balance-caption/content": "Баланс",
+        "wallet/eye/label": "Сховати баланс",
+        "wallet/balance-dots/content": "• • • • • •",
+        "wallet/period-week-label/content": "Тиждень",
+        "wallet/period-month-label/content": "Місяць",
+        "wallet/period-planned-label/content": "Заплановані",
+        "wallet/week-coffee/title": "Кава",
+        "wallet/week-coffee/subtitle": "Сьогодні",
+        "wallet/week-taxi/title": "Таксі",
+        "wallet/week-taxi/subtitle": "Учора",
+        "wallet/month-rent/title": "Оренда",
+        "wallet/month-rent/subtitle": "1 жовтня",
+        "wallet/month-salary/title": "Зарплата",
+        "wallet/month-salary/subtitle": "5 жовтня",
+        "wallet/month-gym/title": "Спортзал",
+        "wallet/month-gym/subtitle": "9 жовтня",
+        "wallet/planned-insurance/title": "Страхування",
+        "wallet/planned-insurance/subtitle": "Через 3 дні",
+        "wallet/period-none/content": "Оберіть період, щоб побачити операції.",
+        "wallet/to-survey/label": "Розкажіть, що вам до вподоби",
+        "survey/survey-bar/title": "Про вас",
+        "survey/topics-title/content": "Що вас цікавить? Оберіть будь-що.",
+        "survey/topic-travel-label/content": "Подорожі",
+        "survey/topic-food-label/content": "Їжа й ресторани",
+        "survey/topic-books-label/content": "Книжки",
+        "survey/goals-title/content": "Яка ваша головна мета?",
+        "survey/goal-rewards-title/content": "Нагороди",
+        "survey/goal-savings-title/content": "Заощадження",
+        "survey/goal-travel-title/content": "Подорожі",
+        "survey/goal-unsure-title/content": "Ще не знаю",
+        "survey/flags-title/content": "Як із вами зв’язуватися?",
+        "survey/flag-push-title/content": "Сповіщення",
+        "survey/flag-push-subtitle/content": "Лише про ваші нагороди",
+        "survey/flag-mail-title/content": "Листи",
+        "survey/flag-mail-subtitle/content": "Пропозиції раз на місяць",
+        "survey/score-title/content": "Чи порадите ви нас друзям?",
+        "survey/score-0-label/content": "0",
+        "survey/score-1-label/content": "1",
+        "survey/score-2-label/content": "2",
+        "survey/score-3-label/content": "3",
+        "survey/score-4-label/content": "4",
+        "survey/score-5-label/content": "5",
+        "survey/score-6-label/content": "6",
+        "survey/score-7-label/content": "7",
+        "survey/score-8-label/content": "8",
+        "survey/score-9-label/content": "9",
+        "survey/score-10-label/content": "10",
+        "survey/score-low/content": "Нізащо",
+        "survey/score-high/content": "Напевно",
+        "survey/continue/label": "Далі"
+      },
+      "ar": {
+        "wallet/wallet-bar/title": "المحفظة",
+        "wallet/balance-caption/content": "الرصيد",
+        "wallet/eye/label": "إخفاء الرصيد",
+        "wallet/balance-dots/content": "• • • • • •",
+        "wallet/period-week-label/content": "أسبوع",
+        "wallet/period-month-label/content": "شهر",
+        "wallet/period-planned-label/content": "المجدولة",
+        "wallet/week-coffee/title": "قهوة",
+        "wallet/week-coffee/subtitle": "اليوم",
+        "wallet/week-taxi/title": "سيارة أجرة",
+        "wallet/week-taxi/subtitle": "أمس",
+        "wallet/month-rent/title": "الإيجار",
+        "wallet/month-rent/subtitle": "1 أكتوبر",
+        "wallet/month-salary/title": "الراتب",
+        "wallet/month-salary/subtitle": "5 أكتوبر",
+        "wallet/month-gym/title": "النادي الرياضي",
+        "wallet/month-gym/subtitle": "9 أكتوبر",
+        "wallet/planned-insurance/title": "التأمين",
+        "wallet/planned-insurance/subtitle": "بعد 3 أيام",
+        "wallet/period-none/content": "اختر فترة لعرض العمليات.",
+        "wallet/to-survey/label": "أخبرنا بما تفضّل",
+        "survey/survey-bar/title": "عنك",
+        "survey/topics-title/content": "ما الذي يهمّك؟ اختر ما تشاء.",
+        "survey/topic-travel-label/content": "السفر",
+        "survey/topic-food-label/content": "الطعام والمطاعم",
+        "survey/topic-books-label/content": "الكتب",
+        "survey/goals-title/content": "ما هدفك الرئيسي؟",
+        "survey/goal-rewards-title/content": "المكافآت",
+        "survey/goal-savings-title/content": "الادخار",
+        "survey/goal-travel-title/content": "السفر",
+        "survey/goal-unsure-title/content": "لست متأكدًا بعد",
+        "survey/flags-title/content": "كيف نتواصل معك؟",
+        "survey/flag-push-title/content": "الإشعارات",
+        "survey/flag-push-subtitle/content": "عن مكافآتك فقط",
+        "survey/flag-mail-title/content": "الرسائل البريدية",
+        "survey/flag-mail-subtitle/content": "عروض مرة في الشهر",
+        "survey/score-title/content": "ما احتمال أن توصي بنا؟",
+        "survey/score-0-label/content": "0",
+        "survey/score-1-label/content": "1",
+        "survey/score-2-label/content": "2",
+        "survey/score-3-label/content": "3",
+        "survey/score-4-label/content": "4",
+        "survey/score-5-label/content": "5",
+        "survey/score-6-label/content": "6",
+        "survey/score-7-label/content": "7",
+        "survey/score-8-label/content": "8",
+        "survey/score-9-label/content": "9",
+        "survey/score-10-label/content": "10",
+        "survey/score-low/content": "إطلاقًا",
+        "survey/score-high/content": "بالتأكيد",
+        "survey/continue/label": "متابعة"
+      }
+    }
+  }
+}

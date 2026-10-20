@@ -1,0 +1,570 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "alignment",
+  "name": "Alignment on both axes",
+  "initialScreenId": "centered",
+  "screens": [
+    {
+      "screenId": "centered",
+      "name": "Centred on the screen",
+      "root": {
+        "id": "centered-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md",
+          "align": "center",
+          "justify": "center"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "centered-disc",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none",
+              "align": "center",
+              "justify": "center"
+            },
+            "style": {
+              "width": 160,
+              "height": 160,
+              "radius": "pill",
+              "background": {
+                "kind": "color",
+                "color": "primary"
+              },
+              "color": "onPrimary"
+            },
+            "children": [
+              {
+                "id": "centered-icon",
+                "type": "Icon",
+                "props": {
+                  "name": "gift",
+                  "size": "lg"
+                }
+              }
+            ]
+          },
+          {
+            "id": "centered-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "You are all set"
+              },
+              "align": "center",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "centered-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "A node with its own width and a button of natural width stand in the centre; the texts keep the full width."
+              },
+              "align": "center",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "centered-next",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "See both axes"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "axes"
+                }
+              },
+              "fullWidth": false
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "axes",
+      "name": "Column and container",
+      "root": {
+        "id": "axes-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "axes-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Both axes"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "axes-column-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Column 160 high: centre across, space between along"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "axes-column",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "between"
+            },
+            "children": [
+              {
+                "id": "axes-column-top",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Top"
+                  },
+                  "tone": "neutral"
+                }
+              },
+              {
+                "id": "axes-column-text",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "A stretched text keeps the full width"
+                  },
+                  "align": "center",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS"
+                }
+              },
+              {
+                "id": "axes-column-bottom",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Bottom"
+                  },
+                  "tone": "neutral"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "border": {
+                "color": "border",
+                "width": 1
+              },
+              "height": 160
+            }
+          },
+          {
+            "id": "axes-min-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Card with a minimal height 140: end across, end along"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "axes-min",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm",
+              "align": "end",
+              "justify": "end"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "border": {
+                "color": "border",
+                "width": 1
+              },
+              "minHeight": 140
+            },
+            "children": [
+              {
+                "id": "axes-min-badge",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "New"
+                  },
+                  "tone": "neutral"
+                }
+              },
+              {
+                "id": "axes-min-button",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "To the bottom zone"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "bottom"
+                    }
+                  },
+                  "fullWidth": false
+                }
+              }
+            ]
+          },
+          {
+            "id": "axes-row-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Row card 88 high: space between along, end across"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "axes-row",
+            "type": "Container",
+            "props": {
+              "direction": "row",
+              "gap": "sm",
+              "align": "end",
+              "justify": "between"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "border": {
+                "color": "border",
+                "width": 1
+              },
+              "height": 88
+            },
+            "children": [
+              {
+                "id": "axes-row-a",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "One"
+                  },
+                  "tone": "neutral"
+                }
+              },
+              {
+                "id": "axes-row-icon",
+                "type": "Icon",
+                "props": {
+                  "name": "star",
+                  "size": "lg"
+                }
+              },
+              {
+                "id": "axes-row-b",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Two"
+                  },
+                  "tone": "neutral"
+                }
+              }
+            ]
+          },
+          {
+            "id": "axes-row-center-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Row card as tall as its content: centre along"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "axes-row-center",
+            "type": "Container",
+            "props": {
+              "direction": "row",
+              "gap": "sm",
+              "justify": "center"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "border": {
+                "color": "border",
+                "width": 1
+              }
+            },
+            "children": [
+              {
+                "id": "axes-row-c",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Left"
+                  },
+                  "tone": "neutral"
+                }
+              },
+              {
+                "id": "axes-row-d",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Right"
+                  },
+                  "tone": "neutral"
+                }
+              }
+            ]
+          },
+          {
+            "id": "axes-hug-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Column as tall as its content: «end along» has nothing to move"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "axes-hug",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "end",
+              "justify": "end"
+            },
+            "children": [
+              {
+                "id": "axes-hug-a",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "First"
+                  },
+                  "tone": "neutral"
+                }
+              },
+              {
+                "id": "axes-hug-b",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Second"
+                  },
+                  "tone": "neutral"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "border": {
+                "color": "border",
+                "width": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "bottom",
+      "name": "Body between the bars",
+      "root": {
+        "id": "bottom-root",
+        "type": "Screen",
+        "props": {
+          "gap": "sm",
+          "align": "end",
+          "justify": "end"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "bottom-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "The end of the body"
+              },
+              "showBack": true
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "bottom-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "The body stands at its end: right above the pinned button, not under the app bar."
+              },
+              "align": "end",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            }
+          },
+          {
+            "id": "bottom-badge",
+            "type": "Badge",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Only the body is placed"
+              },
+              "tone": "neutral"
+            }
+          },
+          {
+            "id": "bottom-pinned",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Back to the start"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "centered"
+                }
+              },
+              "fullWidth": false
+            },
+            "pin": "bottom"
+          }
+        ]
+      }
+    }
+  ]
+}

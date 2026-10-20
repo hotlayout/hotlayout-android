@@ -1,0 +1,1070 @@
+{
+  "description": "Text template, number format and plural cases shared by every HotLayout reader (schema 9.4.0). A row is one string value of a document (`value`: a `literal`, a `binding` or a `template`) and everything a reader needs to turn it into text: `sourceLocale` is `localization.defaultLocale` (null: the document has no localization), `translationLocale` is the `translation` answer of locale resolution (the key of `localization.strings` the reader uses; equal to `sourceLocale` when the source language is shown), `formattingLocale` is its `formatting` answer, `translations` holds the entries of `localization.strings[translationLocale]` for this value keyed by the path INSIDE the value (`template`, `values.<name>.forms.<category>`; the empty key is the literal itself), `data` maps data paths to values (a missing key and null are both `no data`), `now` is the reader clock and `timeZone` the device zone (absent: any). The reader must produce `expected` exactly, character for character; U+00A0 is written as an escape. `mayDiffer` marks a row whose answer depends on the CLDR data of the platform: the rule is fixed, the exact characters are not promised, and the note says what may differ. `readerOnly` marks a row with a value the builder cannot produce (the validator or the schema rejects it): it is a rule for readers that meet a document from another producer or a newer minor. Rows named CLARIFIED were added after the first readers were built; rows named CLARIFIED-2, before 9.5.0 was released. Clarification of 9.18.0: `shownTextCases` (a string and the string a reader SHOWS: runs of space, tab, LF and CR become one space, the edges are trimmed, U+00A0 stays) and `shownTemplateCases` (the same rule after the template and the translation: `expected` is the string of the pipeline BEFORE the rule, `shown` after it); the rows of `cases` do not know the rule. The rows `CLARIFIED-3 dateTime` fix the separator between the date and the time (the CLDR pattern of the language, not a space).",
+  "now": "2026-10-10T09:00:00.000Z",
+  "cases": [
+    {"name": "two values in one sentence", "value": {"kind": "template", "template": "{done} / {total} steps", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}, "total": {"kind": "binding", "path": "task.target", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"task.progress": 3, "task.target": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "3 / 5 steps"},
+    {"name": "the translation puts the values in another order", "value": {"kind": "template", "template": "{done} / {total} steps", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}, "total": {"kind": "binding", "path": "task.target", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "Кроків: {total}, пройдено {done}"}, "data": {"task.progress": 3, "task.target": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "Кроків: 5, пройдено 3"},
+    {"name": "no translation of the template: the source string (missingTranslation)", "value": {"kind": "template", "template": "{done} / {total} steps", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}, "total": {"kind": "binding", "path": "task.target", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"task.progress": 3, "task.target": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "3 / 5 steps"},
+    {"name": "no data for one value: its own fallback, the sentence stays", "value": {"kind": "template", "template": "{done} / {total} steps", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}, "total": {"kind": "binding", "path": "task.target", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"task.target": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "— / 5 steps"},
+    {"name": "null is no data", "value": {"kind": "template", "template": "{done} / {total} steps", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}, "total": {"kind": "binding", "path": "task.target", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"task.progress": null, "task.target": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "— / 5 steps"},
+    {"name": "no data at all: every value falls back", "value": {"kind": "template", "template": "{done} / {total} steps", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}, "total": {"kind": "binding", "path": "task.target", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "— / — steps"},
+    {"name": "an object at the path is not a value for text: fallback", "value": {"kind": "template", "template": "{done} / {total} steps", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}, "total": {"kind": "binding", "path": "task.target", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"task.progress": {"value": 3}, "task.target": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "— / 5 steps"},
+    {"name": "a placeholder the template does not declare is plain text, braces included", "value": {"kind": "template", "template": "{done} / {total} steps", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}, "total": {"kind": "binding", "path": "task.target", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "Пройдено {don} з {total}"}, "data": {"task.progress": 3, "task.target": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "Пройдено {don} з 5"},
+    {"name": "a value the string does not mention is allowed and not shown", "value": {"kind": "template", "template": "{done} steps", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}, "total": {"kind": "binding", "path": "task.target", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"task.progress": 3, "task.target": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "3 steps"},
+    {"name": "a placeholder may repeat", "value": {"kind": "template", "template": "{done}+{done}", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"task.progress": 3}, "now": "2026-10-10T09:00:00.000Z", "expected": "3+3"},
+    {"name": "only {name} with a declared name is a placeholder: spaces, capitals, empty and doubled braces", "value": {"kind": "template", "template": "{ done } {Done} {} {{done}}", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"task.progress": 3}, "now": "2026-10-10T09:00:00.000Z", "expected": "{ done } {Done} {} {3}"},
+    {"name": "names of object prototype members are not values", "value": {"kind": "template", "template": "{constructor} {toString} {__proto__}", "values": {}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "{constructor} {toString} {__proto__}"},
+    {"name": "substitution is one pass: braces inside a value are not substituted again", "value": {"kind": "template", "template": "Hi {name}, {total}", "values": {"name": {"kind": "binding", "path": "user.name", "fallback": ""}, "total": {"kind": "binding", "path": "task.target", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.name": "{total}", "task.target": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "Hi {total}, 5"},
+    {"name": "a template without values is plain text", "value": {"kind": "template", "template": "Hello", "values": {}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "Hello"},
+    {"name": "an empty template is an empty string", "value": {"kind": "template", "template": "", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"task.progress": 3}, "now": "2026-10-10T09:00:00.000Z", "expected": ""},
+    {"name": "a string and a boolean are shown as they are", "value": {"kind": "template", "template": "{name}: {flag}", "values": {"name": {"kind": "binding", "path": "user.name", "fallback": ""}, "flag": {"kind": "binding", "path": "task.completed", "fallback": ""}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.name": "Ada", "task.completed": true}, "now": "2026-10-10T09:00:00.000Z", "expected": "Ada: true"},
+    {"name": "an integer-valued number is written without a fraction (3.0 is 3)", "value": {"kind": "template", "template": "{done} steps", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"task.progress": 3.0}, "now": "2026-10-10T09:00:00.000Z", "expected": "3 steps"},
+    {"name": "a fallback is not formatted", "value": {"kind": "template", "template": "{points} pts", "values": {"points": {"kind": "binding", "path": "user.points", "fallback": "1850", "format": "number"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "1850 pts"},
+    {"name": "a literal is its translation", "value": {"kind": "literal", "value": "Save"}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"": "Зберегти"}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "Зберегти"},
+    {"name": "a single binding follows the same rule as a template value", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1850}, "now": "2026-10-10T09:00:00.000Z", "expected": "1,850"},
+    {"name": "number: group separators of the language (en)", "value": {"kind": "template", "template": "{points} pts", "values": {"points": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1850}, "now": "2026-10-10T09:00:00.000Z", "expected": "1,850 pts"},
+    {"name": "number: group separators of the language (uk, no-break space)", "value": {"kind": "template", "template": "{points}", "values": {"points": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}}}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"user.points": 1850}, "now": "2026-10-10T09:00:00.000Z", "expected": "1\u00a0850"},
+    {"name": "number: grouping is ALWAYS on (es writes 1.850, not 1850)", "value": {"kind": "template", "template": "{points}", "values": {"points": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}}}, "sourceLocale": "es", "translationLocale": "es", "formattingLocale": "es", "translations": {}, "data": {"user.points": 1850}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.850"},
+    {"name": "number: the fraction is kept up to three digits", "value": {"kind": "template", "template": "{points}", "values": {"points": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1234567.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "1,234,567.5"},
+    {"name": "number: more than three fraction digits are rounded", "value": {"kind": "template", "template": "{points}", "values": {"points": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 0.1234}, "now": "2026-10-10T09:00:00.000Z", "expected": "0.123"},
+    {"name": "number: negative", "value": {"kind": "template", "template": "{points}", "values": {"points": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": -1850}, "now": "2026-10-10T09:00:00.000Z", "expected": "-1,850"},
+    {"name": "number: no format, no separators", "value": {"kind": "template", "template": "{points} pts", "values": {"points": {"kind": "binding", "path": "user.points", "fallback": "0"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1850}, "now": "2026-10-10T09:00:00.000Z", "expected": "1850 pts"},
+    {"name": "number: a string is not a number, shown as it is (unparsableBoundValue)", "value": {"kind": "template", "template": "{points}", "values": {"points": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": "1850"}, "now": "2026-10-10T09:00:00.000Z", "expected": "1850"},
+    {"name": "number: the formatting locale may be more specific than the translation (ar-EG next to ar)", "value": {"kind": "template", "template": "{points}", "values": {"points": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}}}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar-EG", "translations": {"template": "{points}"}, "data": {"user.points": 1850}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits and separators come from the CLDR data of the platform; plain `ar` gives Latin digits on some CLDR versions and Arabic-Indic on others, `ar-EG` is Arabic-Indic everywhere we looked.", "expected": "١٬٨٥٠"},
+    {"name": "an unknown format word: the value as it is (unknownBindingFormat)", "value": {"kind": "template", "template": "{points}", "values": {"points": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "percent"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1850}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The document schema rejects an unknown format; a reader of an older minor meets it in a newer document.", "expected": "1850"},
+    {"name": "currency: amount, no-break space, code; a whole amount has no fraction", "value": {"kind": "template", "template": "{price}", "values": {"price": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "JOD"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"offer.price": 120}, "now": "2026-10-10T09:00:00.000Z", "expected": "120\u00a0JOD"},
+    {"name": "currency: a fractional amount takes the digits of the currency (USD: 2)", "value": {"kind": "template", "template": "{price}", "values": {"price": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"offer.price": 1850.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "1,850.50\u00a0USD"},
+    {"name": "currency: the same order in every language, separators of the language (uk)", "value": {"kind": "template", "template": "{price}", "values": {"price": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD"}}}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"offer.price": 1850.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "1\u00a0850,50\u00a0USD"},
+    {"name": "currency: three digits for JOD", "value": {"kind": "template", "template": "{price}", "values": {"price": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "JOD"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"offer.price": 12.5}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "The number of fraction digits of a currency comes from the platform data (ISO 4217 as CLDR carries it).", "expected": "12.500\u00a0JOD"},
+    {"name": "currency: no digits for JPY, even for a fractional amount", "value": {"kind": "template", "template": "{price}", "values": {"price": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "JPY"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"offer.price": 1200.4}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "The number of fraction digits of a currency comes from the platform data.", "expected": "1,200\u00a0JPY"},
+    {"name": "currency: a code the platform does not know has two digits", "value": {"kind": "template", "template": "{price}", "values": {"price": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "XQQ"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"offer.price": 12.5}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "A platform may know a code another platform does not.", "expected": "12.50\u00a0XQQ"},
+    {"name": "currency: no code, the number as it is (missingCurrencyCode)", "value": {"kind": "template", "template": "{price}", "values": {"price": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"offer.price": 120}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The validator rejects `currency` without a code.", "expected": "120"},
+    {"name": "currency: a code of the wrong shape, the number as it is", "value": {"kind": "template", "template": "{price}", "values": {"price": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "usd"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"offer.price": 120}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The document schema rejects the code.", "expected": "120"},
+    {"name": "currency: a string is not a number, shown as it is", "value": {"kind": "template", "template": "{price}", "values": {"price": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"offer.price": "120"}, "now": "2026-10-10T09:00:00.000Z", "expected": "120"},
+    {"name": "daysUntil: whole days until the moment", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T09:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "4 days left"},
+    {"name": "daysUntil: a part of a day counts as a day (rounded up)", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T09:00:00.001Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "5 days left"},
+    {"name": "daysUntil: three hours left is one day", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-10T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 day left"},
+    {"name": "daysUntil: the moment is now, zero", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-10T09:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "0 days left"},
+    {"name": "daysUntil: the moment has passed, zero and never negative", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-01T09:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "0 days left"},
+    {"name": "daysUntil: the time zone does not matter (Asia/Tokyo)", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T09:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "Asia/Tokyo", "expected": "4 days left"},
+    {"name": "daysUntil: the time zone does not matter (America/Los_Angeles)", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T09:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "America/Los_Angeles", "expected": "4 days left"},
+    {"name": "daysUntil: an offset in the value is honoured", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T12:00:00.000+03:00"}, "now": "2026-10-10T09:00:00.000Z", "expected": "4 days left"},
+    {"name": "daysUntil: the number is written as `number` (group separators)", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2030-11-18T09:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "1,500 days left"},
+    {"name": "daysUntil: a value that is not a date is shown as it is, and the word takes `other`", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "soon"}, "now": "2026-10-10T09:00:00.000Z", "expected": "soon days left"},
+    {"name": "daysUntil: no data, the fallback and `other`", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "— days left"},
+    {"name": "plural: one (en)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 point"},
+    {"name": "plural: other (en)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5 points"},
+    {"name": "plural TRAP: `zero` is a CATEGORY, not the number 0; English has no such category", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"zero": "no points", "one": "point", "two": "couple of points", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 0}, "now": "2026-10-10T09:00:00.000Z", "expected": "0 points"},
+    {"name": "plural TRAP: `two` is a category, not the number 2", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"zero": "no points", "one": "point", "two": "couple of points", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 2}, "now": "2026-10-10T09:00:00.000Z", "expected": "2 points"},
+    {"name": "plural TRAP: a language without the category `one` (ja) shows `other` for 1", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"zero": "no points", "one": "point", "two": "couple of points", "other": "points"}}}}, "sourceLocale": "ja", "translationLocale": "ja", "formattingLocale": "ja", "translations": {}, "data": {"user.points": 1}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 points"},
+    {"name": "plural: a fraction is `other` (en)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.5 points"},
+    {"name": "plural: the sign does not matter", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": -1}, "now": "2026-10-10T09:00:00.000Z", "expected": "-1 point"},
+    {"name": "plural: the number is rounded to three fraction digits first (1.0004 is written 1 and is `one`)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1.0004}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 point"},
+    {"name": "plural: the rounding does not depend on the format of the value (1.0004 as it is, still `one`)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1.0004}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.0004 point"},
+    {"name": "plural: a visible fraction is `other` (1.004)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1.004}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.004 points"},
+    {"name": "plural: a formatted number, the word follows the number and not its text", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1001}, "now": "2026-10-10T09:00:00.000Z", "expected": "1,001 points"},
+    {"name": "plural: agrees with money", "value": {"kind": "template", "template": "{price} / {unit}", "values": {"price": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD"}, "unit": {"kind": "plural", "of": "price", "forms": {"one": "ticket", "other": "tickets"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"offer.price": 1}, "now": "2026-10-10T09:00:00.000Z", "expected": "1\u00a0USD / ticket"},
+    {"name": "plural uk: 1", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 1}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 бал"},
+    {"name": "plural uk: 2", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 2}, "now": "2026-10-10T09:00:00.000Z", "expected": "2 бали"},
+    {"name": "plural uk: 5", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5 балів"},
+    {"name": "plural uk: 11", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 11}, "now": "2026-10-10T09:00:00.000Z", "expected": "11 балів"},
+    {"name": "plural uk: 21", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 21}, "now": "2026-10-10T09:00:00.000Z", "expected": "21 бал"},
+    {"name": "plural uk: 22", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 22}, "now": "2026-10-10T09:00:00.000Z", "expected": "22 бали"},
+    {"name": "plural uk: 25", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 25}, "now": "2026-10-10T09:00:00.000Z", "expected": "25 балів"},
+    {"name": "plural uk: 0", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 0}, "now": "2026-10-10T09:00:00.000Z", "expected": "0 балів"},
+    {"name": "plural uk: 111", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 111}, "now": "2026-10-10T09:00:00.000Z", "expected": "111 балів"},
+    {"name": "plural uk: a fraction is `other`", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 1.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.5 бала"},
+    {"name": "plural pl: 1", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "pl", "formattingLocale": "pl", "translations": {"values.unit.forms.one": "punkt", "values.unit.forms.few": "punkty", "values.unit.forms.many": "punktów", "values.unit.forms.other": "punktu"}, "data": {"user.points": 1}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 punkt"},
+    {"name": "plural pl: 2", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "pl", "formattingLocale": "pl", "translations": {"values.unit.forms.one": "punkt", "values.unit.forms.few": "punkty", "values.unit.forms.many": "punktów", "values.unit.forms.other": "punktu"}, "data": {"user.points": 2}, "now": "2026-10-10T09:00:00.000Z", "expected": "2 punkty"},
+    {"name": "plural pl: 5", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "pl", "formattingLocale": "pl", "translations": {"values.unit.forms.one": "punkt", "values.unit.forms.few": "punkty", "values.unit.forms.many": "punktów", "values.unit.forms.other": "punktu"}, "data": {"user.points": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5 punktów"},
+    {"name": "plural pl: 22", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "pl", "formattingLocale": "pl", "translations": {"values.unit.forms.one": "punkt", "values.unit.forms.few": "punkty", "values.unit.forms.many": "punktów", "values.unit.forms.other": "punktu"}, "data": {"user.points": 22}, "now": "2026-10-10T09:00:00.000Z", "expected": "22 punkty"},
+    {"name": "plural pl: 25", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "pl", "formattingLocale": "pl", "translations": {"values.unit.forms.one": "punkt", "values.unit.forms.few": "punkty", "values.unit.forms.many": "punktów", "values.unit.forms.other": "punktu"}, "data": {"user.points": 25}, "now": "2026-10-10T09:00:00.000Z", "expected": "25 punktów"},
+    {"name": "plural ar: 0", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "translations": {"template": "{count} {unit}", "values.unit.forms.zero": "لا أيام", "values.unit.forms.one": "يوم واحد", "values.unit.forms.two": "يومان", "values.unit.forms.few": "أيام", "values.unit.forms.many": "يومًا", "values.unit.forms.other": "يوم"}, "data": {"user.points": 0}, "now": "2026-10-10T09:00:00.000Z", "expected": "0 لا أيام"},
+    {"name": "plural ar: 1", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "translations": {"template": "{count} {unit}", "values.unit.forms.zero": "لا أيام", "values.unit.forms.one": "يوم واحد", "values.unit.forms.two": "يومان", "values.unit.forms.few": "أيام", "values.unit.forms.many": "يومًا", "values.unit.forms.other": "يوم"}, "data": {"user.points": 1}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 يوم واحد"},
+    {"name": "plural ar: 2", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "translations": {"template": "{count} {unit}", "values.unit.forms.zero": "لا أيام", "values.unit.forms.one": "يوم واحد", "values.unit.forms.two": "يومان", "values.unit.forms.few": "أيام", "values.unit.forms.many": "يومًا", "values.unit.forms.other": "يوم"}, "data": {"user.points": 2}, "now": "2026-10-10T09:00:00.000Z", "expected": "2 يومان"},
+    {"name": "plural ar: 3", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "translations": {"template": "{count} {unit}", "values.unit.forms.zero": "لا أيام", "values.unit.forms.one": "يوم واحد", "values.unit.forms.two": "يومان", "values.unit.forms.few": "أيام", "values.unit.forms.many": "يومًا", "values.unit.forms.other": "يوم"}, "data": {"user.points": 3}, "now": "2026-10-10T09:00:00.000Z", "expected": "3 أيام"},
+    {"name": "plural ar: 11", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "translations": {"template": "{count} {unit}", "values.unit.forms.zero": "لا أيام", "values.unit.forms.one": "يوم واحد", "values.unit.forms.two": "يومان", "values.unit.forms.few": "أيام", "values.unit.forms.many": "يومًا", "values.unit.forms.other": "يوم"}, "data": {"user.points": 11}, "now": "2026-10-10T09:00:00.000Z", "expected": "11 يومًا"},
+    {"name": "plural ar: 100", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "translations": {"template": "{count} {unit}", "values.unit.forms.zero": "لا أيام", "values.unit.forms.one": "يوم واحد", "values.unit.forms.two": "يومان", "values.unit.forms.few": "أيام", "values.unit.forms.many": "يومًا", "values.unit.forms.other": "يوم"}, "data": {"user.points": 100}, "now": "2026-10-10T09:00:00.000Z", "expected": "100 يوم"},
+    {"name": "plural with daysUntil (uk): the word follows the counted days", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "Лишилося {days} {unit}", "values.unit.forms.one": "день", "values.unit.forms.few": "дні", "values.unit.forms.many": "днів", "values.unit.forms.other": "дня"}, "data": {"campaign.endsAt": "2026-11-01T09:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "Лишилося 22 дні"},
+    {"name": "plural: a form the language needs is not written, `other`", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 3}, "now": "2026-10-10T09:00:00.000Z", "expected": "3 бала"},
+    {"name": "plural: forms are not translated, source forms by SOURCE rules (21 is `other` in English, `one` in Ukrainian)", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "Лишилося {days} {unit}"}, "data": {"campaign.endsAt": "2026-10-31T09:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "Лишилося 21 days"},
+    {"name": "plural: `other` is not translated, the translated `one` is NOT mixed in", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"values.unit.forms.one": "бал"}, "data": {"user.points": 21}, "now": "2026-10-10T09:00:00.000Z", "expected": "21 points"},
+    {"name": "plural: forms are translated, the template is not", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 21}, "now": "2026-10-10T09:00:00.000Z", "expected": "21 бал"},
+    {"name": "plural: source language with three forms (uk), no translation asked", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "бал", "few": "бали", "many": "балів", "other": "бала"}}}}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"user.points": 22}, "now": "2026-10-10T09:00:00.000Z", "expected": "22 бали"},
+    {"name": "plural: no number (the value is a string), `other`", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": "many"}, "now": "2026-10-10T09:00:00.000Z", "expected": "many points"},
+    {"name": "plural: `of` names a value that is not from data, `other`", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "unit", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The validator rejects a plural that does not agree with a number.", "expected": "1 points"},
+    {"name": "plural: `of` names nothing, `other`", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "total", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The validator rejects a plural that does not agree with a number.", "expected": "1 points"},
+    {"name": "plural: `of` is a prototype member name, `other`", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "constructor", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The validator rejects a plural that does not agree with a number.", "expected": "1 points"},
+    {"name": "plural: a document without localization names no language, `other`", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": null, "translationLocale": null, "formattingLocale": null, "translations": {}, "data": {"user.points": 1}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The validator rejects a plural in a document without localization.", "expected": "1 points"},
+    {"name": "plural: a regional translation key (pt-BR) uses its own rules", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "pt-BR", "formattingLocale": "pt-BR", "translations": {"values.unit.forms.one": "ponto", "values.unit.forms.other": "pontos"}, "data": {"user.points": 1}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 ponto"},
+    {"name": "plural: a value that is used twice and a word that is not used", "value": {"kind": "template", "template": "{count} of {count}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 2}, "now": "2026-10-10T09:00:00.000Z", "expected": "2 of 2"},
+    {"name": "CLARIFIED: a template value of an unknown kind is an empty place, without braces", "value": {"kind": "template", "template": "{done} [{extra}] steps", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}, "extra": {"kind": "countdown", "until": "campaign.endsAt"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"task.progress": 3}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The document schema rejects a value of another kind; a reader of an older minor meets it in a newer document.", "expected": "3 [] steps"},
+    {"name": "CLARIFIED: a template value that is not an object is an empty place", "value": {"kind": "template", "template": "{done} [{extra}] steps", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}, "extra": "soon"}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"task.progress": 3}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The document schema rejects a value of another kind; a reader of an older minor meets it in a newer document.", "expected": "3 [] steps"},
+    {"name": "CLARIFIED: a template value of a known kind and a wrong shape is an empty place", "value": {"kind": "template", "template": "{done} [{unit}] [{lost}]", "values": {"done": {"kind": "binding", "path": "task.progress", "fallback": "—"}, "unit": {"kind": "plural", "of": "done", "forms": {"one": "step"}}, "lost": {"kind": "binding", "fallback": "x"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"task.progress": 3}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The document schema rejects a value of another kind; a reader of an older minor meets it in a newer document.", "expected": "3 [] []"},
+    {"name": "CLARIFIED: a plural that agrees with a value of an unknown kind takes other", "value": {"kind": "template", "template": "{extra}{unit}", "values": {"extra": {"kind": "countdown"}, "unit": {"kind": "plural", "of": "extra", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The document schema rejects a value of another kind; a reader of an older minor meets it in a newer document.", "expected": "points"},
+    {"name": "CLARIFIED: an empty string in the data is no data, the fallback is shown (a single binding)", "value": {"kind": "binding", "path": "user.name", "fallback": "Guest"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.name": ""}, "now": "2026-10-10T09:00:00.000Z", "expected": "Guest"},
+    {"name": "CLARIFIED: an empty string in the data is no data (a template value)", "value": {"kind": "template", "template": "Hi {name}!", "values": {"name": {"kind": "binding", "path": "user.name", "fallback": "Guest"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.name": ""}, "now": "2026-10-10T09:00:00.000Z", "expected": "Hi Guest!"},
+    {"name": "CLARIFIED: a string of spaces is a value and is shown as it is", "value": {"kind": "template", "template": "Hi {name}!", "values": {"name": {"kind": "binding", "path": "user.name", "fallback": "Guest"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.name": " "}, "now": "2026-10-10T09:00:00.000Z", "expected": "Hi  !"},
+    {"name": "CLARIFIED: an empty string under a number format is no data too", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": ""}, "now": "2026-10-10T09:00:00.000Z", "expected": "0"},
+    {"name": "CLARIFIED date shape: seconds are optional", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T09:00Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "4 days left"},
+    {"name": "CLARIFIED date shape: \"1850\" is not a date (not the year 1850)", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "1850"}, "now": "2026-10-10T09:00:00.000Z", "expected": "1850 days left"},
+    {"name": "CLARIFIED date shape: a date without a time is not a date", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14"}, "now": "2026-10-10T09:00:00.000Z", "expected": "2026-10-14 days left"},
+    {"name": "CLARIFIED date shape: a date without a zone is not a date", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T09:00:00"}, "now": "2026-10-10T09:00:00.000Z", "expected": "2026-10-14T09:00:00 days left"},
+    {"name": "CLARIFIED date shape: a space instead of T is not a date", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14 09:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "2026-10-14 09:00:00Z days left"},
+    {"name": "CLARIFIED date shape: an offset without a colon is not a date", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T09:00:00+0300"}, "now": "2026-10-10T09:00:00.000Z", "expected": "2026-10-14T09:00:00+0300 days left"},
+    {"name": "CLARIFIED date shape: a timestamp number is not a date", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": 1791968400000}, "now": "2026-10-10T09:00:00.000Z", "expected": "1791968400000 days left"},
+    {"name": "CLARIFIED date shape: the same definition for the format date", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-10-14]"},
+    {"name": "CLARIFIED date shape: the same definition for the format dateTime", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "dateTime"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "1850"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[1850]"},
+    {"name": "CLARIFIED date shape: the same definition for the format time", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "time"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T09:00:00"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-10-14T09:00:00]"},
+    {"name": "CLARIFIED plural without data: a numeric fallback gives the number (en, 1)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "1"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 point"},
+    {"name": "CLARIFIED plural without data: a numeric fallback gives the number (en, 0)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "0 points"},
+    {"name": "CLARIFIED plural without data: the fallback is shown for an empty string too", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "1"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": ""}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 point"},
+    {"name": "CLARIFIED plural without data: a numeric fallback gives the number (uk, 0 is many)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "0 балів"},
+    {"name": "CLARIFIED plural without data: a fallback that is not a number, other (uk)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "—"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "— бала"},
+    {"name": "CLARIFIED plural without data: a fractional fallback is a number (uk, other)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "1.5"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.5 бала"},
+    {"name": "CLARIFIED plural without data: a numeric fallback gives the number (uk, 22 is few)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "22"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "22 бали"},
+    {"name": "CLARIFIED plural without data: a numeric fallback gives the number (ar, 0 is zero)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "translations": {"template": "{count} {unit}", "values.unit.forms.zero": "لا أيام", "values.unit.forms.one": "يوم واحد", "values.unit.forms.two": "يومان", "values.unit.forms.few": "أيام", "values.unit.forms.many": "يومًا", "values.unit.forms.other": "يوم"}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "0 لا أيام"},
+    {"name": "CLARIFIED plural without data: a numeric fallback gives the number (ar, 2 is two)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "2"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "translations": {"template": "{count} {unit}", "values.unit.forms.zero": "لا أيام", "values.unit.forms.one": "يوم واحد", "values.unit.forms.two": "يومان", "values.unit.forms.few": "أيام", "values.unit.forms.many": "يومًا", "values.unit.forms.other": "يوم"}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "2 يومان"},
+    {"name": "CLARIFIED plural without data: the fallback of daysUntil gives the number too", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "1", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 day left"},
+    {"name": "CLARIFIED plural: data that is present and is not a number does not fall to the fallback number", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "1"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": "many"}, "now": "2026-10-10T09:00:00.000Z", "expected": "many points"},
+    {"name": "CLARIFIED magnitude: 2^53 - 1 is still formatted", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 9007199254740991}, "now": "2026-10-10T09:00:00.000Z", "expected": "9,007,199,254,740,991"},
+    {"name": "CLARIFIED magnitude: beyond 2^53 - 1 the number is shown as it is", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 9007199254740994}, "now": "2026-10-10T09:00:00.000Z", "expected": "9007199254740994"},
+    {"name": "CLARIFIED magnitude: the same limit for currency", "value": {"kind": "template", "template": "{price}", "values": {"price": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"offer.price": 9007199254740994}, "now": "2026-10-10T09:00:00.000Z", "expected": "9007199254740994"},
+    {"name": "CLARIFIED magnitude: a negative number beyond the limit", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": -9007199254740994}, "now": "2026-10-10T09:00:00.000Z", "expected": "-9007199254740994"},
+    {"name": "CLARIFIED magnitude: at the limit the word still agrees (uk, ends in 1: one)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 9007199254740991}, "now": "2026-10-10T09:00:00.000Z", "expected": "9007199254740991 бал"},
+    {"name": "CLARIFIED magnitude: beyond the limit the word takes other (uk, ends in 4 and is not few)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 9007199254740994}, "now": "2026-10-10T09:00:00.000Z", "expected": "9007199254740994 бала"},
+    {"name": "plural TRAP: a missing form falls to other, never to a neighbour (ar, 2 without two but with few)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "translations": {"template": "{count} {unit}", "values.unit.forms.zero": "لا أيام", "values.unit.forms.one": "يوم واحد", "values.unit.forms.few": "أيام", "values.unit.forms.many": "يومًا", "values.unit.forms.other": "يوم"}, "data": {"user.points": 2}, "now": "2026-10-10T09:00:00.000Z", "expected": "2 يوم"},
+    {"name": "CLARIFIED no locale data: number is shown as it is", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "tlh", "translations": {}, "data": {"user.points": 1850}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "The row needs a formatting locale the platform has no number data for; tlh (Klingon) is in no CLDR release we know. A platform that has the data formats the number.", "expected": "1850"},
+    {"name": "CLARIFIED no locale data: currency is shown as it is", "value": {"kind": "template", "template": "{price}", "values": {"price": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "JOD"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "tlh", "translations": {}, "data": {"offer.price": 120}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "The row needs a formatting locale the platform has no number data for; tlh (Klingon) is in no CLDR release we know. A platform that has the data formats the number.", "expected": "120"},
+    {"name": "CLARIFIED no locale data: daysUntil is the counted days in plain digits, no separators", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "tlh", "translations": {}, "data": {"campaign.endsAt": "2030-11-18T09:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "The row needs a formatting locale the platform has no number data for; tlh (Klingon) is in no CLDR release we know. A platform that has the data formats the number.", "expected": "1500 days left"},
+    {"name": "CLARIFIED-2 date validity: 30 February is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-02-30T00:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-02-30T00:00:00Z]"},
+    {"name": "CLARIFIED-2 date validity: 29 February in a common year is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-02-29T00:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-02-29T00:00:00Z]"},
+    {"name": "CLARIFIED-2 date validity: 29 February 1900 (a century year that is not a leap year) is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "1900-02-29T00:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[1900-02-29T00:00:00Z]"},
+    {"name": "CLARIFIED-2 date validity: 31 April is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-04-31T12:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-04-31T12:00:00Z]"},
+    {"name": "CLARIFIED-2 date validity: month 13 is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-13-01T00:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-13-01T00:00:00Z]"},
+    {"name": "CLARIFIED-2 date validity: month 00 is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-00-10T00:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-00-10T00:00:00Z]"},
+    {"name": "CLARIFIED-2 date validity: day 00 is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-00T00:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-10-00T00:00:00Z]"},
+    {"name": "CLARIFIED-2 date validity: hour 24 is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T24:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-10-14T24:00:00Z]"},
+    {"name": "CLARIFIED-2 date validity: hour 25 is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T25:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-10-14T25:00:00Z]"},
+    {"name": "CLARIFIED-2 date validity: second 60 (no leap second) is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T12:00:60Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-10-14T12:00:60Z]"},
+    {"name": "CLARIFIED-2 date validity: minute 60 is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T12:60:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-10-14T12:60:00Z]"},
+    {"name": "CLARIFIED-2 date validity: offset +24:00 is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T12:00:00+24:00"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-10-14T12:00:00+24:00]"},
+    {"name": "CLARIFIED-2 date validity: offset minutes 60 is not a date (date)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T12:00:00+05:60"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-10-14T12:00:00+05:60]"},
+    {"name": "CLARIFIED-2 date validity: hour 24 is not a date (time)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "time"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T24:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[2026-10-14T24:00:00Z]"},
+    {"name": "CLARIFIED-2 date validity: 30 February is not a date for daysUntil either", "value": {"kind": "template", "template": "{days} {unit} left", "values": {"days": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil"}, "unit": {"kind": "plural", "of": "days", "forms": {"one": "day", "other": "days"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2030-02-30T09:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "2030-02-30T09:00:00.000Z days left"},
+    {"name": "CLARIFIED-2 date validity: 29 February 2028 is a date (a leap year)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2028-02-29T00:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[Feb 29, 2028]"},
+    {"name": "CLARIFIED-2 date validity: 29 February 2000 is a date (a century year divisible by 400)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2000-02-29T00:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[Feb 29, 2000]"},
+    {"name": "CLARIFIED-2 date validity: 23:59:59 with offset +23:59 is a date", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T23:59:59+23:59"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "[Oct 14, 2026]"},
+    {"name": "CLARIFIED-2 calendar: Thai shows the Gregorian year 2026, not the Buddhist 2569", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "th", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T12:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "mayDiffer": "Digits and month names are CLDR data and may differ; the CALENDAR is not: the year is the Gregorian 2026.", "expected": "[31 ต.ค. 2026]"},
+    {"name": "CLARIFIED-2 calendar: Persian shows the Gregorian year 2026 (in the digits of the language), not the Persian 1405", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "fa", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T12:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "mayDiffer": "Digits and month names are CLDR data and may differ; the CALENDAR is not: the year is the Gregorian 2026.", "expected": "[۳۱ اکتبر ۲۰۲۶]"},
+    {"name": "CLARIFIED-2 no locale data: date is shown as it is (dv)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "dv", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T12:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "mayDiffer": "The row needs a formatting locale the platform has no date data for; dv (Dhivehi) and la (Latin) are in no ICU release of the engines we know. A platform that has the data formats the date.", "expected": "[2026-10-31T12:00:00Z]"},
+    {"name": "CLARIFIED-2 no locale data: date is shown as it is (la)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "date"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "la", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T12:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "mayDiffer": "The row needs a formatting locale the platform has no date data for; dv (Dhivehi) and la (Latin) are in no ICU release of the engines we know. A platform that has the data formats the date.", "expected": "[2026-10-31T12:00:00Z]"},
+    {"name": "CLARIFIED-2 no locale data: dateTime is shown as it is (dv)", "value": {"kind": "template", "template": "[{at}]", "values": {"at": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "dateTime"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "dv", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T12:00:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "mayDiffer": "The row needs a formatting locale the platform has no date data for; dv (Dhivehi) and la (Latin) are in no ICU release of the engines we know. A platform that has the data formats the date.", "expected": "[2026-10-31T12:00:00Z]"},
+    {"name": "CLARIFIED-2 rounding: 1.0005 is 1.001 under number (half away from zero over the shortest decimal)", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1.0005}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.001"},
+    {"name": "CLARIFIED-2 rounding: 1.0004 is 1 under number (half away from zero over the shortest decimal)", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1.0004}, "now": "2026-10-10T09:00:00.000Z", "expected": "1"},
+    {"name": "CLARIFIED-2 rounding: 1.005 USD is 1.01 USD under currency", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "currency", "currency": "USD"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1.005}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.01 USD"},
+    {"name": "CLARIFIED-2 rounding: 2.675 USD is 2.68 USD under currency", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "currency", "currency": "USD"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 2.675}, "now": "2026-10-10T09:00:00.000Z", "expected": "2.68 USD"},
+    {"name": "CLARIFIED-2 plural of a fraction: French 1.5 takes one (the CLDR rule for the fraction part)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "fr", "formattingLocale": "fr", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "point", "values.unit.forms.other": "points"}, "data": {"user.points": 1.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.5 point"},
+    {"name": "CLARIFIED-2 plural of a fraction: Hindi 0.5 takes one", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "hi", "formattingLocale": "hi", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "point", "values.unit.forms.other": "points"}, "data": {"user.points": 0.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "0.5 point"},
+    {"name": "CLARIFIED-2 plural of a fraction: English 1.5 takes other", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "point", "values.unit.forms.other": "points"}, "data": {"user.points": 1.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.5 points"},
+    {"name": "CLARIFIED-2 plural of a fraction: French 2.5 takes other", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "fr", "formattingLocale": "fr", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "point", "values.unit.forms.other": "points"}, "data": {"user.points": 2.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "2.5 points"},
+    {"name": "CLARIFIED-2 plural without data: a numeric fallback of any length gives the number (1. and forty-five zeros is one)", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "1.000000000000000000000000000000000000000000000"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.000000000000000000000000000000000000000000000 point"},
+    {"name": "CLARIFIED-2 rounding: -1.0005 is -1.001 under number (half away from zero)", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": -1.0005}, "now": "2026-10-10T09:00:00.000Z", "expected": "-1.001"},
+    {"name": "CLARIFIED-2 rounding: 2.0005 is 2.001 under number", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 2.0005}, "now": "2026-10-10T09:00:00.000Z", "expected": "2.001"},
+    {"name": "CLARIFIED-2 rounding: 1.2345 is 1.235 under number", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1.2345}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.235"},
+    {"name": "CLARIFIED-2 magnitude: a negative number beyond the limit is shown as it is under currency too", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "currency", "currency": "USD"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": -9007199254740994}, "now": "2026-10-10T09:00:00.000Z", "expected": "-9007199254740994"},
+    {"name": "CLARIFIED-3 dateTime joins date and time with the CLDR pattern of the language, not a space: en", "value": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "dateTime"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T14:05:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "mayDiffer": "Older ICU data writes U+202F (narrow no-break space) before PM; the comma between the date and the time is the point of the row: a reader that glues the two parts with a plain space writes «Oct 31, 2026 2:05 PM».", "expected": "Oct 31, 2026, 2:05 PM"},
+    {"name": "CLARIFIED-3 dateTime joins date and time with the CLDR pattern of the language, not a space: uk", "value": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "dateTime"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T14:05:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "mayDiffer": "CLDR data puts either a plain space or U+202F (narrow no-break space) between the year and «р.»; Dart `intl` writes the second: «31 жовт. 2026\u202fр., 14:05». Both are right: the point of the row is the date and the time joined by the comma of the language pattern, not this one character; a reader that glues the two parts with a plain space writes «31 жовт. 2026 р. 14:05».", "expected": "31 жовт. 2026 р., 14:05"},
+    {"name": "CLARIFIED-3 dateTime joins date and time with the CLDR pattern of the language, not a space: ar", "value": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "dateTime"}, "sourceLocale": "ar", "translationLocale": "ar", "formattingLocale": "ar", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T14:05:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "mayDiffer": "The comma is the Arabic comma U+060C; digits stay Latin with plain `ar` (see the row about ar-EG).", "expected": "31 أكتوبر 2026، 2:05 م"},
+    {"name": "CLARIFIED-3 dateTime joins date and time with the CLDR pattern of the language, not a space: de", "value": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "dateTime"}, "sourceLocale": "de", "translationLocale": "de", "formattingLocale": "de", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T14:05:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "31. Okt. 2026, 14:05"},
+    {"name": "CLARIFIED-3 dateTime joins date and time with the CLDR pattern of the language, not a space: fr", "value": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "dateTime"}, "sourceLocale": "fr", "translationLocale": "fr", "formattingLocale": "fr", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T14:05:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "31 oct. 2026, 14:05"},
+    {"name": "CLARIFIED-3 dateTime joins date and time with the CLDR pattern of the language, not a space: ja", "value": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "dateTime"}, "sourceLocale": "ja", "translationLocale": "ja", "formattingLocale": "ja", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T14:05:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "2026年10月31日 14:05"},
+    {"name": "CLARIFIED-3 dateTime joins date and time with the CLDR pattern of the language, not a space: es", "value": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "dateTime"}, "sourceLocale": "es", "translationLocale": "es", "formattingLocale": "es", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T14:05:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "expected": "31 oct 2026, 14:05"},
+    {"name": "CLARIFIED-3 dateTime joins date and time with the CLDR pattern of the language, not a space: ru", "value": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "dateTime"}, "sourceLocale": "ru", "translationLocale": "ru", "formattingLocale": "ru", "translations": {}, "data": {"campaign.endsAt": "2026-10-31T14:05:00Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "UTC", "mayDiffer": "CLDR data puts either a plain space or U+202F (narrow no-break space) between the year and «г.»; Dart `intl` writes the second: «31 окт. 2026\u202fг., 14:05». Both are right: the point of the row is the date and the time joined by the comma of the language pattern, not this one character; a reader that glues the two parts with a plain space writes «31 окт. 2026 г. 14:05».", "expected": "31 окт. 2026 г., 14:05"}
+  ],
+  "shownTextCases": [
+    {"name": "two spaces inside become one", "text": "1  Maya", "expected": "1 Maya"},
+    {"name": "three spaces and more", "text": "a   b      c", "expected": "a b c"},
+    {"name": "a tab is a space", "text": "a\tb", "expected": "a b"},
+    {"name": "a line feed is a space", "text": "a\nb", "expected": "a b"},
+    {"name": "a carriage return and a line feed together are ONE space", "text": "a\r\nb", "expected": "a b"},
+    {"name": "a mixed run of space, tab and line feed is one space", "text": "a \t\n b", "expected": "a b"},
+    {"name": "spaces at the start and at the end are not shown", "text": "   Maya   ", "expected": "Maya"},
+    {"name": "a tab and a line feed at the edges are not shown", "text": "\t\nMaya\n\t", "expected": "Maya"},
+    {"name": "a no-break space between a number and a word stays and merges with nothing", "text": "120 JOD", "expected": "120 JOD"},
+    {"name": "two no-break spaces stay two", "text": "a  b", "expected": "a  b"},
+    {"name": "a space next to a no-break space is not merged with it", "text": "a  b", "expected": "a  b"},
+    {"name": "a no-break space at the edge is not trimmed", "text": " Maya ", "expected": " Maya "},
+    {"name": "only spaces: nothing is shown", "text": "     ", "expected": ""},
+    {"name": "only a tab and a line feed: nothing is shown", "text": "\t\n", "expected": ""},
+    {"name": "an empty string stays empty", "text": "", "expected": ""},
+    {"name": "a single space is nothing", "text": " ", "expected": ""},
+    {"name": "an Arabic string: the run between words is one space", "text": "مرحبا   بالعالم", "expected": "مرحبا بالعالم"},
+    {"name": "an Arabic string: the edges are trimmed", "text": "  مرحبا  ", "expected": "مرحبا"},
+    {"name": "other spaces (em space U+2003) are not in the list and stay", "text": "a  b", "expected": "a  b"},
+    {"name": "a zero-width space is not a space: it stays", "text": "a​​b", "expected": "a​​b"},
+    {"name": "a form feed is not in the list: it stays", "text": "a\fb", "expected": "a\fb"},
+    {"name": "one space is one space", "text": "a b", "expected": "a b"},
+    {"name": "a field label: the same rule as any text for a person", "text": " Your  name ", "expected": "Your name"},
+    {"name": "a field placeholder (the hint inside the field) is shown text: the edges and the runs go", "text": "  name@example.com  ", "expected": "name@example.com"},
+    {"name": "a field helper note is shown text: a run of spaces and a line feed are one space", "text": "At least  8\ncharacters", "expected": "At least 8 characters"},
+    {"name": "a field error text is shown text: the edges go", "text": " Required ", "expected": "Required"}
+  ],
+  "shownTemplateCases": [
+    {"name": "a template with an empty place in the middle: «a {x} b» is «a b»", "value": {"kind": "template", "template": "a {x} b", "values": {"x": {"kind": "binding", "path": "user.name", "fallback": ""}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "a  b", "shown": "a b"},
+    {"name": "a template with an empty place at the start: no space at the edge", "value": {"kind": "template", "template": "{x} b", "values": {"x": {"kind": "binding", "path": "user.name", "fallback": ""}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": " b", "shown": "b"},
+    {"name": "a template with an empty place at the end: no space at the edge", "value": {"kind": "template", "template": "a {x}", "values": {"x": {"kind": "binding", "path": "user.name", "fallback": ""}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "a ", "shown": "a"},
+    {"name": "a template of two empty places is nothing", "value": {"kind": "template", "template": "{x} {y}", "values": {"x": {"kind": "binding", "path": "user.name", "fallback": ""}, "y": {"kind": "binding", "path": "user.title", "fallback": ""}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": " ", "shown": ""},
+    {"name": "the rank and the name: the name is empty, one space is left", "value": {"kind": "template", "template": "{rank} {name} points", "values": {"rank": {"kind": "binding", "path": "user.rank", "fallback": "1"}, "name": {"kind": "binding", "path": "user.name", "fallback": ""}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.rank": 1}, "now": "2026-10-10T09:00:00.000Z", "expected": "1  points", "shown": "1 points"},
+    {"name": "the value itself has two spaces: they merge as well", "value": {"kind": "template", "template": "{rank} {name}", "values": {"rank": {"kind": "binding", "path": "user.rank", "fallback": "1"}, "name": {"kind": "binding", "path": "user.name", "fallback": ""}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.rank": 1, "user.name": "Maya  K"}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 Maya  K", "shown": "1 Maya K"},
+    {"name": "the value of the data has spaces at the edges: not shown", "value": {"kind": "template", "template": "[{name}]", "values": {"name": {"kind": "binding", "path": "user.name", "fallback": ""}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.name": "  Maya  "}, "now": "2026-10-10T09:00:00.000Z", "expected": "[  Maya  ]", "shown": "[ Maya ]"},
+    {"name": "the translation is the string that is judged, not the source", "value": {"kind": "template", "template": "{rank} {name} points", "values": {"rank": {"kind": "binding", "path": "user.rank", "fallback": "1"}, "name": {"kind": "binding", "path": "user.name", "fallback": ""}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{rank} {name} балів"}, "data": {"user.rank": 1}, "now": "2026-10-10T09:00:00.000Z", "expected": "1  балів", "shown": "1 балів"},
+    {"name": "Arabic: an empty place between words", "value": {"kind": "template", "template": "{a} {x} {b}", "values": {"a": {"kind": "binding", "path": "user.a", "fallback": "مرحبا"}, "x": {"kind": "binding", "path": "user.x", "fallback": ""}, "b": {"kind": "binding", "path": "user.b", "fallback": "بالعالم"}}}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "translations": {"template": "{a} {x} {b}"}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "مرحبا  بالعالم", "shown": "مرحبا بالعالم"}
+  ],
+  "moneyNote": "Schema 9.19.0 — money as money: the fields «currencyDisplay», «currencyPosition» and «sign» of a binding (rules: x-money). A row of «moneyCases» is a row of «cases» plus «direction»: the direction of the SHOWN text (that of «directionLocale» of locale resolution) — the reader wraps the composed form in U+2066 … U+2069 exactly when it is «rtl». «expected» is the whole string, character for character; U+00A0, U+2066, U+2069 and U+2212 are written as escapes. «pieces» (where present, for a value that is a single binding) are the pieces of the formatted value in logical order, each with «part»: «fraction», «currency» or null for the rest; joined, the pieces are «expected», and the isolation marks sit inside the first and the last piece. A reader of 9.18 fails the rows that name one of the three fields and passes the rows marked WITHOUT.",
+  "moneyCases": [
+    {"name": "sign: a positive number takes a plus", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": 120}, "now": "2026-10-10T09:00:00.000Z", "pieces": [{"text": "+120", "part": null}], "expected": "+120"},
+    {"name": "sign: a negative number takes U+2212 MINUS SIGN, not the hyphen the platform writes", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": -1850}, "now": "2026-10-10T09:00:00.000Z", "expected": "\u22121,850"},
+    {"name": "sign: zero has no sign", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": 0}, "now": "2026-10-10T09:00:00.000Z", "expected": "0"},
+    {"name": "sign: negative zero has no sign (and no minus of the platform)", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": -0.0}, "now": "2026-10-10T09:00:00.000Z", "expected": "0"},
+    {"name": "sign: a number written as zero has no sign (-0.0004 under three digits)", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": -0.0004}, "now": "2026-10-10T09:00:00.000Z", "expected": "0"},
+    {"name": "sign: a positive number written as zero has no plus (0.0004)", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": 0.0004}, "now": "2026-10-10T09:00:00.000Z", "expected": "0"},
+    {"name": "sign: 0.0005 is written 0.001 and takes the plus (half away from zero)", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": 0.0005}, "now": "2026-10-10T09:00:00.000Z", "expected": "+0.001"},
+    {"name": "sign: -0.0005 is written 0.001 and takes the minus", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": -0.0005}, "now": "2026-10-10T09:00:00.000Z", "expected": "\u22120.001"},
+    {"name": "sign: separators of the language stay (uk)", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {"user.points": 1850.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "+1\u00a0850,5"},
+    {"name": "sign: separators of the language stay (es, negative)", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "es", "translationLocale": "es", "formattingLocale": "es", "direction": "ltr", "translations": {}, "data": {"user.points": -1850}, "now": "2026-10-10T09:00:00.000Z", "expected": "\u22121.850"},
+    {"name": "sign: an integer-valued number is written without a fraction (3.0 is +3)", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": 3.0}, "now": "2026-10-10T09:00:00.000Z", "expected": "+3"},
+    {"name": "sign: money with the code, a positive amount (uk)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "sign": "always"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {"offer.price": 42000}, "now": "2026-10-10T09:00:00.000Z", "expected": "+42\u00a0000\u00a0UAH"},
+    {"name": "sign: money with the code, a negative amount (uk)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "sign": "always"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {"offer.price": -1200.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "\u22121\u00a0200,50\u00a0UAH"},
+    {"name": "sign: the word agrees with the absolute value (-1 is `one`)", "value": {"kind": "template", "template": "{delta} {unit}", "values": {"delta": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "unit": {"kind": "plural", "of": "delta", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": -1}, "now": "2026-10-10T09:00:00.000Z", "expected": "\u22121 point"},
+    {"name": "WITHOUT the fields nothing changed: a negative amount is written by the platform, with the code after", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": -5.25}, "now": "2026-10-10T09:00:00.000Z", "pieces": [{"text": "-5", "part": null}, {"text": ".25", "part": "fraction"}, {"text": "\u00a0USD", "part": "currency"}], "expected": "-5.25\u00a0USD"},
+    {"name": "sign: no data, the fallback is shown as it is — no sign", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "0"},
+    {"name": "sign: a fallback that looks like a number is still text — no sign", "value": {"kind": "binding", "path": "user.points", "fallback": "12", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "12"},
+    {"name": "sign: a string is not a number, shown as it is", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": "120"}, "now": "2026-10-10T09:00:00.000Z", "expected": "120"},
+    {"name": "sign: beyond 2^53 - 1 the number is shown as it is, without a sign", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": 9007199254740994}, "now": "2026-10-10T09:00:00.000Z", "expected": "9007199254740994"},
+    {"name": "sign: a negative number beyond the limit is shown as it is (the hyphen of the plain number)", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": -9007199254740994}, "now": "2026-10-10T09:00:00.000Z", "expected": "-9007199254740994"},
+    {"name": "sign: no number data for the formatting locale, the number as it is", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "tlh", "direction": "ltr", "translations": {}, "data": {"user.points": 120}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "The row needs a formatting locale the platform has no number data for; a platform that has the data writes +120.", "expected": "120"},
+    {"name": "READER sign: a word of a newer minor is no field — the number as before 9.19", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "exceptZero"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": -5}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The document schema rejects the word.", "expected": "-5"},
+    {"name": "READER sign: without a format the field is not read", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": 120}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The validator rejects `sign` without `format: number` or `currency`.", "expected": "120"},
+    {"name": "READER sign: `daysUntil` does not read the field", "value": {"kind": "binding", "path": "campaign.endsAt", "fallback": "—", "format": "daysUntil", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"campaign.endsAt": "2026-10-14T09:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The validator rejects `sign` on `daysUntil`.", "expected": "4"},
+    {"name": "symbol: the sign of the table stands after the amount, with U+00A0 (uk)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {"offer.price": 24580.75}, "now": "2026-10-10T09:00:00.000Z", "pieces": [{"text": "24\u00a0580", "part": null}, {"text": ",75", "part": "fraction"}, {"text": "\u00a0₴", "part": "currency"}], "expected": "24\u00a0580,75\u00a0₴"},
+    {"name": "symbol: a whole amount has no fraction", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {"offer.price": 500}, "now": "2026-10-10T09:00:00.000Z", "pieces": [{"text": "500", "part": null}, {"text": "\u00a0₴", "part": "currency"}], "expected": "500\u00a0₴"},
+    {"name": "symbol: inside a sentence (uk, «до 500 ₴»)", "value": {"kind": "template", "template": "до {limit}", "values": {"limit": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol"}}}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {"offer.price": 500}, "now": "2026-10-10T09:00:00.000Z", "expected": "до 500\u00a0₴"},
+    {"name": "symbol: the same order in every language (en)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 1850.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "1,850.50\u00a0$"},
+    {"name": "symbol: the same order in every language (es)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "EUR", "currencyDisplay": "symbol"}, "sourceLocale": "es", "translationLocale": "es", "formattingLocale": "es", "direction": "ltr", "translations": {}, "data": {"offer.price": 1850.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.850,50\u00a0€"},
+    {"name": "symbol: a large amount (uk)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {"offer.price": 1234567890.12}, "now": "2026-10-10T09:00:00.000Z", "expected": "1\u00a0234\u00a0567\u00a0890,12\u00a0₴"},
+    {"name": "symbol: a negative amount takes U+2212 (uk)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {"offer.price": -1200}, "now": "2026-10-10T09:00:00.000Z", "expected": "\u22121\u00a0200\u00a0₴"},
+    {"name": "symbol and sign: income (uk, «+42 000 ₴»)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol", "sign": "always"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {"offer.price": 42000}, "now": "2026-10-10T09:00:00.000Z", "expected": "+42\u00a0000\u00a0₴"},
+    {"name": "symbol and sign: zero has no sign", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol", "sign": "always"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {"offer.price": 0}, "now": "2026-10-10T09:00:00.000Z", "expected": "0\u00a0₴"},
+    {"name": "symbol: a code the table does not have is shown as the code, in the same place (JOD)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "JOD", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 120}, "now": "2026-10-10T09:00:00.000Z", "pieces": [{"text": "120", "part": null}, {"text": "\u00a0JOD", "part": "currency"}], "expected": "120\u00a0JOD"},
+    {"name": "symbol: a code the table does not have, with a fraction (CHF)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "CHF", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 12.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "12.50\u00a0CHF"},
+    {"name": "symbol: a code the table does not have still gets the composed form — U+2212 for a negative amount", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "CHF", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": -12.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "\u221212.50\u00a0CHF"},
+    {"name": "symbol: the digits of the currency stay (JPY has none)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "JPY", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 1200.4}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "The number of fraction digits of a currency comes from the platform data.", "expected": "1,200\u00a0¥"},
+    {"name": "symbol: no data, the fallback as it is", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "—"},
+    {"name": "READER symbol: a word of a newer minor is no field — the code, as before 9.19", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD", "currencyDisplay": "narrowSymbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": -5.25}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The document schema rejects the word.", "expected": "-5.25\u00a0USD"},
+    {"name": "READER symbol: `number` does not read the currency fields — written as before 9.19", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "currencyDisplay": "symbol", "currencyPosition": "before"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"user.points": -1850.5}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The validator rejects the currency fields without `format: currency`.", "expected": "-1,850.5"},
+    {"name": "READER symbol: no currency code, the number as it is", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 120}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The validator rejects `currency` without a code.", "expected": "120"},
+    {"name": "before: the sign stands before the amount with no gap", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD", "currencyDisplay": "symbol", "currencyPosition": "before"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 1850.5}, "now": "2026-10-10T09:00:00.000Z", "pieces": [{"text": "$", "part": "currency"}, {"text": "1,850", "part": null}, {"text": ".50", "part": "fraction"}], "expected": "$1,850.50"},
+    {"name": "before: the minus stands before the currency", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD", "currencyDisplay": "symbol", "currencyPosition": "before"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": -5.25}, "now": "2026-10-10T09:00:00.000Z", "pieces": [{"text": "\u2212", "part": null}, {"text": "$", "part": "currency"}, {"text": "5", "part": null}, {"text": ".25", "part": "fraction"}], "expected": "\u2212$5.25"},
+    {"name": "before: the plus stands before the currency", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD", "currencyDisplay": "symbol", "currencyPosition": "before", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 120}, "now": "2026-10-10T09:00:00.000Z", "expected": "+$120"},
+    {"name": "before: an amount written as zero has no sign (-0.004 under two digits)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD", "currencyDisplay": "symbol", "currencyPosition": "before", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": -0.004}, "now": "2026-10-10T09:00:00.000Z", "expected": "$0.00"},
+    {"name": "before: the code stands before the amount with U+00A0", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD", "currencyPosition": "before"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 1850.5}, "now": "2026-10-10T09:00:00.000Z", "pieces": [{"text": "USD\u00a0", "part": "currency"}, {"text": "1,850", "part": null}, {"text": ".50", "part": "fraction"}], "expected": "USD\u00a01,850.50"},
+    {"name": "before: the code, a negative amount", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD", "currencyPosition": "before"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": -5.25}, "now": "2026-10-10T09:00:00.000Z", "expected": "\u2212USD\u00a05.25"},
+    {"name": "before: a sign the table does not have is the code, with the gap of the code", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "CHF", "currencyDisplay": "symbol", "currencyPosition": "before"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 12.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "CHF\u00a012.50"},
+    {"name": "before: the place is the author's, not the language's (uk, «₴24 580,75»)", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol", "currencyPosition": "before"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {"offer.price": 24580.75}, "now": "2026-10-10T09:00:00.000Z", "expected": "₴24\u00a0580,75"},
+    {"name": "READER before: a word of a newer minor is no field", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD", "currencyPosition": "start"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 120}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The document schema rejects the word.", "expected": "120\u00a0USD"},
+    {"name": "table: the sign of UAH", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5\u00a0₴"},
+    {"name": "table: the sign of USD", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5\u00a0$"},
+    {"name": "table: the sign of EUR", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "EUR", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5\u00a0€"},
+    {"name": "table: the sign of GBP", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "GBP", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5\u00a0£"},
+    {"name": "table: the sign of PLN", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "PLN", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5\u00a0zł"},
+    {"name": "table: the sign of JPY", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "JPY", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5\u00a0¥"},
+    {"name": "table: the sign of CZK", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "CZK", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5\u00a0Kč"},
+    {"name": "table: the sign of TRY", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "TRY", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5\u00a0₺"},
+    {"name": "table: the sign of INR", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "INR", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5\u00a0₹"},
+    {"name": "table: the sign of ILS", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "ILS", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5\u00a0₪"},
+    {"name": "table: the sign of KZT", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "KZT", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5\u00a0₸"},
+    {"name": "table: the sign of GEL", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "GEL", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "direction": "ltr", "translations": {}, "data": {"offer.price": 5}, "now": "2026-10-10T09:00:00.000Z", "expected": "5\u00a0₾"},
+    {"name": "rtl: a signed number is one left-to-right piece — U+2066 … U+2069 around it", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "direction": "rtl", "translations": {}, "data": {"user.points": 120}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits and separators come from the CLDR data of the platform (plain `ar` gives Latin digits on some CLDR versions and Arabic-Indic on others). The sign, the order, the currency sign, the gap and the two isolation marks are fixed.", "pieces": [{"text": "\u2066+120\u2069", "part": null}], "expected": "\u2066+120\u2069"},
+    {"name": "rtl: a negative signed number", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "direction": "rtl", "translations": {}, "data": {"user.points": -120}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits and separators come from the CLDR data of the platform (plain `ar` gives Latin digits on some CLDR versions and Arabic-Indic on others). The sign, the order, the currency sign, the gap and the two isolation marks are fixed.", "expected": "\u2066\u2212120\u2069"},
+    {"name": "rtl: the amount with its currency sign is one piece", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "direction": "rtl", "translations": {}, "data": {"offer.price": 500}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits and separators come from the CLDR data of the platform (plain `ar` gives Latin digits on some CLDR versions and Arabic-Indic on others). The sign, the order, the currency sign, the gap and the two isolation marks are fixed.", "pieces": [{"text": "\u2066500", "part": null}, {"text": "\u00a0₴\u2069", "part": "currency"}], "expected": "\u2066500\u00a0₴\u2069"},
+    {"name": "rtl: the currency before the amount stays before it in the piece", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "USD", "currencyDisplay": "symbol", "currencyPosition": "before", "sign": "always"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "direction": "rtl", "translations": {}, "data": {"offer.price": 120}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits and separators come from the CLDR data of the platform (plain `ar` gives Latin digits on some CLDR versions and Arabic-Indic on others). The sign, the order, the currency sign, the gap and the two isolation marks are fixed.", "expected": "\u2066+$120\u2069"},
+    {"name": "rtl: the code before the amount", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "JOD", "currencyPosition": "before"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "direction": "rtl", "translations": {}, "data": {"offer.price": 120}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits and separators come from the CLDR data of the platform (plain `ar` gives Latin digits on some CLDR versions and Arabic-Indic on others). The sign, the order, the currency sign, the gap and the two isolation marks are fixed.", "expected": "\u2066JOD\u00a0120\u2069"},
+    {"name": "rtl: the piece inside an Arabic sentence", "value": {"kind": "template", "template": "Balance {amount}", "values": {"amount": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol"}}}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "direction": "rtl", "translations": {"template": "رصيدك {amount}"}, "data": {"offer.price": 500}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits and separators come from the CLDR data of the platform (plain `ar` gives Latin digits on some CLDR versions and Arabic-Indic on others). The sign, the order, the currency sign, the gap and the two isolation marks are fixed.", "expected": "رصيدك \u2066500\u00a0₴\u2069"},
+    {"name": "rtl: Arabic-Indic digits — the plus is still U+002B, first in the piece", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar-EG", "direction": "rtl", "translations": {}, "data": {"user.points": 120}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits come from the CLDR data of the platform; `ar-EG` is Arabic-Indic everywhere we looked.", "expected": "\u2066+١٢٠\u2069"},
+    {"name": "rtl WITHOUT the fields nothing changed: no isolation marks", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "JOD"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "direction": "rtl", "translations": {}, "data": {"offer.price": 120}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits and separators come from the CLDR data of the platform (plain `ar` gives Latin digits on some CLDR versions and Arabic-Indic on others). The sign, the order, the currency sign, the gap and the two isolation marks are fixed.", "expected": "120\u00a0JOD"},
+    {"name": "rtl: the fallback is not wrapped", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "direction": "rtl", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "0"},
+    {"name": "rtl: a value shown as it is is not wrapped", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "sign": "always"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "direction": "rtl", "translations": {}, "data": {"user.points": "120"}, "now": "2026-10-10T09:00:00.000Z", "expected": "120"},
+    {"name": "ltr: no isolation marks in a left-to-right text, whatever the fields", "value": {"kind": "binding", "path": "offer.price", "fallback": "—", "format": "currency", "currency": "UAH", "currencyDisplay": "symbol", "sign": "always"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "direction": "ltr", "translations": {}, "data": {"offer.price": 42000.5}, "now": "2026-10-10T09:00:00.000Z", "expected": "+42\u00a0000,50\u00a0₴"}
+  ],
+  "datePartsNote": "Schema 9.19.0 — parts of a date: the field «dateParts» of a binding beside «format: date» (rules: x-dateParts). A row of «datePartsCases» is a row of «cases»; «timeZone», where present, is the time zone of the device (without it the moment is noon UTC, the same calendar day almost everywhere). «expected» is the whole string, character for character. «readerOnly» — a document the builder does not make: the schema or a rule of the validator rejects it, and the row says what a reader does with it.",
+  "datePartsCases": [
+    {"name": "WITHOUT the field nothing changed: year, short month, day (en)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "Oct 15, 2026"},
+    {"name": "dayMonth: day and month in full, no year (en)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonth"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "October 15"},
+    {"name": "weekdayDayMonth: the day of the week, day and month (en)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "weekdayDayMonth"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "Thursday, October 15"},
+    {"name": "dayMonthYear: day, month in full and year (en)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonthYear"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "October 15, 2026"},
+    {"name": "WITHOUT the field nothing changed: year, short month, day (uk)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "CLDR data puts either a plain space or U+202F (narrow no-break space) before the year mark («р.», «ж.»); Dart `intl` writes the second. Both are right: the point of the row is which parts are shown.", "expected": "15 жовт. 2026 р."},
+    {"name": "dayMonth: day and month in full, no year (uk)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonth"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "15 жовтня"},
+    {"name": "weekdayDayMonth: the day of the week, day and month (uk)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "weekdayDayMonth"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "четвер, 15 жовтня"},
+    {"name": "dayMonthYear: day, month in full and year (uk)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonthYear"}, "sourceLocale": "uk", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "CLDR data puts either a plain space or U+202F (narrow no-break space) before the year mark («р.», «ж.»); Dart `intl` writes the second. Both are right: the point of the row is which parts are shown.", "expected": "15 жовтня 2026 р."},
+    {"name": "WITHOUT the field nothing changed: year, short month, day (es)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date"}, "sourceLocale": "es", "translationLocale": "es", "formattingLocale": "es", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "The short month of Spanish is written with or without a dot depending on the CLDR version.", "expected": "15 oct 2026"},
+    {"name": "dayMonth: day and month in full, no year (es)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonth"}, "sourceLocale": "es", "translationLocale": "es", "formattingLocale": "es", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "15 de octubre"},
+    {"name": "weekdayDayMonth: the day of the week, day and month (es)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "weekdayDayMonth"}, "sourceLocale": "es", "translationLocale": "es", "formattingLocale": "es", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "jueves, 15 de octubre"},
+    {"name": "dayMonthYear: day, month in full and year (es)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonthYear"}, "sourceLocale": "es", "translationLocale": "es", "formattingLocale": "es", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "15 de octubre de 2026"},
+    {"name": "WITHOUT the field nothing changed: year, short month, day (ar)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date"}, "sourceLocale": "ar", "translationLocale": "ar", "formattingLocale": "ar", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits come from the CLDR data of the platform: plain `ar` gives Latin digits on some CLDR versions and Arabic-Indic on others.", "expected": "15 أكتوبر 2026"},
+    {"name": "dayMonth: day and month in full, no year (ar)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonth"}, "sourceLocale": "ar", "translationLocale": "ar", "formattingLocale": "ar", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits come from the CLDR data of the platform: plain `ar` gives Latin digits on some CLDR versions and Arabic-Indic on others.", "expected": "15 أكتوبر"},
+    {"name": "weekdayDayMonth: the day of the week, day and month (ar)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "weekdayDayMonth"}, "sourceLocale": "ar", "translationLocale": "ar", "formattingLocale": "ar", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits come from the CLDR data of the platform: plain `ar` gives Latin digits on some CLDR versions and Arabic-Indic on others.", "expected": "الخميس، 15 أكتوبر"},
+    {"name": "dayMonthYear: day, month in full and year (ar)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonthYear"}, "sourceLocale": "ar", "translationLocale": "ar", "formattingLocale": "ar", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "Digits come from the CLDR data of the platform: plain `ar` gives Latin digits on some CLDR versions and Arabic-Indic on others.", "expected": "15 أكتوبر 2026"},
+    {"name": "the order of parts is the language's, not the word's: Kazakh puts the day of the week last", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "weekdayDayMonth"}, "sourceLocale": "kk", "translationLocale": "kk", "formattingLocale": "kk", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "The pattern comes from CLDR; older data may differ in punctuation.", "expected": "15 қазан, бейсенбі"},
+    {"name": "the order of parts is the language's: Turkish, the day of the week last and no comma", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "weekdayDayMonth"}, "sourceLocale": "tr", "translationLocale": "tr", "formattingLocale": "tr", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "15 Ekim Perşembe"},
+    {"name": "the order of parts is the language's: Japanese", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "weekdayDayMonth"}, "sourceLocale": "ja", "translationLocale": "ja", "formattingLocale": "ja", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "10月15日木曜日"},
+    {"name": "the year stands where the language puts it: Kazakh", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonthYear"}, "sourceLocale": "kk", "translationLocale": "kk", "formattingLocale": "kk", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "The pattern comes from CLDR; older data may differ in punctuation. CLDR data puts either a plain space or U+202F (narrow no-break space) before the year mark («р.», «ж.»); Dart `intl` writes the second. Both are right: the point of the row is which parts are shown.", "expected": "2026 ж. 15 қазан"},
+    {"name": "a regional locale formats by its own pattern (en-GB next to en)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "weekdayDayMonth"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en-GB", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "mayDiffer": "CLDR versions disagree on the comma after the day of the week in en-GB.", "expected": "Thursday 15 October"},
+    {"name": "the month is in the case the language asks for: Polish", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonth"}, "sourceLocale": "pl", "translationLocale": "pl", "formattingLocale": "pl", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "15 października"},
+    {"name": "in a template: the source language", "value": {"kind": "template", "template": "Until {date}", "values": {"date": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonth"}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "Until October 15"},
+    {"name": "in a template: the translation moves the place, the date follows the formatting locale", "value": {"kind": "template", "template": "Until {date}", "values": {"date": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonth"}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "до {date}"}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "до 15 жовтня"},
+    {"name": "in a template: a heading of a day", "value": {"kind": "template", "template": "{day}", "values": {"day": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "weekdayDayMonth"}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{day}"}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "четвер, 15 жовтня"},
+    {"name": "the day and its day of the week are those of the device time zone (UTC+14: already Friday the 16th)", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "weekdayDayMonth"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "Pacific/Kiritimati", "expected": "Friday, October 16"},
+    {"name": "the same moment in UTC-11 is still Thursday the 15th", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "weekdayDayMonth"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "timeZone": "Pacific/Pago_Pago", "expected": "Thursday, October 15"},
+    {"name": "a value that is not a date is shown as it is, whatever the word", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonth"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "soon"}, "now": "2026-10-10T09:00:00.000Z", "expected": "soon"},
+    {"name": "a date without a time is not a date: shown as it is", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonthYear"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-10-15"}, "now": "2026-10-10T09:00:00.000Z", "expected": "2026-10-15"},
+    {"name": "no data: the fallback, never formatted", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "soon", "format": "date", "dateParts": "weekdayDayMonth"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {}, "now": "2026-10-10T09:00:00.000Z", "expected": "soon"},
+    {"name": "an empty string in the data is «no value»: the fallback", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonth"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": ""}, "now": "2026-10-10T09:00:00.000Z", "expected": "—"},
+    {"name": "a day that the calendar does not have is not a date: shown as it is", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "dayMonth"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-02-30T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "expected": "2026-02-30T12:00:00.000Z"},
+    {"name": "a word of a later minor: the field is absent, the date is written as before", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": "relative"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The schema rejects a word that is not in the list.", "expected": "Oct 15, 2026"},
+    {"name": "the field that is not a string: absent", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "date", "dateParts": 7}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The schema rejects a value that is not a word of the list.", "expected": "Oct 15, 2026"},
+    {"name": "the field on a number: ignored, the number is written as before", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "dateParts": "dayMonth"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1850}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The builder does not publish the field on a format that does not read it.", "expected": "1,850"},
+    {"name": "the field without a format: ignored, the value is shown as it is", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "dateParts": "dayMonth"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The builder does not publish the field without the date format.", "expected": "2026-10-15T12:00:00.000Z"},
+    {"name": "the field on daysUntil: ignored, the number of days is written", "value": {"kind": "binding", "path": "account.lastAt", "fallback": "—", "format": "daysUntil", "dateParts": "dayMonth"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"account.lastAt": "2026-10-15T12:00:00.000Z"}, "now": "2026-10-10T09:00:00.000Z", "readerOnly": "The builder does not publish the field on a format that does not read it.", "expected": "6"}
+  ],
+  "countdownNote": "Schema 9.21.0 — a countdown part: «format: countdownPart» with «unit» (days, hours 0–23, minutes 0–59, seconds 0–59) and an optional «pad: 2» (rules: x-countdown). A row of «countdownCases» is a row of «cases»: «now» is the clock of the reader, the moment is in the data. S = floor(max(0, moment - now) / 1000); the parts round DOWN. «expected» is the whole string, character for character. «readerOnly» — a document the builder does not make, and the row says what a reader does with it.",
+  "countdownCases": [
+    {
+      "name": "days: whole days left",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "days"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "2"
+    },
+    {
+      "name": "hours: 0–23 after the whole days",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "hours"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "14"
+    },
+    {
+      "name": "minutes: 0–59 after the whole hours",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "minutes"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "5"
+    },
+    {
+      "name": "minutes with pad 2: a zero in front",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "minutes",
+        "pad": 2
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "05"
+    },
+    {
+      "name": "seconds: 0–59",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "seconds"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "9"
+    },
+    {
+      "name": "seconds with pad 2",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "seconds",
+        "pad": 2
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "09"
+    },
+    {
+      "name": "pad 2 does not cut a longer number",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "hours",
+        "pad": 2
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "14"
+    },
+    {
+      "name": "the sentence is the template: order and words belong to the translation",
+      "value": {
+        "kind": "template",
+        "template": "{d} d {h} h {m} min {s} s",
+        "values": {
+          "d": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "days"
+          },
+          "h": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "hours"
+          },
+          "m": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "minutes",
+            "pad": 2
+          },
+          "s": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "seconds",
+            "pad": 2
+          }
+        }
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "2 d 14 h 05 min 09 s"
+    },
+    {
+      "name": "Ukrainian words and a plural word agree with the days part",
+      "value": {
+        "kind": "template",
+        "template": "{d} {dw} {h} год {m} хв",
+        "values": {
+          "d": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "days"
+          },
+          "dw": {
+            "kind": "plural",
+            "of": "d",
+            "forms": {
+              "one": "день",
+              "few": "дні",
+              "many": "днів",
+              "other": "дня"
+            }
+          },
+          "h": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "hours"
+          },
+          "m": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "minutes",
+            "pad": 2
+          }
+        }
+      },
+      "sourceLocale": "uk",
+      "translationLocale": "uk",
+      "formattingLocale": "uk",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "2 дні 14 год 05 хв"
+    },
+    {
+      "name": "the plural word agrees with the hours part",
+      "value": {
+        "kind": "template",
+        "template": "{h} {hw} left",
+        "values": {
+          "h": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "hours"
+          },
+          "hw": {
+            "kind": "plural",
+            "of": "h",
+            "forms": {
+              "one": "hour",
+              "other": "hours"
+            }
+          }
+        }
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "14 hours left"
+    },
+    {
+      "name": "one hour: «one» form",
+      "value": {
+        "kind": "template",
+        "template": "{h} {hw} left",
+        "values": {
+          "h": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "hours"
+          },
+          "hw": {
+            "kind": "plural",
+            "of": "h",
+            "forms": {
+              "one": "hour",
+              "other": "hours"
+            }
+          }
+        }
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-10T10:30:00.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "1 hour left"
+    },
+    {
+      "name": "rounding is DOWN: 59 min 59 s is 0 hours",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "hours"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-10T09:59:59.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "0"
+    },
+    {
+      "name": "rounding is DOWN: 999 ms is 0 seconds",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "seconds"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-10T09:00:00.999Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "0"
+    },
+    {
+      "name": "one second and a millisecond is 1 second",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "seconds"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-10T09:00:01.001Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "1"
+    },
+    {
+      "name": "26 hours: 1 day and 2 hours (hours wrap at 24)",
+      "value": {
+        "kind": "template",
+        "template": "{d}/{h}",
+        "values": {
+          "d": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "days"
+          },
+          "h": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "hours"
+          }
+        }
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-11T11:00:00.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "1/2"
+    },
+    {
+      "name": "61 seconds: 1 minute and 1 second (seconds wrap at 60)",
+      "value": {
+        "kind": "template",
+        "template": "{m}:{s}",
+        "values": {
+          "m": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "minutes"
+          },
+          "s": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "seconds",
+            "pad": 2
+          }
+        }
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-10T09:01:01.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "1:01"
+    },
+    {
+      "name": "exactly now: zero",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "seconds",
+        "pad": 2
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-10T09:00:00.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "00"
+    },
+    {
+      "name": "a past moment: every part is zero, not a minus",
+      "value": {
+        "kind": "template",
+        "template": "{d} d {h} h {m} min {s} s",
+        "values": {
+          "d": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "days"
+          },
+          "h": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "hours"
+          },
+          "m": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "minutes",
+            "pad": 2
+          },
+          "s": {
+            "kind": "binding",
+            "path": "offer.endsAt",
+            "fallback": "—",
+            "format": "countdownPart",
+            "unit": "seconds",
+            "pad": 2
+          }
+        }
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-09T00:00:00.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "0 d 0 h 00 min 00 s"
+    },
+    {
+      "name": "a zone offset in the data changes the moment, not the parts rule",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "hours"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000+02:00"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "12"
+    },
+    {
+      "name": "days are written like «number»: groups (en)",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "days"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2030-02-25T09:00:00.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "1,234"
+    },
+    {
+      "name": "days are written like «number»: groups (es)",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "days"
+      },
+      "sourceLocale": "es",
+      "translationLocale": "es",
+      "formattingLocale": "es",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2030-02-25T09:00:00.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "1.234"
+    },
+    {
+      "name": "Arabic digits of the formatting locale, with pad",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "minutes",
+        "pad": 2
+      },
+      "sourceLocale": "en",
+      "translationLocale": "ar",
+      "formattingLocale": "ar-EG",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "mayDiffer": "Digits come from the CLDR data of the platform; `ar-EG` is Arabic-Indic everywhere we looked.",
+      "expected": "٠٥"
+    },
+    {
+      "name": "no data: the fallback, never formatted",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "hours"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {},
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "—"
+    },
+    {
+      "name": "not a date: the value as it is",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "hours"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "soon"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "soon"
+    },
+    {
+      "name": "a date without a zone is not a date: the value as it is",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "hours"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "2026-10-12T23:05:09"
+    },
+    {
+      "name": "without «unit» the format does not apply: the value as it is",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "2026-10-12T23:05:09.000Z",
+      "readerOnly": "the validator rejects it (countdown_unit_required)"
+    },
+    {
+      "name": "an unknown unit is no unit: the value as it is",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "countdownPart",
+        "unit": "weeks"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "2026-10-12T23:05:09.000Z",
+      "readerOnly": "the schema rejects the word"
+    },
+    {
+      "name": "«unit» on another format is not read",
+      "value": {
+        "kind": "binding",
+        "path": "offer.endsAt",
+        "fallback": "—",
+        "format": "date",
+        "unit": "hours"
+      },
+      "sourceLocale": "en",
+      "translationLocale": "en",
+      "formattingLocale": "en",
+      "translations": {},
+      "data": {
+        "offer.endsAt": "2026-10-12T23:05:09.000Z"
+      },
+      "now": "2026-10-10T09:00:00.000Z",
+      "expected": "Oct 12, 2026",
+      "readerOnly": "the validator rejects it (binding_look_field_unused)",
+      "timeZone": "UTC"
+    }
+  ],
+  "compactNote": "Schema 9.23.0 — a compact number: «notation: compact» beside «format: number» (rules: x-compactNumber). A row of «compactCases» is a row of «cases». Below 1 000 the number is written as «number» writes it; otherwise the magnitude divided by the largest step not above it (thousand, million, billion), one fraction digit, half up (the magnitude, so a negative number rounds away from zero), the trailing zero dropped, a mantissa that reaches 1 000 written with the next step. The suffix comes from a closed table by the first subtag of the formatting locale — «en»: K, M, B with no gap; «uk»: «тис.», «млн», «млрд» after U+00A0; any other language: the «en» suffixes. The decimal separator and the digits are those of the formatting locale. A plural word agrees with the FULL value. «expected» is the whole string, character for character; U+00A0, U+2066, U+2069 and U+2212 are written as escapes.",
+  "compactCases": [
+    {"name": "below the first step: every digit", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 999}, "now": "2026-10-10T09:00:00.000Z", "expected": "999"},
+    {"name": "the first step: 1000 is 1K, the trailing zero dropped", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1000}, "now": "2026-10-10T09:00:00.000Z", "expected": "1K"},
+    {"name": "half up: 1050 is 1.1K", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1050}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.1K"},
+    {"name": "one fraction digit", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1200}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.2K"},
+    {"name": "the sample of the design: 48.2K", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 48200}, "now": "2026-10-10T09:00:00.000Z", "expected": "48.2K"},
+    {"name": "below the half: down", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 48249}, "now": "2026-10-10T09:00:00.000Z", "expected": "48.2K"},
+    {"name": "exactly the half: up", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 48250}, "now": "2026-10-10T09:00:00.000Z", "expected": "48.3K"},
+    {"name": "just below the next step", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 999949}, "now": "2026-10-10T09:00:00.000Z", "expected": "999.9K"},
+    {"name": "rounded to 1000K: written with the next step", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 999950}, "now": "2026-10-10T09:00:00.000Z", "expected": "1M"},
+    {"name": "a million", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1000000}, "now": "2026-10-10T09:00:00.000Z", "expected": "1M"},
+    {"name": "millions with a fraction digit", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 12500000}, "now": "2026-10-10T09:00:00.000Z", "expected": "12.5M"},
+    {"name": "billions", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1234567890}, "now": "2026-10-10T09:00:00.000Z", "expected": "1.2B"},
+    {"name": "beyond the last step: billions with groups", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1000000000000}, "now": "2026-10-10T09:00:00.000Z", "expected": "1,000B"},
+    {"name": "negative: the minus the platform writes", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": -48200}, "now": "2026-10-10T09:00:00.000Z", "expected": "-48.2K"},
+    {"name": "negative below the step: every digit", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": -999}, "now": "2026-10-10T09:00:00.000Z", "expected": "-999"},
+    {"name": "zero", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 0}, "now": "2026-10-10T09:00:00.000Z", "expected": "0"},
+    {"name": "a fraction below the step: as the number format", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 999.6}, "now": "2026-10-10T09:00:00.000Z", "expected": "999.6"},
+    {"name": "a fraction above the step: rounded", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1000.4}, "now": "2026-10-10T09:00:00.000Z", "expected": "1K"},
+    {"name": "sign always: plus before the compact number", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 48200}, "now": "2026-10-10T09:00:00.000Z", "expected": "+48.2K"},
+    {"name": "sign always, negative: U+2212, the magnitude rounded half up", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact", "sign": "always"}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": -48250}, "now": "2026-10-10T09:00:00.000Z", "expected": "\u221248.3K"},
+    {"name": "uk: below the step", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"user.points": 999}, "now": "2026-10-10T09:00:00.000Z", "expected": "999"},
+    {"name": "uk: thousands — the Ukrainian thousands suffix after U+00A0", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"user.points": 1000}, "now": "2026-10-10T09:00:00.000Z", "expected": "1\u00A0тис."},
+    {"name": "uk: the decimal comma of the language", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"user.points": 48200}, "now": "2026-10-10T09:00:00.000Z", "expected": "48,2\u00A0тис."},
+    {"name": "uk: rounded to the next step", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"user.points": 999950}, "now": "2026-10-10T09:00:00.000Z", "expected": "1\u00A0млн"},
+    {"name": "uk: millions", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"user.points": 12500000}, "now": "2026-10-10T09:00:00.000Z", "expected": "12,5\u00A0млн"},
+    {"name": "uk: billions", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"user.points": 1234567890}, "now": "2026-10-10T09:00:00.000Z", "expected": "1,2\u00A0млрд"},
+    {"name": "uk: beyond the last step, groups of the language", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"user.points": 1000000000000}, "now": "2026-10-10T09:00:00.000Z", "expected": "1\u00A0000\u00A0млрд"},
+    {"name": "uk: negative", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"user.points": -48200}, "now": "2026-10-10T09:00:00.000Z", "expected": "-48,2\u00A0тис."},
+    {"name": "uk: sign always", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact", "sign": "always"}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {}, "data": {"user.points": 48200}, "now": "2026-10-10T09:00:00.000Z", "expected": "+48,2\u00A0тис."},
+    {"name": "uk-UA: the suffix language is the first subtag", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk-UA", "translations": {}, "data": {"user.points": 48200}, "now": "2026-10-10T09:00:00.000Z", "expected": "48,2\u00A0тис."},
+    {"name": "ar: no table of its own — the English suffix", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar", "direction": "rtl", "translations": {}, "data": {"user.points": 48200}, "now": "2026-10-10T09:00:00.000Z", "expected": "48.2K"},
+    {"name": "ar-EG: the digits of the locale, the English suffix", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar-EG", "direction": "rtl", "translations": {}, "data": {"user.points": 48200}, "now": "2026-10-10T09:00:00.000Z", "expected": "٤٨٫٢K"},
+    {"name": "ar-EG: below the step", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar-EG", "direction": "rtl", "translations": {}, "data": {"user.points": 999}, "now": "2026-10-10T09:00:00.000Z", "expected": "٩٩٩"},
+    {"name": "ar-EG: sign always — the composed form isolated in right-to-left text", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact", "sign": "always"}, "sourceLocale": "en", "translationLocale": "ar", "formattingLocale": "ar-EG", "direction": "rtl", "translations": {}, "data": {"user.points": 48200}, "now": "2026-10-10T09:00:00.000Z", "expected": "\u2066+٤٨٫٢K\u2069"},
+    {"name": "de: the decimal comma, the English suffix", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "de", "formattingLocale": "de", "translations": {}, "data": {"user.points": 48200}, "now": "2026-10-10T09:00:00.000Z", "expected": "48,2K"},
+    {"name": "fr: millions", "value": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "sourceLocale": "en", "translationLocale": "fr", "formattingLocale": "fr", "translations": {}, "data": {"user.points": 1500000}, "now": "2026-10-10T09:00:00.000Z", "expected": "1,5M"},
+    {"name": "plural uk: agrees with the full value 48200 (many), not with 48,2", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 48200}, "now": "2026-10-10T09:00:00.000Z", "expected": "48,2\u00A0тис. балів"},
+    {"name": "plural uk: 1000 is many, not one", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 1000}, "now": "2026-10-10T09:00:00.000Z", "expected": "1\u00A0тис. балів"},
+    {"name": "plural uk: 1001 is one — the full value decides", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "uk", "formattingLocale": "uk", "translations": {"template": "{count} {unit}", "values.unit.forms.one": "бал", "values.unit.forms.few": "бали", "values.unit.forms.many": "балів", "values.unit.forms.other": "бала"}, "data": {"user.points": 1001}, "now": "2026-10-10T09:00:00.000Z", "expected": "1\u00A0тис. бал"},
+    {"name": "plural en: 1000 is other", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1000}, "now": "2026-10-10T09:00:00.000Z", "expected": "1K points"},
+    {"name": "plural en: below the step, one", "value": {"kind": "template", "template": "{count} {unit}", "values": {"count": {"kind": "binding", "path": "user.points", "fallback": "0", "format": "number", "notation": "compact"}, "unit": {"kind": "plural", "of": "count", "forms": {"one": "point", "other": "points"}}}}, "sourceLocale": "en", "translationLocale": "en", "formattingLocale": "en", "translations": {}, "data": {"user.points": 1}, "now": "2026-10-10T09:00:00.000Z", "expected": "1 point"}
+  ]
+}

@@ -1,0 +1,552 @@
+{
+ "now": "2026-10-12T09:00:00.000Z",
+ "en": {
+  "data": {
+   "user.fullName": "Alex Morgan",
+   "user.firstName": "Alex",
+   "user.avatar": "/landing/demo/sunny/avatar.webp",
+   "user.level": 7,
+   "user.tier": "GOLD",
+   "user.title": "Gold Explorer",
+   "user.points": 1850,
+   "user.nextTier": "Platinum",
+   "user.pointsToNext": 150,
+   "user.tierProgress": 78,
+   "user.activeQuests": 3,
+   "user.questsDone": 12,
+   "user.lifetimePoints": 4230,
+   "streak.days": 4,
+   "streak.left": 3,
+   "streak.bonus": 50,
+   "chest.opensIn": "Opens in 3 h 20 min",
+   "art.confetti": "/landing/demo/sunny/confetti.webp",
+   "art.emblem": "/landing/demo/sunny/emblem.webp",
+   "art.chest": "/landing/demo/sunny/chest.webp",
+   "art.coin": "/landing/demo/sunny/coin.webp"
+  },
+  "collections": {
+   "quests": [
+    {
+     "quest.id": "coffee",
+     "quest.color": "grape",
+     "quest.icon": "coffee",
+     "quest.title": "Coffee week",
+     "quest.description": "Pay by card at any café five times this week and the bonus is yours.",
+     "quest.art": "/landing/demo/sunny/quest-art.webp",
+     "quest.object": "/landing/demo/sunny/object-coffee.webp",
+     "quest.hero": "/landing/demo/sunny/hero-coffee.webp",
+     "quest.progress": 3,
+     "quest.target": 5,
+     "quest.what": "café payments",
+     "quest.reward": 200,
+     "quest.perk": "x2 on weekends",
+     "quest.stampHint": "Two more coffees and the bonus lands instantly.",
+     "quest.endsAt": "2026-10-15T20:00:00.000Z",
+     "quest.statusLabel": "IN PROGRESS",
+     "quest.cta": "Continue",
+     "quest.stage": 2,
+     "quest.stepOne": "Join the quest",
+     "quest.stepTwo": "Make 5 café payments",
+     "quest.stepThree": "Collect your bonus",
+     "quest.noteOne": "Done · Oct 8",
+     "quest.noteTwo": "3 of 5 · any café, any amount",
+     "quest.noteThree": "+200 pts land instantly"
+    },
+    {
+     "quest.id": "rides",
+     "quest.color": "mint",
+     "quest.icon": "bike",
+     "quest.title": "Ride & earn",
+     "quest.description": "Pay for three bike or scooter rides by card this weekend and collect extra points.",
+     "quest.art": "/landing/demo/sunny/quest-art.webp",
+     "quest.object": "/landing/demo/sunny/object-rides.webp",
+     "quest.hero": "/landing/demo/sunny/hero-rides.webp",
+     "quest.progress": 1,
+     "quest.target": 3,
+     "quest.what": "rides this weekend",
+     "quest.reward": 150,
+     "quest.perk": "Any rental",
+     "quest.stampHint": "Two more rides and the bonus is yours.",
+     "quest.endsAt": "2026-10-14T08:00:00.000Z",
+     "quest.statusLabel": "NEW",
+     "quest.cta": "Start",
+     "quest.stage": 2,
+     "quest.stepOne": "Join the quest",
+     "quest.stepTwo": "Take 3 rides",
+     "quest.stepThree": "Collect your bonus",
+     "quest.noteOne": "Done · Oct 11",
+     "quest.noteTwo": "1 of 3 · any bike or scooter rental",
+     "quest.noteThree": "+150 pts land instantly"
+    },
+    {
+     "quest.id": "roundups",
+     "quest.color": "sky",
+     "quest.icon": "piggy-bank",
+     "quest.title": "Round-up saver",
+     "quest.description": "Turn on round-ups and set aside the spare change from four purchases.",
+     "quest.art": "/landing/demo/sunny/quest-art.webp",
+     "quest.object": "/landing/demo/sunny/object-roundups.webp",
+     "quest.hero": "/landing/demo/sunny/hero-roundups.webp",
+     "quest.progress": 3,
+     "quest.target": 4,
+     "quest.what": "purchases rounded up",
+     "quest.reward": 350,
+     "quest.perk": "Paid once",
+     "quest.stampHint": "One more purchase and the bonus lands instantly.",
+     "quest.endsAt": "2026-10-31T20:00:00.000Z",
+     "quest.statusLabel": "IN PROGRESS",
+     "quest.cta": "Continue",
+     "quest.stage": 2,
+     "quest.stepOne": "Turn on round-ups",
+     "quest.stepTwo": "Round up 4 purchases",
+     "quest.stepThree": "Collect your bonus",
+     "quest.noteOne": "Done · Oct 5",
+     "quest.noteTwo": "3 of 4 · any purchase counts",
+     "quest.noteThree": "+350 pts land instantly"
+    }
+   ],
+   "activity": [
+    {
+     "entry.title": "Coffee week",
+     "entry.label": "Quest step",
+     "entry.icon": "coffee",
+     "entry.tone": "grape",
+     "entry.date": "2026-10-11T08:40:00.000Z",
+     "entry.points": 40
+    },
+    {
+     "entry.title": "Cinema for two",
+     "entry.label": "Reward",
+     "entry.icon": "ticket",
+     "entry.tone": "coral",
+     "entry.date": "2026-10-09T18:05:00.000Z",
+     "entry.points": -900
+    },
+    {
+     "entry.title": "Card payments",
+     "entry.label": "Weekly bonus",
+     "entry.icon": "credit-card",
+     "entry.tone": "sky",
+     "entry.date": "2026-10-07T12:30:00.000Z",
+     "entry.points": 120
+    },
+    {
+     "entry.title": "Friend joined",
+     "entry.label": "Referral",
+     "entry.icon": "users",
+     "entry.tone": "mint",
+     "entry.date": "2026-10-03T16:20:00.000Z",
+     "entry.points": 250
+    },
+    {
+     "entry.title": "September streak",
+     "entry.label": "Streak bonus",
+     "entry.icon": "flame",
+     "entry.tone": "coral",
+     "entry.date": "2026-09-30T09:00:00.000Z",
+     "entry.points": 100
+    }
+   ],
+   "rewards": [
+    {
+     "reward.id": "coffee",
+     "reward.title": "Coffee voucher",
+     "reward.note": "Any partner café",
+     "reward.icon": "coffee",
+     "reward.tone": "grape",
+     "reward.price": 400
+    },
+    {
+     "reward.id": "cinema",
+     "reward.title": "Cinema for two",
+     "reward.note": "Two tickets, any film",
+     "reward.icon": "popcorn",
+     "reward.tone": "coral",
+     "reward.price": 900
+    },
+    {
+     "reward.id": "boost",
+     "reward.title": "Cashback boost",
+     "reward.note": "Double cashback for a week",
+     "reward.icon": "badge-percent",
+     "reward.tone": "sky",
+     "reward.price": 1200
+    },
+    {
+     "reward.id": "tree",
+     "reward.title": "Plant a tree",
+     "reward.note": "We plant it, you get the photo",
+     "reward.icon": "tree-pine",
+     "reward.tone": "mint",
+     "reward.price": 250
+    }
+   ]
+  }
+ },
+ "uk": {
+  "data": {
+   "user.fullName": "Олекса Мороз",
+   "user.firstName": "Олексо",
+   "user.avatar": "/landing/demo/sunny/avatar.webp",
+   "user.level": 7,
+   "user.tier": "ЗОЛОТО",
+   "user.title": "Золотий дослідник",
+   "user.points": 1850,
+   "user.nextTier": "Платини",
+   "user.pointsToNext": 150,
+   "user.tierProgress": 78,
+   "user.activeQuests": 3,
+   "user.questsDone": 12,
+   "user.lifetimePoints": 4230,
+   "streak.days": 4,
+   "streak.left": 3,
+   "streak.bonus": 50,
+   "chest.opensIn": "Відкриється за 3 год 20 хв",
+   "art.confetti": "/landing/demo/sunny/confetti.webp",
+   "art.emblem": "/landing/demo/sunny/emblem.webp",
+   "art.chest": "/landing/demo/sunny/chest.webp",
+   "art.coin": "/landing/demo/sunny/coin.webp"
+  },
+  "collections": {
+   "quests": [
+    {
+     "quest.id": "coffee",
+     "quest.color": "grape",
+     "quest.icon": "coffee",
+     "quest.title": "Кавовий тиждень",
+     "quest.description": "П’ять разів заплатіть карткою в будь-якій кав’ярні цього тижня — і бонус ваш.",
+     "quest.art": "/landing/demo/sunny/quest-art.webp",
+     "quest.object": "/landing/demo/sunny/object-coffee.webp",
+     "quest.hero": "/landing/demo/sunny/hero-coffee.webp",
+     "quest.progress": 3,
+     "quest.target": 5,
+     "quest.what": "оплат у кав’ярнях",
+     "quest.reward": 200,
+     "quest.perk": "x2 на вихідних",
+     "quest.stampHint": "Ще дві кави — і бонус надійде одразу.",
+     "quest.endsAt": "2026-10-15T20:00:00.000Z",
+     "quest.statusLabel": "ТРИВАЄ",
+     "quest.cta": "Далі",
+     "quest.stage": 2,
+     "quest.stepOne": "Приєднатися до квесту",
+     "quest.stepTwo": "Зробити 5 оплат у кав’ярнях",
+     "quest.stepThree": "Забрати бонус",
+     "quest.noteOne": "Виконано · 8 жовт.",
+     "quest.noteTwo": "3 із 5 · будь-яка кав’ярня й сума",
+     "quest.noteThree": "+200 балів надійдуть одразу"
+    },
+    {
+     "quest.id": "rides",
+     "quest.color": "mint",
+     "quest.icon": "bike",
+     "quest.title": "Їдь і заробляй",
+     "quest.description": "Оплатіть карткою три поїздки на велосипеді чи самокаті на вихідних — і отримайте додаткові бали.",
+     "quest.art": "/landing/demo/sunny/quest-art.webp",
+     "quest.object": "/landing/demo/sunny/object-rides.webp",
+     "quest.hero": "/landing/demo/sunny/hero-rides.webp",
+     "quest.progress": 1,
+     "quest.target": 3,
+     "quest.what": "поїздок на вихідних",
+     "quest.reward": 150,
+     "quest.perk": "Будь-який прокат",
+     "quest.stampHint": "Ще дві поїздки — і бонус ваш.",
+     "quest.endsAt": "2026-10-14T08:00:00.000Z",
+     "quest.statusLabel": "НОВИЙ",
+     "quest.cta": "Почати",
+     "quest.stage": 2,
+     "quest.stepOne": "Приєднатися до квесту",
+     "quest.stepTwo": "Зробити 3 поїздки",
+     "quest.stepThree": "Забрати бонус",
+     "quest.noteOne": "Виконано · 11 жовт.",
+     "quest.noteTwo": "1 із 3 · будь-який прокат",
+     "quest.noteThree": "+150 балів надійдуть одразу"
+    },
+    {
+     "quest.id": "roundups",
+     "quest.color": "sky",
+     "quest.icon": "piggy-bank",
+     "quest.title": "Скарбничка з решти",
+     "quest.description": "Увімкніть заокруглення й відкладіть решту з чотирьох покупок.",
+     "quest.art": "/landing/demo/sunny/quest-art.webp",
+     "quest.object": "/landing/demo/sunny/object-roundups.webp",
+     "quest.hero": "/landing/demo/sunny/hero-roundups.webp",
+     "quest.progress": 3,
+     "quest.target": 4,
+     "quest.what": "покупок заокруглено",
+     "quest.reward": 350,
+     "quest.perk": "Один раз",
+     "quest.stampHint": "Ще одна покупка — і бонус надійде одразу.",
+     "quest.endsAt": "2026-10-31T20:00:00.000Z",
+     "quest.statusLabel": "ТРИВАЄ",
+     "quest.cta": "Далі",
+     "quest.stage": 2,
+     "quest.stepOne": "Увімкнути заокруглення",
+     "quest.stepTwo": "Заокруглити 4 покупки",
+     "quest.stepThree": "Забрати бонус",
+     "quest.noteOne": "Виконано · 5 жовт.",
+     "quest.noteTwo": "3 із 4 · рахується будь-яка покупка",
+     "quest.noteThree": "+350 балів надійдуть одразу"
+    }
+   ],
+   "activity": [
+    {
+     "entry.title": "Кавовий тиждень",
+     "entry.label": "Крок квесту",
+     "entry.icon": "coffee",
+     "entry.tone": "grape",
+     "entry.date": "2026-10-11T08:40:00.000Z",
+     "entry.points": 40
+    },
+    {
+     "entry.title": "Кіно на двох",
+     "entry.label": "Нагорода",
+     "entry.icon": "ticket",
+     "entry.tone": "coral",
+     "entry.date": "2026-10-09T18:05:00.000Z",
+     "entry.points": -900
+    },
+    {
+     "entry.title": "Оплати карткою",
+     "entry.label": "Бонус тижня",
+     "entry.icon": "credit-card",
+     "entry.tone": "sky",
+     "entry.date": "2026-10-07T12:30:00.000Z",
+     "entry.points": 120
+    },
+    {
+     "entry.title": "Друг приєднався",
+     "entry.label": "Запрошення",
+     "entry.icon": "users",
+     "entry.tone": "mint",
+     "entry.date": "2026-10-03T16:20:00.000Z",
+     "entry.points": 250
+    },
+    {
+     "entry.title": "Серія за вересень",
+     "entry.label": "Бонус серії",
+     "entry.icon": "flame",
+     "entry.tone": "coral",
+     "entry.date": "2026-09-30T09:00:00.000Z",
+     "entry.points": 100
+    }
+   ],
+   "rewards": [
+    {
+     "reward.id": "coffee",
+     "reward.title": "Сертифікат на каву",
+     "reward.note": "Будь-яка кав’ярня-партнер",
+     "reward.icon": "coffee",
+     "reward.tone": "grape",
+     "reward.price": 400
+    },
+    {
+     "reward.id": "cinema",
+     "reward.title": "Кіно на двох",
+     "reward.note": "Два квитки на будь-який фільм",
+     "reward.icon": "popcorn",
+     "reward.tone": "coral",
+     "reward.price": 900
+    },
+    {
+     "reward.id": "boost",
+     "reward.title": "Підвищений кешбек",
+     "reward.note": "Подвійний кешбек на тиждень",
+     "reward.icon": "badge-percent",
+     "reward.tone": "sky",
+     "reward.price": 1200
+    },
+    {
+     "reward.id": "tree",
+     "reward.title": "Посадити дерево",
+     "reward.note": "Ми садимо — ви отримуєте фото",
+     "reward.icon": "tree-pine",
+     "reward.tone": "mint",
+     "reward.price": 250
+    }
+   ]
+  }
+ },
+ "ar": {
+  "data": {
+   "user.fullName": "أليكس مورغان",
+   "user.firstName": "أليكس",
+   "user.avatar": "/landing/demo/sunny/avatar.webp",
+   "user.level": 7,
+   "user.tier": "ذهبي",
+   "user.title": "مستكشف ذهبي",
+   "user.points": 1850,
+   "user.nextTier": "البلاتينية",
+   "user.pointsToNext": 150,
+   "user.tierProgress": 78,
+   "user.activeQuests": 3,
+   "user.questsDone": 12,
+   "user.lifetimePoints": 4230,
+   "streak.days": 4,
+   "streak.left": 3,
+   "streak.bonus": 50,
+   "chest.opensIn": "يفتح بعد 3 س 20 د",
+   "art.confetti": "/landing/demo/sunny/confetti.webp",
+   "art.emblem": "/landing/demo/sunny/emblem.webp",
+   "art.chest": "/landing/demo/sunny/chest.webp",
+   "art.coin": "/landing/demo/sunny/coin.webp"
+  },
+  "collections": {
+   "quests": [
+    {
+     "quest.id": "coffee",
+     "quest.color": "grape",
+     "quest.icon": "coffee",
+     "quest.title": "أسبوع القهوة",
+     "quest.description": "ادفع ببطاقتك في أي مقهى خمس مرات هذا الأسبوع لتحصل على المكافأة.",
+     "quest.art": "/landing/demo/sunny/quest-art.webp",
+     "quest.object": "/landing/demo/sunny/object-coffee.webp",
+     "quest.hero": "/landing/demo/sunny/hero-coffee.webp",
+     "quest.progress": 3,
+     "quest.target": 5,
+     "quest.what": "عمليات دفع في المقاهي",
+     "quest.reward": 200,
+     "quest.perk": "x2 في نهاية الأسبوع",
+     "quest.stampHint": "قهوتان إضافيتان وتصلك المكافأة فوراً.",
+     "quest.endsAt": "2026-10-15T20:00:00.000Z",
+     "quest.statusLabel": "جارٍ",
+     "quest.cta": "متابعة",
+     "quest.stage": 2,
+     "quest.stepOne": "انضم إلى التحدي",
+     "quest.stepTwo": "أتمم 5 عمليات دفع في المقاهي",
+     "quest.stepThree": "احصل على مكافأتك",
+     "quest.noteOne": "تمّ · 8 أكتوبر",
+     "quest.noteTwo": "3 من 5 · أي مقهى وأي مبلغ",
+     "quest.noteThree": "تُضاف 200 نقطة فوراً"
+    },
+    {
+     "quest.id": "rides",
+     "quest.color": "mint",
+     "quest.icon": "bike",
+     "quest.title": "اركب واكسب",
+     "quest.description": "ادفع ببطاقتك مقابل ثلاث رحلات بالدراجة أو السكوتر في نهاية الأسبوع واحصل على نقاط إضافية.",
+     "quest.art": "/landing/demo/sunny/quest-art.webp",
+     "quest.object": "/landing/demo/sunny/object-rides.webp",
+     "quest.hero": "/landing/demo/sunny/hero-rides.webp",
+     "quest.progress": 1,
+     "quest.target": 3,
+     "quest.what": "رحلات في نهاية الأسبوع",
+     "quest.reward": 150,
+     "quest.perk": "أي خدمة تأجير",
+     "quest.stampHint": "رحلتان إضافيتان والمكافأة لك.",
+     "quest.endsAt": "2026-10-14T08:00:00.000Z",
+     "quest.statusLabel": "جديد",
+     "quest.cta": "ابدأ",
+     "quest.stage": 2,
+     "quest.stepOne": "انضم إلى التحدي",
+     "quest.stepTwo": "أتمم 3 رحلات",
+     "quest.stepThree": "احصل على مكافأتك",
+     "quest.noteOne": "تمّ · 11 أكتوبر",
+     "quest.noteTwo": "1 من 3 · أي خدمة تأجير",
+     "quest.noteThree": "تُضاف 150 نقطة فوراً"
+    },
+    {
+     "quest.id": "roundups",
+     "quest.color": "sky",
+     "quest.icon": "piggy-bank",
+     "quest.title": "ادّخار الباقي",
+     "quest.description": "فعّل تقريب المبالغ وادّخر الباقي من أربع عمليات شراء.",
+     "quest.art": "/landing/demo/sunny/quest-art.webp",
+     "quest.object": "/landing/demo/sunny/object-roundups.webp",
+     "quest.hero": "/landing/demo/sunny/hero-roundups.webp",
+     "quest.progress": 3,
+     "quest.target": 4,
+     "quest.what": "عمليات شراء مقرّبة",
+     "quest.reward": 350,
+     "quest.perk": "مرة واحدة",
+     "quest.stampHint": "عملية شراء واحدة وتصلك المكافأة فوراً.",
+     "quest.endsAt": "2026-10-31T20:00:00.000Z",
+     "quest.statusLabel": "جارٍ",
+     "quest.cta": "متابعة",
+     "quest.stage": 2,
+     "quest.stepOne": "فعّل تقريب المبالغ",
+     "quest.stepTwo": "قرّب مبالغ 4 عمليات شراء",
+     "quest.stepThree": "احصل على مكافأتك",
+     "quest.noteOne": "تمّ · 5 أكتوبر",
+     "quest.noteTwo": "3 من 4 · تُحتسب كل عملية شراء",
+     "quest.noteThree": "تُضاف 350 نقطة فوراً"
+    }
+   ],
+   "activity": [
+    {
+     "entry.title": "أسبوع القهوة",
+     "entry.label": "خطوة في التحدي",
+     "entry.icon": "coffee",
+     "entry.tone": "grape",
+     "entry.date": "2026-10-11T08:40:00.000Z",
+     "entry.points": 40
+    },
+    {
+     "entry.title": "تذكرتا سينما",
+     "entry.label": "مكافأة",
+     "entry.icon": "ticket",
+     "entry.tone": "coral",
+     "entry.date": "2026-10-09T18:05:00.000Z",
+     "entry.points": -900
+    },
+    {
+     "entry.title": "الدفع بالبطاقة",
+     "entry.label": "مكافأة الأسبوع",
+     "entry.icon": "credit-card",
+     "entry.tone": "sky",
+     "entry.date": "2026-10-07T12:30:00.000Z",
+     "entry.points": 120
+    },
+    {
+     "entry.title": "دعوة صديق",
+     "entry.label": "دعوة",
+     "entry.icon": "users",
+     "entry.tone": "mint",
+     "entry.date": "2026-10-03T16:20:00.000Z",
+     "entry.points": 250
+    },
+    {
+     "entry.title": "سلسلة سبتمبر",
+     "entry.label": "مكافأة السلسلة",
+     "entry.icon": "flame",
+     "entry.tone": "coral",
+     "entry.date": "2026-09-30T09:00:00.000Z",
+     "entry.points": 100
+    }
+   ],
+   "rewards": [
+    {
+     "reward.id": "coffee",
+     "reward.title": "قسيمة قهوة",
+     "reward.note": "أي مقهى شريك",
+     "reward.icon": "coffee",
+     "reward.tone": "grape",
+     "reward.price": 400
+    },
+    {
+     "reward.id": "cinema",
+     "reward.title": "تذكرتا سينما",
+     "reward.note": "تذكرتان لأي فيلم",
+     "reward.icon": "popcorn",
+     "reward.tone": "coral",
+     "reward.price": 900
+    },
+    {
+     "reward.id": "boost",
+     "reward.title": "استرداد نقدي إضافي",
+     "reward.note": "استرداد مضاعف لمدة أسبوع",
+     "reward.icon": "badge-percent",
+     "reward.tone": "sky",
+     "reward.price": 1200
+    },
+    {
+     "reward.id": "tree",
+     "reward.title": "ازرع شجرة",
+     "reward.note": "نزرعها ونرسل لك الصورة",
+     "reward.icon": "tree-pine",
+     "reward.tone": "mint",
+     "reward.price": 250
+    }
+   ]
+  }
+ }
+}

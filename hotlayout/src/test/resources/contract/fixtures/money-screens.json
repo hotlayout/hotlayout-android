@@ -1,0 +1,488 @@
+{
+  "schemaVersion": "9.28.0",
+  "documentId": "money",
+  "name": "Money as money",
+  "initialScreenId": "account",
+  "screens": [
+    {
+      "screenId": "account",
+      "name": "Account",
+      "root": {
+        "id": "account-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Account"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "balance-card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "balance-caption",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Balance"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "balance",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "template",
+                    "template": "{balance}",
+                    "values": {
+                      "balance": {
+                        "kind": "binding",
+                        "path": "account.balance",
+                        "fallback": "—",
+                        "format": "currency",
+                        "currency": "UAH",
+                        "currencyDisplay": "symbol"
+                      }
+                    }
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "spans": {
+                    "balance": {
+                      "parts": {
+                        "fraction": {
+                          "typography": "titleM",
+                          "color": "muted"
+                        },
+                        "currency": {
+                          "color": "muted"
+                        }
+                      }
+                    }
+                  }
+                },
+                "style": {
+                  "typography": "displayL"
+                }
+              },
+              {
+                "id": "balance-before",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "template",
+                    "template": "{balance}",
+                    "values": {
+                      "balance": {
+                        "kind": "binding",
+                        "path": "account.balance",
+                        "fallback": "—",
+                        "format": "currency",
+                        "currency": "UAH",
+                        "currencyDisplay": "symbol",
+                        "currencyPosition": "before"
+                      }
+                    }
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis",
+                  "spans": {
+                    "balance": {
+                      "parts": {
+                        "fraction": {
+                          "typography": "bodyS",
+                          "color": "muted"
+                        }
+                      }
+                    }
+                  }
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              },
+              {
+                "id": "balance-code",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "binding",
+                    "path": "account.balance",
+                    "fallback": "—",
+                    "format": "currency",
+                    "currency": "UAH"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              }
+            ]
+          },
+          {
+            "id": "operations-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Operations"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "operations",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "sm"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "income",
+                "type": "Row",
+                "props": {
+                  "gap": "md",
+                  "align": "center",
+                  "justify": "between",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "income-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Salary"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "bodyM"
+                    }
+                  },
+                  {
+                    "id": "income-amount",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "template",
+                        "template": "{amount}",
+                        "values": {
+                          "amount": {
+                            "kind": "binding",
+                            "path": "account.income",
+                            "fallback": "—",
+                            "format": "currency",
+                            "currency": "UAH",
+                            "currencyDisplay": "symbol",
+                            "sign": "always"
+                          }
+                        }
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis",
+                      "spans": {
+                        "amount": {
+                          "parts": {
+                            "fraction": {
+                              "typography": "bodyS"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "style": {
+                      "typography": "titleS",
+                      "color": "success"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "operations-line",
+                "type": "Divider",
+                "props": {
+                  "color": "border",
+                  "spacing": "sm",
+                  "orientation": "horizontal"
+                }
+              },
+              {
+                "id": "spent",
+                "type": "Row",
+                "props": {
+                  "gap": "md",
+                  "align": "center",
+                  "justify": "between",
+                  "wrap": false,
+                  "scrollable": false
+                },
+                "children": [
+                  {
+                    "id": "spent-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Groceries"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "bodyM"
+                    }
+                  },
+                  {
+                    "id": "spent-amount",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "template",
+                        "template": "{amount}",
+                        "values": {
+                          "amount": {
+                            "kind": "binding",
+                            "path": "account.spent",
+                            "fallback": "—",
+                            "format": "currency",
+                            "currency": "UAH",
+                            "currencyDisplay": "symbol",
+                            "sign": "always"
+                          }
+                        }
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis",
+                      "spans": {
+                        "amount": {
+                          "parts": {
+                            "fraction": {
+                              "typography": "bodyS"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "style": {
+                      "typography": "titleS",
+                      "color": "onSurface"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "cashback",
+            "type": "ListTile",
+            "props": {
+              "leading": {
+                "kind": "icon",
+                "icon": "gift"
+              },
+              "title": {
+                "kind": "literal",
+                "value": "Cashback this month"
+              },
+              "trailing": {
+                "kind": "text",
+                "text": {
+                  "kind": "binding",
+                  "path": "account.limit",
+                  "fallback": "—",
+                  "format": "currency",
+                  "currency": "UAH",
+                  "currencyDisplay": "symbol",
+                  "sign": "always"
+                }
+              },
+              "subtitle": {
+                "kind": "template",
+                "template": "up to {limit}",
+                "values": {
+                  "limit": {
+                    "kind": "binding",
+                    "path": "account.limit",
+                    "fallback": "—",
+                    "format": "currency",
+                    "currency": "UAH",
+                    "currencyDisplay": "symbol"
+                  }
+                }
+              }
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "foot",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "between",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "points",
+                "type": "Badge",
+                "props": {
+                  "label": {
+                    "kind": "template",
+                    "template": "{points} pts",
+                    "values": {
+                      "points": {
+                        "kind": "binding",
+                        "path": "task.rewardPoints",
+                        "fallback": "0",
+                        "format": "number",
+                        "sign": "always"
+                      }
+                    }
+                  },
+                  "tone": "accent"
+                }
+              },
+              {
+                "id": "top-up",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "template",
+                    "template": "Top up {limit}",
+                    "values": {
+                      "limit": {
+                        "kind": "binding",
+                        "path": "account.limit",
+                        "fallback": "—",
+                        "format": "currency",
+                        "currency": "UAH",
+                        "currencyDisplay": "symbol"
+                      }
+                    }
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "submit"
+                  },
+                  "fullWidth": false
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk",
+      "ar"
+    ],
+    "strings": {
+      "uk": {
+        "account/bar/title": "Рахунок",
+        "account/balance-caption/content": "Баланс",
+        "account/balance/content.template": "{balance}",
+        "account/balance-before/content.template": "{balance}",
+        "account/operations-title/content": "Операції",
+        "account/income-title/content": "Зарплата",
+        "account/income-amount/content.template": "{amount}",
+        "account/spent-title/content": "Продукти",
+        "account/spent-amount/content.template": "{amount}",
+        "account/cashback/title": "Кешбек цього місяця",
+        "account/cashback/subtitle.template": "до {limit}",
+        "account/points/label.template": "{points} балів",
+        "account/top-up/label.template": "Поповнити на {limit}"
+      },
+      "ar": {
+        "account/bar/title": "الحساب",
+        "account/balance-caption/content": "الرصيد",
+        "account/balance/content.template": "{balance}",
+        "account/balance-before/content.template": "{balance}",
+        "account/operations-title/content": "العمليات",
+        "account/income-title/content": "الراتب",
+        "account/income-amount/content.template": "{amount}",
+        "account/spent-title/content": "البقالة",
+        "account/spent-amount/content.template": "{amount}",
+        "account/cashback/title": "الاسترداد النقدي هذا الشهر",
+        "account/cashback/subtitle.template": "حتى {limit}",
+        "account/points/label.template": "{points} نقطة",
+        "account/top-up/label.template": "إضافة {limit}"
+      }
+    }
+  }
+}
