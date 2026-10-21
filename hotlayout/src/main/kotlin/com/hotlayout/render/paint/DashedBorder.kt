@@ -2,6 +2,7 @@ package com.hotlayout.render.paint
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -130,7 +131,7 @@ internal fun Modifier.dashedBorder(width: Double, color: Color, radii: Corners?)
     path.close()
     val stroke = Stroke(width = px(width), cap = StrokeCap.Butt, pathEffect = PathEffect.dashPathEffect(floatArrayOf(px(line.dash), px(line.gap))))
     if (layoutDirection == LayoutDirection.Rtl) {
-        scale(-1f, 1f, pivot = androidx.compose.ui.geometry.Offset(size.width / 2, size.height / 2)) { drawPath(path, color, style = stroke) }
+        scale(-1f, 1f, pivot = Offset(size.width / 2, size.height / 2)) { drawPath(path, color, style = stroke) }
     } else {
         drawPath(path, color, style = stroke)
     }

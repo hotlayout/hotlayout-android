@@ -3,6 +3,8 @@ package com.hotlayout.render.screen
 import com.hotlayout.DataScope
 import com.hotlayout.JsonObject
 import com.hotlayout.data.Conditions
+import com.hotlayout.model.WidthClass
+import com.hotlayout.render.adaptive.WideChrome
 
 /**
  * The rules of the navigation bar (`x-style.layout.navBar`, `navBadge`, `navBadgeMotion`): its
@@ -103,7 +105,7 @@ internal object NavBarRules {
 
     /** Where the bar stands (`bottom`, `appBar` or `top`): the rule of the wide places, [com.hotlayout.render.adaptive.WideChrome.navPlace]. */
     fun place(widthClass: String, widePlacement: com.hotlayout.JsonValue?, appBarShown: Boolean): String =
-        com.hotlayout.render.adaptive.WideChrome.navPlace(
-            com.hotlayout.model.WidthClass.named(widthClass) ?: com.hotlayout.model.WidthClass.Unknown, widePlacement?.string == "bottom", appBarShown,
+        WideChrome.navPlace(
+            WidthClass.named(widthClass) ?: WidthClass.Unknown, widePlacement?.string == "bottom", appBarShown,
         ).word
 }

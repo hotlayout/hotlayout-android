@@ -4,6 +4,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -27,6 +29,7 @@ import androidx.compose.ui.semantics.testTag
 import com.hotlayout.JsonObject
 import com.hotlayout.JsonValue
 import com.hotlayout.data.Conditions
+import com.hotlayout.model.DocumentNode
 import com.hotlayout.render.RenderContext
 import com.hotlayout.render.StyledText
 import com.hotlayout.render.WidgetCall
@@ -43,7 +46,7 @@ import com.hotlayout.theme.TextStyleValue
 private const val THUMBNAIL_SCALE = 2.0
 
 /** The shown text of a string that lies in a slot of a node (`trailing.text`, `trailing.caption`). */
-internal fun RenderContext.slotText(node: com.hotlayout.model.DocumentNode, path: String): String {
+internal fun RenderContext.slotText(node: DocumentNode, path: String): String {
     val parts = path.split('.')
     val value = node.props[parts.first()]?.get(parts.drop(1).joinToString("."))
     return ShownText.of(BindableText.text(value, language(node, path), textEnvironment, sink, "${location(node)}: $path"))
@@ -79,7 +82,7 @@ internal fun ListTileWidget(call: WidgetCall) {
         // The press, the long press, the pose and the name of a row with an action are the card's (`pressableCard`, set by the node).
         else -> modifier.semantics(mergeDescendants = true) {}
     }
-    Row(modifier, horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(gap.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier, horizontalArrangement = Arrangement.spacedBy(gap.dp), verticalAlignment = Alignment.CenterVertically) {
         LeadingSlot(call)
         Texts(call, title, subtitle, Modifier.weight(1f))
         TrailingSlot(call, trailingKind)
@@ -207,7 +210,7 @@ private fun TrailingText(call: WidgetCall, slot: JsonValue) {
 
 /** The mark of an option row: a ring, with a dot inside when chosen. */
 @Composable
-private fun RadioMark(selected: Boolean, size: Double, selectedColor: androidx.compose.ui.graphics.Color, mutedColor: androidx.compose.ui.graphics.Color) {
+private fun RadioMark(selected: Boolean, size: Double, selectedColor: Color, mutedColor: Color) {
     Canvas(Modifier.size(size.dp).clearAndSetSemantics {}) {
         val stroke = 2.dp.toPx()
         val radius = (this.size.minDimension - stroke) / 2

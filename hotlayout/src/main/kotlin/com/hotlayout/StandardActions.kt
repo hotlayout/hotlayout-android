@@ -1,5 +1,6 @@
 package com.hotlayout
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -51,7 +52,7 @@ public object StandardActions {
 public fun runStandardAction(context: Context, action: HotlayoutAction, deeplinkSchemes: Set<String> = emptySet()): Boolean {
     val address = StandardActions.url(action, deeplinkSchemes) ?: return false
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(address)).addCategory(Intent.CATEGORY_BROWSABLE)
-    if (context !is android.app.Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    if (context !is Activity) intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     return try {
         context.startActivity(intent)
         true

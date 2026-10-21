@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import com.hotlayout.model.DocumentNode
+import com.hotlayout.render.LineBoxKeeper
 import com.hotlayout.render.RenderContext
 import com.hotlayout.render.StyledText
 import com.hotlayout.render.WidgetCall
@@ -35,6 +36,7 @@ import com.hotlayout.render.dp
 import com.hotlayout.render.neverNarrowerThanItsLine
 import com.hotlayout.render.textAlign
 import com.hotlayout.text.BindableText
+import com.hotlayout.text.TemplateRun
 import com.hotlayout.theme.GradientValue
 import com.hotlayout.theme.NodeStyle
 import com.hotlayout.theme.Rgba
@@ -69,7 +71,7 @@ internal data class DrawnRun(val text: String, val typography: TextStyleValue, v
 internal class TextRichPlan(val runs: List<DrawnRun>, val base: TextStyleValue, val lineBlock: Double) {
     companion object {
         fun make(
-            templateRuns: List<com.hotlayout.text.TemplateRun>, active: Map<String, TextSpanStyle>, base: TextStyleValue,
+            templateRuns: List<TemplateRun>, active: Map<String, TextSpanStyle>, base: TextStyleValue,
             color: Rgba, emphasis: TextEmphasis, resolver: StyleResolver,
         ): TextRichPlan {
             val merged = TextSpans.shown(TextSpans.runs(templateRuns, active))
@@ -139,7 +141,7 @@ private fun MarkerRow(
     val geometry = ListMarkerRules.geometry(marker, plan.base.fontSize, groupSize)
     val glyph = ListMarkerRules.text(marker, number, context.locale.formatting)
     val glyphStyle = composeTextStyle(plan.base, context.inherited.color, context, align = TextAlign.End, lineBlock = plan.lineBlock)
-    val markerKeeper = androidx.compose.runtime.remember(plan.lineBlock) { com.hotlayout.render.LineBoxKeeper(plan.lineBlock) }
+    val markerKeeper = androidx.compose.runtime.remember(plan.lineBlock) { LineBoxKeeper(plan.lineBlock) }
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(geometry.gap.dp), verticalAlignment = Alignment.Top) {
         Box(Modifier.width(geometry.column.dp).clearAndSetSemantics { testTag = "marker:$glyph" }, contentAlignment = Alignment.TopEnd) {
             // The column may be narrower than the glyph («١.» in Arabic-Indic digits): the marker overflows toward
@@ -168,7 +170,7 @@ private fun RichParagraph(plan: TextRichPlan, context: RenderContext, gradient: 
     }
     val text = buildAnnotatedString { plan.runs.forEachIndexed { index, run -> withStyle(styles[index]) { append(run.text) } } }
     val whole = plan.runs.joinToString("") { it.text }
-    val keeper = androidx.compose.runtime.remember(plan.lineBlock) { com.hotlayout.render.LineBoxKeeper(plan.lineBlock) }
+    val keeper = androidx.compose.runtime.remember(plan.lineBlock) { LineBoxKeeper(plan.lineBlock) }
     BasicText(
         text = text,
         modifier = modifier.then(keeper.modifier).semantics { this.text = AnnotatedString(whole) },

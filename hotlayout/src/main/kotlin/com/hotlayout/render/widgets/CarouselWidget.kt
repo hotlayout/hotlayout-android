@@ -3,6 +3,7 @@ package com.hotlayout.render.widgets
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.FlingBehavior
@@ -196,7 +197,7 @@ private class PlaceModifier(private val onPlace: (Int) -> Unit) : LayoutModifier
 }
 
 /** Ends a drag or a throw on the stop it would reach; with reduced motion the scroll jumps there. */
-private class SnapFling(private val scroll: androidx.compose.foundation.ScrollState, private val reduced: Boolean) : FlingBehavior {
+private class SnapFling(private val scroll: ScrollState, private val reduced: Boolean) : FlingBehavior {
     var stops: List<Float> = emptyList()
 
     override suspend fun ScrollScope.performFling(initialVelocity: Float): Float {

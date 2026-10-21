@@ -8,6 +8,7 @@ import com.hotlayout.actions.Flow
 import com.hotlayout.actions.FlowDocument
 import com.hotlayout.actions.FlowFrame
 import com.hotlayout.data.RecordLink
+import java.math.BigDecimal
 
 /**
  * What survives a configuration change (a rotation, a fold, a change of the window) when the host's activity is recreated:
@@ -80,7 +81,7 @@ internal object ConfigChangeState {
     }
 
     private fun number(value: Double): String =
-        if (value == Math.rint(value) && Math.abs(value) < 1e15) value.toLong().toString() else java.math.BigDecimal(value.toString()).toPlainString()
+        if (value == Math.rint(value) && Math.abs(value) < 1e15) value.toLong().toString() else BigDecimal(value.toString()).toPlainString()
 
     private fun string(text: String, out: StringBuilder) {
         out.append('"')

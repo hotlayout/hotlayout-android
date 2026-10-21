@@ -6,6 +6,7 @@ import android.icu.util.GregorianCalendar
 import android.icu.util.TimeZone
 import com.hotlayout.JsonValue
 import java.util.Date
+import java.util.Locale
 
 /** Dates of the contract: what counts as a date, and how it is written. */
 internal object DateText {
@@ -102,7 +103,7 @@ internal object DateText {
 
     /** The CLDR medium date-time joiner of a language (`{1}` is the date, `{0}` the time). */
     fun glue(locale: String?): String {
-        val tag = locale?.let(LocaleTags::normalize) ?: java.util.Locale.getDefault().toLanguageTag()
+        val tag = locale?.let(LocaleTags::normalize) ?: Locale.getDefault().toLanguageTag()
         for (candidate in LocaleTags.lookupChain(tag)) dateTimeGlue[candidate]?.let { return it }
         return "{1}, {0}"
     }

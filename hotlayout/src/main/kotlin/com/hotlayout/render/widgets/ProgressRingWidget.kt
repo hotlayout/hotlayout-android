@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
@@ -168,11 +169,11 @@ internal class RingScale(
         is ProgressRules.Fill.Solid -> Brush.sweepGradient(0f to fill.color.color, 1f to fill.color.color, center = center)
         is ProgressRules.Fill.Gradient -> {
             val on = ProgressRules.gradientStops(fill.stops, share)
-            val list = ArrayList<Pair<Float, androidx.compose.ui.graphics.Color>>()
+            val list = ArrayList<Pair<Float, Color>>()
             on.firstOrNull()?.let { list.add(0f to it.first.color) }
             on.forEach { list.add(it.second.coerceIn(0.0, 1.0).toFloat() to it.first.color) }
             on.lastOrNull()?.let { list.add(min(1.0, share).toFloat() to it.first.color) }
-            list.add(1f to (on.lastOrNull()?.first?.color ?: androidx.compose.ui.graphics.Color.Transparent))
+            list.add(1f to (on.lastOrNull()?.first?.color ?: Color.Transparent))
             Brush.sweepGradient(*list.toTypedArray(), center = center)
         }
     }

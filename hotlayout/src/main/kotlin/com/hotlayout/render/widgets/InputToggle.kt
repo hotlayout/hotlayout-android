@@ -33,6 +33,7 @@ import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.semantics.toggleableState
 import androidx.compose.ui.state.ToggleableState
 import com.hotlayout.JsonValue
+import com.hotlayout.render.RenderContext
 import com.hotlayout.render.StyledText
 import com.hotlayout.render.WidgetCall
 import com.hotlayout.render.color
@@ -88,7 +89,7 @@ private fun ToggleRow(call: WidgetCall, checkbox: Boolean) {
 }
 
 @Composable
-private fun SwitchRow(modifier: Modifier, look: InputLook, label: String, on: Boolean, context: com.hotlayout.render.RenderContext) {
+private fun SwitchRow(modifier: Modifier, look: InputLook, label: String, on: Boolean, context: RenderContext) {
     val track = look.color(if (on) "primary" else "muted").color
     val thumb = look.color(if (on) "onPrimary" else "surface").color
     Row(
@@ -108,7 +109,7 @@ private fun SwitchRow(modifier: Modifier, look: InputLook, label: String, on: Bo
 }
 
 @Composable
-private fun CheckboxRow(modifier: Modifier, look: InputLook, label: String, on: Boolean, required: Boolean, context: com.hotlayout.render.RenderContext) {
+private fun CheckboxRow(modifier: Modifier, look: InputLook, label: String, on: Boolean, required: Boolean, context: RenderContext) {
     val side = InputRules.CHECKBOX_BOX_SIZE
     val shape = RoundedCornerShape(InputRules.CHECKBOX_BOX_RADIUS.dp)
     val accent = look.color(if (on) "primary" else "muted").color

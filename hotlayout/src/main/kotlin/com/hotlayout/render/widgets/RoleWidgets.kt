@@ -48,6 +48,7 @@ import com.hotlayout.render.paint.DashedBorderRules
 import com.hotlayout.render.paint.dashedBorder
 import com.hotlayout.render.paint.glass
 import com.hotlayout.render.shape
+import com.hotlayout.text.TextHeard
 import com.hotlayout.theme.BackgroundValue
 import com.hotlayout.theme.Corners
 import com.hotlayout.theme.HotlayoutTheme
@@ -105,7 +106,7 @@ internal data class RoleSurface(
 }
 
 /** Draws the box of a role surface around the content: shadow, shape, fill, border, padding. */
-@androidx.compose.runtime.Composable
+@Composable
 internal fun Modifier.roleBox(surface: RoleSurface, shape: Shape, padding: Sides, rightToLeft: Boolean): Modifier {
     var modifier = this.glass(surface.backdropBlur, shape)
     if (surface.shadow.isNotEmpty()) modifier = modifier.cssShadows(surface.shadow, shape)
@@ -151,7 +152,7 @@ internal object ButtonGeometry {
 
     /** The accessible name of an icon button: the label, else the name of the icon in words. */
     fun iconButtonName(label: String, iconName: JsonValue?): String {
-        if (!com.hotlayout.text.TextHeard.isSilent(label)) return label
+        if (!TextHeard.isSilent(label)) return label
         return iconName?.string?.replace('-', ' ') ?: ""
     }
 }

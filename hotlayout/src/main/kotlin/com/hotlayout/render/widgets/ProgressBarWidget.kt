@@ -13,6 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Canvas
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.semantics.ProgressBarRangeInfo
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.progressBarRangeInfo
@@ -110,12 +114,12 @@ internal class BarScale(
     val units: Double?,
     val glow: ProgressRules.Glow?,
 ) {
-    fun draw(scope: androidx.compose.ui.graphics.drawscope.DrawScope) {
+    fun draw(scope: DrawScope) {
         if (glow != null) pass(scope, ProgressInk(glow, scope.density))
         pass(scope, ProgressInk(null, scope.density))
     }
 
-    private fun pass(scope: androidx.compose.ui.graphics.drawscope.DrawScope, ink: ProgressInk) {
+    private fun pass(scope: DrawScope, ink: ProgressInk) {
         val density = scope.density
         val width = scope.size.width / density.toDouble()
         val height = scope.size.height / density.toDouble()
@@ -128,7 +132,7 @@ internal class BarScale(
         }
     }
 
-    private inner class Drawing(val canvas: androidx.compose.ui.graphics.Canvas, val ink: ProgressInk, val density: Float, val width: Double, val height: Double) {
+    private inner class Drawing(val canvas: Canvas, val ink: ProgressInk, val density: Float, val width: Double, val height: Double) {
         /** A logical offset from the start of the row, as an x of the canvas: mirrored in right-to-left. */
         fun x(offset: Double): Double = if (rightToLeft) width - offset else offset
 
@@ -138,7 +142,7 @@ internal class BarScale(
             return Rect((origin * k).toFloat(), 0f, ((origin + maxOf(0.0, length)) * k).toFloat(), (height * k).toFloat())
         }
 
-        fun fillPaint(line: Double, size: androidx.compose.ui.geometry.Size) = when (val fill = paint.fill) {
+        fun fillPaint(line: Double, size: Size) = when (val fill = paint.fill) {
             is ProgressRules.Fill.Solid -> ink.solid(fill.color)
             is ProgressRules.Fill.Gradient -> ink.brush(linearBrush(fill.stops, Offset((x(0.0) * density).toFloat(), 0f), Offset((x(line) * density).toFloat(), 0f)), size)
         }
@@ -187,7 +191,7 @@ internal class BarScale(
         }
 
         /** The fill of a step cut at [share] of its length from the logical start, the step's rounded shape kept. */
-        fun cut(shape: androidx.compose.ui.graphics.Path, frame: Rect, share: Double, box: ProgressRules.SegmentBox, line: Double, whole: Rect) {
+        fun cut(shape: Path, frame: Rect, share: Double, box: ProgressRules.SegmentBox, line: Double, whole: Rect) {
             val cutRect = rect(box.start, box.inline * minOf(1.0, share))
             canvas.drawPath(intersect(shape, cutRect), fillPaint(line, whole.size))
         }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.hotlayout.JsonObject
 import com.hotlayout.actions.PressTarget
+import com.hotlayout.actions.WriteActions
 import com.hotlayout.model.DocumentNode
 import com.hotlayout.model.DocumentReader
 import com.hotlayout.model.WidgetType
@@ -20,10 +21,13 @@ import com.hotlayout.render.paint.glassSource
 import com.hotlayout.render.paint.rememberGlassSource
 import com.hotlayout.render.screen.AppBarRules
 import com.hotlayout.render.widgets.CarouselRules
+import com.hotlayout.render.widgets.ListNumber
+import com.hotlayout.render.widgets.ListPosition
 import com.hotlayout.render.widgets.rememberBackgroundImage
 import com.hotlayout.theme.BoxLook
 import com.hotlayout.theme.Corners
 import com.hotlayout.theme.NodeStyle
+import com.hotlayout.theme.Sides
 
 /** A container is a control when its action is not `none` or carries an analytics event. */
 internal fun acts(action: JsonObject?): Boolean {
@@ -55,7 +59,7 @@ internal fun NodeView(
     // A card of a carousel with `perView` has the box width the carousel gives it, whatever it says about its own.
     context.cardWidth?.let { look = look.copy(width = it, minWidth = null, maxWidth = null) }
     // The padding of a carousel lies inside its scroll: the first card stands a padding from the edge.
-    if (node.widget in WidgetType.carouselHosts && CarouselRules.of(node) != null) look = look.copy(padding = com.hotlayout.theme.Sides.Zero)
+    if (node.widget in WidgetType.carouselHosts && CarouselRules.of(node) != null) look = look.copy(padding = Sides.Zero)
     // The inset of the status bar lies inside the box of the app bar, above its padding.
     if (node.widget == WidgetType.AppBar && context.barInset > 0) look = look.copy(padding = look.padding.copy(top = look.padding.top + context.barInset))
     val box = if (node.widget in WidgetType.roleSurfaces) outerOfRole(look) else look
@@ -66,7 +70,7 @@ internal fun NodeView(
     // A role surface (button) fills the minimum its box names: the limits of the box do not reach the surface inside.
     val fillsMinimum = node.widget in WidgetType.roleSurfaces && (box.minWidth != null || box.minHeight != null)
     // Options of a write action under one parent are one group: «1 of 3» is said only inside a collection.
-    val optionGroup = node.children.isNotEmpty() && com.hotlayout.actions.WriteActions.holdsOptionGroup(node.children) { context.isShown(it) }
+    val optionGroup = node.children.isNotEmpty() && WriteActions.holdsOptionGroup(node.children) { context.isShown(it) }
     val glassSource = if (node.widget == WidgetType.Screen) rememberGlassSource(node) else null
     val motion = if (node.widget == WidgetType.Screen) null else NodeMotion.read(node.fields["motion"])
     // The root never moves; a node placed by a stack has its motion turned back by the layer of the stack.
@@ -104,9 +108,9 @@ internal data class WidgetCall(
     val depth: Int,
     val parentType: String?,
     /** The place among the siblings of the parent (`Text.marker` numbering). */
-    val position: com.hotlayout.render.widgets.ListPosition? = null,
+    val position: ListPosition? = null,
     /** The number of a list-template instance. */
-    val number: com.hotlayout.render.widgets.ListNumber? = null,
+    val number: ListNumber? = null,
 )
 
 /** A role widget draws its own surface: only the size, the margin and the opacity stay on the node box. */

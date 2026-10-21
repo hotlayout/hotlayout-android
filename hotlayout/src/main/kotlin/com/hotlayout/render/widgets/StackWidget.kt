@@ -5,6 +5,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.layout.ParentDataModifier
 import androidx.compose.ui.layout.Placeable
 import androidx.compose.ui.unit.Constraints
@@ -14,6 +16,7 @@ import com.hotlayout.render.NodeView
 import com.hotlayout.render.Placement
 import com.hotlayout.render.WidgetCall
 import com.hotlayout.render.motion.LocalLayerTurn
+import com.hotlayout.render.paint.GlassRules
 import com.hotlayout.render.paint.aboveGlass
 import com.hotlayout.theme.StyleResolver
 
@@ -67,7 +70,7 @@ internal fun StackWidget(call: WidgetCall) {
     val kinds = LayerRules.kinds(node.type, node.children.map { it.fields })
     val acting = LayerRules.acting(kinds, node.children.map { context.isShown(it) })
     // A layer after a glass layer lies over that glass (a dot on a glass button), so it is drawn over it, sharp.
-    val firstGlass = node.children.indexOfFirst { com.hotlayout.render.paint.GlassRules.uses(it) }
+    val firstGlass = node.children.indexOfFirst { GlassRules.uses(it) }
     Layout(
         content = {
             node.children.forEachIndexed { index, child ->
@@ -93,14 +96,14 @@ internal fun StackWidget(call: WidgetCall) {
     }
 }
 
-private fun androidx.compose.ui.layout.MeasureScope.layoutStack(
+private fun MeasureScope.layoutStack(
     measurables: List<Measurable>,
     incoming: Constraints,
     alignH: LayerAlignWord,
     alignV: LayerAlignWord,
     stretch: Boolean,
     rightToLeft: Boolean,
-): androidx.compose.ui.layout.MeasureResult {
+): MeasureResult {
     val roles = measurables.map { it.parentData as? LayerRole ?: LayerRole.Sizing }
     val offered = if (incoming.hasBoundedWidth) incoming.maxWidth else Constraints.Infinity
     val sizing = measurables.indices.filter { roles[it] == LayerRole.Sizing }

@@ -4,12 +4,14 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.text
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -21,6 +23,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.LayoutDirection
 import com.hotlayout.render.dp
 import com.hotlayout.theme.Rgba
 import com.hotlayout.theme.TextStyleValue
@@ -113,7 +116,7 @@ internal fun Modifier.neverNarrowerThanItsLine(endAligned: Boolean = false): Mod
     val placeable = measurable.measure(Constraints(minWidth = intrinsic + room, maxWidth = intrinsic + room, minHeight = 0, maxHeight = constraints.maxHeight))
     // The slack is not part of the box: the text keeps the place it had, the spare room lies on the side the text is
     // not drawn on (right for a text at the start of a left-to-right line or at the end of a right-to-left one).
-    val textOnTheRight = (layoutDirection == androidx.compose.ui.unit.LayoutDirection.Rtl) != endAligned
+    val textOnTheRight = (layoutDirection == LayoutDirection.Rtl) != endAligned
     layout(intrinsic, placeable.height) { placeable.place(if (textOnTheRight) -room else 0, 0) }
 }
 
@@ -156,8 +159,8 @@ internal fun composeSpanStyle(
     context: RenderContext,
     fontStyle: String,
     decoration: String,
-    brush: androidx.compose.ui.graphics.Brush? = null,
-): androidx.compose.ui.text.SpanStyle {
+    brush: Brush? = null,
+): SpanStyle {
     val density = LocalDensity.current
     val familyName = context.theme.fontFamilies[if (style.role == "heading") "heading" else "body"]
     val family = familyName?.let(context.fonts::family) ?: FontFamily.Default
@@ -172,9 +175,9 @@ internal fun composeSpanStyle(
             else -> TextDecoration.None
         }
         if (brush != null) {
-            androidx.compose.ui.text.SpanStyle(brush = brush, fontSize = size, fontWeight = weight, fontStyle = slant, fontFamily = family, letterSpacing = spacing, textDecoration = line)
+            SpanStyle(brush = brush, fontSize = size, fontWeight = weight, fontStyle = slant, fontFamily = family, letterSpacing = spacing, textDecoration = line)
         } else {
-            androidx.compose.ui.text.SpanStyle(color = color.color, fontSize = size, fontWeight = weight, fontStyle = slant, fontFamily = family, letterSpacing = spacing, textDecoration = line)
+            SpanStyle(color = color.color, fontSize = size, fontWeight = weight, fontStyle = slant, fontFamily = family, letterSpacing = spacing, textDecoration = line)
         }
     }
 }

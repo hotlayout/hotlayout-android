@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -24,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -37,6 +39,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.testTag
 import com.hotlayout.JsonValue
+import com.hotlayout.model.DocumentNode
 import com.hotlayout.render.NodeView
 import com.hotlayout.render.Placement
 import com.hotlayout.render.StyledText
@@ -129,7 +132,7 @@ internal fun TabsWidget(call: WidgetCall) {
  * title is its prop, although the strip draws it.
  */
 @Composable
-private fun TabTitle(call: WidgetCall, tab: com.hotlayout.model.DocumentNode, open: Boolean, focus: FocusRequester, onSelect: () -> Unit, onArrow: (String) -> Boolean) {
+private fun TabTitle(call: WidgetCall, tab: DocumentNode, open: Boolean, focus: FocusRequester, onSelect: () -> Unit, onArrow: (String) -> Boolean) {
     val context = call.context
     val theme = context.theme
     val style = NodeStyle.effective(tab, context.scope)
@@ -140,11 +143,11 @@ private fun TabTitle(call: WidgetCall, tab: com.hotlayout.model.DocumentNode, op
     val color = context.resolver.color(ref) ?: look.color
     val indicator = theme.spacing[TabsRules.INDICATOR_TOKEN] ?: 4.0
     val padding = theme.spacing[TabsRules.TITLE_PADDING_TOKEN] ?: 8.0
-    val primary = theme.colorValue("primary")?.color ?: androidx.compose.ui.graphics.Color.Blue
+    val primary = theme.colorValue("primary")?.color ?: Color.Blue
     val title = context.text(tab, "title")
     // The strip scrolls sideways (unbounded width): the indicator takes the width of the title, measured, not the strip's.
     Column(
-        Modifier.width(androidx.compose.foundation.layout.IntrinsicSize.Max).focusRequester(focus)
+        Modifier.width(IntrinsicSize.Max).focusRequester(focus)
             .onKeyEvent { event ->
                 if (event.type != KeyEventType.KeyDown) return@onKeyEvent false
                 when (event.key) {
@@ -162,6 +165,6 @@ private fun TabTitle(call: WidgetCall, tab: com.hotlayout.model.DocumentNode, op
         Box(Modifier.padding(top = padding.dp, bottom = maxOf(0.0, padding - indicator).dp)) {
             StyledText(title, theme.typography["titleS"] ?: look.typography, color, context, maxLines = 1)
         }
-        Box(Modifier.fillMaxWidth().height(indicator.dp).semantics { testTag = if (open) "tab-indicator:open" else "tab-indicator:closed" }.background(if (open) primary else androidx.compose.ui.graphics.Color.Transparent))
+        Box(Modifier.fillMaxWidth().height(indicator.dp).semantics { testTag = if (open) "tab-indicator:open" else "tab-indicator:closed" }.background(if (open) primary else Color.Transparent))
     }
 }

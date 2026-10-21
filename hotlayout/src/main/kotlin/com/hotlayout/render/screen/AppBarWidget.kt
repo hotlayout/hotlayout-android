@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.IntrinsicMeasurable
+import androidx.compose.ui.layout.IntrinsicMeasureScope
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasurePolicy
@@ -35,6 +36,7 @@ import com.hotlayout.JsonValue
 import com.hotlayout.model.DocumentNode
 import com.hotlayout.render.NodeView
 import com.hotlayout.render.Placement
+import com.hotlayout.render.RenderContext
 import com.hotlayout.render.StyledText
 import com.hotlayout.render.WidgetCall
 import com.hotlayout.render.adaptive.WideChrome
@@ -48,6 +50,7 @@ import com.hotlayout.render.widgets.IconGlyph
 import com.hotlayout.render.widgets.ListTileRules
 import com.hotlayout.render.widgets.PartStyleRules
 import com.hotlayout.render.widgets.iconWordBox
+import com.hotlayout.theme.NodeStyle
 
 /** Which part of the app bar a child of the row is. */
 internal enum class AppBarPart { Back, LeadingNode, Title, Action, NavItem }
@@ -106,10 +109,10 @@ internal fun AppBarWidget(call: WidgetCall) {
 }
 
 /** The context of the navigation items in this bar: the box of the navigation bar is not drawn, but the colour and the font it names pass to its items. */
-private fun navItemsContext(context: com.hotlayout.render.RenderContext, child: com.hotlayout.render.RenderContext): com.hotlayout.render.RenderContext {
+private fun navItemsContext(context: RenderContext, child: RenderContext): RenderContext {
     val nav = context.barNav ?: return child
-    val style = com.hotlayout.theme.NodeStyle.effective(nav, context.scope)
-    return child.copy(navAtTop = true, inherited = com.hotlayout.theme.NodeStyle.inherited(context.inherited, style, context.resolver))
+    val style = NodeStyle.effective(nav, context.scope)
+    return child.copy(navAtTop = true, inherited = NodeStyle.inherited(context.inherited, style, context.resolver))
 }
 
 /** The width of the node of the leading zone is natural, even for a button that would fill: «full width» has nothing to mean in a zone as wide as the node. */
@@ -120,7 +123,7 @@ private fun naturalWidth(leading: DocumentNode): DocumentNode {
 
 /** The arrow: a square of the `xl` step with the `chevron` glyph of size `md` turned half a turn; the set mirrors the chevron itself in right-to-left text, so the arrow points toward where the person came from in both directions. */
 @Composable
-private fun BackArrow(side: Double, context: com.hotlayout.render.RenderContext, node: DocumentNode, modifier: Modifier) {
+private fun BackArrow(side: Double, context: RenderContext, node: DocumentNode, modifier: Modifier) {
     val (glyph, box) = iconWordBox("md", context.theme)
     val press = { context.press(JsonObject.of("type" to "navigate.back"), node) }
     Box(
@@ -139,7 +142,7 @@ private fun BackArrow(side: Double, context: com.hotlayout.render.RenderContext,
 }
 
 @Composable
-private fun TitleBlock(node: DocumentNode, context: com.hotlayout.render.RenderContext, modifier: Modifier) {
+private fun TitleBlock(node: DocumentNode, context: RenderContext, modifier: Modifier) {
     val theme = context.theme
     val start = AppBarRules.titleAlign(node.props["titleAlign"]) == AppBarRules.TitleAlign.Start
     val title = context.text(node, "title")
@@ -202,15 +205,15 @@ private class AppBarPolicy(val backSide: Double, val gap: Double, val actionGap:
         }
     }
 
-    override fun androidx.compose.ui.layout.IntrinsicMeasureScope.maxIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Int): Int =
+    override fun IntrinsicMeasureScope.maxIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Int): Int =
         measurables.sumOf { it.maxIntrinsicWidth(height) } + (gap * density * 2).roundToInt()
 
-    override fun androidx.compose.ui.layout.IntrinsicMeasureScope.minIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Int): Int =
+    override fun IntrinsicMeasureScope.minIntrinsicWidth(measurables: List<IntrinsicMeasurable>, height: Int): Int =
         maxIntrinsicWidth(measurables, height)
 
-    override fun androidx.compose.ui.layout.IntrinsicMeasureScope.maxIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Int): Int =
+    override fun IntrinsicMeasureScope.maxIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Int): Int =
         measurables.maxOfOrNull { it.maxIntrinsicHeight(width) } ?: 0
 
-    override fun androidx.compose.ui.layout.IntrinsicMeasureScope.minIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Int): Int =
+    override fun IntrinsicMeasureScope.minIntrinsicHeight(measurables: List<IntrinsicMeasurable>, width: Int): Int =
         maxIntrinsicHeight(measurables, width)
 }

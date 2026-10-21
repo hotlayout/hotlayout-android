@@ -12,17 +12,21 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -45,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDirection
 import androidx.compose.ui.unit.LayoutDirection
 import com.hotlayout.JsonValue
+import com.hotlayout.model.DocumentNode
 import com.hotlayout.render.RenderContext
 import com.hotlayout.render.StyledText
 import com.hotlayout.render.WidgetCall
@@ -149,10 +154,10 @@ private fun NoteRow(note: String, isError: Boolean, counter: String?, look: Inpu
 }
 
 /** The platform content type of a hint of the contract; Compose names no type for `url`. */
-@OptIn(androidx.compose.ui.ExperimentalComposeUiApi::class)
-private fun autofillContentType(hint: String?): androidx.compose.ui.autofill.ContentType? = when (hint) {
-    "email" -> androidx.compose.ui.autofill.ContentType.EmailAddress
-    "telephoneNumber" -> androidx.compose.ui.autofill.ContentType.PhoneNumber
+@OptIn(ExperimentalComposeUiApi::class)
+private fun autofillContentType(hint: String?): ContentType? = when (hint) {
+    "email" -> ContentType.EmailAddress
+    "telephoneNumber" -> ContentType.PhoneNumber
     else -> null
 }
 
@@ -162,7 +167,7 @@ private sealed class Mark {
     data class Icon(val name: String) : Mark()
 }
 
-private fun markOf(context: RenderContext, node: com.hotlayout.model.DocumentNode, prop: String): Mark? =
+private fun markOf(context: RenderContext, node: DocumentNode, prop: String): Mark? =
     when (val affix = InputPartsRules.affix(node.props[prop])) {
         is InputPartsRules.Affix.Text -> {
             val text = InputPartsRules.affixText(
@@ -184,7 +189,7 @@ private fun MarkView(mark: Mark, look: InputLook, context: RenderContext, focus:
     val press = Modifier.pointerInput(disabled) { detectTapGestures { if (!disabled) focus() } }
     when (mark) {
         is Mark.Text -> StyledText(mark.text, body, color, context, press.height(body.lineBox.dp), maxLines = 1)
-        is Mark.Icon -> com.hotlayout.render.widgets.IconGlyph(mark.name, body.fontSize, body.fontSize, body.lineBox, color.color, context.rightToLeft, press)
+        is Mark.Icon -> IconGlyph(mark.name, body.fontSize, body.fontSize, body.lineBox, color.color, context.rightToLeft, press)
     }
 }
 
@@ -255,7 +260,7 @@ private fun FieldBox(
                 testTag = "field:${node.id}"
                 if (context.form?.autofill != false) autofillContentType(InputRules.autofillHint(keyboard))?.let { contentType = it }
             }
-        androidx.compose.runtime.CompositionLocalProvider(LocalLayoutDirection provides if (contentLtr) LayoutDirection.Ltr else LocalLayoutDirection.current) {
+        CompositionLocalProvider(LocalLayoutDirection provides if (contentLtr) LayoutDirection.Ltr else LocalLayoutDirection.current) {
             BasicTextField(
                 value = displayed,
                 onValueChange = { driver.onValueChange(it, shown) },
@@ -293,7 +298,7 @@ private fun FieldBox(
                 decorationBox = { inner ->
                     Box(Modifier.fillMaxWidth(), contentAlignment = if (lines > 1) Alignment.TopStart else Alignment.CenterStart) {
                         if (shown.isEmpty() && placeholder.isNotEmpty()) {
-                            androidx.compose.foundation.text.BasicText(placeholder, Modifier.fillMaxWidth().clearAndSetSemantics {}, style = placeholderStyle, maxLines = lines)
+                            BasicText(placeholder, Modifier.fillMaxWidth().clearAndSetSemantics {}, style = placeholderStyle, maxLines = lines)
                         }
                         inner()
                     }

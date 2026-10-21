@@ -126,7 +126,7 @@ internal fun IconWidget(call: WidgetCall) {
     var area: Modifier = Modifier
     named.width?.let { area = area.width(it.dp) }
     named.height?.let { area = area.height(it.dp) }
-    androidx.compose.foundation.layout.Box(area, contentAlignment = androidx.compose.ui.Alignment.Center) {
+    Box(area, contentAlignment = Alignment.Center) {
         IconGlyph(icon.name, glyph, width, height, context.inherited.color.let { Color(it.argb()) }, context.rightToLeft)
     }
 }

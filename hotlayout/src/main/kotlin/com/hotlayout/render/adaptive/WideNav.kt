@@ -3,6 +3,7 @@ package com.hotlayout.render.adaptive
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.IntrinsicMeasurable
@@ -79,13 +81,13 @@ internal fun OwnNavBar(call: WidgetCall) {
     val child = context.copy(contentMaxWidth = null, navAtTop = true)
     Column(
         Modifier.fillMaxWidth().clipToBounds().background(surface)
-            .drawBehind { if (line > 0) drawRect(borderColor, topLeft = androidx.compose.ui.geometry.Offset(0f, size.height - (line * density).toFloat()), size = Size(size.width, (line * density).toFloat())) }
+            .drawBehind { if (line > 0) drawRect(borderColor, topLeft = Offset(0f, size.height - (line * density).toFloat()), size = Size(size.width, (line * density).toFloat())) }
             .padding(top = context.barInset.dp),
     ) {
         WideNavRow(wideNavMetrics(theme), Modifier.contentColumn(context.contentMaxWidth)) {
             for (item in items) NodeView(item, child, Placement.Natural, call.depth + 1, "NavBar")
         }
-        if (line > 0) androidx.compose.foundation.layout.Spacer(Modifier.height(line.dp))
+        if (line > 0) Spacer(Modifier.height(line.dp))
     }
 }
 

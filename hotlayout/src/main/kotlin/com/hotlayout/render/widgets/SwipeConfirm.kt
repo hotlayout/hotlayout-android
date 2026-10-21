@@ -58,12 +58,14 @@ import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.testTag
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import com.hotlayout.DataScope
 import com.hotlayout.JsonObject
 import com.hotlayout.actions.ActionCatalog
 import com.hotlayout.model.DocumentNode
 import com.hotlayout.render.RenderContext
+import com.hotlayout.render.StyledText
 import com.hotlayout.render.color
 import com.hotlayout.render.cssShadows
 import com.hotlayout.render.dp
@@ -289,7 +291,7 @@ internal fun SwipeConfirmButton(
         contentAlignment = Alignment.Center,
     ) {
         Box(Modifier.padding(horizontal = room.dp), contentAlignment = Alignment.Center) {
-            com.hotlayout.render.StyledText(look.label, look.typography, look.labelColor, context, align = androidx.compose.ui.text.style.TextAlign.Center)
+            StyledText(look.label, look.typography, look.labelColor, context, align = TextAlign.Center)
         }
         val track = SwipeConfirmRules.Track(height, maxWidth.value.toDouble(), look.borderWidth, inset)
         val geometry = SwipeConfirmRules.geometry(track)

@@ -1,6 +1,7 @@
 package com.hotlayout.render.widgets
 
 import android.graphics.BlurMaskFilter
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.RoundRect
@@ -57,7 +58,7 @@ internal class ProgressInk(private val glow: ProgressRules.Glow?, private val de
 /** A rounded rectangle as a path; the radius is limited by half of the shorter side. */
 internal fun roundedPath(rect: Rect, radius: Float): Path {
     val r = min(radius, min(rect.width, rect.height) / 2).coerceAtLeast(0f)
-    return Path().apply { addRoundRect(RoundRect(rect, androidx.compose.ui.geometry.CornerRadius(r, r))) }
+    return Path().apply { addRoundRect(RoundRect(rect, CornerRadius(r, r))) }
 }
 
 /** The part of [shape] that lies inside [cut]: the shape's rounded outline kept, its fill cut. */
