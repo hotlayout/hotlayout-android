@@ -18,7 +18,7 @@ staging=hotlayout/build/staging-deploy
 rm -rf "$staging"
 ./gradlew --quiet :hotlayout:publishReleasePublicationToStagingRepository
 
-version=$(grep -E '^version = ' hotlayout/build.gradle.kts | cut -d'"' -f2)
+version=$(grep -E '^version=' gradle.properties | cut -d= -f2)
 dir="$staging/com/hotlayout/hotlayout-android/$version"
 for f in "$dir"/*.aar "$dir"/*.pom "$dir"/*.jar; do
   [ -f "$f.asc" ] || { echo "Not signed: $f (is signingInMemoryKey set?)" >&2; exit 1; }

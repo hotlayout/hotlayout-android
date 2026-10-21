@@ -8,7 +8,6 @@ plugins {
 }
 
 group = "com.hotlayout"
-version = "0.2.0"
 
 android {
     namespace = "com.hotlayout"
@@ -16,7 +15,6 @@ android {
 
     defaultConfig {
         minSdk = 26
-        consumerProguardFiles("consumer-rules.pro")
     }
 
     compileOptions {
@@ -79,13 +77,13 @@ afterEvaluate {
         publications {
             create<MavenPublication>("release") {
                 from(components["release"])
-                groupId = "com.hotlayout"
                 artifactId = "hotlayout-android"
                 version = project.version.toString()
                 pom {
                     name.set("HotLayout for Android")
                     description.set("A Jetpack Compose reader of HotLayout server-driven UI documents.")
                     url.set("https://github.com/hotlayout/hotlayout-android")
+                    inceptionYear.set("2026")
                     licenses {
                         license {
                             name.set("The Apache License, Version 2.0")
@@ -96,7 +94,13 @@ afterEvaluate {
                         developer {
                             id.set("hotlayout")
                             name.set("HotLayout")
+                            url.set("https://hotlayout.com")
+                            email.set("contact@hotlayout.com")
                         }
+                    }
+                    issueManagement {
+                        system.set("GitHub Issues")
+                        url.set("https://github.com/hotlayout/hotlayout-android/issues")
                     }
                     scm {
                         url.set("https://github.com/hotlayout/hotlayout-android")
