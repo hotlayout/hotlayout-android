@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +32,7 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
+import com.hotlayout.DataScope
 import com.hotlayout.HotlayoutReport
 import com.hotlayout.ImagePolicy
 import com.hotlayout.JsonValue
@@ -40,10 +42,20 @@ import com.hotlayout.render.WidgetCall
 import com.hotlayout.render.color
 import com.hotlayout.text.ShownText
 import com.hotlayout.theme.Rgba
+import java.io.ByteArrayOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.net.CookieHandler
 import java.net.HttpURLConnection
 import java.net.URL
+import kotlin.coroutines.cancellation.CancellationException
 import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runInterruptible
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -125,47 +137,76 @@ internal object ImageSourceRules {
     fun documentAddress(address: String): String = if (address.length <= REPORT_DOCUMENT_LENGTH) address else address.take(REPORT_DOCUMENT_LENGTH) + "…"
 }
 
-/** The address of an image source of the document, after the host's policy; a refused one is a report and no request. */
-internal fun imageAddress(source: JsonValue?, context: RenderContext): String? {
-    if (source?.obj == null) return null
-    fun judged(address: String, fromData: Boolean): String? {
-        val resolved = context.images.resolve(address)?.takeUnless(ImageSourceRules::neverAnImage)
-        if (resolved == null) {
-            val shown = if (fromData) ImageSourceRules.schemeAndHost(address) else ImageSourceRules.documentAddress(address)
-            context.sink.add(HotlayoutReport.Kind.IgnoredInput, "image", "the address $shown is not loaded: the picture is drawn as its placeholder")
-        }
-        return resolved
+/** Where an image source of the document leads after the host's policy: the address to load, or why none is loaded. */
+internal class ImageAddress(val address: String?, val refusal: String?)
+
+/** The address of an image source; a refused one is no request and a report (the address shown without its secrets). */
+internal fun resolveImageAddress(source: JsonValue?, images: ImagePolicy, scope: DataScope): ImageAddress {
+    if (source?.obj == null) return ImageAddress(null, null)
+    fun judged(address: String, fromData: Boolean): ImageAddress {
+        val resolved = images.resolve(address)?.takeUnless(ImageSourceRules::neverAnImage)
+        if (resolved != null) return ImageAddress(resolved, null)
+        val shown = if (fromData) ImageSourceRules.schemeAndHost(address) else ImageSourceRules.documentAddress(address)
+        return ImageAddress(null, "the address $shown is not loaded: the picture is drawn as its placeholder")
     }
     return when (source["kind"]?.string) {
-        "asset" -> source["asset"]?.string?.let { context.images.assets[it] }
-        "url" -> source["url"]?.string?.let { judged(it, fromData = false) }
+        "asset" -> ImageAddress(source["asset"]?.string?.let { images.assets[it] }, null)
+        "url" -> source["url"]?.string?.let { judged(it, fromData = false) } ?: ImageAddress(null, null)
         "binding" -> {
-            val bound = source["path"]?.string?.let { context.scope[it]?.string }?.takeIf { it.isNotEmpty() }?.let { judged(it, fromData = true) }
-            bound ?: source["fallback"]?.string?.let { context.images.assets[it] }
+            val bound = source["path"]?.string?.let { scope[it]?.string }?.takeIf { it.isNotEmpty() }?.let { judged(it, fromData = true) }
+            if (bound?.address != null) bound
+            else ImageAddress(source["fallback"]?.string?.let { images.assets[it] }, bound?.refusal)
         }
-        else -> null
+        else -> ImageAddress(null, null)
     }
+}
+
+/** The address of an image source of the document, after the host's policy; a refused one is reported once the node is composed. */
+@Composable
+internal fun imageAddress(source: JsonValue?, context: RenderContext): String? {
+    val judged = resolveImageAddress(source, context.images, context.scope)
+    judged.refusal?.let { reason -> SideEffect { context.sink.add(HotlayoutReport.Kind.IgnoredInput, "image", reason) } }
+    return judged.address
 }
 
 /**
  * The memory cache of decoded pictures, shared by every image of every screen: a picture in a list
- * is fetched once, and an address that failed is not asked for again until [reset].
+ * is fetched once. A picture that failed is not asked for again for [FAILURE_RETRY_MS]; after that
+ * the next node that shows it asks again (a network that came back, a server that recovered).
  */
 internal object ImageStore {
-    private val cache = object : LruCache<String, Bitmap>(64 * 1024 * 1024) {
+    /** How long a failed address is not asked for again. */
+    const val FAILURE_RETRY_MS: Long = 30_000
+
+    /** The memory the decoded pictures may take: an eighth of what the app may use. */
+    private val cacheBytes: Int = (Runtime.getRuntime().maxMemory() / 8).coerceIn(4L * 1024 * 1024, Int.MAX_VALUE.toLong()).toInt()
+
+    private val cache = object : LruCache<String, Bitmap>(cacheBytes) {
         override fun sizeOf(key: String, value: Bitmap) = value.byteCount
     }
-    private val failed = HashSet<String>()
+
+    /** The moment, on [clock], until which an address that failed is not asked for again. */
+    private val failedUntil = LruCache<String, Long>(512)
+
+    /** Milliseconds of a monotonic clock; tests move it. */
+    internal var clock: () -> Long = { System.nanoTime() / 1_000_000 }
 
     internal fun reset() {
         cache.evictAll()
-        synchronized(failed) { failed.clear() }
+        failedUntil.evictAll()
     }
 
-    internal fun cached(address: String): Bitmap? = cache.get(address)
+    /** A picture is decoded for a longest side: the same address under another side is another picture. */
+    private fun key(address: String, maxPixelSide: Int) = "$maxPixelSide|$address"
 
-    private val deadlines = java.util.concurrent.ScheduledThreadPoolExecutor(1) { task -> Thread(task, "hotlayout-image-deadline").apply { isDaemon = true } }
-        .apply { removeOnCancelPolicy = true }
+    internal fun cached(address: String, maxPixelSide: Int = ImagePolicy.DEFAULT_MAX_PIXEL_SIDE): Bitmap? = cache.get(key(address, maxPixelSide))
+
+    private fun recentlyFailed(key: String): Boolean {
+        val until = failedUntil.get(key) ?: return false
+        if (clock() < until) return true
+        failedUntil.remove(key)
+        return false
+    }
 
     internal suspend fun load(
         address: String,
@@ -173,22 +214,24 @@ internal object ImageStore {
         policy: ImagePolicy = ImagePolicy(maxDownloadBytes = maxBytes),
         report: (String) -> Unit = {},
     ): Bitmap? {
-        cached(address)?.let { return it }
-        if (synchronized(failed) { address in failed }) return null
+        val key = key(address, policy.maxPixelSide)
+        cache.get(key)?.let { return it }
+        if (recentlyFailed(key)) return null
         val isData = address.startsWith("data:image/")
-        if (!isData && policy.fetch == null && java.net.CookieHandler.getDefault() != null) {
+        if (!isData && policy.fetch == null && CookieHandler.getDefault() != null) {
             // HttpURLConnection sends and stores through the app's own cookie handler; the address is the document's.
             report("a picture is not fetched while the app has a global CookieHandler; give ImagePolicy.fetch a client of your own")
             return null
         }
-        val bitmap = withContext(Dispatchers.IO) { runCatching { decode(address, maxBytes, policy) }.getOrNull() }
-        if (bitmap != null) cache.put(address, bitmap) else synchronized(failed) { failed.add(address) }
+        // A cancelled load (the node left the screen) is no failure: the exception goes on and nothing is remembered.
+        val bitmap = withContext(Dispatchers.IO) { decode(address, maxBytes, policy) }
+        if (bitmap != null) cache.put(key, bitmap) else failedUntil.put(key, clock() + FAILURE_RETRY_MS)
         return bitmap
     }
 
     /** All of [input], or `null` once it is longer than [maxBytes] or past [deadlineAtNanos] (a server may send more than it announced, or slowly). */
-    internal fun readCapped(input: java.io.InputStream, maxBytes: Long, deadlineAtNanos: Long = Long.MAX_VALUE): ByteArray? {
-        val out = java.io.ByteArrayOutputStream()
+    internal fun readCapped(input: InputStream, maxBytes: Long, deadlineAtNanos: Long = Long.MAX_VALUE): ByteArray? {
+        val out = ByteArrayOutputStream()
         val buffer = ByteArray(16 * 1024)
         var total = 0L
         while (true) {
@@ -220,40 +263,79 @@ internal object ImageStore {
     }
 
     private suspend fun decode(address: String, maxBytes: Long, policy: ImagePolicy): Bitmap? {
-        if (address.startsWith("data:image/")) {
-            val comma = address.indexOf(',')
-            if (comma < 0 || !address.substring(0, comma).endsWith(";base64")) return null
-            // The decoded size is known from the text before anything is decoded.
-            if ((address.length - comma - 1).toLong() * 3 / 4 > maxBytes + 3) return null
-            val bytes = Base64.decode(address.substring(comma + 1), Base64.DEFAULT)
-            if (bytes.size > maxBytes) return null
-            return decodeBounded(bytes, policy.maxPixelSide)
-        }
-        val host = policy.fetch
-        val bytes = if (host != null) {
-            withTimeoutOrNull(policy.totalDeadlineMs) { host(address, maxBytes) }?.takeIf { it.size <= maxBytes }
-        } else {
-            download(address, maxBytes, policy.totalDeadlineMs)
-        }
+        val bytes = if (address.startsWith("data:image/")) dataBytes(address, maxBytes) else transfer(address, maxBytes, policy)
         return bytes?.let { decodeBounded(it, policy.maxPixelSide) }
     }
 
-    /** The reader's own transfer: no redirects (a 3xx answer is a refusal, so no hop is followed unjudged), no cookies (the caller refused when the app has a handler), a total deadline. */
-    private fun download(address: String, maxBytes: Long, deadlineMs: Long): ByteArray? {
-        val connection = URL(address).openConnection() as HttpURLConnection
+    /** The bytes of a `data:` address of base64, or `null`; the decoded size is known from the text before anything is decoded. */
+    private fun dataBytes(address: String, maxBytes: Long): ByteArray? {
+        val comma = address.indexOf(',')
+        if (comma < 0 || !address.substring(0, comma).endsWith(";base64")) return null
+        if ((address.length - comma - 1).toLong() * 3 / 4 > maxBytes + 3) return null
+        val bytes = try {
+            Base64.decode(address.substring(comma + 1), Base64.DEFAULT)
+        } catch (_: IllegalArgumentException) {
+            return null
+        }
+        return bytes.takeIf { it.size <= maxBytes }
+    }
+
+    /** The bytes of a remote picture through the host's transport or the reader's own, within [ImagePolicy.totalDeadlineMs] for the whole call. */
+    private suspend fun transfer(address: String, maxBytes: Long, policy: ImagePolicy): ByteArray? {
+        val host = policy.fetch ?: return download(address, maxBytes, policy.totalDeadlineMs)
+        val bytes = try {
+            withTimeoutOrNull(policy.totalDeadlineMs) { host(address, maxBytes) }
+        } catch (cancelled: CancellationException) {
+            throw cancelled
+        } catch (_: Exception) {
+            // A transport that throws instead of answering `null` failed this picture, not the screen.
+            null
+        }
+        return bytes?.takeIf { it.size <= maxBytes }
+    }
+
+    /**
+     * The reader's own transfer: no redirects (a 3xx answer is a refusal, so no hop is followed unjudged), no cookies
+     * (the caller refused when the app has a handler). The deadline holds the whole transfer, from the request to the
+     * last byte, not the silence between two bytes: a server that sends a byte now and then is cut too.
+     */
+    private suspend fun download(address: String, maxBytes: Long, deadlineMs: Long): ByteArray? {
+        val connection = try {
+            URL(address).openConnection() as? HttpURLConnection
+        } catch (_: IOException) {
+            null
+        } ?: return null
         connection.connectTimeout = 15_000
         connection.readTimeout = 30_000
         connection.instanceFollowRedirects = false
-        val deadlineAt = System.nanoTime() + deadlineMs * 1_000_000
-        // Cuts a transfer that outlives the deadline, also one stuck in a read.
-        val watchdog = deadlines.schedule({ connection.disconnect() }, deadlineMs, java.util.concurrent.TimeUnit.MILLISECONDS)
         return try {
-            if (connection.responseCode !in 200..299 || connection.contentLengthLong > maxBytes) null
-            else connection.inputStream.use { input -> readCapped(input, maxBytes, deadlineAt) }
+            withTimeoutOrNull(deadlineMs) {
+                coroutineScope {
+                    // A blocking read does not end on the interrupt of a cancelled coroutine: closing the connection ends it.
+                    val cut = launch(start = CoroutineStart.UNDISPATCHED) {
+                        try {
+                            awaitCancellation()
+                        } finally {
+                            connection.disconnect()
+                        }
+                    }
+                    try {
+                        runInterruptible { read(connection, maxBytes) }
+                    } finally {
+                        cut.cancel()
+                    }
+                }
+            }
+        } catch (_: IOException) {
+            null
         } finally {
-            watchdog.cancel(false)
             connection.disconnect()
         }
+    }
+
+    private fun read(connection: HttpURLConnection, maxBytes: Long): ByteArray? {
+        if (connection.responseCode !in 200..299 || connection.contentLengthLong > maxBytes) return null
+        return connection.inputStream.use { input -> readCapped(input, maxBytes) }
     }
 }
 
@@ -264,8 +346,8 @@ internal object ImageStore {
  */
 @Composable
 internal fun RemoteImage(address: String?, fit: String, placeholder: Rgba, modifier: Modifier = Modifier, policy: ImagePolicy = ImagePolicy(), sink: ReportSink? = null) {
-    var image by remember(address) { mutableStateOf<ImageBitmap?>(address?.let(ImageStore::cached)?.asImageBitmap()) }
-    LaunchedEffect(address) {
+    var image by remember(address, policy.maxPixelSide) { mutableStateOf(address?.let { ImageStore.cached(it, policy.maxPixelSide) }?.asImageBitmap()) }
+    LaunchedEffect(address, policy.maxPixelSide) {
         if (address != null && image == null) image = ImageStore.load(address, policy.maxDownloadBytes, policy) { reason ->
                 sink?.add(HotlayoutReport.Kind.IgnoredInput, "image", reason)
             }?.asImageBitmap()

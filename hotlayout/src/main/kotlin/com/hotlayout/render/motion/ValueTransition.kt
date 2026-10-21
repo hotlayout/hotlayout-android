@@ -164,9 +164,12 @@ internal object ValueTransition {
  * Two scopes come out: `stepped` for the label (the number moves in steps) and `smooth` for the
  * fill of a scale. A change during a transition starts from the value shown at that moment and
  * runs the full duration.
+ *
+ * A screen treats an engine as a value: it changes a [copy] while it composes and keeps the copy
+ * only when it differs ([sameState]), so composing changes nothing that was drawn before.
  */
 internal class ValueTransitionEngine {
-    class Run(val from: Double, val to: Double, val digits: Int, val scale: Boolean, var start: Double? = null)
+    data class Run(val from: Double, val to: Double, val digits: Int, val scale: Boolean, var start: Double? = null)
 
     data class Ends(val from: Double, val to: Double, val shown: Double)
 
@@ -186,6 +189,21 @@ internal class ValueTransitionEngine {
     private var justFinished = false
 
     val isRunning: Boolean get() = runs.isNotEmpty()
+
+    /** An engine in the same state that changes on its own. */
+    fun copy(): ValueTransitionEngine = ValueTransitionEngine().also { copy ->
+        copy.mounted = mounted
+        copy.localeKey = localeKey
+        copy.last.putAll(last)
+        runs.forEach { (path, run) -> copy.runs[path] = run.copy() }
+        copy.time = time
+        copy.justFinished = justFinished
+    }
+
+    /** Whether [other] shows the same numbers now and later. */
+    fun sameState(other: ValueTransitionEngine): Boolean =
+        mounted == other.mounted && localeKey == other.localeKey && last == other.last && runs == other.runs &&
+            time == other.time && justFinished == other.justFinished
 
     /** True once after the last run ended. */
     fun takeFinished(): Boolean = justFinished.also { justFinished = false }

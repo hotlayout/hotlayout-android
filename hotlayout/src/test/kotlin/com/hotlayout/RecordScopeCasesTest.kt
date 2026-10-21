@@ -52,7 +52,7 @@ class RecordScopeCasesTest {
         assertEquals(20, rows.size)
         for (row in rows) {
             val name = row.name()
-            val flow = Flow(ActionCasesTest.flowDocument(row, "flow"), null)
+            var flow = Flow(ActionCasesTest.flowDocument(row, "flow"), null)
             assertEquals("start: $name", listOf(row["start"]?.string ?: ""), flow.stack.map { it.screenId })
             row["steps"]?.array.orEmpty().mapNotNull { it.obj }.forEachIndexed { index, step ->
                 val label = "$name — step ${index + 1}"
@@ -65,7 +65,8 @@ class RecordScopeCasesTest {
                     "host" -> JsonObject(listOf("type" to (step["type"] ?: JsonValue.Str("submit"))))
                     else -> error("unknown step: $label")
                 }
-                val outcome = flow.press(action, TableJson.instances(step["instances"]))
+                val (next, outcome) = flow.press(action, TableJson.instances(step["instances"]))
+                flow = next
                 val expect = step["expect"]
                 assertEquals("stack: $label", expect?.get("stack")?.array.orEmpty().mapNotNull { it.string }, flow.stack.map { it.screenId })
                 assertEquals("record: $label", expect?.get("record") ?: JsonValue.Null, TableJson.record(flow.top?.record))
@@ -124,20 +125,20 @@ class RecordScopeCasesTest {
             val screens = (row["screens"]?.obj ?: JsonObject()).map { (id, presentation) ->
                 FlowDocument.Screen(id, if (presentation.string == "modal") ScreenPresentation.Modal else ScreenPresentation.Page)
             }
-            val flow = Flow(FlowDocument("live", screens, row["start"]?.string, emptyMap(), listsOf(row)), null)
+            var flow = Flow(FlowDocument("live", screens, row["start"]?.string, emptyMap(), listsOf(row)), null)
             row["steps"]?.array.orEmpty().mapNotNull { it.obj }.forEachIndexed { index, step ->
                 val label = "${row.name()} — step ${index + 1}"
                 when (step["do"]?.string) {
                     "navigate" -> {
                         var action = JsonObject(listOf("type" to JsonValue.Str("navigate"), "params" to jsonObjectOf("screenId" to step["to"])))
                         if (step["carryRecord"]?.bool == true) action = action.with("carryRecord", JsonValue.Bool(true))
-                        flow.press(action, TableJson.instances(step["instances"]))
+                        flow = flow.press(action, TableJson.instances(step["instances"])).flow
                     }
-                    "back" -> flow.press(JsonObject.of("type" to "navigate.back"))
+                    "back" -> flow = flow.press(JsonObject.of("type" to "navigate.back")).flow
                     "data" -> {
                         val collections = step["collections"]?.obj ?: JsonObject()
                         val before = flow.stack.map { it.screenId }
-                        flow.refresh { collections[it] }
+                        flow = flow.refresh { collections[it] }
                         assertEquals("a data step is not a show: $label", before, flow.stack.map { it.screenId })
                     }
                     else -> error("unknown step: $label")

@@ -29,8 +29,9 @@ import com.hotlayout.theme.BackgroundValue
 internal fun rememberBackgroundImage(background: BackgroundValue?, shape: androidx.compose.ui.graphics.Shape, context: RenderContext): Modifier {
     val image = background as? BackgroundValue.Image ?: return Modifier
     val address = imageAddress(image.source, context)
-    var bitmap by remember(address) { mutableStateOf<ImageBitmap?>(address?.let(ImageStore::cached)?.asImageBitmap()) }
-    LaunchedEffect(address) {
+    val side = context.images.maxPixelSide
+    var bitmap by remember(address, side) { mutableStateOf<ImageBitmap?>(address?.let { ImageStore.cached(it, side) }?.asImageBitmap()) }
+    LaunchedEffect(address, side) {
         if (address != null && bitmap == null) {
             bitmap = ImageStore.load(address, context.images.maxDownloadBytes, context.images) { reason ->
                 context.sink.add(HotlayoutReport.Kind.IgnoredInput, "image", reason)

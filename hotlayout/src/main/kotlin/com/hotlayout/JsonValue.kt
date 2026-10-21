@@ -1,5 +1,6 @@
 package com.hotlayout
 
+import androidx.compose.runtime.Immutable
 import com.hotlayout.json.JsonParser
 
 /** A syntax error of the JSON parser: [JsonValue.parse] throws it for text that is not JSON. */
@@ -13,7 +14,10 @@ public class JsonParseException(public val offset: Int, public val reason: Strin
  * document arrives over the network and may be newer than the reader, or produced by something
  * other than the builder. A piece of the wrong shape must be skipped and reported, never crash
  * the screen, and a strict decoder fails the whole document on the first surprise.
+ *
+ * Immutable, as every value inside it: a screen compares the values it was drawn with by equality.
  */
+@Immutable
 public sealed class JsonValue {
     /** The JSON `null`. */
     public object Null : JsonValue() {
@@ -21,18 +25,23 @@ public sealed class JsonValue {
     }
 
     /** A JSON boolean. */
+    @Immutable
     public data class Bool(val value: Boolean) : JsonValue()
 
     /** A JSON number. */
+    @Immutable
     public data class Num(val value: Double) : JsonValue()
 
     /** A JSON string. */
+    @Immutable
     public data class Str(val value: String) : JsonValue()
 
     /** A JSON array. */
+    @Immutable
     public data class Arr(val items: List<JsonValue>) : JsonValue()
 
     /** A JSON object. */
+    @Immutable
     public data class Obj(val fields: JsonObject) : JsonValue()
 
     /** The string of a [Str], else `null`. */
@@ -90,14 +99,20 @@ public sealed class JsonValue {
  *
  * Order matters in a few places of the contract (the first entry wins, a document is walked in
  * its own order). A repeated key keeps its first position and takes the last value, as
- * `JSON.parse` does. Equality ignores the order.
+ * `JSON.parse` does. Equality ignores the order. Immutable: [with] returns a copy.
  */
-public class JsonObject(pairs: List<Pair<String, JsonValue>> = emptyList()) : Iterable<Pair<String, JsonValue>> {
-    private val storage = LinkedHashMap<String, JsonValue>()
+@Immutable
+public class JsonObject internal constructor(
+    private val storage: LinkedHashMap<String, JsonValue>,
+    /** Marks the constructor that takes [storage] over as it is; nothing else holds that map. */
+    @Suppress("UNUSED_PARAMETER") adopted: Unit,
+) : Iterable<Pair<String, JsonValue>> {
 
-    init {
-        for ((key, value) in pairs) storage[key] = value
-    }
+    /** An object from pairs, in their order. */
+    public constructor(pairs: List<Pair<String, JsonValue>> = emptyList()) : this(LinkedHashMap<String, JsonValue>().apply { for ((key, value) in pairs) put(key, value) }, Unit)
+
+    /** An empty object. */
+    public constructor() : this(emptyList())
 
     /** An object from a map, in the map's order. */
     public constructor(map: Map<String, JsonValue>) : this(map.entries.map { it.key to it.value })
@@ -116,9 +131,9 @@ public class JsonObject(pairs: List<Pair<String, JsonValue>> = emptyList()) : It
 
     /** A copy with `key` set (or removed for `null`). */
     public fun with(key: String, value: JsonValue?): JsonObject {
-        val copy = JsonObject(toList())
-        if (value == null) copy.storage.remove(key) else copy.storage[key] = value
-        return copy
+        val copy = LinkedHashMap(storage)
+        if (value == null) copy.remove(key) else copy[key] = value
+        return JsonObject(copy, Unit)
     }
 
     /** A copy as a map, in the object's order. */
@@ -132,8 +147,16 @@ public class JsonObject(pairs: List<Pair<String, JsonValue>> = emptyList()) : It
 
     override fun toString(): String = storage.toString()
 
-    internal fun putInternal(key: String, value: JsonValue) {
-        storage[key] = value
+    /** Builds an object key by key for the parser; the object it builds is never changed after [build]. */
+    internal class Builder {
+        private var storage: LinkedHashMap<String, JsonValue>? = LinkedHashMap()
+
+        /** A repeated key keeps its first position and takes the last value. */
+        fun put(key: String, value: JsonValue) {
+            checkNotNull(storage) { "the object is built already" }[key] = value
+        }
+
+        fun build(): JsonObject = JsonObject(checkNotNull(storage) { "the object is built already" }, Unit).also { storage = null }
     }
 
     public companion object {

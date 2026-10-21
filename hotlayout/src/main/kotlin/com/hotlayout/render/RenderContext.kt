@@ -1,5 +1,6 @@
 package com.hotlayout.render
 
+import androidx.compose.runtime.Stable
 import com.hotlayout.DataScope
 import com.hotlayout.HotlayoutFonts
 import com.hotlayout.ImagePolicy
@@ -13,7 +14,12 @@ import com.hotlayout.model.DocumentNode
 import com.hotlayout.model.ReportSink
 import com.hotlayout.model.WidthClass
 import com.hotlayout.model.WidthRules
+import com.hotlayout.render.widgets.CarouselMemory
 import com.hotlayout.render.widgets.ChoiceScope
+import com.hotlayout.render.widgets.InputForm
+import com.hotlayout.render.widgets.ListBudget
+import com.hotlayout.render.widgets.ListNumber
+import com.hotlayout.render.widgets.ListPosition
 import com.hotlayout.render.widgets.PressRun
 import com.hotlayout.text.BindableText
 import com.hotlayout.text.Localization
@@ -29,9 +35,13 @@ import java.util.TimeZone
  * What every node of a screen needs to draw: the theme, the data, the language and the way back to
  * the screen for presses. Passed down explicitly, one value per node.
  *
- * This file is shared by every widget family: add a field only when more than one family needs
- * it, and keep the defaults so that existing call sites do not change.
+ * Stable: two equal contexts draw the same node, so a node whose context and node did not change
+ * is skipped when its parent recomposes. The callbacks it carries are the screen's own, equal from
+ * one composition to the next, and they always reach the host's latest lambdas.
+ *
+ * Shared by every widget family: a field belongs here when more than one family needs it.
  */
+@Stable
 internal data class RenderContext(
     val resolver: StyleResolver,
     val screenId: String,
@@ -62,9 +72,9 @@ internal data class RenderContext(
     /** The choice group the node is drawn inside (`ChoiceGroup`), or `null`. */
     val choice: ChoiceScope? = null,
     /** The place of the node among its siblings (a numbered list item needs its neighbours); read once by [NodeView]. */
-    val listPosition: com.hotlayout.render.widgets.ListPosition? = null,
+    val listPosition: ListPosition? = null,
     /** The place of this node in a numbered list from data (`Text.marker: number`); `null` outside one. */
-    val listNumber: com.hotlayout.render.widgets.ListNumber? = null,
+    val listNumber: ListNumber? = null,
     /** The top safe inset the app bar of the screen holds inside its box (set by the screen for the bar only). */
     val barInset: Double = 0.0,
     /** The app bar is scrolled: the body is past the threshold (`appBarScrolled`); only the bar itself reads it. */
@@ -74,15 +84,15 @@ internal data class RenderContext(
     /** The line on top of the navigation bar, which the touch area of an item takes in. */
     val navLine: Double = 0.0,
     /** The accessible name of the back arrow of an app bar. */
-    val backLabel: String = "Back",
+    val backLabel: String,
     /** The text fields of the screen: the order for the «next» key and their focus (`null` outside a screen). */
-    val form: com.hotlayout.render.widgets.InputForm? = null,
+    val form: InputForm? = null,
     /** What the carousels of the stack remember, the frame of the stack this screen is, and the indexes of the list instances the node stands in. */
-    val carousels: com.hotlayout.render.widgets.CarouselMemory? = null,
+    val carousels: CarouselMemory? = null,
     val frameIndex: Int = 0,
     val instancePath: List<Int> = emptyList(),
     /** The list budget of the screen being drawn (`x-listBudget`); `null` outside a screen: a list then draws every record it would. */
-    val listBudget: com.hotlayout.render.widgets.ListBudget.Plan? = null,
+    val listBudget: ListBudget.Plan? = null,
     /** The width of the box of a card of a carousel with `perView`, in logical pixels; read once by [NodeView]. */
     val cardWidth: Double? = null,
     /** The width class of the box of this screen (one per screen; a modal layer is always compact). The tree is already resolved for it. */
@@ -139,8 +149,6 @@ internal data class RenderContext(
 
     fun location(node: DocumentNode): String = "screen “$screenId”: node “${node.id}”"
 }
-
-
 
 /** How a parent places a child: stretched to its width or at its natural width. */
 internal data class Placement(val stretchWidth: Boolean) {

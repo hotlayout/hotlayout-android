@@ -1,6 +1,8 @@
 package com.hotlayout.render.screen
 
-import android.provider.Settings
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,14 +21,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.layout.Measurable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -48,6 +48,7 @@ import com.hotlayout.render.dp
 import com.hotlayout.render.interaction.pressInput
 import com.hotlayout.render.interaction.pressPose
 import com.hotlayout.render.interaction.PressFeedbackRules
+import com.hotlayout.render.motion.rememberReducedMotion
 import com.hotlayout.render.roundToInt
 import com.hotlayout.render.signedDp
 import com.hotlayout.render.widgets.ButtonGeometry
@@ -165,31 +166,37 @@ internal fun NavItemWidget(call: WidgetCall) {
  */
 @Composable
 internal fun NavBadgeDot(shown: Boolean, glyph: Double, boxHeight: Double, color: Color, rightToLeft: Boolean) {
-    val resolver = LocalContext.current.contentResolver
-    val reduced = remember { runCatching { Settings.Global.getFloat(resolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f }.getOrDefault(false) }
+    val reduced = rememberReducedMotion()
     var seen by remember { mutableStateOf(false) }
     var before by remember { mutableStateOf(shown) }
     var change by remember { mutableStateOf(NavBarRules.BadgeChange.None) }
-    var elapsed by remember { mutableStateOf(0.0) }
+    // The milliseconds of the change in progress; read only where the dot is drawn, so a frame redraws and does not recompose.
+    val elapsed = remember { Animatable(0f) }
     LaunchedEffect(shown) {
         val moving = NavBarRules.badgeChange(seen, before, shown, reduced)
         seen = true
         before = shown
+        // The clock of the change starts at zero before the change is drawn.
+        if (moving != NavBarRules.BadgeChange.None) elapsed.snapTo(0f)
         change = moving
         if (moving == NavBarRules.BadgeChange.None) return@LaunchedEffect
         val duration = if (moving == NavBarRules.BadgeChange.Appear) NavBarRules.APPEAR_MS else NavBarRules.DISAPPEAR_MS
-        val start = androidx.compose.runtime.withFrameMillis { it }
-        elapsed = 0.0
-        while (elapsed < duration) elapsed = (androidx.compose.runtime.withFrameMillis { it } - start).toDouble()
+        elapsed.animateTo(duration.toFloat(), tween(duration.toInt(), easing = LinearEasing))
         change = NavBarRules.BadgeChange.None
     }
     if (!shown && change != NavBarRules.BadgeChange.Disappear) return
     val dot = NavBarRules.badgeBox(0.0, (boxHeight - glyph) / 2, glyph, rightToLeft)
-    val scale = if (change == NavBarRules.BadgeChange.Appear) NavBarRules.appearScale(elapsed) else 1.0
-    val opacity = if (change == NavBarRules.BadgeChange.Disappear) NavBarRules.disappearOpacity(elapsed) else 1.0
+    val moving = change
     Box(
         Modifier.absoluteOffset(dot.left.signedDp, dot.top.signedDp).size(dot.size.dp)
-            .scale(scale.toFloat()).alpha(opacity.toFloat()).background(color, CircleShape)
+            .graphicsLayer {
+                val millis = elapsed.value.toDouble()
+                val scale = if (moving == NavBarRules.BadgeChange.Appear) NavBarRules.appearScale(millis).toFloat() else 1f
+                scaleX = scale
+                scaleY = scale
+                alpha = if (moving == NavBarRules.BadgeChange.Disappear) NavBarRules.disappearOpacity(millis).toFloat() else 1f
+            }
+            .background(color, CircleShape)
             .testTag("nav-badge-dot"),
     )
 }

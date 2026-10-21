@@ -122,7 +122,12 @@ private fun keyName(key: Key): String = when (key) {
 
 /**
  * The touch of a card: a tap acts, a hold of 450 ms inside a slop of 10 performs the long press
- * once, and the release that follows it is swallowed (it is the same touch).
+ * once, and the release that follows it is swallowed (it is the same touch). The threshold and the
+ * slop are the contract's (`x-longPress.thresholdMs`, `touchSlop` in logical pixels), not the
+ * platform's, so every reader fires at the same moment.
+ *
+ * Written by hand because `combinedClickable` takes its long-press timeout and touch slop from the
+ * platform's view configuration, and the contract fixes both.
  */
 private fun Modifier.cardGestures(hasPress: Boolean, hasLong: Boolean, press: () -> Unit, long: () -> Unit, onPressing: (Boolean) -> Unit): Modifier =
     pointerInput(hasPress, hasLong) {
@@ -132,45 +137,44 @@ private fun Modifier.cardGestures(hasPress: Boolean, hasLong: Boolean, press: ()
             // The innermost control takes the touch: whoever sees it first in the main pass owns it.
             down.consume()
             onPressing(true)
-            var fired = false
-            var cancelled = false
-            val result = withTimeoutOrNull(if (hasLong) LongPressRules.THRESHOLD_MS.toLong() else Long.MAX_VALUE) {
-                var verdict: Release? = null
-                while (verdict == null) {
-                    val event = awaitPointerEvent()
-                    val change = event.changes.firstOrNull { it.id == down.id }
-                    verdict = when {
-                        change == null -> Release.Cancelled
-                        change.changedToUp() -> Release.Up
-                        (change.position - down.position).getDistance() > slop -> Release.Cancelled
-                        else -> null
+            // A gesture cut short (the node left the screen, the pointer input restarted) still lets go of the pose.
+            try {
+                val result = withTimeoutOrNull(if (hasLong) LongPressRules.THRESHOLD_MS.toLong() else Long.MAX_VALUE) {
+                    var verdict: Release? = null
+                    while (verdict == null) {
+                        val event = awaitPointerEvent()
+                        val change = event.changes.firstOrNull { it.id == down.id }
+                        verdict = when {
+                            change == null -> Release.Cancelled
+                            change.changedToUp() -> Release.Up
+                            (change.position - down.position).getDistance() > slop -> Release.Cancelled
+                            else -> null
+                        }
+                    }
+                    verdict
+                }
+                when (result) {
+                    null -> {
+                        long()
+                        // The rest of the touch belongs to the gesture that fired: nothing else acts on it.
+                        while (true) {
+                            val event = awaitPointerEvent(PointerEventPass.Initial)
+                            event.changes.forEach { it.consume() }
+                            if (event.changes.all { !it.pressed }) break
+                        }
+                    }
+                    Release.Up -> if (hasPress) press()
+                    Release.Cancelled -> {
+                        // A drag that left the slop: wait for the end of the touch without acting.
+                        while (true) {
+                            val event = awaitPointerEvent()
+                            if (event.changes.all { !it.pressed }) break
+                        }
                     }
                 }
-                verdict
+            } finally {
+                onPressing(false)
             }
-            when (result) {
-                null -> {
-                    fired = true
-                    long()
-                }
-                Release.Up -> if (hasPress) press()
-                Release.Cancelled -> cancelled = true
-            }
-            if (fired) {
-                // The rest of the touch belongs to the gesture that fired: nothing else acts on it.
-                while (true) {
-                    val event = awaitPointerEvent(PointerEventPass.Initial)
-                    event.changes.forEach { it.consume() }
-                    if (event.changes.all { !it.pressed }) break
-                }
-            } else if (cancelled) {
-                // A drag that left the slop: wait for the end of the touch without acting.
-                while (true) {
-                    val event = awaitPointerEvent()
-                    if (event.changes.all { !it.pressed }) break
-                }
-            }
-            onPressing(false)
         }
     }
 

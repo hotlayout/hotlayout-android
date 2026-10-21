@@ -9,15 +9,16 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshotFlow
-import kotlinx.coroutines.flow.drop
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
@@ -46,6 +47,7 @@ import com.hotlayout.render.modal.ModalRules
 import com.hotlayout.render.modal.ModalStack
 import com.hotlayout.render.modal.PageTransition
 import com.hotlayout.render.modal.SystemBackStep
+import com.hotlayout.render.motion.ProvideReducedMotion
 import com.hotlayout.render.screen.AnatomyScreen
 import com.hotlayout.render.screen.LocalSafeAreaOverride
 import com.hotlayout.render.screen.SafeAreaOverride
@@ -60,7 +62,6 @@ import com.hotlayout.text.Localization
 import com.hotlayout.text.TextDirectionRule
 import com.hotlayout.theme.NodeStyle
 import com.hotlayout.theme.StyleResolver
-import java.util.Locale
 import java.util.TimeZone
 import kotlinx.coroutines.Job
 
@@ -83,10 +84,10 @@ public data class ActionSource(val nodeId: String, val screenId: String, val rec
  * @param theme the theme contract of the project; the built-in theme without one.
  * @param themeId the theme of the set to draw with; the set's default theme without it.
  * @param data the host's data, a flat map from a data path to a value.
- * @param locale the device locale as the platform gives it (`ar-EG`, `pt_BR`).
+ * @param locale the device locale as the platform gives it (`ar-EG`, `pt_BR`); the first locale of the configuration without it.
  * @param entry a named entry point of the document; an unknown name starts on the initial screen.
  * @param timeZone the zone dates are written in; the zone of the device without it.
- * @param now «now» in epoch milliseconds for dates and counted days; the clock of the device without it. A host that gives
+ * @param now «now» in epoch milliseconds for dates and counted days; without it the clock of the device, read once when the document is first drawn. A host that gives
  * it owns the clock: a time left shown by the document does not count down on its own then.
  * @param images which picture addresses the reader may load and how much of one (see [ImagePolicy]).
  * @param fonts the families the theme names, from the host's resources; the system font otherwise.
@@ -114,7 +115,7 @@ public fun HotlayoutScreen(
     theme: HotlayoutThemeSet = HotlayoutThemeSet.builtIn,
     themeId: String? = null,
     data: DataScope = emptyMap(),
-    locale: String? = Locale.getDefault().toLanguageTag(),
+    locale: String? = LocalConfiguration.current.locales[0].toLanguageTag(),
     entry: String? = null,
     timeZone: TimeZone? = null,
     now: Long? = null,
@@ -138,9 +139,13 @@ public fun HotlayoutScreen(
     val host = rememberFlowHost(document, entry, data, writablePaths, Callbacks(onAction, onTrack, onWrite, onHaptic, onActionTask, onNavigate, onScreenChange, onReport))
     FlowEffects(host, document, entry, data)
 
-    val resolution = Localization.resolve(document.localization, locale)
+    val resolution = remember(document.localization, locale) { Localization.resolve(document.localization, locale) }
     val rightToLeft = TextDirectionRule.isRightToLeft(resolution.directionLocale) ?: false
-    val resolver = StyleResolver(theme.theme(themeId))
+    val selectedTheme = theme.theme(themeId)
+    val resolver = remember(selectedTheme) { StyleResolver(selectedTheme) }
+    // Without a «now» of the host the clock of the device is read once per document: the countdowns count from it.
+    val deviceNow = remember(document.documentId) { System.currentTimeMillis() }
+    val imagePolicy = rememberEquivalent(images, ::sameImagePolicy)
     val carousels = host.carousels
     val frames = host.flow.stack
     SideEffect { carousels.prune(frames.map { it.screenId }) }
@@ -149,7 +154,7 @@ public fun HotlayoutScreen(
     BoxWithConstraints(modifier) {
         val areaWidth = maxWidth.value.toDouble()
         val setup = ScreenSetup(
-            document, resolver, resolution, rightToLeft, data, host.session, timeZone, (now ?: System.currentTimeMillis()).toDouble(), images, fonts,
+            document, resolver, resolution, rightToLeft, data, host.session, timeZone, (now ?: deviceNow).toDouble(), imagePolicy, fonts,
             host.sink, host::perform, host::write, host.shownSerial, host.focusRegistries, autofill, carousels, frames, WidthClass.of(areaWidth), labels.back,
             clockPinned = now != null,
         )
@@ -157,10 +162,30 @@ public fun HotlayoutScreen(
             LocalLayoutDirection provides if (rightToLeft) LayoutDirection.Rtl else LayoutDirection.Ltr,
             LocalSafeAreaOverride provides SafeAreaOverride(safeAreaTop, safeAreaBottom),
         ) {
-            ScreenStack(host, setup, areaWidth, handleSystemBack)
+            ProvideReducedMotion { ScreenStack(host, setup, areaWidth, handleSystemBack) }
         }
     }
 }
+
+/**
+ * [value], or the instance held from the composition before when [same] says the two are equivalent: a host that
+ * builds a new value of a class without equality on every composition does not make every node of the screen redraw.
+ */
+@Composable
+private fun <T> rememberEquivalent(value: T, same: (T, T) -> Boolean): T {
+    val held = remember { HeldValue(value) }
+    val result = if (same(held.value, value)) held.value else value
+    SideEffect { held.value = result }
+    return result
+}
+
+private class HeldValue<T>(var value: T)
+
+/** Two picture policies that load the same addresses the same way; the lambdas compare by their own equality. */
+private fun sameImagePolicy(a: ImagePolicy, b: ImagePolicy): Boolean = a === b || (
+    a.assets == b.assets && a.maxDownloadBytes == b.maxDownloadBytes && a.maxPixelSide == b.maxPixelSide &&
+        a.totalDeadlineMs == b.totalDeadlineMs && a.fetch == b.fetch && a.resolve == b.resolve
+    )
 
 /** The state of the flow of one document: the stack, the session, the counters and the three ways to change them. */
 @Stable
@@ -222,27 +247,22 @@ private class FlowHost(
         val before = flow
         val host = hostScope()
         val handlers = callbacks
-        val updated = before.copy()
         val navigationSource = ActionSource(node.id, before.top?.screenId ?: "", before.nodeRecord(instances))
-        // The haptic request and the event come first, also when the host then cancels the navigation.
+        // The haptic request and the event come first, also when the host then cancels the navigation; they go out once.
         var announced = false
-        fun announce(outcome: PressOutcome) {
+        fun announce(outcome: PressOutcome, source: ActionSource) {
             if (announced) return
-            announced = true
-            outcome.haptic?.let { handlers.onHaptic?.invoke(it, navigationSource) }
-            outcome.track?.let { handlers.onTrack?.invoke(it, navigationSource) }
-        }
-        val outcome = updated.press(action, instances, host, sink) { pending, kind, from, to ->
-            announce(pending)
-            val handed = ActionCatalog.handed(action, RecordScope.overlay(host, navigationSource.record) ?: host)
-            handlers.onNavigate?.invoke(NavigateRequest(kind, from.screenId, to, handed, navigationSource)) != false
-        }
-        val source = ActionSource(node.id, before.top?.screenId ?: "", outcome.hostRecord)
-        if (!announced) {
             announced = true
             outcome.haptic?.let { handlers.onHaptic?.invoke(it, source) }
             outcome.track?.let { handlers.onTrack?.invoke(it, source) }
         }
+        val (updated, outcome) = before.press(action, instances, host, sink) { pending, kind, from, to ->
+            announce(pending, navigationSource)
+            val handed = ActionCatalog.handed(action, RecordScope.overlay(host, navigationSource.record) ?: host)
+            handlers.onNavigate?.invoke(NavigateRequest(kind, from.screenId, to, handed, navigationSource)) != false
+        }
+        val source = ActionSource(node.id, before.top?.screenId ?: "", outcome.hostRecord)
+        announce(outcome, source)
         var task: Job? = null
         outcome.handed?.let {
             handlers.onAction?.invoke(it, source)
@@ -292,23 +312,21 @@ private fun FlowEffects(host: FlowHost, document: HotlayoutDocument, entry: Stri
     }
     LaunchedEffect(document) {
         // A new version of the same document: the stack stays unless it holds a screen that is gone.
-        val updated = host.flow.copy()
-        val shown = updated.update(FlowDocument.of(document))
+        val (updated, shown) = host.flow.update(FlowDocument.of(document))
         if (updated != host.flow) host.flow = updated
         shown?.let {
             host.lastShownCause = it.cause
             host.callbacks.onScreenChange?.invoke(it)
         }
-        host.callbacks.onReport?.invoke(document.reports + host.sink.reports)
     }
-    // A report that comes after the first frame (a refused picture address, a list over its budget, a picture that failed) reaches the host too.
+    // The reports of the document and of the screens, once at the start and again for every report that comes later
+    // (a refused picture address, a list over its budget, a picture that failed).
     LaunchedEffect(host, document) {
-        snapshotFlow { host.sink.changes }.drop(1).collect { host.callbacks.onReport?.invoke(document.reports + host.sink.reports) }
+        host.sink.changes.collect { host.callbacks.onReport?.invoke(document.reports + host.sink.reports) }
     }
     LaunchedEffect(entry) {
         if (entry == host.flow.entry) return@LaunchedEffect
-        val updated = host.flow.copy()
-        val shown = updated.restart(entry)
+        val (updated, shown) = host.flow.restart(entry)
         host.flow = updated
         shown?.let {
             host.shownSerial += 1
@@ -319,8 +337,7 @@ private fun FlowEffects(host: FlowHost, document: HotlayoutDocument, entry: Stri
     LaunchedEffect(data) {
         // New data: every frame looks for its record again (`x-liveRecord`); an update of a record is not a show.
         val scope = RecordScope.merge(DataLayers(session = host.session, data = data))
-        val updated = host.flow.copy()
-        if (updated.refresh { scope[it] }) host.flow = updated
+        host.flow = host.flow.refresh { scope[it] }
     }
 }
 
@@ -339,8 +356,13 @@ private fun ScreenStack(host: FlowHost, setup: ScreenSetup, areaWidth: Double, h
         if (index <= pageIndex) return@mapIndexedNotNull null
         val screen = document.screen(frame.screenId) ?: return@mapIndexedNotNull null
         val shape = WideChrome.modalShape(screen.modalPlacement?.let(JsonValue::Str), areaWidth)
-        ModalLayerSpec(index, screen.screenId, screen.name, shape != WideChrome.ModalShape.Sheet, shape == WideChrome.ModalShape.SheetWindow, screen.backdropBlur, screen.dismissible) {
-            ScreenRoot(screen, frame, setup, asLayer = true, sheetWindow = shape == WideChrome.ModalShape.SheetWindow)
+        // One spec while nothing it draws changed: the stack compares the layers it keeps for their exit by identity.
+        key(index, screen.screenId) {
+            remember(screen, frame, setup, shape) {
+                ModalLayerSpec(index, screen.screenId, screen.name, shape != WideChrome.ModalShape.Sheet, shape == WideChrome.ModalShape.SheetWindow, screen.backdropBlur, screen.dismissible) {
+                    ScreenRoot(screen, frame, setup, asLayer = true, sheetWindow = shape == WideChrome.ModalShape.SheetWindow)
+                }
+            }
         }
     }
     ModalStack(
@@ -371,8 +393,9 @@ private data class Callbacks(
     val onReport: ((List<HotlayoutReport>) -> Unit)?,
 )
 
-/** What every screen of the stack is drawn with. */
-private class ScreenSetup(
+/** What every screen of the stack is drawn with; equal setups draw the same screens. */
+@Immutable
+private data class ScreenSetup(
     val document: HotlayoutDocument,
     val resolver: StyleResolver,
     val resolution: LocaleResolution,
@@ -389,26 +412,19 @@ private class ScreenSetup(
     val shownSerial: Int,
     val focusRegistries: InputFocusRegistries,
     val autofill: Boolean,
-    val carousels: CarouselMemory? = null,
-    val frames: List<FlowFrame> = emptyList(),
+    val carousels: CarouselMemory,
+    val frames: List<FlowFrame>,
     /** The width class of the box the host gave the screen. */
-    val areaClass: WidthClass = WidthClass.Compact,
+    val areaClass: WidthClass,
     /** The accessible name of the back arrow of an app bar. */
-    val backLabel: String = "Back",
-    val clockPinned: Boolean = false,
+    val backLabel: String,
+    val clockPinned: Boolean,
 ) {
     fun context(screen: ScreenEntry, frame: FlowFrame, root: DocumentNode, widthClass: WidthClass): RenderContext {
         val host = RecordScope.merge(DataLayers(session = session, data = data))
         val scope = RecordScope.overlay(host, frame.record) ?: host
         // One plan per screen, made before anything is drawn: a list cannot know what the lists before it drew.
         val budget = ListBudget.plan(root, scope)
-        if (budget.notDrawn > 0) {
-            val count = if (budget.notDrawn >= ListBudget.COUNT_CEILING) "at least ${budget.notDrawn}" else "${budget.notDrawn}"
-            sink.add(
-                HotlayoutReport.Kind.IgnoredInput, "screen “${screen.screenId}”",
-                "the list budget of ${ListBudget.PER_SCREEN} instances per screen was reached: $count instances of list templates were not drawn",
-            )
-        }
         return RenderContext(
             resolver = resolver,
             screenId = screen.screenId,
@@ -436,6 +452,16 @@ private class ScreenSetup(
             widthClass = widthClass,
         )
     }
+
+    /** What the list budget of a screen left undrawn, as a report; reported once the screen is composed. */
+    fun reportBudget(screen: ScreenEntry, budget: ListBudget.Plan?) {
+        if (budget == null || budget.notDrawn <= 0) return
+        val count = if (budget.notDrawn >= ListBudget.COUNT_CEILING) "at least ${budget.notDrawn}" else "${budget.notDrawn}"
+        sink.add(
+            HotlayoutReport.Kind.IgnoredInput, "screen “${screen.screenId}”",
+            "the list budget of ${ListBudget.PER_SCREEN} instances per screen was reached: $count instances of list templates were not drawn",
+        )
+    }
 }
 
 /**
@@ -447,8 +473,10 @@ private fun ScreenRoot(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup
     // The reader resolves the tree for the class and then draws a plain document: no widget knows the word «class».
     val widthClass = WideChrome.contentWidthClass(screen.presentation, setup.areaClass)
     val root = remember(screen.root, widthClass) { screen.root.inWidthClass(widthClass) }
+    val context = remember(setup, screen, frame, root, widthClass) { setup.context(screen, frame, root, widthClass) }
+    SideEffect { setup.reportBudget(screen, context.listBudget) }
     AnatomyScreen(
-        root, setup.context(screen, frame, root, widthClass), Modifier.testTag("screen:${screen.screenId}"),
+        root, context, Modifier.testTag("screen:${screen.screenId}"),
         shrinks = asLayer, insets = if (asLayer) ScreenInsets() else null, sheetWindow = sheetWindow,
     )
 }

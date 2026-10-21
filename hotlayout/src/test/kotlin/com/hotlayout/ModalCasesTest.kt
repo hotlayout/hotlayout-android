@@ -222,7 +222,7 @@ class ModalCasesTest {
                     val params = JsonObject(listOf("screenId" to (last["screenId"] ?: JsonValue.Null)))
                     var action = JsonObject(listOf("type" to JsonValue.Str("navigate"), "params" to JsonValue.Obj(params)))
                     if (last["record"] != null) action = action.with("carryRecord", JsonValue.Bool(true))
-                    flow.press(action).shown
+                    flow.press(action).outcome.shown
                 }
             }
             val actual = TableJson.shown(event).obj ?: JsonObject()

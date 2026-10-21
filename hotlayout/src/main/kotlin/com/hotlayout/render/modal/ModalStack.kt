@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -13,7 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.rememberUpdatedState
@@ -21,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
@@ -102,17 +104,16 @@ internal fun ModalStack(
     modifier: Modifier = Modifier,
 ) {
     val pageFocus = remember { FocusRequester() }
-    val focus = remember { HashMap<Int, FocusRequester>() }
     val topKey = layers.lastOrNull()?.index
     LaunchedEffect(focusSerial) {
-        if (focusSerial == 0) return@LaunchedEffect
-        val target = if (topKey == null) pageFocus else focus.getOrPut(topKey) { FocusRequester() }
-        runCatching { target.requestFocus() }
+        // A layer on top takes the focus itself (see [ModalLayerView]); the page takes it back after the last layer closed.
+        if (focusSerial != 0 && topKey == null) runCatching { pageFocus.requestFocus() }
     }
     val pageBlur = ModalRules.combinedBlur(layers.mapNotNull { it.blur })
     val reduced = rememberReducedMotion()
-    val seen = remember { LinkedHashMap<Int, ModalLayerSpec>() }
-    var finished by remember { androidx.compose.runtime.mutableStateOf(emptySet<Int>()) }
+    // The layers of the last composition: one that left the stack is drawn from here while it sinks back.
+    var seen by remember { mutableStateOf(emptyMap<Int, ModalLayerSpec>()) }
+    var finished by remember { mutableStateOf(emptySet<Int>()) }
     // A place of the stack taken again by a new layer is no longer a finished exit.
     val takenAgain = layers.map { it.index }.filter { it in finished }
     if (takenAgain.isNotEmpty()) SideEffect { finished = finished - takenAgain.toSet() }
@@ -133,17 +134,17 @@ internal fun ModalStack(
         val currentIndexes = layers.map { it.index }.toSet()
         val leaving = if (reduced) emptyList() else seen.values.filter { it.index !in currentIndexes && it.index !in finished }
         SideEffect {
-            seen.keys.retainAll { it in currentIndexes || it !in finished }
-            layers.forEach { seen[it.index] = it }
+            val next = seen.filterKeys { it in currentIndexes || it !in finished } + layers.associateBy { it.index }
+            if (next != seen) seen = next
         }
         val drawn = (layers + leaving).sortedBy { it.index }
         drawn.forEachIndexed { position, layer ->
-            androidx.compose.runtime.key(layer.index, layer.screenId) {
+            key(layer.index, layer.screenId) {
                 val isLeaving = leaving.any { it === layer }
                 val isTop = !isLeaving && layer === layers.lastOrNull()
                 val above = if (isLeaving) 0.0 else ModalRules.combinedBlur(layers.filter { it.index > layer.index }.mapNotNull { it.blur })
                 ModalLayerView(
-                    layer, isTop, above, marginDp, focus.getOrPut(layer.index) { FocusRequester() }, dismiss, Modifier.zIndex((position + 1).toFloat()),
+                    layer, isTop, above, marginDp, focusSerial, dismiss, Modifier.zIndex((position + 1).toFloat()),
                     leaving = isLeaving, onGone = { finished = finished + layer.index },
                 )
             }
@@ -157,7 +158,7 @@ private fun ModalLayerView(
     isTop: Boolean,
     blurredBy: Double,
     marginDp: Double,
-    focus: FocusRequester,
+    focusSerial: Int,
     dismiss: () -> Unit,
     modifier: Modifier,
     leaving: Boolean = false,
@@ -170,8 +171,14 @@ private fun ModalLayerView(
     val offset = remember { Animatable(0f) }
     val appear = remember { Animatable(if (reduced) 1f else 0f) }
     var sheetHeight by remember { mutableFloatStateOf(0f) }
-    var exiting by remember { androidx.compose.runtime.mutableStateOf(false) }
+    var exiting by remember { mutableStateOf(false) }
     val scrollSink = remember { ModalBodyScroll() }
+    val focus = remember { FocusRequester() }
+    val topNow = rememberUpdatedState(isTop)
+    LaunchedEffect(focusSerial) {
+        // Only a move the user made takes the focus, and only to the layer on top.
+        if (focusSerial != 0 && topNow.value) runCatching { focus.requestFocus() }
+    }
 
     val gone = rememberUpdatedState(onGone)
     LaunchedEffect(leaving) {
@@ -184,7 +191,6 @@ private fun ModalLayerView(
     }
     LaunchedEffect(Unit) { if (appear.value < 1f) appear.animateTo(1f, tween(APPEAR_MS, easing = ENTER_EASING)) }
 
-    val visibleShare = if (offset.value <= 0f || sheetHeight <= 0f) 1f else (1f - offset.value / sheetHeight).coerceIn(0f, 1f)
     val live = isTop && !exiting
 
     Box(
@@ -221,7 +227,12 @@ private fun ModalLayerView(
         // The dim: it takes every touch, so nothing reaches what lies under the layer.
         Box(
             Modifier.fillMaxSize()
-                .background(Color.Black.copy(alpha = (ModalRules.SCRIM_OPACITY * visibleShare * appear.value).toFloat()))
+                .drawBehind {
+                    // Read while drawing: the dim follows the drag and the appearance frame by frame without recomposing.
+                    val dragged = offset.value
+                    val visibleShare = if (dragged <= 0f || sheetHeight <= 0f) 1f else (1f - dragged / sheetHeight).coerceIn(0f, 1f)
+                    drawRect(Color.Black.copy(alpha = (ModalRules.SCRIM_OPACITY * visibleShare * appear.value).toFloat()))
+                }
                 .testTag("modal-scrim:${layer.screenId}")
                 .clearAndSetSemantics { }
                 .pointerInput(live, layer.dismissible) { detectTapGestures { if (live && layer.dismissible) dismissNow.value() } },

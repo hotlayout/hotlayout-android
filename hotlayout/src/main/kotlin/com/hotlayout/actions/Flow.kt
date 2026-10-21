@@ -1,5 +1,6 @@
 package com.hotlayout.actions
 
+import androidx.compose.runtime.Immutable
 import com.hotlayout.DataScope
 import com.hotlayout.HotlayoutAction
 import com.hotlayout.HotlayoutDocument
@@ -68,41 +69,37 @@ internal data class ListInstance(
 
 /** What a press did. Order of delivery: the haptic request, `track`, then either `handed` or `shown`. */
 internal data class PressOutcome(
-    var track: TrackEvent? = null,
-    var haptic: String? = null,
-    var handed: HotlayoutAction? = null,
+    val track: TrackEvent? = null,
+    val haptic: String? = null,
+    val handed: HotlayoutAction? = null,
     /** The record handed to the host together with the action. */
-    var hostRecord: DataScope? = null,
-    var shown: ScreenShownEvent? = null,
+    val hostRecord: DataScope? = null,
+    val shown: ScreenShownEvent? = null,
 )
 
 /**
- * The screen stack and how actions move it. A value: the screen keeps it in state, and the tables
- * drive it without any view.
+ * The screen stack and how actions move it. An immutable value: every move returns the next flow,
+ * so the screen keeps it in state as is and the tables drive it without any view.
  *
  * Rules: `navigate` pushes a screen of the document (an unknown one is the host's); `navigate.back`
  * pops, and on the first screen it is the host's; `navigate.section` resets the stack to the
  * section screen (the same single screen: nothing, no event); every other action goes to the host.
  * Navigation never happens when the host cancels it.
  */
+@Immutable
 internal class Flow private constructor(
-    document: FlowDocument,
-    entry: String?,
-    stack: List<FlowFrame>,
+    internal val document: FlowDocument,
+    internal val entry: String?,
+    internal val stack: List<FlowFrame>,
 ) {
-    internal var document: FlowDocument = document
-        private set
-    internal var entry: String? = entry
-        private set
-    internal var stack: List<FlowFrame> = stack
-        private set
-
     /** Starts a flow on its first screen. */
-    public constructor(document: FlowDocument, entry: String?) : this(document, entry, emptyList()) {
-        restart(entry)
-    }
+    constructor(document: FlowDocument, entry: String?) : this(document, entry, firstStack(document, entry))
 
-    internal fun copy(): Flow = Flow(document, entry, stack)
+    /** A flow after a move, and the screen the move showed (`null`: nothing new was shown). */
+    internal data class Moved(val flow: Flow, val shown: ScreenShownEvent?)
+
+    /** A flow after a press, and what the press did. */
+    internal data class Pressed(val flow: Flow, val outcome: PressOutcome)
 
     /** The same flow with another stack (restored after a configuration change); the caller checks the screens exist. */
     internal fun withStack(stack: List<FlowFrame>): Flow = Flow(document, entry, stack)
@@ -136,25 +133,19 @@ internal class Flow private constructor(
     }
 
     /** The host starts the flow again, with another entry. */
-    internal fun restart(entry: String?): ScreenShownEvent? {
-        this.entry = entry
-        val first = document.start(entry)
-        if (first == null) {
-            stack = emptyList()
-            return null
-        }
-        stack = listOf(FlowFrame(first))
-        return shownEvent(ScreenShownCause.Entry)
+    internal fun restart(entry: String?): Moved {
+        val next = Flow(document, entry)
+        return Moved(next, next.shownEvent(ScreenShownCause.Entry))
     }
 
     /**
      * The host renders a new version of the same document. If the stack holds a screen the new
      * version lacks, the flow starts again from the entry (`stackScreenGone`).
      */
-    internal fun update(newDocument: FlowDocument): ScreenShownEvent? {
-        document = newDocument
-        if (stack.all { newDocument.screen(it.screenId) != null }) return null
-        return restart(entry)
+    internal fun update(newDocument: FlowDocument): Moved {
+        val next = Flow(newDocument, entry, stack)
+        if (stack.all { newDocument.screen(it.screenId) != null }) return Moved(next, null)
+        return next.restart(entry)
     }
 
     /** The record scope of a node on the top screen: the screen's record, overlaid by its list instances. */
@@ -168,13 +159,11 @@ internal class Flow private constructor(
     /**
      * The host gave new collections: every frame searches for its links again. The stack, the
      * events and the show cause do not change — an update of the record is not a show. Returns
-     * whether any frame changed.
+     * this same flow when no frame changed.
      */
-    internal fun refresh(collections: (String) -> JsonValue?): Boolean {
+    internal fun refresh(collections: (String) -> JsonValue?): Flow {
         val next = stack.map { FlowFrame(it.screenId, LiveRecord.refresh(it.chain, collections, document.entitySources)) }
-        if (next == stack) return false
-        stack = next
-        return true
+        return if (next == stack) this else Flow(document, entry, next)
     }
 
     /**
@@ -189,47 +178,47 @@ internal class Flow private constructor(
         data: DataScope = emptyMap(),
         sink: ReportSink? = null,
         allowNavigation: (PressOutcome, NavigateKind, FlowFrame, String) -> Boolean = { _, _, _, _ -> true },
-    ): PressOutcome {
-        val outcome = PressOutcome()
-        outcome.haptic = ActionCatalog.haptic(action)
-        outcome.track = ActionCatalog.track(action, sink)
+    ): Pressed {
+        val outcome = PressOutcome(haptic = ActionCatalog.haptic(action), track = ActionCatalog.track(action, sink))
         val chain = nodeChain(instances)
         val record = if (chain.isEmpty()) null else LiveRecord.record(chain)
         val scope = RecordScope.overlay(data, record) ?: data
         val handed = ActionCatalog.handed(action, scope, sink)
         val target = handed.params?.get("screenId")
+        val stays = Pressed(this, outcome)
+        val toHost = Pressed(this, outcome.copy(handed = handed, hostRecord = record))
 
-        fun toHost(): PressOutcome {
-            outcome.handed = handed
-            outcome.hostRecord = record
-            return outcome
+        fun moved(next: List<FlowFrame>, cause: ScreenShownCause): Pressed {
+            val flow = Flow(document, entry, next)
+            return Pressed(flow, outcome.copy(shown = flow.shownEvent(cause)))
         }
 
-        when (handed.type) {
-            "none" -> return outcome
+        return when (handed.type) {
+            "none" -> stays
             "navigate" -> {
-                val screen = target?.let(document::screen) ?: return toHost()
-                if (!allowNavigation(outcome, NavigateKind.Push, stack.last(), target)) return outcome
+                val screen = target?.let(document::screen) ?: return toHost
+                if (!allowNavigation(outcome, NavigateKind.Push, stack.last(), target)) return stays
                 // A list row, a modal layer and an explicit `carryRecord` hand the record over.
                 val carried = RecordScope.carries(instances.isNotEmpty(), screen.presentation, action["carryRecord"]?.bool == true)
-                stack = stack + FlowFrame(target, if (carried) chain else emptyList())
-                outcome.shown = shownEvent(ScreenShownCause.Forward)
+                moved(stack + FlowFrame(target, if (carried) chain else emptyList()), ScreenShownCause.Forward)
             }
             "navigate.back" -> {
-                if (stack.size <= 1) return toHost()
-                if (!allowNavigation(outcome, NavigateKind.Back, stack.last(), stack[stack.size - 2].screenId)) return outcome
-                stack = stack.dropLast(1)
-                outcome.shown = shownEvent(ScreenShownCause.Back)
+                if (stack.size <= 1) return toHost
+                if (!allowNavigation(outcome, NavigateKind.Back, stack.last(), stack[stack.size - 2].screenId)) return stays
+                moved(stack.dropLast(1), ScreenShownCause.Back)
             }
             "navigate.section" -> {
-                if (target == null || document.screen(target) == null) return toHost()
-                if (stack.size == 1 && stack[0].screenId == target) return outcome
-                if (!allowNavigation(outcome, NavigateKind.Switch, stack.last(), target)) return outcome
-                stack = listOf(FlowFrame(target))
-                outcome.shown = shownEvent(ScreenShownCause.Switch)
+                if (target == null || document.screen(target) == null) return toHost
+                if (stack.size == 1 && stack[0].screenId == target) return stays
+                if (!allowNavigation(outcome, NavigateKind.Switch, stack.last(), target)) return stays
+                moved(listOf(FlowFrame(target)), ScreenShownCause.Switch)
             }
-            else -> return toHost()
+            else -> toHost
         }
-        return outcome
+    }
+
+    private companion object {
+        fun firstStack(document: FlowDocument, entry: String?): List<FlowFrame> =
+            document.start(entry)?.let { listOf(FlowFrame(it)) } ?: emptyList()
     }
 }

@@ -58,7 +58,7 @@ class ActionCasesTest {
         for (row in rows) {
             val name = row.name()
             val documentId = row["documentId"]?.string ?: ""
-            val flow = Flow(flowDocument(row, documentId), row["entry"]?.string)
+            var flow = Flow(flowDocument(row, documentId), row["entry"]?.string)
             val start = row["start"]
             assertEquals("start stack: $name", start?.get("stack")?.array.orEmpty().mapNotNull { it.string }, flow.stack.map { it.screenId })
             assertEquals("start shown: $name", start?.get("shown"), TableJson.shown(flow.shownEvent(ScreenShownCause.Entry)))
@@ -71,16 +71,24 @@ class ActionCasesTest {
                         // An auto-repeat of a held key is not a press: nothing happens.
                         val cancelled = step["cancelled"]?.bool == true
                         val action = TableJson.expand(step["action"] ?: JsonValue.Null).obj ?: JsonObject()
-                        outcome = flow.press(action, TableJson.instances(step["instances"]), data) { _, _, _, _ -> !cancelled }
+                        val pressed = flow.press(action, TableJson.instances(step["instances"]), data) { _, _, _, _ -> !cancelled }
+                        flow = pressed.flow
+                        outcome = pressed.outcome
                     }
-                    "restart" -> outcome.shown = flow.restart(step["entry"]?.string)
+                    "restart" -> {
+                        val moved = flow.restart(step["entry"]?.string)
+                        flow = moved.flow
+                        outcome = PressOutcome(shown = moved.shown)
+                    }
                     "rerender" -> Unit
                     "newVersion" -> {
                         var merged = row
                         merged = merged.with("screens", step["screens"])
                         step["initial"]?.let { merged = merged.with("initial", it) }
                         step["entryPoints"]?.let { merged = merged.with("entryPoints", it) }
-                        outcome.shown = flow.update(flowDocument(merged, documentId))
+                        val moved = flow.update(flowDocument(merged, documentId))
+                        flow = moved.flow
+                        outcome = PressOutcome(shown = moved.shown)
                     }
                     else -> error("unknown step: $label")
                 }
