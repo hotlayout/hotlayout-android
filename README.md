@@ -24,28 +24,25 @@ from API 31, so below that the picture stays sharp and nothing is blurred.
 
 ## Install
 
-**Coming soon: Maven Central.** The library is not published yet. The planned coordinates are:
+The library is on Maven Central. With `mavenCentral()` among the repositories of your
+`settings.gradle.kts`, add the dependency:
 
 ```kotlin
 dependencies {
-    // Coming soon: not available on Maven Central yet.
     implementation("com.hotlayout:hotlayout-android:0.2.0")
 }
 ```
 
-Today, use it from a clone of this repository as a Gradle module. Clone it next to your project and
-include the library module from your `settings.gradle.kts`:
+Your project needs the Compose compiler plugin, as any Compose app does.
+
+To work on the library itself, include its module from a clone of this repository:
 
 ```kotlin
 include(":hotlayout")
 project(":hotlayout").projectDir = file("../hotlayout-android/hotlayout")
 ```
 
-then depend on it with `implementation(project(":hotlayout"))`. Your project needs the same plugin and
-repository setup as this one (Android Gradle plugin, Kotlin, the Compose compiler plugin); see
-`gradle/libs.versions.toml`. A composite build (`includeBuild("../hotlayout-android")` with a
-dependency substitution for `com.hotlayout:hotlayout-android`) works as well.
-You can also run `./gradlew :hotlayout:publishToMavenLocal` and depend on the artifact from `mavenLocal()`.
+and depend on it with `implementation(project(":hotlayout"))`. You can also run `./gradlew :hotlayout:publishToMavenLocal` and depend on the artifact from `mavenLocal()`.
 
 The library does not declare the `INTERNET` permission. The default picture loader downloads over the
 network, so an app that shows pictures from `https:` addresses adds it to its own manifest:
@@ -175,7 +172,8 @@ comparing the readers side by side; `./gradlew test` draws them again without wr
 
 `./gradlew :hotlayout:publishToMavenLocal` builds the artifact (`com.hotlayout:hotlayout-android`) with its sources
 and javadoc jars. Signing uses the key given by the Gradle properties `signingInMemoryKey` and
-`signingInMemoryKeyPassword`; without them nothing is signed.
+`signingInMemoryKeyPassword`; without them nothing is signed. `scripts/publish-central.sh` builds the signed release
+and uploads it to the Central Portal, where the deployment waits to be published by hand.
 
 ## Documentation
 

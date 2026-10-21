@@ -25,7 +25,7 @@ First version prepared for public release.
 - A bounded trust boundary for documents and themes: wrong-shaped pieces are skipped and reported
   (`onReport`), numbers are bounded, images load over `https:` by default through an `ImagePolicy`
   with size, pixel and time limits, and standard actions are checked again before they are opened.
-- Public API validation (`apiCheck`), Maven publication configuration (not yet published) and a demo
+- Public API validation (`apiCheck`), Maven publication configuration (published on Maven Central as `com.hotlayout:hotlayout-android`) and a demo
   application with the three showcase apps.
 - Contract 9.28.0: the picture address rule, the list budget, the replacement of out-of-bounds theme
   numbers, silent text and reports that arrive late.
