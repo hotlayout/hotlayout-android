@@ -28,9 +28,7 @@ public object HotlayoutVersions {
  */
 public sealed class VersionVerdict {
     /** The same major, a minor this reader knows. */
-    public object Ok : VersionVerdict() {
-        override fun toString(): String = "Ok"
-    }
+    public data object Ok : VersionVerdict()
 
     /** The same major, a newer minor: read, unknown fields skipped. */
     public data class NewerMinor(val documentVersion: String) : VersionVerdict()

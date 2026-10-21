@@ -17,9 +17,7 @@ public sealed class StandardAction {
     /** Open a link of the app with an allowed scheme. */
     public data class Deeplink(val url: String, val scheme: String) : StandardAction()
     /** Close the host's own container. */
-    public object Close : StandardAction() {
-        override fun toString(): String = "Close"
-    }
+    public data object Close : StandardAction()
 }
 
 /** A parameter that did not pass its form. */

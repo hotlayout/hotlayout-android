@@ -3,7 +3,7 @@ package com.hotlayout
 import com.hotlayout.text.LocaleTags
 
 /**
- * Which language a document is shown in (schema 9.1.0).
+ * Which language a document is shown in.
  *
  * The host passes the DEVICE locale (`ar-EG`, `pt_BR`); the document has translations under short
  * codes. The contract's policy rows:

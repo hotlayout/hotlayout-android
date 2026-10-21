@@ -59,8 +59,8 @@ internal data class AlignedBox(val block: Double, val free: Double, val rects: L
  */
 internal object AlignRules {
     /**
-     * The host of a node (`Screen`, `Column`, a `Container`); `null` for a node that has no fields of
-     * 9.15.0. A `Row` is not a host: its fields are older and have schema defaults. No field or an
+     * The host of a node (`Screen`, `Column`, a `Container`); `null` for a node that has no alignment
+     * fields. A `Row` is not a host: its fields are older and have schema defaults. No field or an
      * unknown word acts as without the field: `start`, and `center` across a row.
      */
     fun read(type: String, props: JsonObject): AlignmentRead? {

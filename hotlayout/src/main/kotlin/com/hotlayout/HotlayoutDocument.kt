@@ -51,7 +51,7 @@ public fun loadDocument(bytes: ByteArray): HotlayoutDocument {
     val json = try {
         JsonValue.parse(bytes)
     } catch (error: JsonParseException) {
-        throw HotlayoutLoadException.MalformedJson(error.message ?: "")
+        throw HotlayoutLoadException.MalformedJson("${error.reason} at byte ${error.offset}")
     }
     return loadDocument(json)
 }
