@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import com.hotlayout.HotlayoutReport
 import com.hotlayout.JsonValue
+import com.hotlayout.model.WidgetType
 import com.hotlayout.render.layout.AlignRules
 import com.hotlayout.render.layout.ColumnWidget
 import com.hotlayout.render.layout.RowWidget
@@ -32,20 +33,8 @@ import com.hotlayout.render.widgets.TextFieldWidget
 import com.hotlayout.render.widgets.TextWidget
 
 /**
- * Widgets this reader draws. Every other widget of the schema is drawn by the unknown-widget rule
- * for now (its children in a column, `unknownWidget: 'render-children'`) and reported.
- */
-internal val drawnWidgets: Set<String> = setOf(
-    "ProgressBar", "CircularProgress",
-    "Screen", "Column", "Row", "Container", "Text", "Image", "Icon", "Button", "Spacer", "Divider", "Badge", "Stack", "IconButton", "ChoiceGroup",
-    "Repeater", "Grid", "ListTile", "Accordion", "Tabs", "Tab",
-    "AppBar", "NavBar", "NavItem",
-    "TextField", "Switch", "Checkbox",
-)
-
-/**
- * The one dispatcher by widget type. A new widget family adds ONE line here and its type to
- * [drawnWidgets]; everything else lives in the family's own file.
+ * The one dispatcher by widget type. A new widget family adds ONE line here and its [WidgetType];
+ * everything else lives in the family's own file. A type the schema does not have is drawn as its children.
  */
 @Composable
 internal fun Widget(call: WidgetCall) {
@@ -53,40 +42,40 @@ internal fun Widget(call: WidgetCall) {
     val context = call.context
     // A layer that fills its stack has the stack's height as the free height of its own flow.
     val fills = AlignRules.fills(node.fields, call.parentType)
-    when (node.type) {
-        "Screen", "Column" -> ColumnWidget(node.children, context.resolver.spacing(node.props["gap"] ?: JsonValue.Str("sm")) ?: 0.0, node, context, call.depth, call.placement.stretchWidth, fills)
-        "Row" -> RowWidget(node, context, call.depth, call.placement.stretchWidth, fills)
-        "Container" -> if (node.props["direction"]?.string == "row") {
+    when (node.widget) {
+        WidgetType.Screen, WidgetType.Column -> ColumnWidget(node.children, context.resolver.spacing(node.props["gap"] ?: JsonValue.Str("sm")) ?: 0.0, node, context, call.depth, call.placement.stretchWidth, fills)
+        WidgetType.Row -> RowWidget(node, context, call.depth, call.placement.stretchWidth, fills)
+        WidgetType.Container -> if (node.props["direction"]?.string == "row") {
             RowWidget(node, context, call.depth, call.placement.stretchWidth, fills)
         } else {
             ColumnWidget(node.children, context.resolver.spacing(node.props["gap"] ?: JsonValue.Str("none")) ?: 0.0, node, context, call.depth, call.placement.stretchWidth, fills)
         }
-        "Text" -> TextWidget(call)
-        "Image" -> ImageWidget(call)
-        "Icon" -> IconWidget(call)
-        "Button" -> ButtonWidget(call)
-        "Badge" -> BadgeWidget(call)
-        "IconButton" -> IconButtonWidget(call)
-        "ChoiceGroup" -> ChoiceGroupWidget(call)
-        "TextField" -> TextFieldWidget(call)
-        "Switch" -> SwitchWidget(call)
-        "Checkbox" -> CheckboxWidget(call)
-        "Spacer" -> SpacerWidget(call)
-        "Divider" -> DividerWidget(call)
-        "ProgressBar" -> ProgressBarWidget(call)
-        "CircularProgress" -> CircularProgressWidget(call)
-        "Repeater" -> RepeaterWidget(call)
-        "Grid" -> GridWidget(call)
-        "ListTile" -> ListTileWidget(call)
-        "Accordion" -> AccordionWidget(call)
-        "Tabs" -> TabsWidget(call)
+        WidgetType.Text -> TextWidget(call)
+        WidgetType.Image -> ImageWidget(call)
+        WidgetType.Icon -> IconWidget(call)
+        WidgetType.Button -> ButtonWidget(call)
+        WidgetType.Badge -> BadgeWidget(call)
+        WidgetType.IconButton -> IconButtonWidget(call)
+        WidgetType.ChoiceGroup -> ChoiceGroupWidget(call)
+        WidgetType.TextField -> TextFieldWidget(call)
+        WidgetType.Switch -> SwitchWidget(call)
+        WidgetType.Checkbox -> CheckboxWidget(call)
+        WidgetType.Spacer -> SpacerWidget(call)
+        WidgetType.Divider -> DividerWidget(call)
+        WidgetType.ProgressBar -> ProgressBarWidget(call)
+        WidgetType.CircularProgress -> CircularProgressWidget(call)
+        WidgetType.Repeater -> RepeaterWidget(call)
+        WidgetType.Grid -> GridWidget(call)
+        WidgetType.ListTile -> ListTileWidget(call)
+        WidgetType.Accordion -> AccordionWidget(call)
+        WidgetType.Tabs -> TabsWidget(call)
         // The panel is the node itself: its children in a column, `md` apart.
-        "Tab" -> ColumnWidget(node.children, context.resolver.spacing(JsonValue.Str("md")) ?: 12.0, null, context, call.depth, call.placement.stretchWidth)
-        "Stack" -> StackWidget(call)
-        "AppBar" -> AppBarWidget(call)
-        "NavBar" -> NavBarWidget(call)
-        "NavItem" -> NavItemWidget(call)
-        else -> {
+        WidgetType.Tab -> ColumnWidget(node.children, context.resolver.spacing(JsonValue.Str("md")) ?: 12.0, null, context, call.depth, call.placement.stretchWidth)
+        WidgetType.Stack -> StackWidget(call)
+        WidgetType.AppBar -> AppBarWidget(call)
+        WidgetType.NavBar -> NavBarWidget(call)
+        WidgetType.NavItem -> NavItemWidget(call)
+        WidgetType.Unknown -> {
             // Not drawn by this reader (yet): the children are drawn, as for an unknown widget.
             SideEffect {
                 context.sink.add(HotlayoutReport.Kind.UnknownWidget, context.location(node), "“${node.type}” is not drawn by this reader yet; its children are drawn")

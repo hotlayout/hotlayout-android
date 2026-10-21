@@ -28,6 +28,9 @@ internal data class DocumentNode(
     val style: JsonValue? get() = fields["style"]
     val styleWhen: JsonValue? get() = fields["styleWhen"]
     val visibleIf: JsonValue? get() = fields["visibleIf"]
+
+    /** The widget the type names, [WidgetType.Unknown] for a word the schema does not have. */
+    val widget: WidgetType get() = WidgetType.of(type)
 }
 
 
@@ -66,13 +69,6 @@ internal object DocumentReader {
 
     /** A key an open map cannot have. */
     internal const val FORBIDDEN_KEY = "__proto__"
-
-    /** Widgets of the schema (`x-compatibility.widgets`); any other type is an unknown widget. */
-    internal val knownWidgets: Set<String> = setOf(
-        "Screen", "AppBar", "Column", "Row", "Container", "Grid", "Stack", "Tabs", "Tab", "Accordion",
-        "ChoiceGroup", "Repeater", "Spacer", "Divider", "Text", "Image", "Icon", "Button", "IconButton",
-        "ListTile", "ProgressBar", "CircularProgress", "Badge", "NavBar", "NavItem", "TextField", "Switch", "Checkbox",
-    )
 
     internal fun read(raw: JsonValue): HotlayoutDocument {
         val json = withoutForbiddenKeys(raw)
@@ -162,7 +158,7 @@ internal object DocumentReader {
             val read = value.obj
             if (read != null) props = read else sink.add(HotlayoutReport.Kind.IgnoredInput, here, "props are not an object; the widget draws with its defaults")
         }
-        if (type !in knownWidgets) sink.add(HotlayoutReport.Kind.UnknownWidget, here, "unknown widget “$type”; its children are drawn")
+        if (WidgetType.of(type) == WidgetType.Unknown) sink.add(HotlayoutReport.Kind.UnknownWidget, here, "unknown widget “$type”; its children are drawn")
         val children = ArrayList<DocumentNode>()
         node["children"]?.let { list ->
             val items = list.array

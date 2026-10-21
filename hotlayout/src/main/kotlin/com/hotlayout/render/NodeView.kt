@@ -8,6 +8,7 @@ import com.hotlayout.JsonObject
 import com.hotlayout.actions.PressTarget
 import com.hotlayout.model.DocumentNode
 import com.hotlayout.model.DocumentReader
+import com.hotlayout.model.WidgetType
 import com.hotlayout.render.interaction.ProvideSiblings
 import com.hotlayout.render.interaction.pressableCard
 import com.hotlayout.render.motion.LocalLayerTurn
@@ -23,15 +24,6 @@ import com.hotlayout.render.widgets.rememberBackgroundImage
 import com.hotlayout.theme.BoxLook
 import com.hotlayout.theme.Corners
 import com.hotlayout.theme.NodeStyle
-
-/** Widgets whose style lands on their own surface (a role of the theme), not on the node box. */
-internal val roleSurfaceWidgets = setOf("Button", "IconButton", "Badge")
-
-/** Types that can host a carousel (the props decide). */
-private val carouselHosts = setOf("Row", "Repeater")
-
-/** Containers that are pressable as a whole when they carry an action (9.19.0). */
-internal val pressableContainers = setOf("Column", "Row", "Container", "Stack")
 
 /** A container is a control when its action is not `none` or carries an analytics event. */
 internal fun acts(action: JsonObject?): Boolean {
@@ -63,20 +55,20 @@ internal fun NodeView(
     // A card of a carousel with `perView` has the box width the carousel gives it, whatever it says about its own.
     context.cardWidth?.let { look = look.copy(width = it, minWidth = null, maxWidth = null) }
     // The padding of a carousel lies inside its scroll: the first card stands a padding from the edge.
-    if (node.type in carouselHosts && CarouselRules.of(node) != null) look = look.copy(padding = com.hotlayout.theme.Sides.Zero)
+    if (node.widget in WidgetType.carouselHosts && CarouselRules.of(node) != null) look = look.copy(padding = com.hotlayout.theme.Sides.Zero)
     // The inset of the status bar lies inside the box of the app bar, above its padding.
-    if (node.type == "AppBar" && context.barInset > 0) look = look.copy(padding = look.padding.copy(top = look.padding.top + context.barInset))
-    val box = if (node.type in roleSurfaceWidgets) outerOfRole(look) else look
+    if (node.widget == WidgetType.AppBar && context.barInset > 0) look = look.copy(padding = look.padding.copy(top = look.padding.top + context.barInset))
+    val box = if (node.widget in WidgetType.roleSurfaces) outerOfRole(look) else look
     val press = PressTarget.press(node)
     val long = PressTarget.longPress(node)
     val outerBase = modifier.then(look.margin.paddingModifier())
     val named = box.width != null || box.height != null
     // A role surface (button) fills the minimum its box names: the limits of the box do not reach the surface inside.
-    val fillsMinimum = node.type in roleSurfaceWidgets && (box.minWidth != null || box.minHeight != null)
+    val fillsMinimum = node.widget in WidgetType.roleSurfaces && (box.minWidth != null || box.minHeight != null)
     // Options of a write action under one parent are one group: «1 of 3» is said only inside a collection.
     val optionGroup = node.children.isNotEmpty() && com.hotlayout.actions.WriteActions.holdsOptionGroup(node.children) { context.isShown(it) }
-    val glassSource = if (node.type == "Screen") rememberGlassSource(node) else null
-    val motion = if (node.type == "Screen") null else NodeMotion.read(node.fields["motion"])
+    val glassSource = if (node.widget == WidgetType.Screen) rememberGlassSource(node) else null
+    val motion = if (node.widget == WidgetType.Screen) null else NodeMotion.read(node.fields["motion"])
     // The root never moves; a node placed by a stack has its motion turned back by the layer of the stack.
     val turn = if (parentType == "Stack") LocalLayerTurn.current else 0f
     val backgroundImage = rememberBackgroundImage(box.background, (box.radius ?: Corners()).shape(), context)
@@ -85,7 +77,7 @@ internal fun NodeView(
         if (press != null || long != null) outer = outer.then(Modifier.pressableCard(node, inner, press, long))
         // A named size is the size of the content too: a stack, a column or a row inside it fills that box and aligns
         // its children by its own words (without this the content sat at the top start of the named box).
-        Box(outer.then(if (optionGroup) Modifier.selectableGroup() else Modifier).glass(box.backdropBlur, (box.radius ?: Corners()).shape()).nodeBox(box.withoutMargin(), placement.stretchWidth, context.rightToLeft, clipsNamedSize = node.type !in roleSurfaceWidgets, backgroundImage = backgroundImage), propagateMinConstraints = named || fillsMinimum) {
+        Box(outer.then(if (optionGroup) Modifier.selectableGroup() else Modifier).glass(box.backdropBlur, (box.radius ?: Corners()).shape()).nodeBox(box.withoutMargin(), placement.stretchWidth, context.rightToLeft, clipsNamedSize = node.widget !in WidgetType.roleSurfaces, backgroundImage = backgroundImage), propagateMinConstraints = named || fillsMinimum) {
             ProvideSiblings(node) { Widget(WidgetCall(node, inner, style, placement, depth, parentType, context.listPosition, context.listNumber)) }
         }
     }
@@ -98,7 +90,7 @@ internal fun NodeView(
 /** The effective style; an app bar that is the zone of its screen lays its scrolled style over it while the body is scrolled. */
 private fun effectiveStyle(node: DocumentNode, context: RenderContext): JsonObject {
     val style = NodeStyle.effective(node, context.scope)
-    if (node.type != "AppBar" || !context.barScrolled) return style
+    if (node.widget != WidgetType.AppBar || !context.barScrolled) return style
     return AppBarRules.withScrolledLayer(style, AppBarRules.scrolledStyle(node), context.resolver)
 }
 
