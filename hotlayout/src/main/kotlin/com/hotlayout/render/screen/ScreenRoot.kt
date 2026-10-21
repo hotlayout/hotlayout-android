@@ -1,6 +1,8 @@
 package com.hotlayout.render.screen
 
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -182,7 +184,7 @@ internal fun AnatomyScreen(
                 }
             }
             plan.bar?.let { bar ->
-                val sink = if (plan.bodyAtScreenTop) Modifier.pointerInput(Unit) { detectTapGestures { } } else Modifier
+                val sink = if (plan.bodyAtScreenTop) Modifier.takesTaps() else Modifier
                 Box(Modifier.inZone(ScreenZone.Bar).then(sink)) {
                     NodeView(bar, inner.copy(barInset = screenInsets.top, barScrolled = scrolled, contentMaxWidth = plan.contentMax, barNav = plan.barNav), Placement.Stretched, 1, "Screen")
                 }
@@ -205,6 +207,17 @@ internal fun AnatomyScreen(
         }
         }
     }
+    }
+}
+
+/**
+ * Takes the taps that land on the box (the touch down and its release), so nothing under it acts on
+ * them: the app bar over a body that starts at the screen top. A drag is left to the body.
+ */
+private fun Modifier.takesTaps(): Modifier = pointerInput(Unit) {
+    awaitEachGesture {
+        awaitFirstDown().consume()
+        waitForUpOrCancellation()?.consume()
     }
 }
 
