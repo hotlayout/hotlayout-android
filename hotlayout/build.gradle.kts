@@ -106,6 +106,13 @@ afterEvaluate {
                 }
             }
         }
+        // A local repository that `scripts/publish-central.sh` zips into a bundle for the Central Portal.
+        repositories {
+            maven {
+                name = "staging"
+                url = uri(layout.buildDirectory.dir("staging-deploy"))
+            }
+        }
     }
 }
 
