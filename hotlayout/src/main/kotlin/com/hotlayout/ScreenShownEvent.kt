@@ -1,7 +1,5 @@
 package com.hotlayout
 
-import com.hotlayout.ScreenPresentation
-
 /** How a screen is shown: a page, or a layer over the page below. */
 public enum class ScreenPresentation(public val word: String) { Page("page"), Modal("modal") }
 
@@ -19,8 +17,8 @@ public data class ScreenShownEvent(
     val depth: Int,
     /** The record the screen was opened with. */
     val record: DataScope?,
-    /** `bottom` / `center`, only for a modal screen that names it. */
+    /** The placement of a modal screen: exactly `bottom` or `center`, and only when the screen names it; a word this reader does not know is not passed on. */
     val modalPlacement: String?,
-    /** The request of the shown screen about the status bar icons, only when the screen names one. */
+    /** The request of the shown screen about the status bar icons: exactly `light` or `dark`, and only when the screen names one. */
     val statusBarIcons: String?,
 )

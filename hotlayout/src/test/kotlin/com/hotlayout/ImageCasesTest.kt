@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
@@ -149,8 +150,7 @@ class ImageCasesTest {
 
     /** Waits for the file (read on another thread) and returns the frame. */
     private fun loaded(): android.graphics.Bitmap {
-        val deadline = System.currentTimeMillis() + 10_000
-        while (ImageStore.cached(address = picture) == null && System.currentTimeMillis() < deadline) Thread.sleep(20)
+        compose.waitUntil(10_000) { ImageStore.cached(address = picture) != null }
         compose.waitForIdle()
         return capture()
     }
@@ -214,7 +214,8 @@ class ImageCasesTest {
     @Test fun anAddressTheHostRefusesDrawsThePlaceholder() {
         // The default policy lets only `https:` through: a `data:` address is refused and nothing is loaded.
         show(Screens.document("a" to image(style = """"width":100,"height":100""", address = picture), rootStyle = "{}"))
-        Thread.sleep(200)
+        // Nothing is expected to load: give a request that should not exist time to show itself.
+        try { compose.waitUntil(300) { ImageStore.cached(picture) != null } } catch (_: ComposeTimeoutException) {}
         compose.waitForIdle()
         assertTrue(ImageStore.cached(picture) == null)
         val frame = capture()

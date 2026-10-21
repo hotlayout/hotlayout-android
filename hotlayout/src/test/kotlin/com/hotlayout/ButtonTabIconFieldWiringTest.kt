@@ -35,7 +35,7 @@ import org.robolectric.annotation.GraphicsMode
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h640dp-mdpi")
 @OptIn(androidx.compose.ui.test.ExperimentalTestApi::class)
-class WidgetFixesWiringTest {
+class ButtonTabIconFieldWiringTest {
     @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
 
     private fun show(document: HotlayoutDocument, autofill: Boolean = true) {

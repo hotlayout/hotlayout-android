@@ -433,6 +433,8 @@ public abstract class com/hotlayout/StandardAction {
 public final class com/hotlayout/StandardAction$Close : com/hotlayout/StandardAction {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/hotlayout/StandardAction$Close;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 
@@ -521,6 +523,8 @@ public final class com/hotlayout/VersionVerdict$NewerMinor : com/hotlayout/Versi
 public final class com/hotlayout/VersionVerdict$Ok : com/hotlayout/VersionVerdict {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/hotlayout/VersionVerdict$Ok;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
 

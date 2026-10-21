@@ -12,10 +12,10 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /**
- * The tables of schema 9.28.0 that are rules as functions: the address of a picture, the list budget, the numbers of a
- * theme and the paint of a text. The same rules on the real screen are in [Contract928WiringTest].
+ * The tables that are rules as functions: the address of a picture, the list budget, the numbers of a
+ * theme and the paint of a text. The same rules on the real screen are in [AddressBudgetPaintWiringTest].
  */
-class Contract928CasesTest {
+class AddressBudgetPaintCasesTest {
     private val images get() = Contract.json("fixtures/image-source/image-source-cases.json")
     private val budget get() = Contract.json("fixtures/repeater-filter/list-budget-cases.json")
     private val numbers get() = Contract.json("fixtures/theme-numbers/theme-number-cases.json")

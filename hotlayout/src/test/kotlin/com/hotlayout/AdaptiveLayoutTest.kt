@@ -10,7 +10,6 @@ import com.hotlayout.support.name
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -259,6 +258,5 @@ class AdaptiveLayoutTest {
             val document = AdaptiveRender.document(AdaptiveRender.screenRoot(listOf(JsonValue.Obj(grid))))
             for (width in listOf(393.0, 768.0, 1280.0)) assertNotNull("$extra at $width", stage.draw(AdaptiveRender.Spec(document, width, 300.0)))
         }
-        assertTrue(true)
     }
 }

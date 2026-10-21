@@ -2,7 +2,7 @@ package com.hotlayout
 
 import com.hotlayout.icons.IconBody
 import com.hotlayout.icons.IconSet
-import com.hotlayout.model.DocumentReader
+import com.hotlayout.model.WidgetType
 import com.hotlayout.support.Contract
 import com.hotlayout.theme.HotlayoutTheme
 import com.hotlayout.theme.Rgba
@@ -61,6 +61,6 @@ class MirrorsTest {
 
     @Test fun widgetListMirrorsTheArtifact() {
         val widgets = Contract.json("screen-schema.json")["x-compatibility"]?.get("widgets")?.obj
-        assertEquals(widgets?.keys?.toSet(), DocumentReader.knownWidgets)
+        assertEquals(widgets?.keys?.toSet(), WidgetType.entries.mapNotNull { it.word }.toSet())
     }
 }

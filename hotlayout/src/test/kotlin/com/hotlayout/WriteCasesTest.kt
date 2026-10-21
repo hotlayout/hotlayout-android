@@ -12,7 +12,6 @@ import com.hotlayout.support.TableJson
 import com.hotlayout.support.name
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
-import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /** Write actions (`setValue`, `toggleValue`) and the choice made of plain nodes (`actions/…`, `inputs/choice…`, `inputs/writeFormCases`). */
@@ -167,7 +166,6 @@ class WriteCasesTest {
             }
             assertEquals("after: ${row.name()}", row["after"]?.bool, holds())
         }
-        assertTrue(true)
     }
 
     // The disabled button (`disabledIf`, `requiresFilled`) against the form groups of the input table.

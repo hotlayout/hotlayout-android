@@ -10,6 +10,17 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
+## [Unreleased]
+
+### Changed
+
+- `StandardAction.Close` and `VersionVerdict.Ok` are `data object`s: they gain `equals` and `hashCode`
+  (all references to `INSTANCE` are unchanged; `toString` still returns `Close` / `Ok`).
+- The message of `HotlayoutLoadException.MalformedJson` no longer repeats its prefix: it reads
+  `malformed JSON: <reason> at byte <offset>`.
+- KDoc of `ScreenShownEvent.modalPlacement` and `statusBarIcons` names their closed sets of words.
+- The README example reads the document off the main thread and handles a document the reader refuses.
+
 ## [0.2.0] - 2026-10-20
 
 **Reads:** schema 9.28.x, theme contract 4.0.x, icon set 1.0.0.

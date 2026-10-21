@@ -10,6 +10,7 @@ import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.unit.dp
+import com.hotlayout.render.widgets.ImageStore
 import com.hotlayout.support.Contract
 import com.hotlayout.support.Screens
 import com.hotlayout.support.name
@@ -17,6 +18,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -25,16 +27,18 @@ import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
 
 /**
- * Schema 9.28.0 on the real screen: a refused picture address is a report and no request, the list budget
+ * The rules of the picture address, the list budget and the heard name on the real screen: a refused picture address is a report and no request, the list budget
  * cuts what a screen draws and says it once, and a text that paints nothing is not part of the name of a card.
  */
 @RunWith(RobolectricTestRunner::class)
 @GraphicsMode(GraphicsMode.Mode.NATIVE)
 @Config(qualifiers = "w360dp-h640dp-mdpi")
-class Contract928WiringTest {
+class AddressBudgetPaintWiringTest {
     @get:Rule val compose = createAndroidComposeRule<ComponentActivity>()
 
     private val reports = CopyOnWriteArrayList<HotlayoutReport>()
+
+    @Before fun freshImageStore() = ImageStore.reset()
 
     private fun show(document: HotlayoutDocument, data: Map<String, JsonValue> = emptyMap(), images: ImagePolicy = ImagePolicy()) {
         compose.setContent {
@@ -83,6 +87,9 @@ class Contract928WiringTest {
         val asked = CopyOnWriteArrayList<String>()
         val document = Screens.document("a" to image("script", urlSource("JavaScript:alert(1)")) + "," + image("dev", urlSource("http://localhost:5173/a.png")))
         show(document, images = ImagePolicy(resolve = { it }, fetch = { address, _ -> asked.add(address); null }))
+        // The request is made off the main thread; the script address makes none at all.
+        compose.waitUntil(5_000) { asked.isNotEmpty() }
+        compose.waitForIdle()
         assertEquals("the host's own answer is final, except a script", listOf("http://localhost:5173/a.png"), asked.toList())
     }
 
