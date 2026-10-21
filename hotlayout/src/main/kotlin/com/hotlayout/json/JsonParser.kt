@@ -61,9 +61,9 @@ internal object JsonParser {
 
         fun obj(depth: Int): JsonValue {
             index++
-            val result = JsonObject()
+            val result = JsonObject.Builder()
             skipWhitespace()
-            if (index < bytes.size && byte() == '}'.code) { index++; return JsonValue.Obj(result) }
+            if (index < bytes.size && byte() == '}'.code) { index++; return JsonValue.Obj(result.build()) }
             while (true) {
                 skipWhitespace()
                 if (index >= bytes.size || byte() != '"'.code) throw error("expected a key")
@@ -72,12 +72,12 @@ internal object JsonParser {
                 if (index >= bytes.size || byte() != ':'.code) throw error("expected ':'")
                 index++
                 skipWhitespace()
-                result.putInternal(key, value(depth + 1))
+                result.put(key, value(depth + 1))
                 skipWhitespace()
                 if (index >= bytes.size) throw error("unexpected end in an object")
                 when (byte()) {
                     ','.code -> index++
-                    '}'.code -> { index++; return JsonValue.Obj(result) }
+                    '}'.code -> { index++; return JsonValue.Obj(result.build()) }
                     else -> throw error("expected ',' or '}'")
                 }
             }

@@ -265,11 +265,11 @@ class ScreenAnatomyCasesTest {
                         val fields = JsonObject(record.map { (key, value) -> key.substringAfter('.') to value })
                         listOf(ListInstance(record.first().first.substringBefore('.'), fields))
                     }.orEmpty()
-                    flow.press(JsonObject.of("type" to "navigate", "params" to mapOf("screenId" to (target["screenId"]?.string ?: ""))), instances).shown
+                    flow.press(JsonObject.of("type" to "navigate", "params" to mapOf("screenId" to (target["screenId"]?.string ?: ""))), instances).outcome.shown
                 }
                 "pop" -> {
                     flow.press(JsonObject.of("type" to "navigate", "params" to mapOf("screenId" to "layer")))
-                    flow.press(JsonObject.of("type" to "navigate.back")).shown
+                        .flow.press(JsonObject.of("type" to "navigate.back")).outcome.shown
                 }
                 else -> error("unknown transition: ${row.name()}")
             }
@@ -396,10 +396,10 @@ class ScreenAnatomyCasesTest {
             assertEquals(row.name(), row["expect"] ?: JsonValue.Null, result?.let { JsonValue.Arr(it.map { id -> JsonValue.Str(id) }) } ?: JsonValue.Null)
             // The flow does the same: one screen, cause `switch`, no event when nothing changes.
             val screens = (stack + target).distinct().sorted()
-            val flow = Flow(FlowDocument("d", screens.map { FlowDocument.Screen(it, ScreenPresentation.Page) }, stack.first(), emptyMap()), null)
-            for (screen in stack.drop(1)) flow.press(JsonObject.of("type" to "navigate", "params" to mapOf("screenId" to screen)))
-            val outcome = flow.press(JsonObject.of("type" to "navigate.section", "params" to mapOf("screenId" to target)))
-            assertEquals(row.name(), result ?: stack, flow.stack.map { it.screenId })
+            var flow = Flow(FlowDocument("d", screens.map { FlowDocument.Screen(it, ScreenPresentation.Page) }, stack.first(), emptyMap()), null)
+            for (screen in stack.drop(1)) flow = flow.press(JsonObject.of("type" to "navigate", "params" to mapOf("screenId" to screen))).flow
+            val (switched, outcome) = flow.press(JsonObject.of("type" to "navigate.section", "params" to mapOf("screenId" to target)))
+            assertEquals(row.name(), result ?: stack, switched.stack.map { it.screenId })
             assertEquals(row.name(), result == null, outcome.shown == null)
             if (result != null) assertEquals(row.name(), ScreenShownCause.Switch, outcome.shown?.cause)
         }
