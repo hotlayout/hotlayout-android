@@ -2,6 +2,7 @@ package com.hotlayout.render.motion
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
@@ -62,6 +63,9 @@ internal fun NodeMotionBox(motion: NodeMotion, rightToLeft: Boolean, turnDegrees
     var onScreen by remember { mutableStateOf(false) }
     val begin = remember { mutableLongStateOf(-1L) }
     val elapsed = remember { mutableDoubleStateOf(0.0) }
+    // A glass node inside moves with this layer, which the page of the glass does not see: each frame redraws that page.
+    val glassInside = remember { com.hotlayout.render.paint.GlassInside() }
+    val glassSource = com.hotlayout.render.paint.LocalGlassSource.current
     if (fixed == null && !reduced) {
         LaunchedEffect(onScreen) {
             if (!onScreen) return@LaunchedEffect
@@ -70,6 +74,7 @@ internal fun NodeMotionBox(motion: NodeMotion, rightToLeft: Boolean, turnDegrees
                     NodeMotionFrames.requested.incrementAndGet()
                     if (begin.longValue < 0) begin.longValue = now
                     elapsed.doubleValue = (now - begin.longValue).toDouble()
+                    if (glassInside.inside) glassSource?.invalidate()
                 }
             }
         }
@@ -122,7 +127,7 @@ internal fun NodeMotionBox(motion: NodeMotion, rightToLeft: Boolean, turnDegrees
                 }
                 .restOnly(poseNow),
             propagateMinConstraints = true,
-        ) { content() }
+        ) { CompositionLocalProvider(com.hotlayout.render.paint.LocalGlassInside provides glassInside) { content() } }
     }
 }
 

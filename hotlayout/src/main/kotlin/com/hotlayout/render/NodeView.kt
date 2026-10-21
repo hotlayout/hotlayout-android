@@ -3,6 +3,7 @@ package com.hotlayout.render
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import com.hotlayout.JsonObject
 import com.hotlayout.actions.PressTarget
@@ -15,6 +16,7 @@ import com.hotlayout.render.interaction.pressableCard
 import com.hotlayout.render.motion.LocalLayerTurn
 import com.hotlayout.render.motion.NodeMotion
 import com.hotlayout.render.motion.NodeMotionBox
+import com.hotlayout.render.paint.LocalGlassLevel
 import com.hotlayout.render.paint.ProvideGlass
 import com.hotlayout.render.paint.glass
 import com.hotlayout.render.paint.glassSource
@@ -82,7 +84,9 @@ internal fun NodeView(
         // A named size is the size of the content too: a stack, a column or a row inside it fills that box and aligns
         // its children by its own words (without this the content sat at the top start of the named box).
         Box(outer.then(if (optionGroup) Modifier.selectableGroup() else Modifier).glass(box.backdropBlur, (box.radius ?: Corners()).shape()).nodeBox(box.withoutMargin(), placement.stretchWidth, context.rightToLeft, clipsNamedSize = node.widget !in WidgetType.roleSurfaces, backgroundImage = backgroundImage), propagateMinConstraints = named || fillsMinimum) {
+            CompositionLocalProvider(LocalGlassLevel provides LocalGlassLevel.current + if (box.backdropBlur != null) 1 else 0) {
             ProvideSiblings(node) { Widget(WidgetCall(node, inner, style, placement, depth, parentType, context.listPosition, context.listNumber)) }
+            }
         }
     }
     ProvideGlass(glassSource) {

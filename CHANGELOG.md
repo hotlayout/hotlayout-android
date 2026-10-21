@@ -21,6 +21,14 @@ is stated in every entry.
 - KDoc of `ScreenShownEvent.modalPlacement` and `statusBarIcons` names their closed sets of words.
 - The README example reads the document off the main thread and handles a document the reader refuses.
 
+### Fixed
+
+- Glass (`style.backdropBlur`) on a node that stands inside another glass (a glass button in an app bar that is glass in its
+  scrolled state), or inside a node with its own layer (motion, opacity, a pinned zone), no longer loses the node: the glass
+  nodes of a page stay registered while they are on it, and a glass is drawn after the glass it stands in.
+- A glass node with `motion` is drawn once, at the place it has moved to. It no longer leaves a second, shifted copy of itself
+  in the page it blurs (a sharp second edge below the tile and a halo around its icon).
+
 ## [0.2.0] - 2026-10-20
 
 **Reads:** schema 9.28.x, theme contract 4.0.x, icon set 1.0.0.
