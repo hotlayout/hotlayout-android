@@ -3,17 +3,18 @@ package com.hotlayout.render.motion
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.referentialEqualityPolicy
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalWindowInfo
 import com.hotlayout.JsonObject
 import com.hotlayout.JsonValue
@@ -48,15 +49,6 @@ internal object CountdownRules {
     fun now(base: Double, seconds: Double): Double = base + floor(seconds) * 1000
 }
 
-/** Whether the system asks for no motion (animations switched off in the developer settings or by the user). */
-@Composable
-internal fun rememberReducedMotion(): Boolean {
-    val resolver = LocalContext.current.contentResolver
-    return remember(resolver) {
-        runCatching { android.provider.Settings.Global.getFloat(resolver, android.provider.Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f }.getOrDefault(false)
-    }
-}
-
 /**
  * Hosts a text whose time left counts down: once a second, from the moment the reader already uses
  * as «now» (the clock of the device, unless the host pinned «now»). The clock runs only while the node is on screen, so a screen under another one or a
@@ -79,7 +71,7 @@ internal fun CountdownTicking(node: DocumentNode, context: RenderContext, conten
         return
     }
     var onScreen by remember { mutableStateOf(false) }
-    var seconds by remember { mutableStateOf(0.0) }
+    var seconds by remember { mutableDoubleStateOf(0.0) }
     val window = LocalWindowInfo.current.containerSize
     LaunchedEffect(onScreen) {
         if (!onScreen) return@LaunchedEffect
@@ -103,6 +95,9 @@ internal fun CountdownTicking(node: DocumentNode, context: RenderContext, conten
 /**
  * Hosts a node that may lead its numbers: without `animateChanges` and `animateIn` the content gets
  * the data untouched; with them it is redrawn on every frame of the runs in progress.
+ *
+ * The engine is a value in snapshot state: composing works on a copy of it and keeps the copy from an
+ * effect when it changed (a show, new data), and the frame loop puts a ticked copy into the state.
  */
 @Composable
 internal fun ValueTransitioned(node: DocumentNode, context: RenderContext, content: @Composable (ValueTransitionEngine.Shown) -> Unit) {
@@ -112,31 +107,34 @@ internal fun ValueTransitioned(node: DocumentNode, context: RenderContext, conte
         content(ValueTransitionEngine.Shown.plain(context.scope))
         return
     }
-    val engine = remember { ValueTransitionEngine() }
+    var committed by remember { mutableStateOf(ValueTransitionEngine(), referentialEqualityPolicy()) }
     val reduced = rememberReducedMotion()
     val fixed = LocalValueTransitionElapsedMs.current
-    var frame by remember { mutableLongStateOf(0L) }
     val scope = context.scope
     val literal = node.props["value"]?.takeIf { it["kind"]?.string == "literal" }?.get("value")
     val read: (String) -> JsonValue? = { path ->
         val value = if (path == ValueTransition.LITERAL_KEY) literal else scope[path]
         value?.takeIf { !it.isNull }
     }
+    val localeKey = "${context.locale.translation ?: ""}|${context.locale.formatting ?: ""}"
+    val engine = committed.copy()
     if (appears && !engine.mounted) engine.appear(ValueTransition.appearTargets(node.props), read, reduced)
     val targets = if (leads) ValueTransition.targets(node.props) else ValueTransition.appearTargets(node.props)
-    val localeKey = "${context.locale.translation ?: ""}|${context.locale.formatting ?: ""}"
     engine.sync(targets, read, leads, localeKey, reduced)
     if (fixed != null) {
         // The first frame fixes the start of a run; the second is the chosen moment.
         engine.tick(0.0)
         engine.tick(fixed)
-    } else {
+    }
+    if (!engine.sameState(committed)) SideEffect { committed = engine }
+    if (fixed == null) {
         // A frame loop that lives while runs are going on; a new run restarts it (the scope is the key).
         LaunchedEffect(scope, localeKey) {
-            while (engine.isRunning) withFrameMillis { engine.tick(it.toDouble()); frame = it }
-            frame++
+            // The first frame comes after the composition kept its copy: the loop reads the engine that is drawn.
+            do {
+                withFrameMillis { millis -> if (committed.isRunning) committed = committed.copy().apply { tick(millis.toDouble()) } }
+            } while (committed.isRunning)
         }
     }
-    @Suppress("UNUSED_EXPRESSION") frame
     content(engine.shown(scope))
 }
