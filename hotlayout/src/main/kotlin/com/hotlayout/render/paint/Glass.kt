@@ -3,7 +3,9 @@ package com.hotlayout.render.paint
 import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
@@ -11,6 +13,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.addOutline
@@ -20,6 +23,7 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
 import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.unit.IntSize
@@ -51,36 +55,81 @@ internal object GlassRules {
 
 /**
  * What the glass nodes of a page blur: the page drawn once WITHOUT them, recorded in a layer. A glass
- * node records its own content in a layer of its own during that pass and is drawn afterwards over
- * the page, so the tree is traversed once (a second traversal draws the layers of the children
- * a second time and some of them stay empty).
+ * node records its own content in a layer of its own and is drawn afterwards over the page, so the tree
+ * is traversed once (a second traversal draws the layers of the children a second time and some of them
+ * stay empty).
+ *
+ * The glass nodes stay registered for as long as they are on the page, not per pass: a node inside a layer of its own
+ * (a motion, an alpha) is not drawn again when the page is, so a list rebuilt from each pass would lose it. A glass node
+ * never draws into the host canvas, whether the page is being recorded or the node is redrawn alone: the page it would
+ * show itself in is the page the glass blurs, and the node would be drawn twice, one of them blurred and at the wrong place.
  */
 internal class GlassSource(val layer: GraphicsLayer) {
-    /** True while the page is being recorded for the glass: a glass node then draws nothing into it. */
+    /** True while the page is being recorded for the glass. */
     var recording = false
 
-    /** The place of the page in the root of the window. */
-    var origin = Offset.Zero
+    /** The place of the page in the window, read when the glass is drawn. */
+    var coordinates: LayoutCoordinates? = null
 
-    /** The glass nodes met during the recording, in tree order. */
+    /** The glass nodes of the page in the order they were first drawn: the tree order, a node before the glass inside it. */
     val entries = ArrayList<GlassEntry>()
 
-    /** The nodes that stand after a glass node in their parent (see [aboveGlass]), met during the recording, in tree order. */
+    /** The nodes that stand after a glass node in their parent (see [aboveGlass]), in the same order. */
     val above = ArrayList<AboveEntry>()
+
+    /** Read by the draw of the page: a change redraws it (a node moved, was redrawn alone, left the page). */
+    private val frame = mutableIntStateOf(0)
+
+    fun readFrame(): Int = frame.intValue
+
+    fun invalidate() { frame.intValue += 1 }
+
+    /**
+     * Puts a glass node on the page, after every glass it stands in: by the number of glass nodes around it, and in the order
+     * of the first draw within one. A bar that becomes glass after its buttons did is still drawn before them.
+     */
+    fun register(entry: GlassEntry) {
+        if (entry in entries) return
+        val at = entries.indexOfFirst { it.level > entry.level }
+        if (at < 0) entries.add(entry) else entries.add(at, entry)
+    }
+
+    /** Where the node stands in the page, read now (the layers of its ancestors, a motion, are part of it). */
+    fun place(entry: Placed): Offset {
+        val own = entry.coordinates?.takeIf { it.isAttached }?.positionInRoot() ?: return Offset.Zero
+        val page = coordinates?.takeIf { it.isAttached }?.positionInRoot() ?: Offset.Zero
+        return own - page
+    }
 }
 
-/** A node painted over the glass: its own content in a layer of its own and where it stands. */
-internal class AboveEntry(val content: GraphicsLayer, val origin: Offset)
+/** A node the page draws over its own content: where it stands. */
+internal interface Placed {
+    var coordinates: LayoutCoordinates?
+}
 
-/** A glass node of the last recording: its own content, the layer of its blur and where it stands. */
-internal class GlassEntry(
-    val content: GraphicsLayer,
-    val backdrop: GraphicsLayer,
-    val origin: Offset,
-    val size: IntSize,
-    val radiusPx: Float,
-    val shape: Shape,
-)
+/** A node painted over the glass: its own content in a layer of its own. */
+internal class AboveEntry(val content: GraphicsLayer) : Placed {
+    override var coordinates: LayoutCoordinates? = null
+}
+
+/** A glass node: its own content, the layer of its blur, its box and its shape. */
+internal class GlassEntry(val content: GraphicsLayer, val backdrop: GraphicsLayer) : Placed {
+    override var coordinates: LayoutCoordinates? = null
+    var size: IntSize = IntSize.Zero
+    var radiusPx: Float = 0f
+    var shape: Shape = RectangleShape
+
+    /** How many glass nodes the node stands inside: a glass is drawn after the glass it stands in. */
+    var level = 0
+}
+
+/** Whether a glass node stands inside a moving node (see `NodeMotionBox`). */
+internal class GlassInside { var inside = false }
+
+internal val LocalGlassInside = compositionLocalOf<GlassInside?> { null }
+
+/** How many glass nodes the composition below stands inside (provided by a glass node for its content). */
+internal val LocalGlassLevel = compositionLocalOf { 0 }
 
 internal val LocalGlassSource = compositionLocalOf<GlassSource?> { null }
 
@@ -90,6 +139,8 @@ internal object GlassProbe {
 
     /** How many nodes after a glass node were drawn over it. */
     val aboveDraws = AtomicInteger()
+    /** The boxes of the glass nodes of the last pass, in the order they were drawn. */
+    @Volatile var drawnBoxes: List<Rect> = emptyList()
     @Volatile var lastRadiusPx = 0f
     @Volatile var lastBox: Rect = Rect.Zero
 
@@ -115,10 +166,9 @@ internal fun ProvideGlass(source: GlassSource?, content: @Composable () -> Unit)
  * node over it: the recorded page blurred under the box, clipped by the radius, then the node itself.
  */
 internal fun Modifier.glassSource(source: GlassSource): Modifier = this
-    .onGloballyPositioned { source.origin = it.positionInRoot() }
+    .onGloballyPositioned { source.coordinates = it }
     .drawWithContent {
-        source.entries.clear()
-        source.above.clear()
+        source.readFrame()
         source.recording = true
         try {
             recordContent(source.layer)
@@ -126,11 +176,32 @@ internal fun Modifier.glassSource(source: GlassSource): Modifier = this
             source.recording = false
         }
         drawLayer(source.layer)
-        for (entry in source.entries) drawGlass(source, entry)
+        val drawn = ArrayList<Rect>()
+        for (entry in source.entries.toList()) drawGlass(source, entry)?.let(drawn::add)
+        GlassProbe.drawnBoxes = drawn
         // What stands after a glass node in its parent lies over that glass, not blurred under it.
-        for (entry in source.above) translate((entry.origin - source.origin).x, (entry.origin - source.origin).y) { drawLayer(entry.content) }
+        for (entry in source.above.toList()) {
+            val at = source.place(entry)
+            translate(at.x, at.y) { drawLayer(entry.content) }
+        }
         GlassProbe.aboveDraws.addAndGet(source.above.size)
     }
+
+/** Keeps [entry] on the page while the node is on it, and redraws the page when the node moves or leaves. */
+@Composable
+private fun <T : Placed> Modifier.onPage(source: GlassSource, list: MutableList<T>, entry: T): Modifier {
+    DisposableEffect(source, entry) {
+        onDispose {
+            list.remove(entry)
+            source.invalidate()
+        }
+    }
+    return this.onGloballyPositioned { coordinates ->
+        val moved = entry.coordinates?.takeIf { it.isAttached }?.positionInRoot() != coordinates.positionInRoot()
+        entry.coordinates = coordinates
+        if (moved) source.invalidate()
+    }
+}
 
 /**
  * A node that comes after a glass node in the same parent (a dot on a glass button): it is drawn over the glass, not into the
@@ -140,16 +211,13 @@ internal fun Modifier.glassSource(source: GlassSource): Modifier = this
 internal fun Modifier.aboveGlass(): Modifier {
     val source = LocalGlassSource.current ?: return this
     val content = rememberGraphicsLayer()
-    val origin = remember { FloatArray(2) }
+    val entry = remember(content) { AboveEntry(content) }
     return this
-        .onGloballyPositioned { it.positionInRoot().let { p -> origin[0] = p.x; origin[1] = p.y } }
+        .onPage(source, source.above, entry)
         .drawWithContent {
-            if (!source.recording) {
-                drawContent()
-                return@drawWithContent
-            }
+            if (entry !in source.above) source.above.add(entry)
             recordContent(content)
-            source.above.add(AboveEntry(content, Offset(origin[0], origin[1])))
+            if (!source.recording) source.invalidate()
         }
 }
 
@@ -164,22 +232,26 @@ internal fun Modifier.glass(blur: Int?, shape: Shape): Modifier {
     if (blur == null) return this
     val content = rememberGraphicsLayer()
     val backdrop = rememberGraphicsLayer()
-    val origin = remember { FloatArray(2) }
+    LocalGlassInside.current?.inside = true
+    val entry = remember(content, backdrop) { GlassEntry(content, backdrop) }
+    entry.level = LocalGlassLevel.current
     return this
-        .onGloballyPositioned { it.positionInRoot().let { p -> origin[0] = p.x; origin[1] = p.y } }
+        .onPage(source, source.entries, entry)
         .drawWithContent {
-            if (!source.recording) {
-                drawContent()
-                return@drawWithContent
-            }
+            entry.size = IntSize(size.width.toInt(), size.height.toInt())
+            entry.radiusPx = blur * density
+            entry.shape = shape
+            // Registered before the content is recorded: a glass node inside this one registers after it and is drawn over it.
+            source.register(entry)
             recordContent(content)
-            source.entries.add(GlassEntry(content, backdrop, Offset(origin[0], origin[1]), IntSize(size.width.toInt(), size.height.toInt()), blur * density, shape))
+            // Redrawn alone (its own layer changed, not the page): the page shows the new content.
+            if (!source.recording) source.invalidate()
         }
 }
 
-private fun DrawScope.drawGlass(source: GlassSource, entry: GlassEntry) {
+private fun DrawScope.drawGlass(source: GlassSource, entry: GlassEntry): Rect {
     val box = androidx.compose.ui.geometry.Size(entry.size.width.toFloat(), entry.size.height.toFloat())
-    val shift = entry.origin - source.origin
+    val shift = source.place(entry)
     // The blur reads the page beyond the box too (the page under the edge is blurred into the glass, as in CSS): the backdrop is
     // recorded wider than the box by what the blur reaches, and only the box is shown.
     val reach = GlassRules.reachPx(entry.radiusPx)
@@ -195,8 +267,9 @@ private fun DrawScope.drawGlass(source: GlassSource, entry: GlassEntry) {
     }
     GlassProbe.draws.incrementAndGet()
     GlassProbe.lastRadiusPx = entry.radiusPx
-    GlassProbe.lastBox = Rect(entry.origin, box)
+    GlassProbe.lastBox = Rect(shift, box)
     GlassProbe.lastBackdropReachPx = reach
+    return GlassProbe.lastBox
 }
 
 /**

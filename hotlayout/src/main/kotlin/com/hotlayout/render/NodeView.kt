@@ -86,7 +86,9 @@ internal fun NodeView(
         // A named size is the size of the content too: a stack, a column or a row inside it fills that box and aligns
         // its children by its own words (without this the content sat at the top start of the named box).
         Box(outer.then(if (optionGroup) Modifier.selectableGroup() else Modifier).glass(box.backdropBlur, (box.radius ?: Corners()).shape()).nodeBox(box.withoutMargin(), placement.stretchWidth, context.rightToLeft, clipsNamedSize = node.type !in roleSurfaceWidgets, backgroundImage = backgroundImage), propagateMinConstraints = named || fillsMinimum) {
+            androidx.compose.runtime.CompositionLocalProvider(com.hotlayout.render.paint.LocalGlassLevel provides com.hotlayout.render.paint.LocalGlassLevel.current + if (box.backdropBlur != null) 1 else 0) {
             ProvideSiblings(node) { Widget(WidgetCall(node, inner, style, placement, depth, parentType, context.listPosition, context.listNumber)) }
+            }
         }
     }
     ProvideGlass(glassSource) {
