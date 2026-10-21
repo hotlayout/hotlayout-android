@@ -133,6 +133,18 @@ class ScreenAnatomyWiringTest {
         near(640f - 34f, bounds("Home").bottom, "the bottom inset lies under the items of the bar")
     }
 
+    @Test fun aFloatingGlassBarHangsAboveTheBottomInsetAndIsDrawnAsGlass() {
+        val glassBar = nav(extra = "\"float\":true").replace("\"props\":{\"float\":true}", "\"props\":{\"float\":true},\"style\":{\"margin\":{\"bottom\":8,\"start\":16,\"end\":16},\"radius\":30,\"backdropBlur\":24,\"background\":{\"kind\":\"color\",\"color\":{\"value\":\"#11132b\",\"opacity\":0.62}}}")
+        val before = com.hotlayout.render.paint.GlassProbe.draws.get()
+        show(document(screen("home", "\"gap\":\"none\"", text("t", "Body") + "," + glassBar)), top = 24f, bottom = 34f)
+        capture()
+        // The inset lies outside the pill, under its margin: the label ends the inset and the margin above the bottom edge.
+        assertTrue("the bar hangs above the inset: ${bounds("Home").bottom}", bounds("Home").bottom <= 640f - 34f - 8f)
+        assertTrue("the bar is not pushed far up: ${bounds("Home").bottom}", bounds("Home").bottom >= 640f - 34f - 8f - 30f)
+        assertTrue("the glass of the bar was drawn", com.hotlayout.render.paint.GlassProbe.draws.get() > before)
+        assertEquals(24f, com.hotlayout.render.paint.GlassProbe.lastRadiusPx, 0.01f)
+    }
+
     @Test fun noInsetsWithoutAHost() {
         show(document(screen("home", "\"gap\":\"none\"", bar() + "," + nav())), top = 0f, bottom = 0f)
         val flat = bounds("Mission").top

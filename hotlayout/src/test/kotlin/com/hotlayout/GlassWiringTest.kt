@@ -67,6 +67,13 @@ class GlassWiringTest {
         assertTrue("the page is drawn once and the box stays where it is", near(image.rgbAt(150, 25), 0xff0000))
     }
 
+    @Test fun theBlurReadsThePageBeyondTheBoxSoTheEdgesAreNotSmearedByTheEdgePixels() {
+        show(glassOver(12))
+        capture()
+        // A blur of deviation 12 reaches three deviations; the backdrop is recorded that much wider on every side.
+        assertEquals((3 * 12), GlassProbe.lastBackdropReachPx)
+    }
+
     @Test fun aPageWithoutAGlassDrawsNone() {
         val before = GlassProbe.draws.get()
         show(glassOver(null))

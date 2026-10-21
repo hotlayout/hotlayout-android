@@ -86,7 +86,7 @@ private fun FixtureList() {
 
 /** One fixture drawn by the reader with the demo's data, fonts and theme. */
 @Composable
-fun FixtureScreen(name: String, screenId: String?, locale: String?, now: Long? = null, scenario: String? = null) {
+fun FixtureScreen(name: String, screenId: String?, locale: String?, now: Long? = null, scenario: String? = null, safeAreaTop: androidx.compose.ui.unit.Dp? = null, safeAreaBottom: androidx.compose.ui.unit.Dp? = null) {
     val context = LocalContext.current
     val view = LocalView.current
     val showcase = Showcases.isShowcase(name)
@@ -108,6 +108,8 @@ fun FixtureScreen(name: String, screenId: String?, locale: String?, now: Long? =
         data = remember(name, locale, scenario) { if (showcase) Showcases.data(context, name, locale, scenario) else SampleData.scope(context) },
         locale = locale ?: java.util.Locale.getDefault().toLanguageTag(),
         fonts = DemoFonts,
+        safeAreaTop = safeAreaTop,
+        safeAreaBottom = safeAreaBottom,
         images = remember(showcase) { if (showcase) Showcases.images(context) else ContractSamples.policy(context) },
         now = now ?: if (showcase) Showcases.now(context, name) else null,
         onAction = { action, _ ->

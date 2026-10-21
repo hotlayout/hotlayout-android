@@ -44,6 +44,9 @@ internal object GlassRules {
 
     /** Blur of what lies under a box needs a render effect: API 31. Below it the box keeps its own background and nothing blurs. */
     val supported: Boolean get() = Build.VERSION.SDK_INT >= 31
+
+    /** How far a Gaussian of deviation [sigmaPx] reaches: three deviations. */
+    fun reachPx(sigmaPx: Float): Int = kotlin.math.ceil(3 * sigmaPx).toInt()
 }
 
 /**
@@ -89,6 +92,9 @@ internal object GlassProbe {
     val aboveDraws = AtomicInteger()
     @Volatile var lastRadiusPx = 0f
     @Volatile var lastBox: Rect = Rect.Zero
+
+    /** How far beyond its box the last glass reads the page (pixels on every side). */
+    @Volatile var lastBackdropReachPx = 0
 }
 
 /** The source of the glass of a page: only a page whose tree names a glass records itself, and only where a blur exists. */
@@ -174,18 +180,23 @@ internal fun Modifier.glass(blur: Int?, shape: Shape): Modifier {
 private fun DrawScope.drawGlass(source: GlassSource, entry: GlassEntry) {
     val box = androidx.compose.ui.geometry.Size(entry.size.width.toFloat(), entry.size.height.toFloat())
     val shift = entry.origin - source.origin
+    // The blur reads the page beyond the box too (the page under the edge is blurred into the glass, as in CSS): the backdrop is
+    // recorded wider than the box by what the blur reaches, and only the box is shown.
+    val reach = GlassRules.reachPx(entry.radiusPx)
+    val padded = IntSize(entry.size.width + 2 * reach, entry.size.height + 2 * reach)
     entry.backdrop.renderEffect = BlurEffect(entry.radiusPx, entry.radiusPx, TileMode.Clamp)
-    entry.backdrop.record(drawContext.density, drawContext.layoutDirection, entry.size) {
-        translate(-shift.x, -shift.y) { drawLayer(source.layer) }
+    entry.backdrop.record(drawContext.density, drawContext.layoutDirection, padded) {
+        translate(-shift.x + reach, -shift.y + reach) { drawLayer(source.layer) }
     }
     translate(shift.x, shift.y) {
         val outline = Path().apply { addOutline(entry.shape.createOutline(box, layoutDirection, this@drawGlass)) }
-        clipPath(outline) { drawLayer(entry.backdrop) }
+        clipPath(outline) { translate(-reach.toFloat(), -reach.toFloat()) { drawLayer(entry.backdrop) } }
         drawLayer(entry.content)
     }
     GlassProbe.draws.incrementAndGet()
     GlassProbe.lastRadiusPx = entry.radiusPx
     GlassProbe.lastBox = Rect(entry.origin, box)
+    GlassProbe.lastBackdropReachPx = reach
 }
 
 /**

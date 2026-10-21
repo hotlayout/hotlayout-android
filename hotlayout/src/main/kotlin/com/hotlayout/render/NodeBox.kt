@@ -2,7 +2,6 @@ package com.hotlayout.render
 
 import android.graphics.BlurMaskFilter
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -16,6 +15,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
@@ -44,6 +44,27 @@ internal val Rgba.color: Color get() = Color(argb())
 
 /** Logical corners: Compose mirrors `topStart`… in right-to-left layout, as the contract asks. */
 internal fun Corners.shape(): Shape = RoundedCornerShape(topStart.dp, topEnd.dp, bottomEnd.dp, bottomStart.dp)
+
+/** The corners of the padding box: each radius less the border width, never below zero. */
+internal fun Corners.innerShape(border: Double): Shape =
+    RoundedCornerShape(maxOf(0.0, topStart - border).dp, maxOf(0.0, topEnd - border).dp, maxOf(0.0, bottomEnd - border).dp, maxOf(0.0, bottomStart - border).dp)
+
+/** A solid border painted over the whole box: the ring between the outer edge and the edge inset by [width]. */
+internal fun Modifier.solidBorderOver(width: Double, color: Color, radius: Corners): Modifier = drawWithContent {
+    drawContent()
+    val outer = radius.shape().createOutline(size, layoutDirection, this)
+    val w = (width * density).toFloat()
+    val innerSize = Size(maxOf(0f, size.width - 2 * w), maxOf(0f, size.height - 2 * w))
+    val inner = radius.innerShape(width).createOutline(innerSize, layoutDirection, this)
+    val ring = Path().apply {
+        fillType = androidx.compose.ui.graphics.PathFillType.EvenOdd
+        addOutline(outer)
+        val hole = Path().apply { addOutline(inner) }
+        hole.translate(Offset(w, w))
+        addPath(hole)
+    }
+    drawPath(ring, color)
+}
 
 internal fun Sides.paddingModifier(extra: Double = 0.0): Modifier =
     Modifier.padding(start = (start + extra).dp, top = (top + extra).dp, end = (end + extra).dp, bottom = (bottom + extra).dp)
@@ -83,13 +104,20 @@ internal fun Modifier.nodeBox(look: BoxLook, stretch: Boolean, rightToLeft: Bool
     }
     look.opacity?.let { modifier = modifier.alpha(it.toFloat()) }
     if (look.shadow.isNotEmpty()) modifier = modifier.cssShadows(look.shadow, shape)
-    if (rounded || (clipsNamedSize && (look.width != null || look.height != null))) modifier = modifier.clip(shape)
-    modifier = modifier.backgroundOf(look.background, shape, rightToLeft).then(backgroundImage)
     val borderColor = look.borderColor
-    if (borderColor != null && border > 0) {
-        modifier = if (look.borderDashed) modifier.dashedBorder(border, borderColor.color, look.radius) else modifier.border(border.dp, borderColor.color, shape)
-    }
-    return modifier.then(look.padding.paddingModifier(border))
+    val solidBorder = borderColor != null && border > 0 && !look.borderDashed
+    // The border is the last thing painted and lies outside the clip of the content: clipped with it, its outer half would
+    // be eaten twice on the arcs of the corners (the clip and the stroke both soften the edge).
+    if (solidBorder) modifier = modifier.solidBorderOver(border, borderColor!!.color, look.radius ?: Corners())
+    if (borderColor != null && border > 0 && look.borderDashed) modifier = modifier.dashedBorder(border, borderColor.color, look.radius)
+    modifier = modifier.backgroundOf(look.background, shape, rightToLeft)
+    // The content is clipped by the INNER edge of the border (the padding box): the outer radius less the border width.
+    val contentShape = if (rounded && border > 0) (look.radius ?: Corners()).innerShape(border) else shape
+    // The border takes room, as in CSS: the content starts inside it, and so does the clip.
+    if (border > 0) modifier = modifier.padding(border.dp)
+    if (rounded || (clipsNamedSize && (look.width != null || look.height != null))) modifier = modifier.clip(contentShape)
+    modifier = modifier.then(backgroundImage)
+    return modifier.then(look.padding.paddingModifier())
 }
 
 /**
