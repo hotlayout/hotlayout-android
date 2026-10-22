@@ -14,6 +14,9 @@ is stated in every entry.
 
 ### Fixed
 
+- A focused text field rises above the on-screen keyboard together with the line under it (helper, error, counter):
+  it used to be scrolled only by its box, so the box could end under the keyboard or the pinned block and the line
+  under it stayed hidden. A modal layer now rises above the keyboard too (it stayed under it).
 - A glass inside a glass (`style.backdropBlur`; a glass button in an app bar that turns to glass after a scroll)
   blurs what is drawn under it, the outer glass and its tint included, as a backdrop filter does. It used to
   blur the page under both, so the button showed the sharp, bright content of the body through a blurred bar.

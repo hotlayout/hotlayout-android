@@ -265,8 +265,12 @@ change in either side is not caught by the other:
   only follows (`ModalWiringTest`: events and stack unchanged mid-motion).
   The top inset lies inside the bar box (or lowers the body without a bar); the bottom one only under a bottom zone.
   Layers take none. `statusBarIcons` is only in the show event; the reader never touches the system bars.
-- The keyboard lifts the pinned block (not the nav bar) by `keyboardInset()`; the body area shrinks, so a focused field
-  scrolls into view by Compose's own bring-into-view in the body scroll.
+- The keyboard lifts the pinned block (not the nav bar) by `keyboardInset()`; the body area shrinks, and a focused
+  field is scrolled into it with the line under it (helper, error, counter): the field asks `BringIntoViewRequester` on
+  its whole column once the keyboard has moved the area (`KeepInViewAboveKeyboard`; the cursor's own request covers the
+  box only). A modal layer is placed in the area above the keyboard (`ModalBox`). The host must not pan the window:
+  with `adjustUnspecified` the system shifts the whole window up and the reader cannot see it; use `adjustResize` with
+  an edge-to-edge window (the reader still reads the inset itself).
 - Navigation bar: its place is `WideChrome.screenChrome` / `navPlace` (`NavBarRules.place` delegates); `RenderContext.barInset/barScrolled/navInset/navLine` are what the zones hand the bar and the items.
 - The badge dot is tagged `nav-badge-dot` (read with the unmerged tree); the flash runs only on a change of the condition.
 - Not drawn: the bar of navigation of its own at the top and the items in the app bar, `backdropBlur` of a floating bar.

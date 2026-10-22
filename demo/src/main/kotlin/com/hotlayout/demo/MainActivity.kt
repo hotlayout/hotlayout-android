@@ -46,6 +46,8 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        // The keyboard is an inset the reader reads; the window must not be panned by the system.
+        window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         val fixture = intent.getStringExtra("fixture")
         val screen = intent.getStringExtra("screen")
         val locale = intent.getStringExtra("locale")

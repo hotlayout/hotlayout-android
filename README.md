@@ -158,6 +158,10 @@ consumed (`safeDrawingPadding()`, a `Scaffold`, `consumeWindowInsets`). The reco
 (`enableEdgeToEdge()`) and lets the reader add them; a host that pads works as well and gets nothing added twice.
 `safeAreaTop` / `safeAreaBottom` still override the window's values.
 
+Give the activity `android:windowSoftInputMode="adjustResize"` (with an edge-to-edge window it only reports the keyboard
+as an inset and does not resize anything). With the default the system may pan the whole window when the keyboard comes,
+and a field low on the screen is then shifted instead of scrolled above the keyboard.
+
 ## Shared case tables
 
 The rules of the contract are checked against the case tables the readers share (`contract/fixtures/*/*-cases.json`).

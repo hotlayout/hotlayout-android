@@ -36,6 +36,8 @@ import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.Layout
+import com.hotlayout.render.screen.rememberConsumedInsets
+import com.hotlayout.render.widgets.keyboardInset
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -293,7 +295,9 @@ private fun escapeKey(down: Boolean, key: Key, repeating: Boolean, step: () -> U
 /**
  * Places its one child as [ModalRules.box] says: a sheet at the bottom of the area, a window in the
  * middle. The height is that of the content, no taller than the room; taller content is measured
- * with the smaller height and its body scrolls inside.
+ * with the smaller height and its body scrolls inside. While the on-screen keyboard is shown the area ends at its
+ * top, so the layer rises above it (`x-style.layout.inputs.focus.modal`); a keyboard that an ancestor of the host
+ * has already consumed is not taken twice.
  */
 @Composable
 private fun ModalBox(window: Boolean, sheetWindow: Boolean, marginDp: Double, content: @Composable () -> Unit) {
@@ -303,10 +307,12 @@ private fun ModalBox(window: Boolean, sheetWindow: Boolean, marginDp: Double, co
         window -> WideChrome.ModalShape.Window
         else -> WideChrome.ModalShape.Sheet
     }
-    Layout(content, Modifier.fillMaxSize()) { measurables, constraints ->
+    val consumed = rememberConsumedInsets()
+    val keyboard = keyboardInset(consumed.consumed).value.toDouble()
+    Layout(content, Modifier.then(consumed.modifier).fillMaxSize()) { measurables, constraints ->
         // The rules speak logical pixels (400 wide at most): the box is worked out in them and then scaled.
         val width = constraints.maxWidth / density.toDouble()
-        val height = constraints.maxHeight / density.toDouble()
+        val height = maxOf(0.0, constraints.maxHeight / density.toDouble() - keyboard)
         val layerWidth = (WideChrome.layerWidth(shape, width, marginDp) * density).roundToInt()
         val available = (WideChrome.layerRoom(shape, height, marginDp) * density).roundToInt()
         val placeable = measurables.firstOrNull()?.measure(Constraints(layerWidth, layerWidth, 0, available))

@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -23,6 +25,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
+import kotlinx.coroutines.flow.collectLatest
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -115,8 +120,12 @@ internal fun TextFieldWidget(call: WidgetCall) {
     val counter = InputPartsRules.counterText(node.props["counter"], node.props["maxLength"], shown)
     val xs = look.spacing("xs", 4.0)
 
+    val inView = remember { BringIntoViewRequester() }
+    KeepInViewAboveKeyboard(driver.state.focused, inView)
+
     Column(
         (if (call.placement.stretchWidth) Modifier.fillMaxWidth() else Modifier)
+            .bringIntoViewRequester(inView)
             .alpha(if (disabled) InputRules.DISABLED_OPACITY.toFloat() else 1f)
             .semantics(mergeDescendants = true) {
                 testTag = "node:${node.id}"
@@ -128,6 +137,24 @@ internal fun TextFieldWidget(call: WidgetCall) {
         LabelRow(label, required, look, context)
         FieldBox(call, driver, requester, look, lines, numeric, invalid, disabled, shown)
         NoteRow(note, errorText != null, counter, look, context)
+    }
+}
+
+/**
+ * The focused field, with the line under it, is scrolled into the body area above the on-screen keyboard
+ * (`x-style.layout.inputs.focus.visible`). The area ends at the keyboard (or at the pinned block that rides on it),
+ * so it is asked once the keyboard has changed it, a frame after the inset moves; a field that is already in view
+ * does not scroll. Without the keyboard the request is the same and changes nothing.
+ */
+@Composable
+private fun KeepInViewAboveKeyboard(focused: Boolean, requester: BringIntoViewRequester) {
+    if (!focused) return
+    val keyboard = rememberUpdatedState(keyboardInset())
+    LaunchedEffect(requester) {
+        snapshotFlow { keyboard.value }.collectLatest {
+            withFrameNanos { }
+            requester.bringIntoView()
+        }
     }
 }
 
