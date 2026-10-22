@@ -153,6 +153,37 @@ class LayoutOnDeviceTest {
         assertTrue("pixels between black and white across the edge under the glass: $grey", grey >= (10 * density).toInt())
     }
 
+    /**
+     * A glass inside a glass (a glass button in a glass bar) blurs what is drawn under it, the outer glass included, as a
+     * backdrop filter does: over a red page, in an outer glass with an opaque blue tint, the inner glass with no tint of its
+     * own shows blue, not the red page under both.
+     */
+    @Test
+    fun aGlassInsideAGlassBlursTheOuterGlass() {
+        val document = hostile(
+            """{"schemaVersion":"9.27.0","documentId":"nested-glass","initialScreenId":"s","screens":[{"screenId":"s","name":"S","root":
+            {"id":"r","type":"Screen","props":{"gap":"md"},"style":{"background":{"kind":"color","color":{"value":"#ff0000"}}},"children":[
+              {"id":"outer","type":"Container","props":{"direction":"column","gap":"none","align":"start"},
+               "style":{"width":240,"height":160,"padding":{"top":40,"start":40},"backdropBlur":16,"background":{"kind":"color","color":{"value":"#0000ff"}}},
+               "children":[
+                {"id":"inner","type":"Container","props":{"direction":"column","gap":"none"},
+                 "style":{"width":120,"height":80,"backdropBlur":8,"background":{"kind":"color","color":{"value":"#000000","opacity":0.02}}},
+                 "children":[{"id":"t","type":"Text","props":{"content":{"kind":"literal","value":"In"}},"style":{"color":{"value":"#ffffff"}}}]}
+               ]}
+            ]}}]}""",
+        )
+        rule.setContent { FixtureHost(document, Recorder()) }
+        rule.waitForIdle()
+        val text = rule.onNodeWithText("In").getBoundsInRoot()
+        val image = rule.onRoot().captureToImage().toPixelMap()
+        val density = targetContext.resources.displayMetrics.density
+        // Inside the inner box, away from its text and from its edges (the blur of the outer edge reaches 3 × 8 points in).
+        val x = ((text.left.value + 90) * density).toInt()
+        val y = ((text.top.value + 50) * density).toInt()
+        val c = image[x, y]
+        assertTrue("the inner glass shows the blue outer glass, not the red page: $c", c.blue > 0.8f && c.red < 0.2f)
+    }
+
     private fun lineWidth(text: String): Float {
         val node = rule.onNodeWithText(text, useUnmergedTree = true).fetchSemanticsNode()
         val results = mutableListOf<TextLayoutResult>()

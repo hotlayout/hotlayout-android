@@ -54,8 +54,8 @@ internal object GlassRules {
 }
 
 /**
- * What the glass nodes of a page blur: the page drawn once WITHOUT them, recorded in a layer. A glass
- * node records its own content in a layer of its own and is drawn afterwards over the page, so the tree
+ * What the glass nodes of a page blur: the page drawn once WITHOUT them, recorded in a layer, and under a glass node the
+ * glass nodes drawn before it. A glass node records its own content in a layer of its own and is drawn afterwards over the page, so the tree
  * is traversed once (a second traversal draws the layers of the children a second time and some of them
  * stay empty).
  *
@@ -177,7 +177,12 @@ internal fun Modifier.glassSource(source: GlassSource): Modifier = this
         }
         drawLayer(source.layer)
         val drawn = ArrayList<Rect>()
-        for (entry in source.entries.toList()) drawGlass(source, entry)?.let(drawn::add)
+        val under = ArrayList<GlassEntry>()
+        for (entry in source.entries.toList()) {
+            // A snapshot: a layer may replay its record later (the software path), when the list holds this entry too.
+            drawn.add(drawGlass(source, entry, under.toList()))
+            under.add(entry)
+        }
         GlassProbe.drawnBoxes = drawn
         // What stands after a glass node in its parent lies over that glass, not blurred under it.
         for (entry in source.above.toList()) {
@@ -249,27 +254,48 @@ internal fun Modifier.glass(blur: Int?, shape: Shape): Modifier {
         }
 }
 
-private fun DrawScope.drawGlass(source: GlassSource, entry: GlassEntry): Rect {
+/**
+ * Draws [entry] over the page: what lies under its box blurred, clipped by its shape, then the node itself. What lies under it
+ * is the page AND the glass nodes drawn before it ([under]: the glass it stands in, a glass beside it earlier in the tree) as
+ * they are shown, each with its own blur and content. A button of glass in a bar of glass blurs the bar as it is shown (the
+ * page already blurred by the bar, the tint of the bar over it), not the page under both, as a backdrop filter does.
+ */
+private fun DrawScope.drawGlass(source: GlassSource, entry: GlassEntry, under: List<GlassEntry>): Rect {
     val box = androidx.compose.ui.geometry.Size(entry.size.width.toFloat(), entry.size.height.toFloat())
     val shift = source.place(entry)
     // The blur reads the page beyond the box too (the page under the edge is blurred into the glass, as in CSS): the backdrop is
     // recorded wider than the box by what the blur reaches, and only the box is shown.
     val reach = GlassRules.reachPx(entry.radiusPx)
     val padded = IntSize(entry.size.width + 2 * reach, entry.size.height + 2 * reach)
+    val read = Rect(shift.x - reach, shift.y - reach, shift.x + box.width + reach, shift.y + box.height + reach)
     entry.backdrop.renderEffect = BlurEffect(entry.radiusPx, entry.radiusPx, TileMode.Clamp)
     entry.backdrop.record(drawContext.density, drawContext.layoutDirection, padded) {
-        translate(-shift.x + reach, -shift.y + reach) { drawLayer(source.layer) }
+        translate(-shift.x + reach, -shift.y + reach) {
+            drawLayer(source.layer)
+            for (below in under) {
+                val at = source.place(below)
+                val belowBox = Rect(at, androidx.compose.ui.geometry.Size(below.size.width.toFloat(), below.size.height.toFloat()))
+                if (belowBox.overlaps(read)) paintGlass(below, at)
+            }
+        }
     }
-    translate(shift.x, shift.y) {
-        val outline = Path().apply { addOutline(entry.shape.createOutline(box, layoutDirection, this@drawGlass)) }
-        clipPath(outline) { translate(-reach.toFloat(), -reach.toFloat()) { drawLayer(entry.backdrop) } }
-        drawLayer(entry.content)
-    }
+    paintGlass(entry, shift)
     GlassProbe.draws.incrementAndGet()
     GlassProbe.lastRadiusPx = entry.radiusPx
     GlassProbe.lastBox = Rect(shift, box)
     GlassProbe.lastBackdropReachPx = reach
     return GlassProbe.lastBox
+}
+
+/** A glass node as it is shown at [at]: its recorded backdrop clipped by its shape, then its content. */
+private fun DrawScope.paintGlass(entry: GlassEntry, at: Offset) {
+    val box = androidx.compose.ui.geometry.Size(entry.size.width.toFloat(), entry.size.height.toFloat())
+    val reach = GlassRules.reachPx(entry.radiusPx)
+    translate(at.x, at.y) {
+        val outline = Path().apply { addOutline(entry.shape.createOutline(box, layoutDirection, this@paintGlass)) }
+        clipPath(outline) { translate(-reach.toFloat(), -reach.toFloat()) { drawLayer(entry.backdrop) } }
+        drawLayer(entry.content)
+    }
 }
 
 /**

@@ -10,6 +10,14 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
+## [Unreleased]
+
+### Fixed
+
+- A glass inside a glass (`style.backdropBlur`; a glass button in an app bar that turns to glass after a scroll)
+  blurs what is drawn under it, the outer glass and its tint included, as a backdrop filter does. It used to
+  blur the page under both, so the button showed the sharp, bright content of the body through a blurred bar.
+
 ## [0.2.1] - 2026-10-22
 
 ### Changed
