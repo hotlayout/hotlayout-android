@@ -23,6 +23,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
@@ -36,7 +38,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -121,10 +127,12 @@ internal fun TextFieldWidget(call: WidgetCall) {
     val xs = look.spacing("xs", 4.0)
 
     val inView = remember { BringIntoViewRequester() }
-    KeepInViewAboveKeyboard(driver.state.focused, inView)
+    val blockSize = remember { mutableStateOf(IntSize.Zero) }
+    KeepInViewAboveKeyboard(driver.state.focused, inView, blockSize)
 
     Column(
         (if (call.placement.stretchWidth) Modifier.fillMaxWidth() else Modifier)
+            .onSizeChanged { blockSize.value = it }
             .bringIntoViewRequester(inView)
             .alpha(if (disabled) InputRules.DISABLED_OPACITY.toFloat() else 1f)
             .semantics(mergeDescendants = true) {
@@ -142,18 +150,23 @@ internal fun TextFieldWidget(call: WidgetCall) {
 
 /**
  * The focused field, with the line under it, is scrolled into the body area above the on-screen keyboard
- * (`x-style.layout.inputs.focus.visible`). The area ends at the keyboard (or at the pinned block that rides on it),
- * so it is asked once the keyboard has changed it, a frame after the inset moves; a field that is already in view
- * does not scroll. Without the keyboard the request is the same and changes nothing.
+ * (`x-style.layout.inputs.focus.visible`), and the tail of the body stays under it: the gap of the screen when a
+ * pinned block stands under the body, else the bottom padding of the root (the same room as under the last child
+ * at the end of the scroll). A block that is already in view with its tail does not move; one taller than the
+ * area is put by its top. The area ends at the keyboard (or at the pinned block that rides on it), so it is asked
+ * once the keyboard has changed it, a frame after the inset moves. Without the keyboard the request is the same.
  */
 @Composable
-private fun KeepInViewAboveKeyboard(focused: Boolean, requester: BringIntoViewRequester) {
+private fun KeepInViewAboveKeyboard(focused: Boolean, requester: BringIntoViewRequester, size: State<IntSize>) {
     if (!focused) return
     val keyboard = rememberUpdatedState(keyboardInset())
+    val tail = rememberUpdatedState(with(LocalDensity.current) { LocalBodyTail.current.toPx() })
     LaunchedEffect(requester) {
         snapshotFlow { keyboard.value }.collectLatest {
             withFrameNanos { }
-            requester.bringIntoView()
+            val box = size.value
+            if (box == IntSize.Zero) requester.bringIntoView()
+            else requester.bringIntoView(Rect(0f, 0f, box.width.toFloat(), box.height + tail.value))
         }
     }
 }

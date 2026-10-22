@@ -119,6 +119,28 @@ class FocusedFieldOnDeviceTest {
         assertAbove("Help f11", pay.top.value)
     }
 
+    /** One device pixel in dp: the tolerance of the tail checks. */
+    private fun pixel() = 1f / composeView().resources.displayMetrics.density
+
+    /** With a pinned block: under the field and its helper stays the gap of the screen (`md`, 12), not nothing. */
+    @Test
+    fun theFocusedFieldKeepsTheGapOfTheScreenAbovePinnedBlock() {
+        focusLast(",$pinned")
+        val pay = rule.onNodeWithText("Pay").getBoundsInRoot()
+        val help = rule.onNodeWithText("Help f11", useUnmergedTree = true).getBoundsInRoot()
+        val distance = pay.top.value - help.bottom.value
+        assertTrue("from the helper to the pinned block: $distance dp, the gap of the screen is 12", Math.abs(distance - 12f) <= pixel())
+    }
+
+    /** Without a pinned block: under the field and its helper stays the bottom padding of the root (`lg`, 16) above the keyboard. */
+    @Test
+    fun theFocusedFieldKeepsTheBottomPaddingOfTheRootAboveTheKeyboard() {
+        val top = focusLast("")
+        val help = rule.onNodeWithText("Help f11", useUnmergedTree = true).getBoundsInRoot()
+        val distance = top - help.bottom.value
+        assertTrue("from the helper to the keyboard: $distance dp, the bottom padding of the root is 16", Math.abs(distance - 16f) <= pixel())
+    }
+
     /** With a bar of navigation: it stays under the keyboard, the field with its helper is above the keyboard. */
     @Test
     fun theBarOfNavigationStaysUnderTheKeyboardAndTheFieldIsAboveIt() {

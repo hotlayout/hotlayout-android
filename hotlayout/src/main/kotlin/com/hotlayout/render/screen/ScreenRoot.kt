@@ -235,7 +235,7 @@ private fun BodyZone(plan: ScreenPlan, inner: RenderContext, zoneRoot: DocumentN
             Box(Modifier.padding(start = plan.paddingStart.dp, end = plan.paddingEnd.dp).contentColumn(plan.contentMax)) {
                 // The visible body is what `justify` of the screen distributes (a layer as tall as its content has none).
                 val free = area?.let { ScreenAnatomy.columnRoom(it.value.toDouble(), plan.lead, tail).dp }
-                CompositionLocalProvider(LocalScreenBodyHeight provides free) {
+                CompositionLocalProvider(LocalScreenBodyHeight provides free, com.hotlayout.render.widgets.LocalBodyTail provides tail.dp) {
                     ColumnWidget(plan.body, plan.gap, zoneRoot, inner, 0)
                 }
             }

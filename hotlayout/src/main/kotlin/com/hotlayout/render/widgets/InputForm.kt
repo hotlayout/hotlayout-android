@@ -9,6 +9,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.hotlayout.actions.InputOrder
 import com.hotlayout.render.RenderContext
 import com.hotlayout.theme.HotlayoutTheme
@@ -97,3 +98,9 @@ internal val LocalKeyboardInset = compositionLocalOf<Dp?> { null }
 internal fun ProvideKeyboardInset(inset: Dp?, content: @Composable () -> Unit) {
     CompositionLocalProvider(LocalKeyboardInset provides inset, content = content)
 }
+
+/**
+ * What lies under the last child of the scrolling body: the gap of the screen above a pinned block, else the bottom
+ * padding of the root. A focused field keeps this room under itself when it is scrolled into view.
+ */
+internal val LocalBodyTail = compositionLocalOf { 0.dp }
