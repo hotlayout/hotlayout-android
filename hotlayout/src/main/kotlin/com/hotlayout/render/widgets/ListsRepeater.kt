@@ -98,8 +98,10 @@ internal fun RepeaterWidget(call: WidgetCall) {
  */
 @Composable
 internal fun RepeaterRow(carousel: Boolean, gap: Double, placement: Placement, cards: @Composable () -> Unit) {
-    val modifier = if (carousel) Modifier.horizontalScroll(rememberScrollState()) else if (placement.stretchWidth) Modifier.fillMaxWidth() else Modifier
-    Row(modifier, horizontalArrangement = Arrangement.spacedBy(gap.dp), verticalAlignment = Alignment.CenterVertically) { cards() }
+    com.hotlayout.render.paint.ProvideGlassClip(vertical = false) { clip ->
+        val modifier = if (carousel) clip.horizontalScroll(rememberScrollState()) else if (placement.stretchWidth) Modifier.fillMaxWidth() else Modifier
+        Row(modifier, horizontalArrangement = Arrangement.spacedBy(gap.dp), verticalAlignment = Alignment.CenterVertically) { cards() }
+    }
 }
 
 /** An instance in a column is stretched to the column, except a node with its own width, which stands at the logical start. */

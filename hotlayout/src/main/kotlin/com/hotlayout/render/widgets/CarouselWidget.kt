@@ -147,9 +147,10 @@ internal fun CarouselRow(
     Column(
         Modifier.then(PlaceModifier { place -> if (viewportPx != place) viewportPx = place }).semantics { collectionInfo = CollectionInfo(rowCount = 1, columnCount = count) },
     ) {
+        com.hotlayout.render.paint.ProvideGlassClip(vertical = false) { clip ->
         AlignedRow(
             gap, JustifyWord.Start, align, null, false,
-            Modifier.fillMaxWidth().horizontalScroll(scroll, flingBehavior = fling).focusable()
+            Modifier.fillMaxWidth().then(clip).horizontalScroll(scroll, flingBehavior = fling).focusable()
                 .padding(start = padding.start.dp, top = padding.top.dp, end = padding.end.dp, bottom = padding.bottom.dp),
         ) {
             for (index in 0 until count) {
@@ -158,6 +159,7 @@ internal fun CarouselRow(
                         .semantics { collectionItemInfo = CollectionItemInfo(rowIndex = 0, rowSpan = 1, columnIndex = index, columnSpan = 1) },
                 ) { card(index, cardWidth, viewport?.dp) }
             }
+        }
         }
         if (dots > 0) {
             val base = resolver.color(JsonValue.Str(CarouselRules.DOT_COLOR_TOKEN))?.color ?: Color(0xFF4F46E5)

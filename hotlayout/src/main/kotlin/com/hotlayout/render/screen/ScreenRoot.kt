@@ -230,7 +230,9 @@ private fun BodyZone(plan: ScreenPlan, inner: RenderContext, zoneRoot: DocumentN
     // A floating zone lies over the end of the body: the body's free space is what it leaves, so that short content does not scroll.
     val tail = plan.tail + if (plan.floats) report.floatTail else 0f
     val column: @Composable (androidx.compose.ui.unit.Dp?) -> Unit = { area ->
-        Column(Modifier.then(if (area != null) Modifier.fillMaxSize() else Modifier.fillMaxWidth()).verticalScroll(scroll)) {
+        // The body is clipped by its area; glass inside it is drawn at the page, so it is told the area too.
+        com.hotlayout.render.paint.ProvideGlassClip(vertical = true) { clip ->
+        Column(Modifier.then(if (area != null) Modifier.fillMaxSize() else Modifier.fillMaxWidth()).then(clip).verticalScroll(scroll)) {
             Spacer(Modifier.height(plan.lead.dp))
             Box(Modifier.padding(start = plan.paddingStart.dp, end = plan.paddingEnd.dp).contentColumn(plan.contentMax)) {
                 // The visible body is what `justify` of the screen distributes (a layer as tall as its content has none).
@@ -240,6 +242,7 @@ private fun BodyZone(plan: ScreenPlan, inner: RenderContext, zoneRoot: DocumentN
                 }
             }
             Spacer(Modifier.height(tail.dp))
+        }
         }
     }
     if (plan.shrinks) {

@@ -148,7 +148,8 @@ internal fun RowWidget(node: DocumentNode, context: RenderContext, depth: Int, s
         }
         scrollable -> BoxWithConstraints(base) {
             val viewport = maxWidth.takeIf { it != Dp.Infinity }
-            AlignedRow(gap, justify, align, space.block, fills, Modifier.horizontalScroll(rememberScrollState())) {
+            com.hotlayout.render.paint.ProvideGlassClip(vertical = false) { clip ->
+            AlignedRow(gap, justify, align, space.block, fills, clip.horizontalScroll(rememberScrollState())) {
                 for ((index, child) in node.children.withIndex()) {
                     var modifier: Modifier = Modifier
                     if (viewport != null && rowKind(child) != RowKind.Named) {
@@ -156,6 +157,7 @@ internal fun RowWidget(node: DocumentNode, context: RenderContext, depth: Int, s
                     }
                     NodeView(child, context.at(siblings, index), Placement.Natural, depth + 1, node.type, modifier.then(FlowChild(kind = rowKind(child))))
                 }
+            }
             }
         }
         wrap -> FlowRow(

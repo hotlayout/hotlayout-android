@@ -14,6 +14,10 @@ is stated in every entry.
 
 ### Fixed
 
+- A glass node (`style.backdropBlur`) and a node over it, scrolled under the pinned top zone, are clipped by the
+  bottom edge of the zone, as every other node is. They are drawn at the page, outside the clip of their scrolling
+  ancestors, so a scrolled glass card showed over the top zone and the status bar. Horizontal scrolls (a scrolling
+  row, a carousel, a list as a row) clip glass the same way.
 - A focused text field rises above the on-screen keyboard together with the line under it (helper, error, counter):
   it used to be scrolled only by its box, so the box could end under the keyboard or the pinned block and the line
   under it stayed hidden. A modal layer now rises above the keyboard too (it stayed under it).

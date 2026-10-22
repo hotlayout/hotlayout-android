@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.addOutline
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.graphics.layer.GraphicsLayer
 import androidx.compose.ui.graphics.layer.drawLayer
@@ -94,6 +95,28 @@ internal class GlassSource(val layer: GraphicsLayer) {
         if (at < 0) entries.add(entry) else entries.add(at, entry)
     }
 
+    /**
+     * The part of the page a node may show itself in: the boxes of the clipping ancestors of [clip] (the scrolling body,
+     * a scrolling row) intersected, in the coordinates of the page; `null` — nothing clips it. A glass node is drawn
+     * at the page, outside the clips of its ancestors, so the clips are applied here.
+     */
+    fun clipOf(clip: GlassClip?): Rect? {
+        val page = coordinates?.takeIf { it.isAttached }?.positionInRoot() ?: Offset.Zero
+        var result: Rect? = null
+        var at = clip
+        while (at != null) {
+            val box = at.coordinates?.takeIf { it.isAttached }
+            if (box != null) {
+                val origin = box.positionInRoot() - page
+                // A scroll clips along its own axis only (the other side stays open for what stands out, a shadow).
+                val rect = if (at.vertical) Rect(-OPEN, origin.y, OPEN, origin.y + box.size.height) else Rect(origin.x, -OPEN, origin.x + box.size.width, OPEN)
+                result = result?.intersect(rect) ?: rect
+            }
+            at = at.outer
+        }
+        return result
+    }
+
     /** Where the node stands in the page, read now (the layers of its ancestors, a motion, are part of it). */
     fun place(entry: Placed): Offset {
         val own = entry.coordinates?.takeIf { it.isAttached }?.positionInRoot() ?: return Offset.Zero
@@ -105,16 +128,58 @@ internal class GlassSource(val layer: GraphicsLayer) {
 /** A node the page draws over its own content: where it stands. */
 internal interface Placed {
     var coordinates: LayoutCoordinates?
+
+    /** The nearest clipping ancestor of the node (see [ProvideGlassClip]). */
+    var clip: GlassClip?
+}
+
+/**
+ * An ancestor that clips what it holds to its box (a scroll viewport). The glass nodes and the nodes over them are drawn at
+ * the page, not inside it, so they read its box and clip themselves by it: the body scrolled under the top zone is not shown
+ * over the top zone or the status bar, glass included.
+ */
+internal class GlassClip(val outer: GlassClip?, val vertical: Boolean) {
+    var coordinates: LayoutCoordinates? = null
+}
+
+/** Far enough to stand for “no edge” on the open side of a clip, finite for the canvas. */
+private const val OPEN = 1.0e7f
+
+internal val LocalGlassClip = compositionLocalOf<GlassClip?> { null }
+
+/**
+ * Makes the box that [content] puts [Modifier] on a clip for the glass inside it. The modifier must stand before the scroll in
+ * the chain, so it measures the viewport, not the scrolled content. Without a glass source it does nothing.
+ */
+@Composable
+internal fun ProvideGlassClip(vertical: Boolean, content: @Composable (Modifier) -> Unit) {
+    val source = LocalGlassSource.current
+    if (source == null) {
+        content(Modifier)
+        return
+    }
+    val outer = LocalGlassClip.current
+    val clip = remember(outer, vertical) { GlassClip(outer, vertical) }
+    CompositionLocalProvider(LocalGlassClip provides clip) {
+        content(Modifier.onGloballyPositioned { clip.coordinates = it })
+    }
+}
+
+/** Draws [block] clipped by [rect] when there is one. */
+private inline fun DrawScope.clippedBy(rect: Rect?, block: DrawScope.() -> Unit) {
+    if (rect == null) block() else clipRect(rect.left, rect.top, rect.right, rect.bottom) { block() }
 }
 
 /** A node painted over the glass: its own content in a layer of its own. */
 internal class AboveEntry(val content: GraphicsLayer) : Placed {
     override var coordinates: LayoutCoordinates? = null
+    override var clip: GlassClip? = null
 }
 
 /** A glass node: its own content, the layer of its blur, its box and its shape. */
 internal class GlassEntry(val content: GraphicsLayer, val backdrop: GraphicsLayer) : Placed {
     override var coordinates: LayoutCoordinates? = null
+    override var clip: GlassClip? = null
     var size: IntSize = IntSize.Zero
     var radiusPx: Float = 0f
     var shape: Shape = RectangleShape
@@ -187,7 +252,7 @@ internal fun Modifier.glassSource(source: GlassSource): Modifier = this
         // What stands after a glass node in its parent lies over that glass, not blurred under it.
         for (entry in source.above.toList()) {
             val at = source.place(entry)
-            translate(at.x, at.y) { drawLayer(entry.content) }
+            clippedBy(source.clipOf(entry.clip)) { translate(at.x, at.y) { drawLayer(entry.content) } }
         }
         GlassProbe.aboveDraws.addAndGet(source.above.size)
     }
@@ -217,6 +282,7 @@ internal fun Modifier.aboveGlass(): Modifier {
     val source = LocalGlassSource.current ?: return this
     val content = rememberGraphicsLayer()
     val entry = remember(content) { AboveEntry(content) }
+    entry.clip = LocalGlassClip.current
     return this
         .onPage(source, source.above, entry)
         .drawWithContent {
@@ -240,6 +306,7 @@ internal fun Modifier.glass(blur: Int?, shape: Shape): Modifier {
     LocalGlassInside.current?.inside = true
     val entry = remember(content, backdrop) { GlassEntry(content, backdrop) }
     entry.level = LocalGlassLevel.current
+    entry.clip = LocalGlassClip.current
     return this
         .onPage(source, source.entries, entry)
         .drawWithContent {
@@ -275,11 +342,11 @@ private fun DrawScope.drawGlass(source: GlassSource, entry: GlassEntry, under: L
             for (below in under) {
                 val at = source.place(below)
                 val belowBox = Rect(at, androidx.compose.ui.geometry.Size(below.size.width.toFloat(), below.size.height.toFloat()))
-                if (belowBox.overlaps(read)) paintGlass(below, at)
+                if (belowBox.overlaps(read)) clippedBy(source.clipOf(below.clip)) { paintGlass(below, at) }
             }
         }
     }
-    paintGlass(entry, shift)
+    clippedBy(source.clipOf(entry.clip)) { paintGlass(entry, shift) }
     GlassProbe.draws.incrementAndGet()
     GlassProbe.lastRadiusPx = entry.radiusPx
     GlassProbe.lastBox = Rect(shift, box)
