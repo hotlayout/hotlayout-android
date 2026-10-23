@@ -101,7 +101,7 @@ class PlacementSourceTest {
         assertEquals(PlacementMapStatus.Corrupt, load.mapStatus)
         assertEquals(PlacementStatus.Unreadable, load.resolution.status)
         assertEquals(PlacementReport.Unreadable, load.report)
-        assertNull(store.read("placements"))
+        assertNull(store.read("map:$mapUrl"))
     }
 
     @Test fun onlyAFreshReadableMapBecomesTheLastKnownOne() = runBlocking {
@@ -110,11 +110,11 @@ class PlacementSourceTest {
         val source = PlacementSource(BASE, store = store, transport = transport)
         transport.answers[mapUrl] = PlacementResponse.Body("""{"placementsVersion":"2.0.0","placements":{}}""", "\"x\"")
         assertEquals(PlacementMapStatus.Unsupported, loadPlacement(source, "a").mapStatus)
-        assertNull(store.read("placements"))
+        assertNull(store.read("map:$mapUrl"))
         source.forget()
         transport.answers[mapUrl] = PlacementResponse.Body(map(), "\"y\"")
         loadPlacement(source, "a")
-        assertEquals("\"y\"", store.read("placements")?.etag)
+        assertEquals("\"y\"", store.read("map:$mapUrl")?.etag)
     }
 
     @Test fun neverPublishedMakesEveryPlaceUnknown() = runBlocking {

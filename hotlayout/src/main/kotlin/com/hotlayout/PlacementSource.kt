@@ -32,6 +32,12 @@ public class PlacementSource(
     internal val transport: PlacementTransport = PlacementTransport.Default,
 ) {
     internal val base: String = projectBase.trim().trimEnd('/')
+
+    /** Where the last known map is kept: its address, so a store shared by several projects keeps them apart. */
+    internal val mapAddress: String = "$base/placements/published.json"
+    internal val mapKey: String = "map:$mapAddress"
+    internal fun documentAddress(id: String): String = "$base/documents/$id/published.json"
+    internal fun documentKey(id: String): String = "document:${documentAddress(id)}"
     private val gate = Mutex()
     private var recent: Recent? = null
 
@@ -49,20 +55,22 @@ public class PlacementSource(
     internal suspend fun forget() = gate.withLock { recent = null }
 
     private suspend fun fetchMap(): PlacementRules.Decision {
-        val lastKnown = store.read(MAP_KEY)
+        val lastKnown = store.read(mapKey)
         val sendTag = lastKnown?.takeIf { PlacementRules.readMapText(it.text) is PlacementRules.MapRead.Map }?.etag
-        val answer = safeGet("$base/placements/published.json", sendTag, MAP_MAX_BYTES)
+        val answer = safeGet(mapAddress, sendTag, MAP_MAX_BYTES)
         val network = when (answer) {
-            is PlacementResponse.Body -> PlacementRules.Network.Map(answer.text)
+            is PlacementResponse.Body -> PlacementRules.Network.Map(answer.bytes)
             // A body above the limit is something that is not a map.
-            PlacementResponse.TooLarge -> PlacementRules.Network.Map("")
+            PlacementResponse.TooLarge -> PlacementRules.Network.Map(ByteArray(0))
             PlacementResponse.NotModified -> PlacementRules.Network.NotModified
             PlacementResponse.NotFound -> PlacementRules.Network.NotFound
             PlacementResponse.Unavailable -> PlacementRules.Network.Offline
         }
         val decision = PlacementRules.pickMap(network, lastKnown?.text, bundledMap)
         if (decision.remember && answer is PlacementResponse.Body) {
-            runCatching { store.write(MAP_KEY, StoredText(answer.text, answer.etag)) }
+            // The text that was read: strict UTF-8, without the byte order mark.
+            val text = PlacementRules.decodeBody(answer.bytes)
+            if (text != null) runCatching { store.write(mapKey, StoredText(text, answer.etag)) }
         }
         return decision
     }
@@ -77,13 +85,13 @@ public class PlacementSource(
 
     /** The document [id], through the network, the last known copy and the bundled one. */
     internal suspend fun document(id: String): DocumentResult {
-        val key = DOCUMENT_KEY + id
+        val key = documentKey(id)
         val kept = store.read(key)
-        val keptDocument = kept?.let { readDocument(it.text) }
-        val answer = safeGet("$base/documents/$id/published.json", kept?.takeIf { keptDocument != null }?.etag, DOCUMENT_MAX_BYTES)
+        val keptDocument = kept?.let { readDocument(it.text.toByteArray(Charsets.UTF_8)) }
+        val answer = safeGet(documentAddress(id), kept?.takeIf { keptDocument != null }?.etag, DOCUMENT_MAX_BYTES)
         when (answer) {
             is PlacementResponse.Body -> {
-                val fresh = readDocument(answer.text)
+                val fresh = readDocument(answer.bytes)
                 if (fresh != null) {
                     runCatching { store.write(key, StoredText(answer.text, answer.etag)) }
                     return outcome(fresh)
@@ -91,17 +99,20 @@ public class PlacementSource(
             }
             PlacementResponse.NotModified -> if (keptDocument != null) return outcome(keptDocument)
             // A document that was taken down must not live on from the cache; only the copy of the release stands in.
-            PlacementResponse.NotFound -> return bundledDocuments(id)?.let { readDocument(it) }?.let { outcome(it) }
-                ?: DocumentResult(PlacementRules.DocumentOutcome.Missing)
+            PlacementResponse.NotFound -> {
+                runCatching { store.remove(key) }
+                return bundledDocuments(id)?.let { readDocument(it.toByteArray(Charsets.UTF_8)) }?.let { outcome(it) }
+                    ?: DocumentResult(PlacementRules.DocumentOutcome.Missing)
+            }
             else -> Unit
         }
-        val fallback = keptDocument ?: bundledDocuments(id)?.let { readDocument(it) }
+        val fallback = keptDocument ?: bundledDocuments(id)?.let { readDocument(it.toByteArray(Charsets.UTF_8)) }
         return fallback?.let { outcome(it) } ?: DocumentResult(PlacementRules.DocumentOutcome.Unreadable)
     }
 
-    private suspend fun readDocument(text: String): HotlayoutDocument? = withContext(Dispatchers.Default) {
+    private suspend fun readDocument(bytes: ByteArray): HotlayoutDocument? = withContext(Dispatchers.Default) {
         try {
-            loadDocument(text)
+            loadDocument(bytes)
         } catch (_: HotlayoutLoadException) {
             null
         }
@@ -115,11 +126,9 @@ public class PlacementSource(
     public companion object {
         /** The default pause between two asks of the map in [HotlayoutPlacement]. */
         public const val DEFAULT_REFRESH_MS: Long = 60_000L
-        internal const val MAP_MAX_BYTES = 262_144
+        internal const val MAP_MAX_BYTES = PlacementRules.MAX_BODY_BYTES
         internal const val DOCUMENT_MAX_BYTES = 4 * 1024 * 1024
         internal const val SHARE_MS = 2_000L
-        private const val MAP_KEY = "placements"
-        private const val DOCUMENT_KEY = "document/"
     }
 }
 

@@ -111,6 +111,13 @@
     "brokenPlace": "unreadable",
     "unreadMap": "unreadable",
     "limits": "publish-only",
+    "body": {
+      "leadingBom": "skip",
+      "encoding": "utf-8-strict",
+      "maxBytes": 262144,
+      "maxDepth": 32
+    },
+    "majorComparison": "digit-string",
     "publishedAt": "informational"
   },
   "x-placementSource": {
@@ -122,14 +129,30 @@
     "rememberOnlyFreshNetwork": true,
     "statuses": {
       "fresh": "the network answered with a readable map (or 304 with a readable last-known map)",
-      "offline": "no answer: connection error, timeout, 5xx, 403, or 304 without a readable last-known map",
-      "corrupt": "the network answered with something that is not a map",
+      "offline": "no answer: connection error, deadline, a redirect, 5xx, 403, or 304 without a readable last-known map",
+      "corrupt": "the network answered with something that is not a map: not JSON, not UTF-8, over the size or depth limit",
       "unsupported": "the network answered with a map of another major version",
       "notPublished": "the network answered 404: the project has not published placements"
     },
     "noMapAtAll": {
       "notPublished": "unknown",
       "otherwise": "unreadable"
+    },
+    "redirects": {
+      "follow": false,
+      "map": "offline",
+      "document": "unreadable"
+    },
+    "deadline": {
+      "ms": 20000,
+      "covers": "request-start-to-body-end",
+      "map": "offline",
+      "document": "unreadable"
+    },
+    "lastKnownKey": "map-address",
+    "documentCache": {
+      "key": "document-address",
+      "onNotFound": "drop"
     }
   },
   "x-placementShowing": {
@@ -137,5 +160,19 @@
     "documentMissing": "render-nothing-and-tell-host",
     "documentUnreadable": "render-nothing-and-tell-host",
     "entryMissing": "use-initial-and-tell-host"
+  },
+  "x-placementEvents": {
+    "when": "every-change",
+    "fields": [
+      "status",
+      "report",
+      "mapStatus",
+      "documentId",
+      "entry"
+    ],
+    "documentShown": {
+      "status": "document",
+      "report": null
+    }
   }
 }

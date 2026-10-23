@@ -1,5 +1,5 @@
 {
-  "about": "Shared case table for the placement map (contract/placements.json). Every reader runs every row. readCases: reading the map file and resolving names against it; publishable says whether the strict schema accepts the file (a builder publishes only such files), read and resolve are what a tolerant reader does. sourceCases: which map a reader uses (network, last known, bundled) and with which status. showingCases: what a placement draws once its document has been loaded. Limits on the number of placements and on file size are publish-side only and are not rows here.",
+  "about": "Shared case table for the placement map (contract/placements.json). Every reader runs every row. readCases: reading the map file and resolving names against it; publishable says whether the strict schema accepts the file (a builder publishes only such files), read and resolve are what a tolerant reader does. sourceCases: which map a reader uses (network, last known, bundled) and with which status. showingCases: what a placement draws once its document has been loaded. Limits on the number of placements and on the published file size are publish-side only and are not rows here. The groups after showingCases are the reader rules settled after the reader audit. bodyCases: the BYTES of a map body as a reader receives them; body is a list of parts joined in order, each part is either text (encoded as UTF-8) or hex (raw bytes, two lowercase digits per byte), repeated times times (default 1); read and resolve are as in readCases. transportCases: how an HTTP answer to the map request or to the placement document request is sorted; times are milliseconds from the start of the request, headersAtMs is when the status arrives (default completedAtMs), completedAtMs is when the body ends (null: never). Document rows carry no body: a reader under test answers 2xx with any readable document. Expected for the map is the kind of the network outcome (map, corrupt, notModified, notFound, offline); for the document it is read (handed to the document reader), missing or unreadable. eventCases: settled states of one placement in order and the events the host hears; there is an event for every change of status, report, mapStatus, documentId or entry, the first settled state included. cacheCases: steps of one reader on placement home.banner of two projects (a, b) whose map and document addresses differ only in the project; map is the network outcome of the map request (the map names document d1), document is how the request for d1 ended (ok, notFound, offline); the last known map is kept per map address, and a document that answered 404 is never shown from memory again.",
   "placementsVersion": "1.0.0",
   "readCases": [
     {
@@ -606,6 +606,676 @@
       "name": "an unreadable placement draws nothing and tells the host",
       "resolution": { "status": "unreadable", "documentId": null, "entry": null },
       "expected": { "show": "nothing", "entry": null, "report": "unreadable" }
+    }
+  ],
+  "bodyCases": [
+    {
+      "name": "the same map without a byte order mark",
+      "body": [{ "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}" }],
+      "read": "map",
+      "resolve": [
+        { "name": "home.banner", "status": "document", "documentId": "d1", "entry": null },
+        { "name": "profile.top", "status": "empty", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a UTF-8 byte order mark before the map is skipped",
+      "body": [
+        { "hex": "efbbbf" },
+        { "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}" }
+      ],
+      "read": "map",
+      "resolve": [
+        { "name": "home.banner", "status": "document", "documentId": "d1", "entry": null },
+        { "name": "profile.top", "status": "empty", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "two byte order marks: the second one is not JSON",
+      "body": [
+        { "hex": "efbbbfefbbbf" },
+        { "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}" }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a byte order mark after leading whitespace is not skipped",
+      "body": [
+        { "text": " " },
+        { "hex": "efbbbf" },
+        { "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}" }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a byte that is never UTF-8 (ff) in an unknown field spoils the whole map, it is not replaced",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}},\"note\":\"a"
+        },
+        { "hex": "ff" },
+        { "text": "b\"}" }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "an overlong encoding of a slash (c0 af) in a documentId is corrupt, not a path and not a replacement character",
+      "body": [
+        { "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d" },
+        { "hex": "c0af" },
+        { "text": "x\"},\"profile.top\":{\"documentId\":null}}}" }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "an encoded surrogate (ed a0 80) is not UTF-8",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}},\"note\":\""
+        },
+        { "hex": "eda080" },
+        { "text": "\"}" }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a sequence cut short (e2 82) inside a string is not UTF-8",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}},\"note\":\""
+        },
+        { "hex": "e282" },
+        { "text": "\"}" }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a code point above U+10FFFF (f4 90 80 80) is not UTF-8",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}},\"note\":\""
+        },
+        { "hex": "f4908080" },
+        { "text": "\"}" }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a body in UTF-16 with its byte order mark is not UTF-8",
+      "body": [{ "hex": "fffe7b007d00" }],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "valid two-, three- and four-byte sequences in an unknown field are read",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}},\"note\":\"é ✓ 😀\"}"
+        }
+      ],
+      "read": "map",
+      "resolve": [
+        { "name": "home.banner", "status": "document", "documentId": "d1", "entry": null },
+        { "name": "profile.top", "status": "empty", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "32 nested arrays and objects (the root counts as one) are read",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}},\"x\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+        }
+      ],
+      "read": "map",
+      "resolve": [
+        { "name": "home.banner", "status": "document", "documentId": "d1", "entry": null },
+        { "name": "profile.top", "status": "empty", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "33 levels in an unknown field make the map corrupt",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}},\"x\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+        }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "33 levels inside one placement make the whole map corrupt, not only that placement",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"profile.top\":{\"documentId\":null},\"home.banner\":{\"documentId\":\"d1\",\"x\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}}}"
+        }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "33 levels of objects count the same as arrays",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}},\"x\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":{\"a\":1}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}}"
+        }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "brackets inside strings, escaped quotes included, are not nesting",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}},\"x\":\"[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[\\\"{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{{\"}"
+        }
+      ],
+      "read": "map",
+      "resolve": [
+        { "name": "home.banner", "status": "document", "documentId": "d1", "entry": null },
+        { "name": "profile.top", "status": "empty", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "an escaped backslash ends the string before the quote, so the brackets after it count",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}},\"y\":\"a\\\\\",\"x\":[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]}"
+        }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a body of exactly 262144 bytes is read",
+      "body": [
+        { "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}" },
+        { "text": " ", "times": 262032 }
+      ],
+      "read": "map",
+      "resolve": [
+        { "name": "home.banner", "status": "document", "documentId": "d1", "entry": null },
+        { "name": "profile.top", "status": "empty", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "one byte over 262144 is corrupt",
+      "body": [
+        { "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}" },
+        { "text": " ", "times": 262033 }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "the byte order mark counts toward the size limit",
+      "body": [
+        { "hex": "efbbbf" },
+        { "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}" },
+        { "text": " ", "times": 262030 }
+      ],
+      "read": "corrupt",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a major of twenty digits is another major",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"99999999999999999999.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+        }
+      ],
+      "read": "unsupported",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a major that wraps to 1 in 64 bits (2^64 + 1) is another major",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"18446744073709551617.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+        }
+      ],
+      "read": "unsupported",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a major that wraps to 1 in 32 bits (2^32 + 1) is another major",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"4294967297.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+        }
+      ],
+      "read": "unsupported",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a major that a double rounds to a power of ten is another major",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1000000000000000000000001.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+        }
+      ],
+      "read": "unsupported",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "profile.top", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a minor of twenty digits is read",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.18446744073709551617.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+        }
+      ],
+      "read": "map",
+      "resolve": [
+        { "name": "home.banner", "status": "document", "documentId": "d1", "entry": null },
+        { "name": "profile.top", "status": "empty", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a patch of twenty digits is read",
+      "body": [
+        {
+          "text": "{\"placementsVersion\":\"1.0.99999999999999999999\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+        }
+      ],
+      "read": "map",
+      "resolve": [
+        { "name": "home.banner", "status": "document", "documentId": "d1", "entry": null },
+        { "name": "profile.top", "status": "empty", "documentId": null, "entry": null }
+      ]
+    }
+  ],
+  "transportCases": [
+    {
+      "name": "map: 200 that ends in time is the map",
+      "request": "map",
+      "answer": {
+        "status": 200,
+        "completedAtMs": 1000,
+        "body": [
+          {
+            "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+          }
+        ]
+      },
+      "expected": "map"
+    },
+    {
+      "name": "map: 200 that ends at 19 s is still in time",
+      "request": "map",
+      "answer": {
+        "status": 200,
+        "headersAtMs": 500,
+        "completedAtMs": 19000,
+        "body": [
+          {
+            "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+          }
+        ]
+      },
+      "expected": "map"
+    },
+    {
+      "name": "map: headers in time but the body ends after 20 s is no answer",
+      "request": "map",
+      "answer": {
+        "status": 200,
+        "headersAtMs": 500,
+        "completedAtMs": 21000,
+        "body": [
+          {
+            "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+          }
+        ]
+      },
+      "expected": "offline"
+    },
+    {
+      "name": "map: a server that never answers is no answer after 20 s",
+      "request": "map",
+      "answer": { "status": 200, "completedAtMs": null },
+      "expected": "offline"
+    },
+    {
+      "name": "map: a 301 redirect is not followed and is no answer",
+      "request": "map",
+      "answer": { "status": 301, "completedAtMs": 100 },
+      "expected": "offline"
+    },
+    {
+      "name": "map: a 302 redirect is not followed and is no answer",
+      "request": "map",
+      "answer": { "status": 302, "completedAtMs": 100 },
+      "expected": "offline"
+    },
+    {
+      "name": "map: a 303 redirect is not followed and is no answer",
+      "request": "map",
+      "answer": { "status": 303, "completedAtMs": 100 },
+      "expected": "offline"
+    },
+    {
+      "name": "map: a 307 redirect is not followed and is no answer",
+      "request": "map",
+      "answer": { "status": 307, "completedAtMs": 100 },
+      "expected": "offline"
+    },
+    {
+      "name": "map: a 308 redirect is not followed and is no answer",
+      "request": "map",
+      "answer": { "status": 308, "completedAtMs": 100 },
+      "expected": "offline"
+    },
+    { "name": "map: 304 is not a redirect", "request": "map", "answer": { "status": 304, "completedAtMs": 100 }, "expected": "notModified" },
+    { "name": "map: 304 after 20 s is no answer", "request": "map", "answer": { "status": 304, "completedAtMs": 25000 }, "expected": "offline" },
+    { "name": "map: 404 is never published", "request": "map", "answer": { "status": 404, "completedAtMs": 100 }, "expected": "notFound" },
+    { "name": "map: 404 after 20 s is no answer", "request": "map", "answer": { "status": 404, "completedAtMs": 25000 }, "expected": "offline" },
+    {
+      "name": "map: 200 with a body that is not UTF-8 is a corrupt map",
+      "request": "map",
+      "answer": {
+        "status": 200,
+        "completedAtMs": 100,
+        "body": [{ "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{},\"n\":\"" }, { "hex": "ff" }, { "text": "\"}" }]
+      },
+      "expected": "corrupt"
+    },
+    {
+      "name": "map: 200 over the size limit is a corrupt map",
+      "request": "map",
+      "answer": { "status": 200, "completedAtMs": 100, "body": [{ "text": " ", "times": 262145 }] },
+      "expected": "corrupt"
+    },
+    {
+      "name": "map: 200 with a byte order mark is the map",
+      "request": "map",
+      "answer": {
+        "status": 200,
+        "completedAtMs": 100,
+        "body": [
+          { "hex": "efbbbf" },
+          {
+            "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+          }
+        ]
+      },
+      "expected": "map"
+    },
+    {
+      "name": "document: 200 that ends in time goes to the document reader",
+      "request": "document",
+      "answer": { "status": 200, "completedAtMs": 1000 },
+      "expected": "read"
+    },
+    {
+      "name": "document: headers in time but the body ends after 20 s is unreadable",
+      "request": "document",
+      "answer": { "status": 200, "headersAtMs": 500, "completedAtMs": 21000 },
+      "expected": "unreadable"
+    },
+    {
+      "name": "document: a server that never answers is unreadable after 20 s",
+      "request": "document",
+      "answer": { "status": 200, "completedAtMs": null },
+      "expected": "unreadable"
+    },
+    {
+      "name": "document: a 301 redirect is not followed and is unreadable",
+      "request": "document",
+      "answer": { "status": 301, "completedAtMs": 100 },
+      "expected": "unreadable"
+    },
+    {
+      "name": "document: a 302 redirect is not followed and is unreadable",
+      "request": "document",
+      "answer": { "status": 302, "completedAtMs": 100 },
+      "expected": "unreadable"
+    },
+    {
+      "name": "document: a 307 redirect is not followed and is unreadable",
+      "request": "document",
+      "answer": { "status": 307, "completedAtMs": 100 },
+      "expected": "unreadable"
+    },
+    {
+      "name": "document: a 308 redirect is not followed and is unreadable",
+      "request": "document",
+      "answer": { "status": 308, "completedAtMs": 100 },
+      "expected": "unreadable"
+    },
+    { "name": "document: 404 is missing", "request": "document", "answer": { "status": 404, "completedAtMs": 100 }, "expected": "missing" },
+    {
+      "name": "document: 404 after 20 s is unreadable, not missing",
+      "request": "document",
+      "answer": { "status": 404, "completedAtMs": 25000 },
+      "expected": "unreadable"
+    },
+    { "name": "document: 500 is unreadable", "request": "document", "answer": { "status": 500, "completedAtMs": 100 }, "expected": "unreadable" }
+  ],
+  "eventCases": [
+    {
+      "name": "the first settled state is told, even a document with nothing to report",
+      "states": [{ "status": "document", "documentId": "d1", "entry": null, "report": null, "mapStatus": "fresh" }],
+      "events": [{ "status": "document", "report": null, "mapStatus": "fresh", "documentId": "d1", "entry": null }]
+    },
+    {
+      "name": "the same state again is not told",
+      "states": [
+        { "status": "document", "documentId": "d1", "entry": null, "report": null, "mapStatus": "fresh" },
+        { "status": "document", "documentId": "d1", "entry": null, "report": null, "mapStatus": "fresh" }
+      ],
+      "events": [{ "status": "document", "report": null, "mapStatus": "fresh", "documentId": "d1", "entry": null }]
+    },
+    {
+      "name": "a placement that comes back is told: status document, report null",
+      "states": [
+        { "status": "nothing", "report": "documentMissing", "mapStatus": "fresh" },
+        { "status": "document", "documentId": "d1", "entry": null, "report": null, "mapStatus": "fresh" }
+      ],
+      "events": [
+        { "status": "nothing", "report": "documentMissing", "mapStatus": "fresh", "documentId": null, "entry": null },
+        { "status": "document", "report": null, "mapStatus": "fresh", "documentId": "d1", "entry": null }
+      ]
+    },
+    {
+      "name": "an entry point lost and found again is told both ways",
+      "states": [
+        { "status": "document", "documentId": "d1", "entry": "raffle", "report": null, "mapStatus": "fresh" },
+        { "status": "document", "documentId": "d1", "entry": null, "report": "entryMissing", "mapStatus": "fresh" },
+        { "status": "document", "documentId": "d1", "entry": "raffle", "report": null, "mapStatus": "fresh" }
+      ],
+      "events": [
+        { "status": "document", "report": null, "mapStatus": "fresh", "documentId": "d1", "entry": "raffle" },
+        { "status": "document", "report": "entryMissing", "mapStatus": "fresh", "documentId": "d1", "entry": null },
+        { "status": "document", "report": null, "mapStatus": "fresh", "documentId": "d1", "entry": "raffle" }
+      ]
+    },
+    {
+      "name": "the map going offline while the same document stays is told",
+      "states": [
+        { "status": "document", "documentId": "d1", "entry": null, "report": null, "mapStatus": "fresh" },
+        { "status": "document", "documentId": "d1", "entry": null, "report": null, "mapStatus": "offline" },
+        { "status": "document", "documentId": "d1", "entry": null, "report": null, "mapStatus": "offline" }
+      ],
+      "events": [
+        { "status": "document", "report": null, "mapStatus": "fresh", "documentId": "d1", "entry": null },
+        { "status": "document", "report": null, "mapStatus": "offline", "documentId": "d1", "entry": null }
+      ]
+    },
+    {
+      "name": "another document in the same placement is told",
+      "states": [
+        { "status": "document", "documentId": "d1", "entry": null, "report": null, "mapStatus": "fresh" },
+        { "status": "document", "documentId": "d2", "entry": null, "report": null, "mapStatus": "fresh" }
+      ],
+      "events": [
+        { "status": "document", "report": null, "mapStatus": "fresh", "documentId": "d1", "entry": null },
+        { "status": "document", "report": null, "mapStatus": "fresh", "documentId": "d2", "entry": null }
+      ]
+    },
+    {
+      "name": "one reason for nothing changing into another is told",
+      "states": [
+        { "status": "nothing", "report": "empty", "mapStatus": "fresh" },
+        { "status": "nothing", "report": "unknown", "mapStatus": "fresh" },
+        { "status": "nothing", "report": "unknown", "mapStatus": "fresh" }
+      ],
+      "events": [
+        { "status": "nothing", "report": "empty", "mapStatus": "fresh", "documentId": null, "entry": null },
+        { "status": "nothing", "report": "unknown", "mapStatus": "fresh", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a document disappearing and coming back is told every time",
+      "states": [
+        { "status": "document", "documentId": "d1", "entry": null, "report": null, "mapStatus": "fresh" },
+        { "status": "nothing", "report": "documentMissing", "mapStatus": "fresh" },
+        { "status": "document", "documentId": "d1", "entry": null, "report": null, "mapStatus": "fresh" },
+        { "status": "nothing", "report": "documentUnreadable", "mapStatus": "offline" }
+      ],
+      "events": [
+        { "status": "document", "report": null, "mapStatus": "fresh", "documentId": "d1", "entry": null },
+        { "status": "nothing", "report": "documentMissing", "mapStatus": "fresh", "documentId": null, "entry": null },
+        { "status": "document", "report": null, "mapStatus": "fresh", "documentId": "d1", "entry": null },
+        { "status": "nothing", "report": "documentUnreadable", "mapStatus": "offline", "documentId": null, "entry": null }
+      ]
+    }
+  ],
+  "cacheCases": [
+    {
+      "name": "the last known map of one project is never used for another",
+      "steps": [
+        {
+          "project": "a",
+          "map": {
+            "kind": "map",
+            "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+          },
+          "document": "ok",
+          "expected": { "status": "document", "report": null, "mapStatus": "fresh" }
+        },
+        { "project": "b", "map": { "kind": "offline" }, "expected": { "status": "nothing", "report": "unreadable", "mapStatus": "offline" } },
+        {
+          "project": "a",
+          "map": { "kind": "offline" },
+          "document": "ok",
+          "expected": { "status": "document", "report": null, "mapStatus": "offline" }
+        }
+      ]
+    },
+    {
+      "name": "a document that answered 404 is never shown from memory afterwards",
+      "steps": [
+        {
+          "project": "a",
+          "map": {
+            "kind": "map",
+            "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+          },
+          "document": "ok",
+          "expected": { "status": "document", "report": null, "mapStatus": "fresh" }
+        },
+        {
+          "project": "a",
+          "map": {
+            "kind": "map",
+            "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+          },
+          "document": "notFound",
+          "expected": { "status": "nothing", "report": "documentMissing", "mapStatus": "fresh" }
+        },
+        {
+          "project": "a",
+          "map": {
+            "kind": "map",
+            "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+          },
+          "document": "offline",
+          "expected": { "status": "nothing", "report": "documentUnreadable", "mapStatus": "fresh" }
+        }
+      ]
+    },
+    {
+      "name": "a document remembered for one project is not shown for another with the same id",
+      "steps": [
+        {
+          "project": "a",
+          "map": {
+            "kind": "map",
+            "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+          },
+          "document": "ok",
+          "expected": { "status": "document", "report": null, "mapStatus": "fresh" }
+        },
+        {
+          "project": "b",
+          "map": {
+            "kind": "map",
+            "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"},\"profile.top\":{\"documentId\":null}}}"
+          },
+          "document": "offline",
+          "expected": { "status": "nothing", "report": "documentUnreadable", "mapStatus": "fresh" }
+        }
+      ]
     }
   ]
 }

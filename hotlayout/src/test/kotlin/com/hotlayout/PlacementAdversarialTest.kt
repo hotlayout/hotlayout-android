@@ -7,7 +7,6 @@ import kotlinx.coroutines.runBlocking
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
-import org.junit.Ignore
 import org.junit.Test
 
 /**
@@ -40,11 +39,11 @@ class PlacementAdversarialTest {
         val items = HashMap<String, StoredText>()
         override fun read(key: String): StoredText? = items[key]
         override fun write(key: String, value: StoredText) { items[key] = value }
+        override fun remove(key: String) { items.remove(key) }
     }
 
     // ───────────────────────────── findings ─────────────────────────────
 
-    @Ignore("adversary: store keys are \"placements\" and \"document/<id>\", not scoped by project base")
     @Test fun aStoreSharedByTwoProjectsNeverServesProjectAsMapOrDocumentForProjectB() = runBlocking {
         val store = SharedStore()
         val a = Transport()
@@ -57,7 +56,6 @@ class PlacementAdversarialTest {
         assertNull(b.document)
     }
 
-    @Ignore("adversary: a 404 on the document leaves the kept copy in the store; the next failed request brings it back")
     @Test fun aDocumentTakenDownIsNotRevivedWhenTheNetworkLaterFails() = runBlocking {
         val store = SharedStore()
         val t = Transport()
@@ -72,13 +70,32 @@ class PlacementAdversarialTest {
         assertNull(later.document)
     }
 
-    @Ignore("adversary: with any process-wide CookieHandler the default transport refuses every request, so placements are silently offline forever")
-    @Test fun anAppWithACookieHandlerStillReadsPlacements() = runBlocking {
+    @Test fun anAppWithACookieHandlerStillReadsPlacementsAndNoCookieIsSentOrKept() = runBlocking {
         val before = CookieHandler.getDefault()
-        CookieHandler.setDefault(CookieManager())
+        val jar = CookieManager()
+        jar.cookieStore.add(java.net.URI("https://storage.example/"), java.net.HttpCookie("session", "secret").apply { path = "/" })
+        CookieHandler.setDefault(jar)
         try {
-            val answer = PlacementTransport.Default.get("https://storage.invalid/placements/published.json", null, 1024)
-            assertTrue(answer !is PlacementResponse.Unavailable)
+            val server = java.net.ServerSocket(0)
+            var request = ""
+            val serving = Thread {
+                server.accept().use { socket ->
+                    val reader = socket.getInputStream().bufferedReader(Charsets.ISO_8859_1)
+                    val lines = ArrayList<String>()
+                    while (true) { val line = reader.readLine() ?: break; if (line.isEmpty()) break; lines.add(line) }
+                    request = lines.joinToString("\n")
+                    socket.getOutputStream().write("HTTP/1.1 200 OK\r\nSet-Cookie: tracker=1; Path=/\r\nContent-Length: 2\r\nETag: \"e\"\r\n\r\n{}".toByteArray())
+                }
+            }.apply { start() }
+            val answer = PlacementTransport.download("https://storage.example/placements/published.json", null, 1024, 5_000) { _, _, _ ->
+                java.net.Socket("127.0.0.1", server.localPort)
+            }
+            serving.join()
+            server.close()
+            assertTrue(answer is PlacementResponse.Body)
+            assertEquals("{}", (answer as PlacementResponse.Body).text)
+            assertTrue(request, request.lines().none { it.startsWith("Cookie", ignoreCase = true) })
+            assertEquals(1, jar.cookieStore.cookies.size)
         } finally {
             CookieHandler.setDefault(before)
         }
@@ -127,12 +144,15 @@ class PlacementAdversarialTest {
         }
     }
 
-    @Test fun deepJsonAndBomAreCorruptWithoutAnException() {
-        // Cross-reader note: corrupt here and on iOS (depth cap 256, BOM not skipped); React and Flutter read a map.
+    @Test fun deepJsonIsCorruptWithoutAnException() {
         val depth = 100_000
         val deep = """{"placementsVersion":"1.0.0","placements":{},"x":""" + "[".repeat(depth) + "]".repeat(depth) + "}"
         assertEquals(PlacementRules.MapRead.Corrupt, PlacementRules.readMapText(deep))
-        assertEquals(PlacementRules.MapRead.Corrupt, PlacementRules.readMapText("﻿" + map()))
+    }
+
+    @Test fun oneLeadingByteOrderMarkIsSkipped() {
+        assertTrue(PlacementRules.readMapText("\uFEFF" + map()) is PlacementRules.MapRead.Map)
+        assertEquals(PlacementRules.MapRead.Corrupt, PlacementRules.readMapText("\uFEFF\uFEFF" + map()))
     }
 
     @Test fun corruptOtherMajorAnd404NeverOverwriteTheLastKnownMap() = runBlocking {
@@ -145,11 +165,11 @@ class PlacementAdversarialTest {
             PlacementResponse.NotModified,
         )) {
             val store = SharedStore()
-            store.write("placements", StoredText(good, "\"e\""))
+            store.write("map:$baseA/placements/published.json", StoredText(good, "\"e\""))
             val t = Transport()
             t.answers["$baseA/placements/published.json"] = answer
             val load = loadPlacement(PlacementSource(baseA, store = store, transport = t), "home.banner")
-            assertEquals(good, store.items["placements"]?.text)
+            assertEquals(good, store.items["map:$baseA/placements/published.json"]?.text)
             assertEquals(PlacementStatus.Empty, load.resolution.status)
         }
     }

@@ -3,6 +3,10 @@ package com.hotlayout
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import com.hotlayout.placements.PlacementRules
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
@@ -24,7 +28,8 @@ import kotlinx.coroutines.delay
  * @param name the name of the place, as the app writes it (`home.banner`).
  * @param source where the map and the documents come from.
  * @param refreshIntervalMs the pause between two asks of the map; `null` asks once. Not below 5 seconds.
- * @param onPlacement called with every new result of the load, also when nothing is drawn: [PlacementLoad.report]
+ * @param onPlacement called with the first result and with every result that changes the place (what is drawn, the
+ * report, the map status, the document or the entry point), also when nothing is drawn and when a document comes back: [PlacementLoad.report]
  * says why (`Empty`, `Unknown`, `Unreadable`, `DocumentMissing`, `DocumentUnreadable`) or what to fix while a document
  * is drawn (`EntryMissing`).
  */
@@ -66,7 +71,16 @@ public fun HotlayoutPlacement(
         }
     }
     val tell by rememberUpdatedState(onPlacement)
-    LaunchedEffect(load) { load?.let { tell?.invoke(it) } }
+    // The host hears the first settled state and every change of status, report, map status, document or entry
+    // point, also the return to a shown document; the same state again, and new content of the same document, is no event.
+    var told by remember(name, source) { mutableStateOf<PlacementRules.Settled?>(null) }
+    LaunchedEffect(load) {
+        val now = load ?: return@LaunchedEffect
+        if (PlacementRules.event(told, now.settled()) != null) {
+            told = now.settled()
+            tell?.invoke(now)
+        }
+    }
 
     val current = load ?: return
     val document = current.document ?: return

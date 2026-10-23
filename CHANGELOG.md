@@ -10,7 +10,7 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
-## [0.2.2] - 2026-10-23
+## [Unreleased]
 
 ### Added
 
@@ -23,6 +23,19 @@ is stated in every entry.
   draws nothing, or that its entry point is gone (`EntryMissing`: the document starts on its first screen).
   `PlacementStore` keeps the last known copies, `PlacementTransport` carries the requests. Reads the placement map
   contract 1.0.0; every row of `placements/placement-cases.json` is run.
+  Reading rules of the map body: at most 262 144 bytes, strict UTF-8 (anything else is `Corrupt`), one leading byte
+  order mark skipped, nesting deeper than 32 levels is `Corrupt`; the major version is compared as a string of digits.
+  A request has one 20-second deadline from its start to the end of its body, and a redirect is no answer. The host
+  hears `onPlacement` for the first settled state and for every change of what is drawn, the report, the map
+  status, the document or the entry point (also the return to a shown document). The last known map and the
+  documents are kept under the address of their file, so a store shared by several projects keeps them apart, and a
+  document that answered 404 is dropped from the store.
+  `PlacementStore` has a new method `remove(key)`; `PlacementResponse.Body` carries the raw `bytes` of the body (the
+  `Body(text, etag)` constructor and `text` remain).
+  The default transport writes its GET on the socket itself and never sends or stores cookies, whatever
+  `CookieHandler` the app has installed.
+
+## [0.2.2] - 2026-10-23
 
 ### Fixed
 

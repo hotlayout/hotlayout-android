@@ -87,7 +87,8 @@ public fun isPlacementName(name: String): Boolean = PlacementRules.isName(name)
 public class StoredText(public val text: String, public val etag: String?)
 
 /**
- * Where the reader keeps the last known map and documents. By default in memory: give a store of your own
+ * Where the reader keeps the last known map and documents. Keys are addresses (the address of the map file, the
+ * address of the document file), so a store may be shared by several projects. By default in memory: give a store of your own
  * (a file, a preference) to have them after a restart. Called off the main thread; keep it quick.
  */
 public interface PlacementStore {
@@ -96,6 +97,9 @@ public interface PlacementStore {
 
     /** Keeps [value] under [key]. */
     public fun write(key: String, value: StoredText)
+
+    /** Forgets what is kept under [key]: a document that was taken down must not come back from here. */
+    public fun remove(key: String)
 }
 
 /** A store that keeps everything in memory. */
@@ -103,4 +107,16 @@ public class MemoryPlacementStore : PlacementStore {
     private val items = HashMap<String, StoredText>()
     override fun read(key: String): StoredText? = synchronized(items) { items[key] }
     override fun write(key: String, value: StoredText) { synchronized(items) { items[key] = value } }
+    override fun remove(key: String) { synchronized(items) { items.remove(key) } }
 }
+
+private fun String.lowerFirst() = replaceFirstChar { it.lowercase() }
+
+/** The five fields the host hears about: a change of any of them is a change of the place. */
+internal fun PlacementLoad.settled(): PlacementRules.Settled = PlacementRules.Settled(
+    status = if (document != null) "document" else "nothing",
+    report = report?.name?.lowerFirst(),
+    mapStatus = mapStatus.name.lowerFirst(),
+    documentId = if (document != null) resolution.documentId else null,
+    entry = if (document != null) entry else null,
+)
