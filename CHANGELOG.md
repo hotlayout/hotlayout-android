@@ -14,6 +14,8 @@ is stated in every entry.
 
 ### Fixed
 
+- A focused text field keeps the same room under it above the keyboard on a screen with a floating navigation bar as on
+  one without: the height of the floating zone, which the keyboard covers, is no longer added to that room.
 - A glass node (`style.backdropBlur`) and a node over it, scrolled under the pinned top zone, are clipped by the
   bottom edge of the zone, as every other node is. They are drawn at the page, outside the clip of their scrolling
   ancestors, so a scrolled glass card showed over the top zone and the status bar. Horizontal scrolls (a scrolling

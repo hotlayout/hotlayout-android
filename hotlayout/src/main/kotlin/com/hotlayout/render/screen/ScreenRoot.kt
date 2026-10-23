@@ -236,8 +236,9 @@ private fun BodyZone(plan: ScreenPlan, inner: RenderContext, zoneRoot: DocumentN
             Spacer(Modifier.height(plan.lead.dp))
             Box(Modifier.padding(start = plan.paddingStart.dp, end = plan.paddingEnd.dp).contentColumn(plan.contentMax)) {
                 // The visible body is what `justify` of the screen distributes (a layer as tall as its content has none).
+                // A focused field keeps only the tail of the body: the keyboard covers the floating zone, its room is not added.
                 val free = area?.let { ScreenAnatomy.columnRoom(it.value.toDouble(), plan.lead, tail).dp }
-                CompositionLocalProvider(LocalScreenBodyHeight provides free, com.hotlayout.render.widgets.LocalBodyTail provides tail.dp) {
+                CompositionLocalProvider(LocalScreenBodyHeight provides free, com.hotlayout.render.widgets.LocalBodyTail provides plan.tail.dp) {
                     ColumnWidget(plan.body, plan.gap, zoneRoot, inner, 0)
                 }
             }

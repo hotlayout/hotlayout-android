@@ -141,6 +141,21 @@ class FocusedFieldOnDeviceTest {
         assertTrue("from the helper to the keyboard: $distance dp, the bottom padding of the root is 16", Math.abs(distance - 16f) <= pixel())
     }
 
+    /**
+     * A floating bar of navigation is covered by the keyboard, so its room is not added to the tail: the distance from
+     * the helper to the keyboard equals the one on the same screen without `float` (the bottom padding of the root, 16).
+     */
+    @Test
+    fun theTailUnderTheFocusedFieldIsTheSameWithAFloatingBar() {
+        val floating = nav.replace("\"type\":\"NavBar\",\"props\":{}", "\"type\":\"NavBar\",\"props\":{\"float\":true}")
+        assertTrue("the bar floats", floating != nav)
+        val top = focusLast(",$floating")
+        val help = rule.onNodeWithText("Help f11", useUnmergedTree = true).getBoundsInRoot()
+        val distance = top - help.bottom.value
+        android.util.Log.i("KBTAIL", "float distance=$distance top=$top help=${help.bottom.value}")
+        assertTrue("from the helper to the keyboard with a floating bar: $distance dp, as without it: 16", Math.abs(distance - 16f) <= pixel())
+    }
+
     /** With a bar of navigation: it stays under the keyboard, the field with its helper is above the keyboard. */
     @Test
     fun theBarOfNavigationStaysUnderTheKeyboardAndTheFieldIsAboveIt() {
