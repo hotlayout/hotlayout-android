@@ -14,6 +14,9 @@ is stated in every entry.
 
 ### Fixed
 
+- A page with glass (`style.backdropBlur`) in its scrolling body no longer redraws on every frame while nothing on it
+  changes: it kept the device busy and drained the battery, and a test that waited for an idle page never finished.
+  The glass now follows the body when it scrolls, and keeps its place when the page is recomposed.
 - A glass node (`style.backdropBlur`) and a node over it, scrolled under the pinned top zone, are clipped by the
   bottom edge of the zone, as every other node is. They are drawn at the page, outside the clip of their scrolling
   ancestors, so a scrolled glass card showed over the top zone and the status bar. Horizontal scrolls (a scrolling

@@ -16,9 +16,8 @@ import org.junit.runner.RunWith
 
 /**
  * A glass node (and a node over glass) is drawn at the page, outside the clip of its scrolling ancestors; the body scrolled
- * under the top zone must not show it over the zone or in the status bar. The page is hosted without the Compose test rule:
- * a page with glass redraws all the time, so the rule never reports idle and every query of it hangs. The drag and the
- * screenshot go through the device, with real frames.
+ * under the top zone must not show it over the zone or in the status bar. The drag and the screenshot go through the device,
+ * with real frames, and the drag does not wait for an idle page between its moves.
  */
 @RunWith(AndroidJUnit4::class)
 class ScrolledGlassOnDeviceTest {
@@ -61,8 +60,20 @@ class ScrolledGlassOnDeviceTest {
 
     private fun isRed(pixel: Int) = Color.red(pixel) > 180 && Color.green(pixel) < 80 && Color.blue(pixel) < 80
 
+    /** The lowest row of the window with red pixels of the card; -1 — none. */
+    private fun lowestRed(shot: android.graphics.Bitmap): Int {
+        for (y in shot.height - 1 downTo 0) for (x in 0 until shot.width step 4) if (isRed(shot.getPixel(x, y))) return y
+        return -1
+    }
+
+    private fun screenshot(): android.graphics.Bitmap =
+        androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
+
+    /** The red pixels of the card above and under the edge, and the lowest red row before and after the drag. */
+    private data class Dragged(val above: Int, val below: Int, val bottomBefore: Int, val bottomAfter: Int)
+
     /** The red pixels of the card above [limit] points from the top of the window, and under it, after the page is dragged up. */
-    private fun redAfterDrag(topZone: Boolean, limit: Float): Pair<Int, Int> {
+    private fun redAfterDrag(topZone: Boolean, limit: Float): Dragged {
         val density = targetContext.resources.displayMetrics.density
         val scenario = ActivityScenario.launch(ComponentActivity::class.java)
         run {
@@ -72,13 +83,14 @@ class ScrolledGlassOnDeviceTest {
                 activity.setContent { FixtureHost(document(topZone), Recorder(), modifier = Modifier.fillMaxSize(), safeAreaTop = 40.dp) }
             }
             Thread.sleep(2000)
+            val bottomBefore = lowestRed(screenshot())
             val width = device.displayWidth
             val height = device.displayHeight
             // Drag from low on the page by 100 points (and the touch slop); the device swipe waits for an idle page, this does not.
             val drag = (100 * density).toInt() + 60
             drag(width / 2f, height * 0.8f, height * 0.8f - drag)
             Thread.sleep(2000)
-            val shot = androidx.test.platform.app.InstrumentationRegistry.getInstrumentation().uiAutomation.takeScreenshot()
+            val shot = screenshot()
             val edge = (limit * density).toInt()
             var above = 0
             var below = 0
@@ -86,9 +98,8 @@ class ScrolledGlassOnDeviceTest {
                 if (!isRed(shot.getPixel(x, y))) continue
                 if (y < edge) above++ else below++
             }
-            // Not `close()` nor `onActivity`: they wait for an idle page, and a page with glass never is.
             host?.let { it.runOnUiThread { it.finish() } }
-            return above to below
+            return Dragged(above, below, bottomBefore, lowestRed(shot))
         }
     }
 
@@ -110,5 +121,17 @@ class ScrolledGlassOnDeviceTest {
         val (above, below) = redAfterDrag(topZone = false, limit = 40f)
         assertTrue("the card is still in the body: $below", below > 0)
         assertEquals("red pixels of the scrolled card in the status bar", 0, above)
+    }
+
+    /** The glass card is drawn where the body has scrolled it to, not where it stood when the page was first drawn. */
+    @Test
+    fun scrolledGlassMovesWithTheBody() {
+        val density = targetContext.resources.displayMetrics.density
+        val dragged = redAfterDrag(topZone = false, limit = 40f)
+        assertTrue("the card is drawn before the drag: ${dragged.bottomBefore}", dragged.bottomBefore > 0)
+        assertTrue(
+            "the bottom edge of the card rose with the body: ${dragged.bottomBefore} → ${dragged.bottomAfter}",
+            dragged.bottomAfter in 0..(dragged.bottomBefore - (50 * density).toInt()),
+        )
     }
 }
