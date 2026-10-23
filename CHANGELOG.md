@@ -10,7 +10,7 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
-## [Unreleased]
+## [0.2.2] - 2026-10-23
 
 ### Added
 
@@ -26,6 +26,11 @@ is stated in every entry.
 
 ### Fixed
 
+- A page with glass (`style.backdropBlur`) in its scrolling body no longer redraws on every frame while nothing on it
+  changes: it kept the device busy and drained the battery, and a test that waited for an idle page never finished.
+  The glass now follows the body when it scrolls, and keeps its place when the page is recomposed.
+- A focused text field keeps the same room under it above the keyboard on a screen with a floating navigation bar as on
+  one without: the height of the floating zone, which the keyboard covers, is no longer added to that room.
 - A glass node (`style.backdropBlur`) and a node over it, scrolled under the pinned top zone, are clipped by the
   bottom edge of the zone, as every other node is. They are drawn at the page, outside the clip of their scrolling
   ancestors, so a scrolled glass card showed over the top zone and the status bar. Horizontal scrolls (a scrolling
