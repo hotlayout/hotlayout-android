@@ -12,6 +12,18 @@ is stated in every entry.
 
 ## [Unreleased]
 
+### Added
+
+- Placements: `HotlayoutPlacement(name, source)` draws the document that the project's placement map puts in a named
+  place of the app, and nothing for an empty, unknown or unreadable place or a document that cannot be had.
+  `PlacementSource` reads `placements/published.json` of the project with its `ETag` (304), falls back to the last
+  known map and then to the map bundled with the app, and tells «the network was silent» (`Offline`) from «the map
+  is not a map» (`Corrupt`), «another major» (`Unsupported`) and «never published» (`NotPublished`).
+  `loadPlacement(source, name)` is the same as a suspend function; `PlacementLoad.report` tells the host why a place
+  draws nothing, or that its entry point is gone (`EntryMissing`: the document starts on its first screen).
+  `PlacementStore` keeps the last known copies, `PlacementTransport` carries the requests. Reads the placement map
+  contract 1.0.0; every row of `placements/placement-cases.json` is run.
+
 ### Fixed
 
 - A glass node (`style.backdropBlur`) and a node over it, scrolled under the pinned top zone, are clipped by the

@@ -117,7 +117,7 @@ technology hears in your language.
 
 Separate from the view: `checkDocumentVersion` (verdicts `Ok`, `NewerMinor`, `NewerMajor`, `OlderMajor`,
 `Unparsable`; it takes JSON text, bytes or a `JsonValue`), `loadDocument`, `HotlayoutThemeSet.read`,
-`resolveLocale`.
+`resolveLocale`, `loadPlacement`.
 
 - **Documents and themes are untrusted input.** A piece of the wrong shape is skipped and reported
   (`onReport`), never a crash. A screen deeper than 32 levels is skipped (and reported); the other screens of the
@@ -150,6 +150,51 @@ Separate from the view: `checkDocumentVersion` (verdicts `Ok`, `NewerMinor`, `Ne
   variationSettings = …)` alone draws bold Arabic regular.
 - **Labels**: the few texts the reader says to assistive technology (the name of the back arrow) are not in the
   document. Pass `HotlayoutLabels` in the language of your app; the defaults are English.
+
+## Placements
+
+A placement is a named place of your app (`home.banner`). Which published document stands in it is decided in the
+admin, not in your code: you write the name once, and the screen changes without a release.
+
+```kotlin
+// Once, in your application object: one source serves every placement of the app.
+val placements = PlacementSource(
+    projectBase = "https://storage.example/orgs/acme/projects/app",
+    bundledMap = assets.open("placements.json").bufferedReader().readText(),   // optional: the map of this release
+)
+
+@Composable
+fun HomeBanner() {
+    HotlayoutPlacement(
+        name = "home.banner",
+        source = placements,
+        onAction = { action, _ -> /* as for HotlayoutScreen */ },
+        onPlacement = { load -> if (load.report != null) Log.i("placement", "${load.name}: ${load.report}") },
+    )
+}
+```
+
+`HotlayoutPlacement` draws the document of the place with `HotlayoutScreen` (it takes the same parameters, and
+starts on the entry point the map names) and **nothing** when the place is empty, unknown, unreadable, or its
+document cannot be had. `onPlacement` hears every result with a `PlacementLoad`: `report` is `Empty`, `Unknown`,
+`Unreadable`, `DocumentMissing`, `DocumentUnreadable`, or `EntryMissing` (the entry point is gone from the
+document, which is drawn from its first screen), and `null` when all is well, so you can hide the frame around a
+place that draws nothing. Without Compose, `loadPlacement(source, name)` is the same as a suspend function; it
+runs off the main thread and never throws on a bad answer.
+
+- The map is `placements/published.json` under `projectBase`, read without a token and asked again every
+  `refreshIntervalMs` (a minute by default, `null` for once) with its `ETag`, so an unchanged map costs no body.
+- The network wins. When it is silent, broken, or of another major version, the last known map is used, then
+  `bundledMap`. Only a fresh, readable map from the network becomes the last known one. A fresh map is the whole
+  answer: a place it does not have is `Unknown`, it is not looked up in an older map.
+- `PlacementLoad.mapStatus` tells the cases apart: `Offline` (the network was silent), `Corrupt` (it answered with
+  something that is not a map), `Unsupported` (another major), `NotPublished` (404: the project has no placements).
+- Documents go the same way: the network, the last known copy, then `bundledDocuments`. The last known map and
+  documents live in memory; give `PlacementStore` a file or preferences to keep them over a restart.
+- A name that is not the name of a place is `Unknown` without a look at the map; a place of the map is found only by
+  its own key. The map and the documents come from the network, so their ids are checked by form before they
+  become an address. The default transport is `https` only, follows no redirects, uses no cookies and refuses
+  more than 256 KB of map; give `PlacementTransport` to use your own client.
 
 ## Window insets
 

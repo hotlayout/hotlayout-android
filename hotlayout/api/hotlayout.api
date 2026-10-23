@@ -119,6 +119,10 @@ public final class com/hotlayout/HotlayoutLoadException$NotADocument : com/hotla
 	public final fun getReason ()Ljava/lang/String;
 }
 
+public final class com/hotlayout/HotlayoutPlacementKt {
+	public static final fun HotlayoutPlacement-RKr0Zlc (Ljava/lang/String;Lcom/hotlayout/PlacementSource;Landroidx/compose/ui/Modifier;Ljava/lang/Long;Lcom/hotlayout/HotlayoutThemeSet;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/util/TimeZone;Ljava/lang/Long;Lcom/hotlayout/ImagePolicy;Lcom/hotlayout/HotlayoutFonts;Lcom/hotlayout/WritablePaths;ZZLcom/hotlayout/HotlayoutLabels;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/unit/Dp;Landroidx/compose/ui/unit/Dp;Landroidx/compose/runtime/Composer;IIII)V
+}
+
 public final class com/hotlayout/HotlayoutReport {
 	public static final field $stable I
 	public fun <init> (Lcom/hotlayout/HotlayoutReport$Kind;Ljava/lang/String;Ljava/lang/String;)V
@@ -349,6 +353,13 @@ public final class com/hotlayout/LocaleResolutionKt {
 	public static final fun resolveLocale (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;)Lcom/hotlayout/LocaleResolution;
 }
 
+public final class com/hotlayout/MemoryPlacementStore : com/hotlayout/PlacementStore {
+	public static final field $stable I
+	public fun <init> ()V
+	public fun read (Ljava/lang/String;)Lcom/hotlayout/StoredText;
+	public fun write (Ljava/lang/String;Lcom/hotlayout/StoredText;)V
+}
+
 public final class com/hotlayout/NavigateKind : java/lang/Enum {
 	public static final field Back Lcom/hotlayout/NavigateKind;
 	public static final field Push Lcom/hotlayout/NavigateKind;
@@ -376,6 +387,166 @@ public final class com/hotlayout/NavigateRequest {
 	public final fun getToScreenId ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/hotlayout/PlacementLoad {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Lcom/hotlayout/PlacementMapStatus;Lcom/hotlayout/PlacementMapOrigin;Lcom/hotlayout/PlacementResolution;Lcom/hotlayout/HotlayoutDocument;Ljava/lang/String;Lcom/hotlayout/PlacementReport;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Lcom/hotlayout/PlacementMapStatus;
+	public final fun component3 ()Lcom/hotlayout/PlacementMapOrigin;
+	public final fun component4 ()Lcom/hotlayout/PlacementResolution;
+	public final fun component5 ()Lcom/hotlayout/HotlayoutDocument;
+	public final fun component6 ()Ljava/lang/String;
+	public final fun component7 ()Lcom/hotlayout/PlacementReport;
+	public final fun copy (Ljava/lang/String;Lcom/hotlayout/PlacementMapStatus;Lcom/hotlayout/PlacementMapOrigin;Lcom/hotlayout/PlacementResolution;Lcom/hotlayout/HotlayoutDocument;Ljava/lang/String;Lcom/hotlayout/PlacementReport;)Lcom/hotlayout/PlacementLoad;
+	public static synthetic fun copy$default (Lcom/hotlayout/PlacementLoad;Ljava/lang/String;Lcom/hotlayout/PlacementMapStatus;Lcom/hotlayout/PlacementMapOrigin;Lcom/hotlayout/PlacementResolution;Lcom/hotlayout/HotlayoutDocument;Ljava/lang/String;Lcom/hotlayout/PlacementReport;ILjava/lang/Object;)Lcom/hotlayout/PlacementLoad;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocument ()Lcom/hotlayout/HotlayoutDocument;
+	public final fun getEntry ()Ljava/lang/String;
+	public final fun getMapOrigin ()Lcom/hotlayout/PlacementMapOrigin;
+	public final fun getMapStatus ()Lcom/hotlayout/PlacementMapStatus;
+	public final fun getName ()Ljava/lang/String;
+	public final fun getReport ()Lcom/hotlayout/PlacementReport;
+	public final fun getResolution ()Lcom/hotlayout/PlacementResolution;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/hotlayout/PlacementMapOrigin : java/lang/Enum {
+	public static final field Bundled Lcom/hotlayout/PlacementMapOrigin;
+	public static final field LastKnown Lcom/hotlayout/PlacementMapOrigin;
+	public static final field Network Lcom/hotlayout/PlacementMapOrigin;
+	public static final field None Lcom/hotlayout/PlacementMapOrigin;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/hotlayout/PlacementMapOrigin;
+	public static fun values ()[Lcom/hotlayout/PlacementMapOrigin;
+}
+
+public final class com/hotlayout/PlacementMapStatus : java/lang/Enum {
+	public static final field Corrupt Lcom/hotlayout/PlacementMapStatus;
+	public static final field Fresh Lcom/hotlayout/PlacementMapStatus;
+	public static final field NotPublished Lcom/hotlayout/PlacementMapStatus;
+	public static final field Offline Lcom/hotlayout/PlacementMapStatus;
+	public static final field Unsupported Lcom/hotlayout/PlacementMapStatus;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/hotlayout/PlacementMapStatus;
+	public static fun values ()[Lcom/hotlayout/PlacementMapStatus;
+}
+
+public final class com/hotlayout/PlacementReport : java/lang/Enum {
+	public static final field DocumentMissing Lcom/hotlayout/PlacementReport;
+	public static final field DocumentUnreadable Lcom/hotlayout/PlacementReport;
+	public static final field Empty Lcom/hotlayout/PlacementReport;
+	public static final field EntryMissing Lcom/hotlayout/PlacementReport;
+	public static final field Unknown Lcom/hotlayout/PlacementReport;
+	public static final field Unreadable Lcom/hotlayout/PlacementReport;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/hotlayout/PlacementReport;
+	public static fun values ()[Lcom/hotlayout/PlacementReport;
+}
+
+public final class com/hotlayout/PlacementResolution {
+	public static final field $stable I
+	public fun <init> (Lcom/hotlayout/PlacementStatus;Ljava/lang/String;Ljava/lang/String;)V
+	public synthetic fun <init> (Lcom/hotlayout/PlacementStatus;Ljava/lang/String;Ljava/lang/String;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Lcom/hotlayout/PlacementStatus;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ljava/lang/String;
+	public final fun copy (Lcom/hotlayout/PlacementStatus;Ljava/lang/String;Ljava/lang/String;)Lcom/hotlayout/PlacementResolution;
+	public static synthetic fun copy$default (Lcom/hotlayout/PlacementResolution;Lcom/hotlayout/PlacementStatus;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/hotlayout/PlacementResolution;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDocumentId ()Ljava/lang/String;
+	public final fun getEntry ()Ljava/lang/String;
+	public final fun getStatus ()Lcom/hotlayout/PlacementStatus;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class com/hotlayout/PlacementResponse {
+	public static final field $stable I
+}
+
+public final class com/hotlayout/PlacementResponse$Body : com/hotlayout/PlacementResponse {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun getEtag ()Ljava/lang/String;
+	public final fun getText ()Ljava/lang/String;
+}
+
+public final class com/hotlayout/PlacementResponse$NotFound : com/hotlayout/PlacementResponse {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/hotlayout/PlacementResponse$NotFound;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/hotlayout/PlacementResponse$NotModified : com/hotlayout/PlacementResponse {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/hotlayout/PlacementResponse$NotModified;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/hotlayout/PlacementResponse$TooLarge : com/hotlayout/PlacementResponse {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/hotlayout/PlacementResponse$TooLarge;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/hotlayout/PlacementResponse$Unavailable : com/hotlayout/PlacementResponse {
+	public static final field $stable I
+	public static final field INSTANCE Lcom/hotlayout/PlacementResponse$Unavailable;
+	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/hotlayout/PlacementSource {
+	public static final field $stable I
+	public static final field Companion Lcom/hotlayout/PlacementSource$Companion;
+	public static final field DEFAULT_REFRESH_MS J
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lcom/hotlayout/PlacementStore;Lcom/hotlayout/PlacementTransport;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lcom/hotlayout/PlacementStore;Lcom/hotlayout/PlacementTransport;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class com/hotlayout/PlacementSource$Companion {
+}
+
+public final class com/hotlayout/PlacementSourceKt {
+	public static final fun loadPlacement (Lcom/hotlayout/PlacementSource;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/hotlayout/PlacementStatus : java/lang/Enum {
+	public static final field Document Lcom/hotlayout/PlacementStatus;
+	public static final field Empty Lcom/hotlayout/PlacementStatus;
+	public static final field Unknown Lcom/hotlayout/PlacementStatus;
+	public static final field Unreadable Lcom/hotlayout/PlacementStatus;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lcom/hotlayout/PlacementStatus;
+	public static fun values ()[Lcom/hotlayout/PlacementStatus;
+}
+
+public abstract interface class com/hotlayout/PlacementStore {
+	public abstract fun read (Ljava/lang/String;)Lcom/hotlayout/StoredText;
+	public abstract fun write (Ljava/lang/String;Lcom/hotlayout/StoredText;)V
+}
+
+public abstract interface class com/hotlayout/PlacementTransport {
+	public static final field Companion Lcom/hotlayout/PlacementTransport$Companion;
+	public abstract fun get (Ljava/lang/String;Ljava/lang/String;ILkotlin/coroutines/Continuation;)Ljava/lang/Object;
+}
+
+public final class com/hotlayout/PlacementTransport$Companion {
+	public final fun getDefault ()Lcom/hotlayout/PlacementTransport;
+}
+
+public final class com/hotlayout/PlacementTypesKt {
+	public static final fun isPlacementName (Ljava/lang/String;)Z
 }
 
 public final class com/hotlayout/ScreenPresentation : java/lang/Enum {
@@ -474,6 +645,13 @@ public final class com/hotlayout/StandardActions {
 public final class com/hotlayout/StandardActionsKt {
 	public static final fun runStandardAction (Landroid/content/Context;Lcom/hotlayout/HotlayoutAction;Ljava/util/Set;)Z
 	public static synthetic fun runStandardAction$default (Landroid/content/Context;Lcom/hotlayout/HotlayoutAction;Ljava/util/Set;ILjava/lang/Object;)Z
+}
+
+public final class com/hotlayout/StoredText {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun getEtag ()Ljava/lang/String;
+	public final fun getText ()Ljava/lang/String;
 }
 
 public final class com/hotlayout/TrackEvent {

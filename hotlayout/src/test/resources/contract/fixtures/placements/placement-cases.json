@@ -1,0 +1,611 @@
+{
+  "about": "Shared case table for the placement map (contract/placements.json). Every reader runs every row. readCases: reading the map file and resolving names against it; publishable says whether the strict schema accepts the file (a builder publishes only such files), read and resolve are what a tolerant reader does. sourceCases: which map a reader uses (network, last known, bundled) and with which status. showingCases: what a placement draws once its document has been loaded. Limits on the number of placements and on file size are publish-side only and are not rows here.",
+  "placementsVersion": "1.0.0",
+  "readCases": [
+    {
+      "name": "full map: a document with an entry, a document without one, an empty placement",
+      "json": {
+        "placementsVersion": "1.0.0",
+        "placements": {
+          "home.banner": { "documentId": "d-raffle", "entry": "raffle" },
+          "promo.raffle-button": { "documentId": "d-raffle" },
+          "profile.top": { "documentId": null }
+        }
+      },
+      "publishable": true,
+      "read": "map",
+      "resolve": [
+        { "name": "home.banner", "status": "document", "documentId": "d-raffle", "entry": "raffle" },
+        { "name": "promo.raffle-button", "status": "document", "documentId": "d-raffle", "entry": null },
+        { "name": "profile.top", "status": "empty", "documentId": null, "entry": null },
+        { "name": "cart.banner", "status": "unknown", "documentId": null, "entry": null },
+        { "name": "Home.Banner", "status": "unknown", "documentId": null, "entry": null },
+        { "name": " home.banner", "status": "unknown", "documentId": null, "entry": null },
+        { "name": "constructor", "status": "unknown", "documentId": null, "entry": null },
+        { "name": "__proto__", "status": "unknown", "documentId": null, "entry": null },
+        { "name": "", "status": "unknown", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "no placements at all",
+      "json": { "placementsVersion": "1.0.0", "placements": {} },
+      "publishable": true,
+      "read": "map",
+      "resolve": [{ "name": "home.banner", "status": "unknown", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "publishedAt in UTC is part of the published form",
+      "json": { "placementsVersion": "1.0.0", "publishedAt": "2026-10-23T09:15:00.000Z", "placements": { "home.banner": { "documentId": "d1" } } },
+      "publishable": true,
+      "read": "map",
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d1", "entry": null }]
+    },
+    {
+      "name": "malformed publishedAt: not publishable, but a reader does not look at it",
+      "json": { "placementsVersion": "1.0.0", "publishedAt": "yesterday", "placements": { "home.banner": { "documentId": "d1" } } },
+      "publishable": false,
+      "read": "map",
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d1", "entry": null }]
+    },
+    {
+      "name": "unknown top-level field: not publishable, ignored by a reader",
+      "json": { "placementsVersion": "1.0.0", "owner": "marketing", "placements": { "home.banner": { "documentId": "d1" } } },
+      "publishable": false,
+      "read": "map",
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d1", "entry": null }]
+    },
+    {
+      "name": "unknown field in a placement: not publishable, ignored by a reader",
+      "json": { "placementsVersion": "1.0.0", "placements": { "home.banner": { "documentId": "d1", "from": "2026-11-01T00:00:00Z" } } },
+      "publishable": false,
+      "read": "map",
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d1", "entry": null }]
+    },
+    {
+      "name": "newer minor of the same major is read",
+      "json": { "placementsVersion": "1.4.0", "placements": { "home.banner": { "documentId": "d1", "entry": "spring" } } },
+      "publishable": true,
+      "read": "map",
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d1", "entry": "spring" }]
+    },
+    {
+      "name": "another major (newer) is not understood",
+      "json": { "placementsVersion": "2.0.0", "placements": { "home.banner": { "documentId": "d1" } } },
+      "publishable": true,
+      "read": "unsupported",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "another major (older) is not understood",
+      "json": { "placementsVersion": "0.9.0", "placements": { "home.banner": { "documentId": "d1" } } },
+      "publishable": true,
+      "read": "unsupported",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "version missing",
+      "json": { "placements": { "home.banner": { "documentId": "d1" } } },
+      "publishable": false,
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "version that is not MAJOR.MINOR.PATCH",
+      "json": { "placementsVersion": "1.0", "placements": { "home.banner": { "documentId": "d1" } } },
+      "publishable": false,
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "version with a leading zero is not a version",
+      "json": { "placementsVersion": "01.0.0", "placements": {} },
+      "publishable": false,
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "version as a number",
+      "json": { "placementsVersion": 1, "placements": {} },
+      "publishable": false,
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "placements missing",
+      "json": { "placementsVersion": "1.0.0" },
+      "publishable": false,
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "placements as an array",
+      "json": { "placementsVersion": "1.0.0", "placements": [{ "documentId": "d1" }] },
+      "publishable": false,
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "placements null",
+      "json": { "placementsVersion": "1.0.0", "placements": null },
+      "publishable": false,
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "the file is JSON null",
+      "json": null,
+      "publishable": false,
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "the file is a JSON array",
+      "json": [{ "placementsVersion": "1.0.0", "placements": {} }],
+      "publishable": false,
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "the file is a JSON string",
+      "json": "home.banner",
+      "publishable": false,
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "text that is not JSON (an HTML error page from a proxy)",
+      "text": "<html><body>Service unavailable</body></html>",
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "empty text",
+      "text": "",
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "truncated JSON text",
+      "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\"}",
+      "read": "corrupt",
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "valid JSON text",
+      "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d1\",\"entry\":\"raffle\"}}}",
+      "read": "map",
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d1", "entry": "raffle" }]
+    },
+    {
+      "name": "__proto__ as a placement name is not a placement and does not touch the others",
+      "json": { "placementsVersion": "1.0.0", "placements": { "__proto__": { "documentId": "evil" }, "home.banner": { "documentId": "d1" } } },
+      "publishable": false,
+      "read": "map",
+      "resolve": [
+        { "name": "__proto__", "status": "unknown", "documentId": null, "entry": null },
+        { "name": "home.banner", "status": "document", "documentId": "d1", "entry": null },
+        { "name": "promo.top", "status": "unknown", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "__proto__ at the top level is an unknown field",
+      "json": { "placementsVersion": "1.0.0", "__proto__": { "placements": { "home.banner": { "documentId": "evil" } } }, "placements": {} },
+      "publishable": false,
+      "read": "map",
+      "resolve": [{ "name": "home.banner", "status": "unknown", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "a placement may be called constructor; it is found only when it is in the map",
+      "json": { "placementsVersion": "1.0.0", "placements": { "constructor": { "documentId": "d1" } } },
+      "publishable": true,
+      "read": "map",
+      "resolve": [
+        { "name": "constructor", "status": "document", "documentId": "d1", "entry": null },
+        { "name": "tostring", "status": "unknown", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "name forms: segments after the first may hold a hyphen and start with a digit",
+      "json": {
+        "placementsVersion": "1.0.0",
+        "placements": {
+          "home": { "documentId": "d1" },
+          "home.banner-top": { "documentId": "d2" },
+          "promo.2026": { "documentId": "d3" },
+          "a.b.c.d": { "documentId": "d4" },
+          "home.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": { "documentId": "d5" }
+        }
+      },
+      "publishable": true,
+      "read": "map",
+      "resolve": [
+        { "name": "home", "status": "document", "documentId": "d1", "entry": null },
+        { "name": "home.banner-top", "status": "document", "documentId": "d2", "entry": null },
+        { "name": "promo.2026", "status": "document", "documentId": "d3", "entry": null },
+        { "name": "a.b.c.d", "status": "document", "documentId": "d4", "entry": null },
+        { "name": "home.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "status": "document", "documentId": "d5", "entry": null },
+        { "name": "home.banner", "status": "unknown", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "names of the wrong form are in the file, but no reader finds them",
+      "json": {
+        "placementsVersion": "1.0.0",
+        "placements": {
+          "Home.banner": { "documentId": "d1" },
+          "home..x": { "documentId": "d1" },
+          "home.": { "documentId": "d1" },
+          ".home": { "documentId": "d1" },
+          "1home": { "documentId": "d1" },
+          "home-top": { "documentId": "d1" },
+          "home_banner": { "documentId": "d1" },
+          "home.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": { "documentId": "d1" },
+          "αρχική": { "documentId": "d1" }
+        }
+      },
+      "publishable": false,
+      "read": "map",
+      "resolve": [
+        { "name": "Home.banner", "status": "unknown", "documentId": null, "entry": null },
+        { "name": "home..x", "status": "unknown", "documentId": null, "entry": null },
+        { "name": "home.", "status": "unknown", "documentId": null, "entry": null },
+        { "name": ".home", "status": "unknown", "documentId": null, "entry": null },
+        { "name": "1home", "status": "unknown", "documentId": null, "entry": null },
+        { "name": "home-top", "status": "unknown", "documentId": null, "entry": null },
+        { "name": "home_banner", "status": "unknown", "documentId": null, "entry": null },
+        { "name": "home.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "status": "unknown", "documentId": null, "entry": null },
+        { "name": "αρχική", "status": "unknown", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a documentId that would leave the documents folder makes only its placement unreadable",
+      "json": {
+        "placementsVersion": "1.0.0",
+        "placements": {
+          "home.banner": { "documentId": "../theme" },
+          "home.slash": { "documentId": "a/b" },
+          "home.dot": { "documentId": "." },
+          "home.dots": { "documentId": ".." },
+          "home.ok": { "documentId": "d1" }
+        }
+      },
+      "publishable": false,
+      "read": "map",
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.slash", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.dot", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.dots", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.ok", "status": "document", "documentId": "d1", "entry": null }
+      ]
+    },
+    {
+      "name": "documentId forms: dots inside, mixed case, underscores and the 64-character limit",
+      "json": {
+        "placementsVersion": "1.0.0",
+        "placements": {
+          "home.a": { "documentId": "Promo_2026.v2-final" },
+          "home.b": { "documentId": "...x" },
+          "home.c": { "documentId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" }
+        }
+      },
+      "publishable": true,
+      "read": "map",
+      "resolve": [
+        { "name": "home.a", "status": "document", "documentId": "Promo_2026.v2-final", "entry": null },
+        { "name": "home.b", "status": "document", "documentId": "...x", "entry": null },
+        { "name": "home.c", "status": "document", "documentId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "entry": null }
+      ]
+    },
+    {
+      "name": "documentId of the wrong type or length",
+      "json": {
+        "placementsVersion": "1.0.0",
+        "placements": {
+          "home.empty": { "documentId": "" },
+          "home.number": { "documentId": 42 },
+          "home.long": { "documentId": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" },
+          "home.space": { "documentId": "d 1" },
+          "home.object": { "documentId": { "id": "d1" } }
+        }
+      },
+      "publishable": false,
+      "read": "map",
+      "resolve": [
+        { "name": "home.empty", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.number", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.long", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.space", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.object", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "a placement that is not an object, or has no documentId",
+      "json": {
+        "placementsVersion": "1.0.0",
+        "placements": {
+          "home.string": "d1",
+          "home.null": null,
+          "home.array": ["d1"],
+          "home.true": true,
+          "home.no-id": { "entry": "raffle" }
+        }
+      },
+      "publishable": false,
+      "read": "map",
+      "resolve": [
+        { "name": "home.string", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.null", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.array", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.true", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.no-id", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "entry null reads as no entry, but a builder never writes it",
+      "json": { "placementsVersion": "1.0.0", "placements": { "home.banner": { "documentId": "d1", "entry": null } } },
+      "publishable": false,
+      "read": "map",
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d1", "entry": null }]
+    },
+    {
+      "name": "entry forms: digits and hyphens, the 48-character limit",
+      "json": {
+        "placementsVersion": "1.0.0",
+        "placements": {
+          "home.a": { "documentId": "d1", "entry": "2026-spring" },
+          "home.b": { "documentId": "d1", "entry": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" }
+        }
+      },
+      "publishable": true,
+      "read": "map",
+      "resolve": [
+        { "name": "home.a", "status": "document", "documentId": "d1", "entry": "2026-spring" },
+        { "name": "home.b", "status": "document", "documentId": "d1", "entry": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" }
+      ]
+    },
+    {
+      "name": "entry of the wrong form makes its placement unreadable",
+      "json": {
+        "placementsVersion": "1.0.0",
+        "placements": {
+          "home.upper": { "documentId": "d1", "entry": "Raffle" },
+          "home.empty": { "documentId": "d1", "entry": "" },
+          "home.hyphen": { "documentId": "d1", "entry": "-raffle" },
+          "home.long": { "documentId": "d1", "entry": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee" },
+          "home.number": { "documentId": "d1", "entry": 3 },
+          "home.dot": { "documentId": "d1", "entry": "raffle.v2" }
+        }
+      },
+      "publishable": false,
+      "read": "map",
+      "resolve": [
+        { "name": "home.upper", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.empty", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.hyphen", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.long", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.number", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.dot", "status": "unreadable", "documentId": null, "entry": null }
+      ]
+    },
+    {
+      "name": "an empty placement with an entry is empty; a builder never writes the pair",
+      "json": { "placementsVersion": "1.0.0", "placements": { "home.banner": { "documentId": null, "entry": "raffle" } } },
+      "publishable": false,
+      "read": "map",
+      "resolve": [{ "name": "home.banner", "status": "empty", "documentId": null, "entry": null }]
+    }
+  ],
+  "sourceCases": [
+    {
+      "name": "a readable map from the network is used and remembered",
+      "network": { "kind": "map", "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-new\"}}}" },
+      "expected": { "source": "network", "status": "fresh", "remember": true },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-new", "entry": null }]
+    },
+    {
+      "name": "the network wins over the last known map",
+      "network": { "kind": "map", "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-new\"}}}" },
+      "lastKnown": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-old\"}}}",
+      "bundled": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-bundled\"}}}",
+      "expected": { "source": "network", "status": "fresh", "remember": true },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-new", "entry": null }]
+    },
+    {
+      "name": "a fresh map without the placement is the answer: no fallback to an older map",
+      "network": { "kind": "map", "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{}}" },
+      "lastKnown": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-old\"}}}",
+      "expected": { "source": "network", "status": "fresh", "remember": true },
+      "resolve": [{ "name": "home.banner", "status": "unknown", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "a broken placement in a fresh map is unreadable; no fallback for one placement",
+      "network": { "kind": "map", "text": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"../x\"},\"home.ok\":{\"documentId\":\"d1\"}}}" },
+      "lastKnown": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-old\"}}}",
+      "expected": { "source": "network", "status": "fresh", "remember": true },
+      "resolve": [
+        { "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null },
+        { "name": "home.ok", "status": "document", "documentId": "d1", "entry": null }
+      ]
+    },
+    {
+      "name": "304 Not Modified keeps the last known map, and it is fresh",
+      "network": { "kind": "notModified" },
+      "lastKnown": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-old\"}}}",
+      "bundled": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-bundled\"}}}",
+      "expected": { "source": "lastKnown", "status": "fresh", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-old", "entry": null }]
+    },
+    {
+      "name": "304 without a last known map counts as no answer",
+      "network": { "kind": "notModified" },
+      "bundled": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-bundled\"}}}",
+      "expected": { "source": "bundled", "status": "offline", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-bundled", "entry": null }]
+    },
+    {
+      "name": "304 with an unreadable last known map and nothing bundled",
+      "network": { "kind": "notModified" },
+      "lastKnown": "garbage",
+      "expected": { "source": "none", "status": "offline", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "no answer: the last known map first",
+      "network": { "kind": "offline" },
+      "lastKnown": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-old\"}}}",
+      "bundled": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-bundled\"}}}",
+      "expected": { "source": "lastKnown", "status": "offline", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-old", "entry": null }]
+    },
+    {
+      "name": "no answer and no last known map: the bundled copy",
+      "network": { "kind": "offline" },
+      "bundled": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-bundled\"}}}",
+      "expected": { "source": "bundled", "status": "offline", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-bundled", "entry": null }]
+    },
+    {
+      "name": "no answer and nothing to fall back on",
+      "network": { "kind": "offline" },
+      "expected": { "source": "none", "status": "offline", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "an unreadable last known map is skipped for the bundled copy",
+      "network": { "kind": "offline" },
+      "lastKnown": "{\"placementsVersion\":\"1.0.0\"}",
+      "bundled": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-bundled\"}}}",
+      "expected": { "source": "bundled", "status": "offline", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-bundled", "entry": null }]
+    },
+    {
+      "name": "a last known map of another major is skipped for the bundled copy",
+      "network": { "kind": "offline" },
+      "lastKnown": "{\"placementsVersion\":\"2.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-old\"}}}",
+      "bundled": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-bundled\"}}}",
+      "expected": { "source": "bundled", "status": "offline", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-bundled", "entry": null }]
+    },
+    {
+      "name": "the network answered with something that is not a map: corrupt, last known map used and kept",
+      "network": { "kind": "map", "text": "<html>Sign in</html>" },
+      "lastKnown": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-old\"}}}",
+      "expected": { "source": "lastKnown", "status": "corrupt", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-old", "entry": null }]
+    },
+    {
+      "name": "corrupt answer and only a bundled copy",
+      "network": { "kind": "map", "text": "{\"placements\":{}}" },
+      "bundled": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-bundled\"}}}",
+      "expected": { "source": "bundled", "status": "corrupt", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-bundled", "entry": null }]
+    },
+    {
+      "name": "corrupt answer and nothing to fall back on",
+      "network": { "kind": "map", "text": "null" },
+      "expected": { "source": "none", "status": "corrupt", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "a map of another major from the network: unsupported, last known map used",
+      "network": { "kind": "map", "text": "{\"placementsVersion\":\"2.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-new\"}}}" },
+      "lastKnown": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-old\"}}}",
+      "expected": { "source": "lastKnown", "status": "unsupported", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-old", "entry": null }]
+    },
+    {
+      "name": "another major and nothing to fall back on",
+      "network": { "kind": "map", "text": "{\"placementsVersion\":\"2.0.0\",\"placements\":{}}" },
+      "expected": { "source": "none", "status": "unsupported", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "unreadable", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "404: never published and nothing to fall back on, so every placement is unknown",
+      "network": { "kind": "notFound" },
+      "expected": { "source": "none", "status": "notPublished", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "unknown", "documentId": null, "entry": null }]
+    },
+    {
+      "name": "404 with a bundled copy: the copy shipped with the app",
+      "network": { "kind": "notFound" },
+      "bundled": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-bundled\"}}}",
+      "expected": { "source": "bundled", "status": "notPublished", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-bundled", "entry": null }]
+    },
+    {
+      "name": "404 with a last known map: the same fallback order as any other failure",
+      "network": { "kind": "notFound" },
+      "lastKnown": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-old\"}}}",
+      "bundled": "{\"placementsVersion\":\"1.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-bundled\"}}}",
+      "expected": { "source": "lastKnown", "status": "notPublished", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "document", "documentId": "d-old", "entry": null }]
+    },
+    {
+      "name": "404 with an unreadable bundled copy: no map, and the placements are unknown",
+      "network": { "kind": "notFound" },
+      "bundled": "not json",
+      "expected": { "source": "none", "status": "notPublished", "remember": false },
+      "resolve": [{ "name": "home.banner", "status": "unknown", "documentId": null, "entry": null }]
+    }
+  ],
+  "showingCases": [
+    {
+      "name": "a document without an entry starts on its initial screen",
+      "resolution": { "status": "document", "documentId": "d1", "entry": null },
+      "document": { "kind": "ok", "entryPoints": ["raffle"] },
+      "expected": { "show": "document", "entry": null, "report": null }
+    },
+    {
+      "name": "a document with an entry it has",
+      "resolution": { "status": "document", "documentId": "d1", "entry": "raffle" },
+      "document": { "kind": "ok", "entryPoints": ["rules", "raffle"] },
+      "expected": { "show": "document", "entry": "raffle", "report": null }
+    },
+    {
+      "name": "an entry the document no longer has: initial screen, and the host is told",
+      "resolution": { "status": "document", "documentId": "d1", "entry": "raffle" },
+      "document": { "kind": "ok", "entryPoints": ["rules"] },
+      "expected": { "show": "document", "entry": null, "report": "entryMissing" }
+    },
+    {
+      "name": "an entry and a document with no entry points",
+      "resolution": { "status": "document", "documentId": "d1", "entry": "raffle" },
+      "document": { "kind": "ok", "entryPoints": [] },
+      "expected": { "show": "document", "entry": null, "report": "entryMissing" }
+    },
+    {
+      "name": "the document is gone (404 after the document's own fallbacks)",
+      "resolution": { "status": "document", "documentId": "d1", "entry": "raffle" },
+      "document": { "kind": "missing" },
+      "expected": { "show": "nothing", "entry": null, "report": "documentMissing" }
+    },
+    {
+      "name": "the document is gone, no entry asked",
+      "resolution": { "status": "document", "documentId": "d1", "entry": null },
+      "document": { "kind": "missing" },
+      "expected": { "show": "nothing", "entry": null, "report": "documentMissing" }
+    },
+    {
+      "name": "the document cannot be read",
+      "resolution": { "status": "document", "documentId": "d1", "entry": null },
+      "document": { "kind": "unreadable" },
+      "expected": { "show": "nothing", "entry": null, "report": "documentUnreadable" }
+    },
+    {
+      "name": "an empty placement draws nothing and tells the host",
+      "resolution": { "status": "empty", "documentId": null, "entry": null },
+      "expected": { "show": "nothing", "entry": null, "report": "empty" }
+    },
+    {
+      "name": "an unknown placement draws nothing and tells the host",
+      "resolution": { "status": "unknown", "documentId": null, "entry": null },
+      "expected": { "show": "nothing", "entry": null, "report": "unknown" }
+    },
+    {
+      "name": "an unreadable placement draws nothing and tells the host",
+      "resolution": { "status": "unreadable", "documentId": null, "entry": null },
+      "expected": { "show": "nothing", "entry": null, "report": "unreadable" }
+    }
+  ]
+}
