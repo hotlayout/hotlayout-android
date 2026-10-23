@@ -23,7 +23,7 @@ update `hotlayout/api/hotlayout.api` with `apiDump` and say why in the pull requ
 ## The contract snapshot
 
 `hotlayout/src/test/resources/contract/` holds the JSON artifacts the reader implements
-(`screen-schema.json`, `theme.json`, `data-contract.json`, `icons.json`) and the fixtures the tests read:
+(`screen-schema.json`, `theme.json`, `data-contract.json`, `icons.json`, `placements.json`) and the fixtures the tests read:
 sample documents and the case tables shared by every HotLayout reader. The icon set and the built-in
 theme the library ships with, and the fixtures of the demo, are copies of the same files.
 

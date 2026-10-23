@@ -6,7 +6,7 @@
 #   HOTLAYOUT_CONTRACT=<path-to-contract-checkout> scripts/sync-contract.sh
 #
 # The path is the directory that holds `screen-schema.json`, `theme.json`, `icons.json`,
-# `data-contract.json` and `fixtures/`. There is no default.
+# `data-contract.json`, `placements.json` and `fixtures/`. There is no default.
 #
 # What it writes:
 #  - hotlayout/src/test/resources/contract/*.json and fixtures/ — the artifacts and tables the

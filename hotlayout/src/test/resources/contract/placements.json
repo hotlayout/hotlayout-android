@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hotlayout.com/schema/placements.json",
+  "type": "object",
+  "properties": {
+    "placementsVersion": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$",
+      "description": "Version of the placement contract the file follows (MAJOR.MINOR.PATCH)."
+    },
+    "publishedAt": {
+      "description": "When the map was published, ISO 8601 in UTC. Informational: readers do not rely on it.",
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,3})?Z$"
+    },
+    "placements": {
+      "description": "Placement name to placement. Names are lowercase Latin letters and digits, dot-separated segments.",
+      "type": "object",
+      "propertyNames": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 64,
+        "pattern": "^[a-z][a-z0-9]*(\\.[a-z0-9-]+)*$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "documentId": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(?!\\.+$)[A-Za-z0-9._-]{1,64}$"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "entry": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 48,
+            "pattern": "^[a-z0-9][a-z0-9-]*$"
+          }
+        },
+        "required": [
+          "documentId"
+        ],
+        "additionalProperties": false,
+        "description": "One placement: the document shown there and, optionally, its entry point. documentId null means the placement is declared but empty.",
+        "if": {
+          "properties": {
+            "documentId": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "documentId"
+          ]
+        },
+        "then": {
+          "not": {
+            "required": [
+              "entry"
+            ]
+          }
+        }
+      },
+      "maxProperties": 200
+    }
+  },
+  "required": [
+    "placementsVersion",
+    "placements"
+  ],
+  "additionalProperties": false,
+  "title": "PlacementMap",
+  "description": "The placement map of one project: which published document each named place of the app shows. Published as placements/published.json next to theme/published.json in the project base; read without a token.",
+  "x-placementsVersion": "1.0.0",
+  "x-generatedFrom": "src/entities/placements — generated, do not edit by hand",
+  "x-compatibility": {
+    "policy": {
+      "majorMustMatch": true,
+      "minorAdditionsAreOptional": true
+    }
+  },
+  "x-limits": {
+    "maxPlacements": 200,
+    "maxBytes": 65536,
+    "name": {
+      "pattern": "^[a-z][a-z0-9]*(\\.[a-z0-9-]+)*$",
+      "maxLength": 64
+    },
+    "documentId": {
+      "pattern": "^(?!\\.+$)[A-Za-z0-9._-]{1,64}$"
+    },
+    "entry": {
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "maxLength": 48
+    }
+  },
+  "x-placementReading": {
+    "unknownFields": "ignore",
+    "notAMap": "corrupt",
+    "otherMajor": "unsupported",
+    "newerMinor": "read",
+    "keyLookup": "own-keys-only",
+    "invalidName": "unknown",
+    "nullDocument": "empty",
+    "nullEntry": "absent",
+    "brokenPlace": "unreadable",
+    "unreadMap": "unreadable",
+    "limits": "publish-only",
+    "body": {
+      "leadingBom": "skip",
+      "encoding": "utf-8-strict",
+      "maxBytes": 262144,
+      "maxDepth": 32
+    },
+    "majorComparison": "digit-string",
+    "publishedAt": "informational"
+  },
+  "x-placementSource": {
+    "refresh": "etag-polling-like-document",
+    "fallbackOrder": [
+      "lastKnown",
+      "bundled"
+    ],
+    "rememberOnlyFreshNetwork": true,
+    "statuses": {
+      "fresh": "the network answered with a readable map (or 304 with a readable last-known map)",
+      "offline": "no answer: connection error, deadline, a redirect, 5xx, 403, or 304 without a readable last-known map",
+      "corrupt": "the network answered with something that is not a map: not JSON, not UTF-8, over the size or depth limit",
+      "unsupported": "the network answered with a map of another major version",
+      "notPublished": "the network answered 404: the project has not published placements"
+    },
+    "noMapAtAll": {
+      "notPublished": "unknown",
+      "otherwise": "unreadable"
+    },
+    "redirects": {
+      "follow": false,
+      "map": "offline",
+      "document": "unreadable"
+    },
+    "deadline": {
+      "ms": 20000,
+      "covers": "request-start-to-body-end",
+      "map": "offline",
+      "document": "unreadable"
+    },
+    "lastKnownKey": "map-address",
+    "documentCache": {
+      "key": "document-address",
+      "onNotFound": "drop"
+    }
+  },
+  "x-placementShowing": {
+    "notADocument": "render-nothing-and-tell-host",
+    "documentMissing": "render-nothing-and-tell-host",
+    "documentUnreadable": "render-nothing-and-tell-host",
+    "entryMissing": "use-initial-and-tell-host"
+  },
+  "x-placementEvents": {
+    "when": "every-change",
+    "fields": [
+      "status",
+      "report",
+      "mapStatus",
+      "documentId",
+      "entry"
+    ],
+    "documentShown": {
+      "status": "document",
+      "report": null
+    }
+  }
+}
