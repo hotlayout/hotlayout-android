@@ -193,8 +193,8 @@ runs off the main thread and never throws on a bad answer.
   documents live in memory; give `PlacementStore` a file or preferences to keep them over a restart.
 - A name that is not the name of a place is `Unknown` without a look at the map; a place of the map is found only by
   its own key. The map and the documents come from the network, so their ids are checked by form before they
-  become an address. The default transport is `https` only, follows no redirects, uses no cookies (whatever
-  `CookieHandler` the app has installed), gives a request 20 seconds from start to the end of the body, and reads
+  become an address. The default transport is `https` only, follows no redirects, sends no credentials of its own (an app-wide
+  `CookieHandler` does not stop it and may add cookies the app itself stored for the storage host), gives a request 20 seconds from start to the end of the body, and reads
   at most 256 KB (262 144 bytes) of map; give `PlacementTransport` to use your own client. A map body must be
   UTF-8 (one leading byte order mark is skipped) and at most 32 levels deep, or it is `Corrupt`.
 - `onPlacement` is called for the first result and whenever the place changes: what is drawn, the report, the map

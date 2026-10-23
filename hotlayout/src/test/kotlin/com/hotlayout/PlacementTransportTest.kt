@@ -10,6 +10,12 @@ import org.junit.Test
 
 /** The default transport against a plain local server: statuses, redirects, size and the one deadline. */
 class PlacementTransportTest {
+    companion object {
+        /** A plain connection to the local server in place of the TLS one to the address. */
+        fun localConnection(port: Int, address: java.net.URL): java.net.HttpURLConnection =
+            java.net.URL("http://127.0.0.1:$port${address.file}").openConnection(java.net.Proxy.NO_PROXY) as java.net.HttpURLConnection
+    }
+
     private fun ask(deadlineMs: Long = 5_000, maxBytes: Int = 1024, etag: String? = null, serve: (Socket) -> Unit): Pair<PlacementResponse, String> {
         val server = ServerSocket(0)
         var seen = ""
@@ -26,7 +32,7 @@ class PlacementTransportTest {
             }
         }.apply { start() }
         val answer = runBlocking {
-            PlacementTransport.download("https://storage.example/x.json", etag, maxBytes, deadlineMs) { _, _, _ -> Socket("127.0.0.1", server.localPort) }
+            PlacementTransport.download("https://storage.example/x.json", etag, maxBytes, deadlineMs) { localConnection(server.localPort, it) }
         }
         server.close()
         thread.join(2_000)

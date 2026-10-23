@@ -32,8 +32,8 @@ is stated in every entry.
   document that answered 404 is dropped from the store.
   `PlacementStore` has a new method `remove(key)`; `PlacementResponse.Body` carries the raw `bytes` of the body (the
   `Body(text, etag)` constructor and `text` remain).
-  The default transport writes its GET on the socket itself and never sends or stores cookies, whatever
-  `CookieHandler` the app has installed.
+  The default transport is `HttpsURLConnection` (system proxy, the app's Network Security Config); a process-wide
+  `CookieHandler` of the app does not stop it, and the request may carry cookies the app stored for the storage host.
 
 ## [0.2.2] - 2026-10-23
 
