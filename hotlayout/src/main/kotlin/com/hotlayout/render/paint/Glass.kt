@@ -7,6 +7,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -83,7 +84,13 @@ internal class GlassSource(val layer: GraphicsLayer) {
 
     fun readFrame(): Int = frame.intValue
 
-    fun invalidate() { frame.intValue += 1 }
+    /**
+     * Asks the page to draw again. Called from the draw of a glass node too: the counter is bumped without observing the
+     * read, or that draw would read the state it writes and be drawn again on every frame, together with the page.
+     */
+    fun invalidate() {
+        Snapshot.withoutReadObservation { frame.intValue += 1 }
+    }
 
     /**
      * Puts a glass node on the page, after every glass it stands in: by the number of glass nodes around it, and in the order
@@ -129,6 +136,9 @@ internal class GlassSource(val layer: GraphicsLayer) {
 internal interface Placed {
     var coordinates: LayoutCoordinates?
 
+    /** Where the node stood in the root when it was last placed; `null` before the first placement. */
+    var position: Offset?
+
     /** The nearest clipping ancestor of the node (see [ProvideGlassClip]). */
     var clip: GlassClip?
 }
@@ -173,12 +183,14 @@ private inline fun DrawScope.clippedBy(rect: Rect?, block: DrawScope.() -> Unit)
 /** A node painted over the glass: its own content in a layer of its own. */
 internal class AboveEntry(val content: GraphicsLayer) : Placed {
     override var coordinates: LayoutCoordinates? = null
+    override var position: Offset? = null
     override var clip: GlassClip? = null
 }
 
 /** A glass node: its own content, the layer of its blur, its box and its shape. */
 internal class GlassEntry(val content: GraphicsLayer, val backdrop: GraphicsLayer) : Placed {
     override var coordinates: LayoutCoordinates? = null
+    override var position: Offset? = null
     override var clip: GlassClip? = null
     var size: IntSize = IntSize.Zero
     var radiusPx: Float = 0f
@@ -218,7 +230,9 @@ internal object GlassProbe {
 internal fun rememberGlassSource(root: DocumentNode): GlassSource? {
     val uses = remember(root) { GlassRules.supported && GlassRules.uses(root) }
     if (!uses) return null
-    return GlassSource(rememberGraphicsLayer())
+    // One source for the life of the page: a new one on each recomposition would forget the glass nodes it had registered.
+    val layer = rememberGraphicsLayer()
+    return remember(layer) { GlassSource(layer) }
 }
 
 @Composable
@@ -267,7 +281,10 @@ private fun <T : Placed> Modifier.onPage(source: GlassSource, list: MutableList<
         }
     }
     return this.onGloballyPositioned { coordinates ->
-        val moved = entry.coordinates?.takeIf { it.isAttached }?.positionInRoot() != coordinates.positionInRoot()
+        // The coordinates are the same object from one placement to the next: the place is compared with the one last seen.
+        val position = coordinates.positionInRoot()
+        val moved = entry.position != position
+        entry.position = position
         entry.coordinates = coordinates
         if (moved) source.invalidate()
     }
