@@ -160,7 +160,7 @@ admin, not in your code: you write the name once, and the screen changes without
 // Once, in your application object: one source serves every placement of the app.
 val placements = PlacementSource(
     projectBase = "https://storage.example/orgs/acme/projects/app",
-    bundledMap = assets.open("placements.json").bufferedReader().readText(),   // optional: the map of this release
+    bundledMap = context.assets.open("placements.json").bufferedReader().readText(),   // optional: the map of this release
 )
 
 @Composable
