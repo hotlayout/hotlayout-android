@@ -1,0 +1,1141 @@
+{
+  "description": "Schema 9.30.0 — a write action (setValue, toggleValue of «x-actions.write») on the long press (rules: x-longPressWrite, refines x-longPress.writeActions). «blockCases»: whether the long press of the node may write; «expect» — null (it may), «press-writes» (the «action» of the node is a write action) or «choice-option» (the node is an option of a ChoiceGroup). «documentCases»: «nodes» — the children of the root of one screen; «expect» — the validation codes of the document. «runCases»: a finished screen with no host data, only the session: «nodes» — the children of the root, «gestures» — in order, each «hold» (the finger stays down for the threshold of x-longPress, then lifts), «key» (Shift+F10 on the focused node) or «tap» on the node «node»; «log» — what the host gets, in order: [«track», event] and [«write», path, value]; «handed» — the action types handed to the host; «session» — the session after the last gesture; «shown» — the nodes of «watch» drawn after it; «control» — what the finished screen says about the node: its role and states. «ruleCases»: data of the block. Written by hand.",
+  "blockCases": [
+    {
+      "name": "a card whose press opens a screen",
+      "node": {
+        "id": "card",
+        "type": "Container",
+        "props": {
+          "direction": "column",
+          "gap": "none",
+          "action": {
+            "type": "navigate",
+            "params": {
+              "screenId": "home"
+            }
+          },
+          "longPress": {
+            "type": "setValue",
+            "params": {
+              "path": "task.completed",
+              "value": "true",
+              "valueType": "boolean"
+            }
+          },
+          "longPressLabel": {
+            "kind": "literal",
+            "value": "Mark the step done"
+          }
+        },
+        "children": [
+          {
+            "id": "card-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Step 1: order a coffee"
+              }
+            }
+          }
+        ]
+      },
+      "expect": null
+    },
+    {
+      "name": "a card with no action, only a long press",
+      "node": {
+        "id": "card",
+        "type": "Container",
+        "props": {
+          "direction": "column",
+          "gap": "none",
+          "longPress": {
+            "type": "toggleValue",
+            "params": {
+              "path": "task.completed"
+            }
+          },
+          "longPressLabel": {
+            "kind": "literal",
+            "value": "Mark the step done"
+          }
+        },
+        "children": [
+          {
+            "id": "card-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Step 1: order a coffee"
+              }
+            }
+          }
+        ]
+      },
+      "expect": null
+    },
+    {
+      "name": "a card whose press hands an action to the host",
+      "node": {
+        "id": "card",
+        "type": "Container",
+        "props": {
+          "direction": "column",
+          "gap": "none",
+          "action": {
+            "type": "share"
+          },
+          "longPress": {
+            "type": "toggleValue",
+            "params": {
+              "path": "task.completed"
+            }
+          },
+          "longPressLabel": {
+            "kind": "literal",
+            "value": "Mark the step done"
+          }
+        },
+        "children": [
+          {
+            "id": "card-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Step 1: order a coffee"
+              }
+            }
+          }
+        ]
+      },
+      "expect": null
+    },
+    {
+      "name": "a card whose press writes too",
+      "node": {
+        "id": "card",
+        "type": "Container",
+        "props": {
+          "direction": "column",
+          "gap": "none",
+          "action": {
+            "type": "toggleValue",
+            "params": {
+              "path": "task.completed"
+            }
+          },
+          "longPress": {
+            "type": "setValue",
+            "params": {
+              "path": "task.completed",
+              "value": "true",
+              "valueType": "boolean"
+            }
+          },
+          "longPressLabel": {
+            "kind": "literal",
+            "value": "Mark the step done"
+          }
+        },
+        "children": [
+          {
+            "id": "card-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Step 1: order a coffee"
+              }
+            }
+          }
+        ]
+      },
+      "expect": "press-writes"
+    },
+    {
+      "name": "a card whose press writes and whose long press does not write",
+      "node": {
+        "id": "card",
+        "type": "Container",
+        "props": {
+          "direction": "column",
+          "gap": "none",
+          "action": {
+            "type": "toggleValue",
+            "params": {
+              "path": "task.completed"
+            }
+          },
+          "longPress": {
+            "type": "share"
+          },
+          "longPressLabel": {
+            "kind": "literal",
+            "value": "Mark the step done"
+          }
+        },
+        "children": [
+          {
+            "id": "card-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Step 1: order a coffee"
+              }
+            }
+          }
+        ]
+      },
+      "expect": "press-writes"
+    },
+    {
+      "name": "a card whose press does nothing («none» without track)",
+      "node": {
+        "id": "card",
+        "type": "Container",
+        "props": {
+          "direction": "column",
+          "gap": "none",
+          "action": {
+            "type": "none"
+          },
+          "longPress": {
+            "type": "toggleValue",
+            "params": {
+              "path": "task.completed"
+            }
+          },
+          "longPressLabel": {
+            "kind": "literal",
+            "value": "Mark the step done"
+          }
+        },
+        "children": [
+          {
+            "id": "card-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Step 1: order a coffee"
+              }
+            }
+          }
+        ]
+      },
+      "expect": null
+    },
+    {
+      "name": "an option of a choice group",
+      "node": {
+        "id": "opt",
+        "type": "ListTile",
+        "props": {
+          "title": {
+            "kind": "literal",
+            "value": "Coffee"
+          },
+          "trailing": {
+            "kind": "radio",
+            "optionValue": "coffee"
+          },
+          "longPress": {
+            "type": "setValue",
+            "params": {
+              "path": "task.completed",
+              "value": "true",
+              "valueType": "boolean"
+            }
+          },
+          "longPressLabel": {
+            "kind": "literal",
+            "value": "Mark the step done"
+          }
+        }
+      },
+      "expect": "choice-option"
+    }
+  ],
+  "documentCases": [
+    {
+      "name": "a long press write beside a press that opens a screen — published",
+      "nodes": [
+        {
+          "id": "card",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "action": {
+              "type": "navigate",
+              "params": {
+                "screenId": "s"
+              }
+            },
+            "longPress": {
+              "type": "setValue",
+              "params": {
+                "path": "task.completed",
+                "value": "true",
+                "valueType": "boolean"
+              }
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "card-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "a toggle on a long press of a card with no action — published",
+      "nodes": [
+        {
+          "id": "card",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "longPress": {
+              "type": "toggleValue",
+              "params": {
+                "path": "task.completed"
+              }
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "card-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "a long press write beside a press that writes — not published",
+      "nodes": [
+        {
+          "id": "card",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "action": {
+              "type": "toggleValue",
+              "params": {
+                "path": "task.completed"
+              }
+            },
+            "longPress": {
+              "type": "setValue",
+              "params": {
+                "path": "task.completed",
+                "value": "true",
+                "valueType": "boolean"
+              }
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "card-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        "long_press_write_action"
+      ]
+    },
+    {
+      "name": "a long press that does not write beside a press that writes — published",
+      "nodes": [
+        {
+          "id": "card",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "action": {
+              "type": "toggleValue",
+              "params": {
+                "path": "task.completed"
+              }
+            },
+            "longPress": {
+              "type": "share"
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "card-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "expect": []
+    },
+    {
+      "name": "a long press write on an option of a choice group — not published",
+      "nodes": [
+        {
+          "id": "group",
+          "type": "ChoiceGroup",
+          "props": {
+            "value": {
+              "kind": "literal",
+              "value": ""
+            }
+          },
+          "children": [
+            {
+              "id": "opt",
+              "type": "ListTile",
+              "props": {
+                "title": {
+                  "kind": "literal",
+                  "value": "Coffee"
+                },
+                "trailing": {
+                  "kind": "radio",
+                  "optionValue": "coffee"
+                },
+                "longPress": {
+                  "type": "setValue",
+                  "params": {
+                    "path": "task.completed",
+                    "value": "true",
+                    "valueType": "boolean"
+                  }
+                },
+                "longPressLabel": {
+                  "kind": "literal",
+                  "value": "Mark the step done"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        "long_press_write_action"
+      ]
+    },
+    {
+      "name": "a long press write inside a list from data — not published",
+      "nodes": [
+        {
+          "id": "list",
+          "type": "Repeater",
+          "props": {
+            "source": "tasks",
+            "item": "task",
+            "direction": "column",
+            "gap": "xs"
+          },
+          "children": [
+            {
+              "id": "card",
+              "type": "Container",
+              "props": {
+                "direction": "column",
+                "gap": "none",
+                "longPress": {
+                  "type": "toggleValue",
+                  "params": {
+                    "path": "task.completed"
+                  }
+                },
+                "longPressLabel": {
+                  "kind": "literal",
+                  "value": "Mark the step done"
+                }
+              },
+              "children": [
+                {
+                  "id": "card-title",
+                  "type": "Text",
+                  "props": {
+                    "content": {
+                      "kind": "literal",
+                      "value": "Step 1: order a coffee"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "expect": [
+        "input_inside_repeater"
+      ]
+    },
+    {
+      "name": "a long press write without a name — not published",
+      "nodes": [
+        {
+          "id": "card",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "longPress": {
+              "type": "toggleValue",
+              "params": {
+                "path": "task.completed"
+              }
+            }
+          },
+          "children": [
+            {
+              "id": "card-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        "long_press_label_required"
+      ]
+    },
+    {
+      "name": "a long press write of a flag that is not a flag — not published",
+      "nodes": [
+        {
+          "id": "card",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "longPress": {
+              "type": "setValue",
+              "params": {
+                "path": "task.completed",
+                "value": "yes",
+                "valueType": "boolean"
+              }
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "card-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "expect": [
+        "invalid_action_param"
+      ]
+    },
+    {
+      "name": "two long press writes of one value on siblings — published: a long press makes no choice group",
+      "nodes": [
+        {
+          "id": "a",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "longPress": {
+              "type": "setValue",
+              "params": {
+                "path": "task.completed",
+                "value": "true",
+                "valueType": "boolean"
+              }
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "a-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "b",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "longPress": {
+              "type": "setValue",
+              "params": {
+                "path": "task.completed",
+                "value": "true",
+                "valueType": "boolean"
+              }
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "b-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "expect": []
+    }
+  ],
+  "runCases": [
+    {
+      "name": "held — the value is written and the mark appears",
+      "nodes": [
+        {
+          "id": "card",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "action": {
+              "type": "share"
+            },
+            "longPress": {
+              "type": "toggleValue",
+              "params": {
+                "path": "task.completed"
+              }
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "card-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "done",
+          "type": "Text",
+          "props": {
+            "content": {
+              "kind": "literal",
+              "value": "Done"
+            }
+          },
+          "visibleIf": {
+            "path": "task.completed",
+            "op": "isTrue"
+          }
+        }
+      ],
+      "gestures": [
+        "hold"
+      ],
+      "node": "card",
+      "watch": [
+        "done"
+      ],
+      "log": [
+        [
+          "write",
+          "task.completed",
+          true
+        ]
+      ],
+      "handed": [],
+      "session": {
+        "task.completed": true
+      },
+      "shown": [
+        "done"
+      ],
+      "control": {
+        "role": "button"
+      }
+    },
+    {
+      "name": "a tap runs the press, not the write",
+      "nodes": [
+        {
+          "id": "card",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "action": {
+              "type": "share"
+            },
+            "longPress": {
+              "type": "toggleValue",
+              "params": {
+                "path": "task.completed"
+              }
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "card-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "done",
+          "type": "Text",
+          "props": {
+            "content": {
+              "kind": "literal",
+              "value": "Done"
+            }
+          },
+          "visibleIf": {
+            "path": "task.completed",
+            "op": "isTrue"
+          }
+        }
+      ],
+      "gestures": [
+        "tap"
+      ],
+      "node": "card",
+      "watch": [
+        "done"
+      ],
+      "log": [],
+      "handed": [
+        "share"
+      ],
+      "session": {},
+      "shown": [],
+      "control": {
+        "role": "button"
+      }
+    },
+    {
+      "name": "Shift+F10 writes the same as the hold",
+      "nodes": [
+        {
+          "id": "card",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "action": {
+              "type": "share"
+            },
+            "longPress": {
+              "type": "toggleValue",
+              "params": {
+                "path": "task.completed"
+              }
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "card-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "done",
+          "type": "Text",
+          "props": {
+            "content": {
+              "kind": "literal",
+              "value": "Done"
+            }
+          },
+          "visibleIf": {
+            "path": "task.completed",
+            "op": "isTrue"
+          }
+        }
+      ],
+      "gestures": [
+        "key"
+      ],
+      "node": "card",
+      "watch": [
+        "done"
+      ],
+      "log": [
+        [
+          "write",
+          "task.completed",
+          true
+        ]
+      ],
+      "handed": [],
+      "session": {
+        "task.completed": true
+      },
+      "shown": [
+        "done"
+      ],
+      "control": {
+        "role": "button"
+      }
+    },
+    {
+      "name": "held twice — the toggle goes back",
+      "nodes": [
+        {
+          "id": "card",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "longPress": {
+              "type": "toggleValue",
+              "params": {
+                "path": "task.completed"
+              }
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "card-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "done",
+          "type": "Text",
+          "props": {
+            "content": {
+              "kind": "literal",
+              "value": "Done"
+            }
+          },
+          "visibleIf": {
+            "path": "task.completed",
+            "op": "isTrue"
+          }
+        }
+      ],
+      "gestures": [
+        "hold",
+        "hold"
+      ],
+      "node": "card",
+      "watch": [
+        "done"
+      ],
+      "log": [
+        [
+          "write",
+          "task.completed",
+          true
+        ],
+        [
+          "write",
+          "task.completed",
+          false
+        ]
+      ],
+      "handed": [],
+      "session": {
+        "task.completed": false
+      },
+      "shown": [],
+      "control": {
+        "role": "button"
+      }
+    },
+    {
+      "name": "a value already held is not written again",
+      "nodes": [
+        {
+          "id": "card",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "longPress": {
+              "type": "setValue",
+              "params": {
+                "path": "task.completed",
+                "value": "true",
+                "valueType": "boolean"
+              }
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "card-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "done",
+          "type": "Text",
+          "props": {
+            "content": {
+              "kind": "literal",
+              "value": "Done"
+            }
+          },
+          "visibleIf": {
+            "path": "task.completed",
+            "op": "isTrue"
+          }
+        }
+      ],
+      "gestures": [
+        "hold",
+        "hold"
+      ],
+      "node": "card",
+      "watch": [
+        "done"
+      ],
+      "log": [
+        [
+          "write",
+          "task.completed",
+          true
+        ]
+      ],
+      "handed": [],
+      "session": {
+        "task.completed": true
+      },
+      "shown": [
+        "done"
+      ],
+      "control": {
+        "role": "button"
+      }
+    },
+    {
+      "name": "the event goes before the write",
+      "nodes": [
+        {
+          "id": "card",
+          "type": "Container",
+          "props": {
+            "direction": "column",
+            "gap": "none",
+            "longPress": {
+              "type": "toggleValue",
+              "params": {
+                "path": "task.completed"
+              },
+              "track": {
+                "event": "step_done"
+              },
+              "haptic": "light"
+            },
+            "longPressLabel": {
+              "kind": "literal",
+              "value": "Mark the step done"
+            }
+          },
+          "children": [
+            {
+              "id": "card-title",
+              "type": "Text",
+              "props": {
+                "content": {
+                  "kind": "literal",
+                  "value": "Step 1: order a coffee"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "done",
+          "type": "Text",
+          "props": {
+            "content": {
+              "kind": "literal",
+              "value": "Done"
+            }
+          },
+          "visibleIf": {
+            "path": "task.completed",
+            "op": "isTrue"
+          }
+        }
+      ],
+      "gestures": [
+        "hold"
+      ],
+      "node": "card",
+      "watch": [
+        "done"
+      ],
+      "log": [
+        [
+          "track",
+          "step_done"
+        ],
+        [
+          "write",
+          "task.completed",
+          true
+        ]
+      ],
+      "handed": [],
+      "session": {
+        "task.completed": true
+      },
+      "shown": [
+        "done"
+      ],
+      "control": {
+        "role": "button"
+      }
+    }
+  ],
+  "ruleCases": [
+    {
+      "name": "what it refines",
+      "rule": "refines",
+      "expect": [
+        "x-longPress.writeActions"
+      ]
+    },
+    {
+      "name": "the cases",
+      "rule": "cases",
+      "expect": "contract/fixtures/long-press/long-press-write-cases.json"
+    }
+  ]
+}

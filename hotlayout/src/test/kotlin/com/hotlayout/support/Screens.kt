@@ -18,7 +18,7 @@ object Screens {
             val presentation = if (id in modal) ""","presentation":"modal"""" else ""
             """{"screenId":"$id","name":"$id"$presentation,"root":{"id":"$id-root","type":"Screen","props":{"gap":"none"},"style":$rootStyle,"children":[$children]}}"""
         }
-        return loadDocument("""{"schemaVersion":"9.28.0","documentId":"test","name":"Test","initialScreenId":"${screens.first().first}"$extra,"screens":[$entries]}""")
+        return loadDocument("""{"schemaVersion":"9.30.0","documentId":"test","name":"Test","initialScreenId":"${screens.first().first}"$extra,"screens":[$entries]}""")
     }
 
     fun text(id: String, content: String, extra: String = ""): String =

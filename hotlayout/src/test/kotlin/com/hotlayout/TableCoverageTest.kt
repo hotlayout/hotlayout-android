@@ -33,7 +33,7 @@ class TableCoverageTest {
             "border-dash/lineCases", "border-dash/pathCases", "border-dash/styleCases", "border-dash/ruleCases",
             "actions/writeCases", "actions/writeControlCases", "actions/writePressCases",
             "long-press/gestureCases", "long-press/keyCases", "long-press/nodeCases", "long-press/receiverCases",
-            "long-press/ruleCases", "long-press/keyRepeatCases", "long-press/clickAfterFireCases", "long-press/onceRuleCases",
+            "long-press/ruleCases", "long-press/keyRepeatCases", "long-press/clickAfterFireCases", "long-press/onceRuleCases", "long-press/runCases",
             "swipe-confirm/geometryCases", "swipe-confirm/naturalWidthCases", "swipe-confirm/progressCases",
             "swipe-confirm/releaseCases", "swipe-confirm/thumbCases", "swipe-confirm/captureCases", "swipe-confirm/pressCases",
             "swipe-confirm/ruleCases", "swipe-confirm/busyReleaseCases", "swipe-confirm/busyEndCases", "swipe-confirm/busyRuleCases",
@@ -90,7 +90,7 @@ class TableCoverageTest {
                 // Where the editor puts a dropped child, not a reader's rule.
                 "media-chrome/appBarPlaceCases", "inputs/placementCases",
                 // Where a node may stand and how deep a document may go: what the builder may publish.
-                "composition/nestingCases", "composition/depthCases", "actions/writeTreeCases",
+                "composition/nestingCases", "composition/depthCases", "actions/writeTreeCases", "long-press/blockCases",
                 // Which documents may be published and what an editor advises about an older reader.
                 // The worst case of a screen that the builder checks before it publishes.
                 "repeater-filter/validatorCases",
@@ -104,9 +104,16 @@ class TableCoverageTest {
             }.groupBy({ it.first }, { it.second }).mapValues { (_, groups) -> groups.flatten().toSet() }
         }
 
+        /**
+         * Named, not run: the layer below a top inset the host passes. Compose lays a modal layer in the safe area of the
+         * system, and the reader takes no `safeTop` value to test against.
+         */
+        val notRun = setOf("media-chrome/safeTopModalCases")
+
         fun status(table: String, group: String): String? = when {
             "$table/$group" in run -> "run"
             isValidatorGroup(table, group) -> "validator"
+            "$table/$group" in notRun -> "not run"
             else -> null
         }
     }

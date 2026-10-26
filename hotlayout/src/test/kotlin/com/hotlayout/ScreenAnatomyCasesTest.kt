@@ -491,6 +491,7 @@ class ScreenAnatomyCasesTest {
             "ratioDocumentCases" to "validator", "modalCases" to "modals", "modalAreaCases" to "modals", "modalRuleCases" to "modals",
             "documentCases" to "validator", "appBarPlaceCases" to "editor", "appBar916DocumentCases" to "validator",
             "screenTopDocumentCases" to "validator", "scrolledDocumentCases" to "validator",
+            "safeTopModalCases" to "not run: the layer is laid in the safe area of the system",
         )
         val bottomRun = setOf(
             "childrenCases", "pinCases", "zoneCases", "navHeightCases", "navShareCases", "activeCases", "sectionCases", "ruleCases", "floatZoneCases",

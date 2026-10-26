@@ -1,0 +1,326 @@
+{
+  "schemaVersion": "9.30.0",
+  "documentId": "longpress-write",
+  "name": "A write on a long press",
+  "initialScreenId": "mission",
+  "screens": [
+    {
+      "screenId": "mission",
+      "name": "Mission",
+      "root": {
+        "id": "mission-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "mission-page",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Mission"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "step-card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "step"
+                }
+              },
+              "longPress": {
+                "type": "toggleValue",
+                "params": {
+                  "path": "task.completed"
+                },
+                "haptic": "medium",
+                "track": {
+                  "event": "step_held"
+                }
+              },
+              "longPressLabel": {
+                "kind": "literal",
+                "value": "Mark the step done"
+              }
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "step-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Step 1: order a coffee"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "step-hint",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Hold to mark it done"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "step-done",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Done"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "success"
+                },
+                "visibleIf": {
+                  "path": "task.completed",
+                  "op": "isTrue"
+                }
+              }
+            ],
+            "styleWhen": [
+              {
+                "when": {
+                  "path": "task.completed",
+                  "op": "isTrue"
+                },
+                "style": {
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "success",
+                      "opacity": 0.16
+                    }
+                  }
+                }
+              }
+            ]
+          },
+          {
+            "id": "mission-card",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs",
+              "longPress": {
+                "type": "setValue",
+                "params": {
+                  "path": "taskGroup.completed",
+                  "value": "true",
+                  "valueType": "boolean"
+                },
+                "haptic": "light"
+              },
+              "longPressLabel": {
+                "kind": "literal",
+                "value": "Complete the mission"
+              }
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "mission-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Coffee week"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "mission-hint",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Hold to complete the mission"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "mission-done",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Mission complete"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "success"
+                },
+                "visibleIf": {
+                  "path": "taskGroup.completed",
+                  "op": "isTrue"
+                }
+              }
+            ],
+            "styleWhen": [
+              {
+                "when": {
+                  "path": "taskGroup.completed",
+                  "op": "isTrue"
+                },
+                "style": {
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "success",
+                      "opacity": 0.16
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "step",
+      "name": "Step",
+      "root": {
+        "id": "step-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "step-page",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Order a coffee"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "step-back",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Back"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "mission/mission-page/content": "Місія",
+        "mission/step-card/longPressLabel": "Позначити крок виконаним",
+        "mission/step-title/content": "Крок 1: замовте каву",
+        "mission/step-hint/content": "Утримайте, щоб позначити виконаним",
+        "mission/step-done/content": "Виконано",
+        "mission/mission-card/longPressLabel": "Завершити місію",
+        "mission/mission-title/content": "Кавовий тиждень",
+        "mission/mission-hint/content": "Утримайте, щоб завершити місію",
+        "mission/mission-done/content": "Місію завершено",
+        "step/step-page/content": "Замовте каву",
+        "step/step-back/label": "Назад"
+      }
+    }
+  }
+}

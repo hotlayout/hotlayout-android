@@ -25,9 +25,6 @@ internal object PressTarget {
     /** Widgets that take the field `action` without holding children: the leaves that are buttons. */
     private val actionLeaves: Set<String> = setOf("Button", "IconButton", "NavItem", "ListTile")
 
-    /** Write actions are not published on a long press, and the reader does not run one there. */
-    private val writeActions: Set<String> = setOf("setValue", "toggleValue")
-
     /** An action does something: a type that is not `none`, or `none` with `track`. */
     fun acts(action: JsonObject?): Boolean {
         val type = action?.get("type")?.string ?: return false
@@ -50,9 +47,8 @@ internal object PressTarget {
     /** The long press of a container or a list row that does something, or `null`. */
     fun longPress(node: DocumentNode): JsonObject? {
         if (!acceptsLongPress(node.type)) return null
-        val action = node.props["longPress"]?.obj?.takeIf(::acts) ?: return null
-        val type = action["type"]?.string ?: return null
-        return action.takeIf { type !in writeActions }
+        // A write action is performed like the write of a press; the role of the node comes from `action` only.
+        return node.props["longPress"]?.obj?.takeIf(::acts)
     }
 
     /** Whether the widget accepts the field `longPress` at all (a button, an icon button and a navigation item have one action; a text has none). */

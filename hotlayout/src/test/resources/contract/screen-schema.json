@@ -1224,6 +1224,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "name": {
+          "$ref": "#/$defs/NodeName"
+        },
         "styleScrolled": {
           "description": "Style of this app bar while the body is scrolled (9.21.0): «background», «color», «shadow» and «backdropBlur» only — nothing that changes the box. The layer lies LAST, over the state of «styleWhen»; the threshold and when it applies — «x-style.layout.appBarScrolled». No field — the bar does not change on scroll, exactly as before 9.21.0.",
           "$ref": "#/$defs/ScrolledBarStyle"
@@ -1953,6 +1956,11 @@
         "none"
       ]
     },
+    "NodeName": {
+      "description": "Editor-only name of the node in the document tree (9.29.0), like a layer name in a design tool: «Mission card» instead of «Container». Readers ignore it: it is not drawn, it is not part of the accessible name, it is not sent with events, and it is not translated. 1…80 code points after trimming the edges, not only spaces or invisible characters. Not on the screen root — the screen entry already names it. No field — the tree shows the widget name.",
+      "type": "string",
+      "minLength": 1
+    },
     "ScrolledBarStyle": {
       "type": "object",
       "properties": {
@@ -2031,6 +2039,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         },
         "propsOn": {
           "$ref": "#/$defs/ColumnPropsOn"
@@ -2290,6 +2301,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "name": {
+          "$ref": "#/$defs/NodeName"
+        },
         "propsOn": {
           "$ref": "#/$defs/RowPropsOn"
         },
@@ -2497,6 +2511,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "name": {
+          "$ref": "#/$defs/NodeName"
+        },
         "propsOn": {
           "$ref": "#/$defs/ContainerPropsOn"
         },
@@ -2662,6 +2679,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "name": {
+          "$ref": "#/$defs/NodeName"
+        },
         "propsOn": {
           "$ref": "#/$defs/GridPropsOn"
         },
@@ -2787,6 +2807,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "name": {
+          "$ref": "#/$defs/NodeName"
+        },
         "children": {
           "maxItems": 5,
           "type": "array",
@@ -2891,6 +2914,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "name": {
+          "$ref": "#/$defs/NodeName"
+        },
         "children": {
           "maxItems": 5,
           "type": "array",
@@ -2979,6 +3005,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "name": {
+          "$ref": "#/$defs/NodeName"
+        },
         "children": {
           "maxItems": 15,
           "type": "array",
@@ -3062,6 +3091,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         },
         "children": {
           "maxItems": 10,
@@ -3151,6 +3183,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         },
         "children": {
           "maxItems": 20,
@@ -3320,6 +3355,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "name": {
+          "$ref": "#/$defs/NodeName"
+        },
         "propsOn": {
           "$ref": "#/$defs/RepeaterPropsOn"
         },
@@ -3481,6 +3519,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -3572,6 +3613,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -3660,6 +3704,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -3866,6 +3913,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -4011,6 +4061,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -4455,6 +4508,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "name": {
+          "$ref": "#/$defs/NodeName"
+        },
         "zone": {
           "$ref": "#/$defs/NodeZone"
         }
@@ -4610,6 +4666,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "name": {
+          "$ref": "#/$defs/NodeName"
+        },
         "zone": {
           "$ref": "#/$defs/NodeZone"
         }
@@ -4734,6 +4793,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -5060,6 +5122,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -5253,6 +5318,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -5404,6 +5472,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -5504,6 +5575,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "name": {
+          "$ref": "#/$defs/NodeName"
+        },
         "children": {
           "maxItems": 5,
           "type": "array",
@@ -5594,6 +5668,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -5687,6 +5764,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -5914,6 +5994,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -5997,6 +6080,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
         }
       },
       "required": [
@@ -6088,7 +6174,7 @@
   },
   "$id": "https://hotlayout.com/schema/ui-document.json",
   "title": "UiDocument",
-  "x-schemaVersion": "9.28.0",
+  "x-schemaVersion": "9.30.0",
   "x-compatibility": {
     "policy": {
       "majorMustMatch": true,
@@ -6423,7 +6509,9 @@
       "listBudget": "9.28.0",
       "themeNumbers": "9.28.0",
       "silentText": "9.28.0",
-      "modalFocus": "9.28.0"
+      "modalFocus": "9.28.0",
+      "nodeName": "9.29.0",
+      "longPressWrite": "9.30.0"
     }
   },
   "x-budget": {
@@ -11388,6 +11476,26 @@
     "focusOnShow": "unchanged: the focus moves to the layer when it appears and returns to the opener when it leaves",
     "why": "the document is not the one who decides that a keyboard user cannot reach the host page (WCAG 2.1.2 No Keyboard Trap applies to the host page as a whole)",
     "olderReader": "may cycle Tab inside a layer that cannot be dismissed: a keyboard trap for the host page"
+  },
+  "x-longPressWrite": {
+    "refines": [
+      "x-longPress.writeActions"
+    ],
+    "allowed": "a write action of «x-actions.write» (setValue, toggleValue) on «longPress» is published when the «action» of the same node is not a write action and the node is not an option of a ChoiceGroup",
+    "why": "the state of a choice or a toggle is said by the role of the control, and only «action» gives that role: a node whose press does not write is neither, so its role says nothing about the written value; the long press is a named action («longPressLabel»)",
+    "notAllowed": [
+      "the «action» of the node is a write action: two writes on one node, and its role speaks of one",
+      "the node is an option of a ChoiceGroup: its press already writes the choice of the group"
+    ],
+    "insideRepeater": "not published, as the write of «action»: the path is a literal, every row would write the same",
+    "execution": "the write of «x-actions.write»: the same session, «onWrite» under «writablePaths», the same equality — a value already held is not written again",
+    "order": "x-longPress.order: haptic, track, then the write",
+    "role": "unchanged: the role, the checked or pressed state and the choice group come from «action» only; a long press write makes no choice group and no twin",
+    "shown": "what changed is shown by the data: visibleIf, styleWhen, text — no state of its own",
+    "announcement": "none of its own: the same as for any long press action",
+    "keys": "x-longPress.accessibility.keys and the named action write the same, at once",
+    "olderReader": "9.26–9.29: a reader whose long press runs the one execution path of «action» (x-longPress.form) already writes; a reader that does not know the write actions treats the type as an unknown action",
+    "cases": "contract/fixtures/long-press/long-press-write-cases.json"
   },
   "x-generatedFrom": "src/entities/component-schema — generated, do not edit by hand"
 }

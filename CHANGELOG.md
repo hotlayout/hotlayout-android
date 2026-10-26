@@ -10,6 +10,20 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
+## [0.4.0] - Unreleased
+
+Reads document contract 9.30.0 (theme 4.0.1, icon set 1.0.0).
+
+### Added
+
+- A write action on a long press. A node whose own action does not write may carry `setValue` or `toggleValue` in
+  `longPress`; the hold (also Shift+F10 and the named action of a screen reader) performs it through the same write as
+  a pressed action: the haptic request and the analytics event go first, then the write into the session and
+  `onWrite` (under `writablePaths`), and a value already held is not written again. The role of the node still
+  comes from `action` alone, so the node stays a plain button. Before, a write action on a long press was ignored.
+- The node field `name` (a label for the editor) is accepted and ignored: it is not drawn, not part of an accessible
+  name and not passed to actions, events or reports.
+
 ## [0.3.0] - 2026-10-26
 
 ### Added
