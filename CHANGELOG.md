@@ -10,7 +10,7 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
-## [Unreleased]
+## [0.3.0] - 2026-10-26
 
 ### Added
 
@@ -34,8 +34,6 @@ is stated in every entry.
   `Body(text, etag)` constructor and `text` remain).
   The default transport is `HttpsURLConnection` (system proxy, the app's Network Security Config); a process-wide
   `CookieHandler` of the app does not stop it, and the request may carry cookies the app stored for the storage host.
-
-## [0.2.2] - 2026-10-23
 
 ### Fixed
 
