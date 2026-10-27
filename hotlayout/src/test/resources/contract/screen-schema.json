@@ -6174,7 +6174,7 @@
   },
   "$id": "https://hotlayout.com/schema/ui-document.json",
   "title": "UiDocument",
-  "x-schemaVersion": "9.30.0",
+  "x-schemaVersion": "9.31.0",
   "x-compatibility": {
     "policy": {
       "majorMustMatch": true,
@@ -6511,7 +6511,8 @@
       "silentText": "9.28.0",
       "modalFocus": "9.28.0",
       "nodeName": "9.29.0",
-      "longPressWrite": "9.30.0"
+      "longPressWrite": "9.30.0",
+      "sheetSafeBottom": "9.31.0"
     }
   },
   "x-budget": {
@@ -9291,6 +9292,39 @@
         "press": "nodes-of-the-zone-take-their-own-presses",
         "olderReader": "reads-the-word-as-no-field-the-nodes-scroll-with-the-body",
         "cases": "contract/fixtures/top-zone/top-zone-cases.json"
+      },
+      "sheetSafeBottom": {
+        "refines": [
+          "x-style.layout.bottomZone.safeArea.withoutBottomZone",
+          "x-style.layout.modalLayer.area"
+        ],
+        "appliesTo": "modal-layer-shown-as-a-sheet",
+        "shape": "modalShapeOf-is-sheet-placement-bottom-or-absent-in-the-compact-width-class-of-the-area",
+        "adds": "reader",
+        "inset": "bottom-inset-of-the-platform-home-indicator-or-gesture-bar",
+        "host": "may-give-zero-when-it-accounted-for-the-inset-itself",
+        "box": "the-sheet-box-reaches-the-physical-bottom-of-the-area",
+        "where": {
+          "withoutBottomZone": "bottom-padding-inside-the-sheet-box-under-its-content",
+          "withBottomZone": "bottomZone.safeArea-under-the-content-of-the-zone"
+        },
+        "bottomZone": "the-shown-pinned-block-a-nav-bar-is-not-drawn-in-a-modal-layer",
+        "once": "never-under-the-root-and-under-the-zone-together",
+        "background": "the-sheet-root-background-and-radius-extend-under-the-inset",
+        "rootBottomPadding": "stays-above-the-inset",
+        "height": "content-plus-the-inset-not-taller-than-the-area",
+        "overflow": "the-body-of-the-sheet-scrolls-above-the-inset",
+        "window": "none",
+        "sheetWindow": "none-as-a-window",
+        "page": "unchanged-bottomZone.safeArea",
+        "value": {
+          "unit": "logical-pixels",
+          "notANumberOrNotFinite": "zero",
+          "negative": "zero"
+        },
+        "builder": "inset-of-the-device-frame-zero-without-a-frame",
+        "olderReader": "adds-nothing-the-last-node-of-the-sheet-stands-under-the-home-indicator-unless-the-host-pads-the-sheet",
+        "cases": "contract/fixtures/sheet-safe-bottom/sheet-safe-bottom-cases.json"
       },
       "partStyle": {
         "keys": [

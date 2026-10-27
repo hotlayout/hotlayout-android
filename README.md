@@ -6,7 +6,7 @@ document, a theme and your data become a native Jetpack Compose screen.
 It is a reader of the same contract as the React, Flutter and iOS readers and is measured by the same shared
 case tables.
 
-**Status: complete for contract 9.30.0.** Every widget of the contract is drawn: text and rich text, buttons,
+**Status: complete for contract 9.31.0.** Every widget of the contract is drawn: text and rich text, buttons,
 lists and list rows, stacks and layers, progress bars and rings, the form controls and text fields (with forms
 and their validation), the screen anatomy (app bar, body, bottom zone and navigation bar), modal layers with
 the system back key, carousels, node motion and glass, images, and the adaptive width classes, plus the

@@ -106,7 +106,7 @@ public data class ActionSource(val nodeId: String, val screenId: String, val rec
  * @param onScreenChange the top of the stack changed (the screen was shown, with the cause).
  * @param onReport what the reader skipped or replaced while reading the document, the theme or the data; never shown to the person.
  * @param safeAreaTop the top inset the host has already accounted for, instead of the window's (status bar, cutout); zero for a host that did.
- * @param safeAreaBottom the same for the bottom (navigation bar); the reader adds it only under a bottom zone.
+ * @param safeAreaBottom the same for the bottom (navigation bar); the reader adds it only under a bottom zone, and in a modal sheet (inside its box, once).
  */
 @Composable
 public fun HotlayoutScreen(
@@ -360,7 +360,7 @@ private fun ScreenStack(host: FlowHost, setup: ScreenSetup, areaWidth: Double, h
         key(index, screen.screenId) {
             remember(screen, frame, setup, shape) {
                 ModalLayerSpec(index, screen.screenId, screen.name, shape != WideChrome.ModalShape.Sheet, shape == WideChrome.ModalShape.SheetWindow, screen.backdropBlur, screen.dismissible) {
-                    ScreenRoot(screen, frame, setup, asLayer = true, sheetWindow = shape == WideChrome.ModalShape.SheetWindow)
+                    ScreenRoot(screen, frame, setup, asLayer = true, sheetWindow = shape == WideChrome.ModalShape.SheetWindow, sheet = shape == WideChrome.ModalShape.Sheet)
                 }
             }
         }
@@ -466,10 +466,10 @@ private data class ScreenSetup(
 
 /**
  * A page: the screen with the zones of the contract (`render/screen/`). A modal layer is as tall as
- * its content and takes no platform insets of its own.
+ * its content; a sheet takes the bottom inset of the platform inside its box, a window takes none.
  */
 @Composable
-private fun ScreenRoot(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup, asLayer: Boolean, sheetWindow: Boolean = false) {
+private fun ScreenRoot(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup, asLayer: Boolean, sheetWindow: Boolean = false, sheet: Boolean = false) {
     // The reader resolves the tree for the class and then draws a plain document: no widget knows the word «class».
     val widthClass = WideChrome.contentWidthClass(screen.presentation, setup.areaClass)
     val root = remember(screen.root, widthClass) { screen.root.inWidthClass(widthClass) }
@@ -477,6 +477,6 @@ private fun ScreenRoot(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup
     SideEffect { setup.reportBudget(screen, context.listBudget) }
     AnatomyScreen(
         root, context, Modifier.testTag("screen:${screen.screenId}"),
-        shrinks = asLayer, insets = if (asLayer) ScreenInsets() else null, sheetWindow = sheetWindow,
+        shrinks = asLayer, insets = if (asLayer) ScreenInsets() else null, sheetWindow = sheetWindow, sheet = sheet,
     )
 }

@@ -10,6 +10,21 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
+## [0.5.0] - Unreleased
+
+Reads document contract 9.31.0 (theme 4.0.1, icon set 1.0.0).
+
+### Added
+
+- The bottom safe inset of a modal sheet. A layer shown as a sheet (`presentation: modal`, no `modalPlacement` or
+  `bottom`, in a compact area) still reaches the bottom of its area, and the reader now adds the navigation bar
+  inset (or the `safeAreaBottom` the host passed) inside the box of the sheet, under its content: the background and
+  the radius of the root extend under the gesture bar, the last node stands above it. The inset is added once: with
+  a shown pinned block it goes under the content of that zone, without one it is the bottom padding of the root.
+  The height of the sheet is its content plus the inset, no taller than the area; taller content scrolls above the
+  inset. While the keyboard is shown the sheet rises above it and adds nothing. A window (`center`), a sheet shown
+  as a window in a wider area and a page are unchanged, and a host that passes zero gets zero.
+
 ## [0.4.0] - Unreleased
 
 Reads document contract 9.30.0 (theme 4.0.1, icon set 1.0.0).

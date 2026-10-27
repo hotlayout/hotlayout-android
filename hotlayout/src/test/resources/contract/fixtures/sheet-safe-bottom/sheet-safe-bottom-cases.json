@@ -1,0 +1,42 @@
+{
+  "description": "The bottom safe inset of a modal sheet (schema 9.31.0, rules: x-style.layout.sheetSafeBottom). Written by hand; one table for every reader. «placementCases» — where the reader adds the bottom inset of the platform: «root» is the bottom padding inside the box of the screen root (the sheet box: its background and radius reach the physical bottom), «zone» is the room under the content of the bottom zone (the same rule as on a page, x-style.layout.bottomZone.safeArea); never both. «input.areaWidth» is the width of the area the host gave the screen (it decides sheet or window, x-style.layout.wideModal); «input.safeBottom» is the inset as the host gave it (a host that accounted for it itself gives 0); «input.bottomZone» — the screen has a SHOWN bottom zone (a pinned block; a navigation bar is not drawn in a modal layer). Page rows restate the rule of 9.12.0 and do not change. «geometryCases» — the sheet box in logical points from the top of the area: «contentHeight» is the content of the sheet with the root paddings and its bottom zone, WITHOUT the inset; «contentBottom» is the bottom edge of the content above the inset, from the top of the sheet. «ruleCases» — data of the block.",
+  "placementCases": [
+    { "name": "a sheet without a bottom zone: the inset inside the box, under the content", "input": { "presentation": "modal", "areaWidth": 393, "safeBottom": 34, "bottomZone": false }, "expect": { "root": 34, "zone": 0 } },
+    { "name": "a sheet without a bottom zone on a device without a home indicator: nothing", "input": { "presentation": "modal", "areaWidth": 375, "safeBottom": 0, "bottomZone": false }, "expect": { "root": 0, "zone": 0 } },
+    { "name": "the word bottom: the same as no field", "input": { "presentation": "modal", "modalPlacement": "bottom", "areaWidth": 393, "safeBottom": 34, "bottomZone": false }, "expect": { "root": 34, "zone": 0 } },
+    { "name": "an unknown placement word reads as bottom: a sheet", "input": { "presentation": "modal", "modalPlacement": "side", "areaWidth": 393, "safeBottom": 34, "bottomZone": false }, "expect": { "root": 34, "zone": 0 } },
+    { "name": "a sheet with a pinned block: the inset under the content of the zone, once", "input": { "presentation": "modal", "areaWidth": 393, "safeBottom": 34, "bottomZone": true }, "expect": { "root": 0, "zone": 34 } },
+    { "name": "a sheet with a pinned block on a device without a home indicator: nothing", "input": { "presentation": "modal", "areaWidth": 375, "safeBottom": 0, "bottomZone": true }, "expect": { "root": 0, "zone": 0 } },
+    { "name": "a sheet on an Android gesture bar", "input": { "presentation": "modal", "areaWidth": 412, "safeBottom": 24, "bottomZone": false }, "expect": { "root": 24, "zone": 0 } },
+    { "name": "the host accounted for the inset itself and gives zero", "input": { "presentation": "modal", "areaWidth": 393, "safeBottom": 0, "bottomZone": false }, "expect": { "root": 0, "zone": 0 } },
+    { "name": "an inset that is not a number: zero", "input": { "presentation": "modal", "areaWidth": 393, "safeBottom": "34", "bottomZone": false }, "expect": { "root": 0, "zone": 0 } },
+    { "name": "a negative inset: zero", "input": { "presentation": "modal", "areaWidth": 393, "safeBottom": -10, "bottomZone": false }, "expect": { "root": 0, "zone": 0 } },
+    { "name": "a fractional inset is not rounded", "input": { "presentation": "modal", "areaWidth": 393, "safeBottom": 20.5, "bottomZone": false }, "expect": { "root": 20.5, "zone": 0 } },
+    { "name": "the last compact width: still a sheet", "input": { "presentation": "modal", "areaWidth": 599.5, "safeBottom": 34, "bottomZone": false }, "expect": { "root": 34, "zone": 0 } },
+    { "name": "a window in the centre: no inset inside the layer", "input": { "presentation": "modal", "modalPlacement": "center", "areaWidth": 393, "safeBottom": 34, "bottomZone": false }, "expect": { "root": 0, "zone": 0 } },
+    { "name": "a window in the centre with a pinned block: no inset", "input": { "presentation": "modal", "modalPlacement": "center", "areaWidth": 393, "safeBottom": 34, "bottomZone": true }, "expect": { "root": 0, "zone": 0 } },
+    { "name": "a sheet on a medium area is a window: no inset", "input": { "presentation": "modal", "areaWidth": 768, "safeBottom": 34, "bottomZone": false }, "expect": { "root": 0, "zone": 0 } },
+    { "name": "a sheet on an expanded area is a window: no inset, with a pinned block too", "input": { "presentation": "modal", "modalPlacement": "bottom", "areaWidth": 1280, "safeBottom": 34, "bottomZone": true }, "expect": { "root": 0, "zone": 0 } },
+    { "name": "a page without a bottom zone: unchanged, nothing", "input": { "presentation": "page", "areaWidth": 393, "safeBottom": 34, "bottomZone": false }, "expect": { "root": 0, "zone": 0 } },
+    { "name": "a page without the field presentation: unchanged, nothing", "input": { "areaWidth": 393, "safeBottom": 34, "bottomZone": false }, "expect": { "root": 0, "zone": 0 } },
+    { "name": "a page with a bottom zone: unchanged, under the zone", "input": { "presentation": "page", "areaWidth": 393, "safeBottom": 34, "bottomZone": true }, "expect": { "root": 0, "zone": 34 } }
+  ],
+  "geometryCases": [
+    { "name": "a short sheet grows by the inset and stays at the bottom", "input": { "areaHeight": 852, "contentHeight": 300, "safeBottom": 34 }, "expect": { "y": 518, "height": 334, "contentBottom": 300, "scrolls": false } },
+    { "name": "no inset: the sheet as before 9.31.0", "input": { "areaHeight": 852, "contentHeight": 300, "safeBottom": 0 }, "expect": { "y": 552, "height": 300, "contentBottom": 300, "scrolls": false } },
+    { "name": "content with the inset exactly fills the area: it does not scroll", "input": { "areaHeight": 852, "contentHeight": 818, "safeBottom": 34 }, "expect": { "y": 0, "height": 852, "contentBottom": 818, "scrolls": false } },
+    { "name": "a tall sheet: the area height, the body scrolls above the inset", "input": { "areaHeight": 852, "contentHeight": 900, "safeBottom": 34 }, "expect": { "y": 0, "height": 852, "contentBottom": 818, "scrolls": true } },
+    { "name": "with a pinned block the arithmetic is the same: the inset is under the zone", "input": { "areaHeight": 852, "contentHeight": 400, "safeBottom": 34 }, "expect": { "y": 418, "height": 434, "contentBottom": 400, "scrolls": false } },
+    { "name": "an inset that is not a number: zero", "input": { "areaHeight": 852, "contentHeight": 300, "safeBottom": "34" }, "expect": { "y": 552, "height": 300, "contentBottom": 300, "scrolls": false } }
+  ],
+  "ruleCases": [
+    { "name": "the reader adds the inset", "rule": "adds", "expect": "reader" },
+    { "name": "the keys it refines", "rule": "refines", "expect": ["x-style.layout.bottomZone.safeArea.withoutBottomZone", "x-style.layout.modalLayer.area"] },
+    { "name": "without a bottom zone: inside the sheet box", "rule": "where.withoutBottomZone", "expect": "bottom-padding-inside-the-sheet-box-under-its-content" },
+    { "name": "with a bottom zone: under the content of the zone", "rule": "where.withBottomZone", "expect": "bottomZone.safeArea-under-the-content-of-the-zone" },
+    { "name": "once", "rule": "once", "expect": "never-under-the-root-and-under-the-zone-together" },
+    { "name": "a window: none", "rule": "window", "expect": "none" },
+    { "name": "a sheet shown as a window: none", "rule": "sheetWindow", "expect": "none-as-a-window" },
+    { "name": "the host may give zero", "rule": "host", "expect": "may-give-zero-when-it-accounted-for-the-inset-itself" }
+  ]
+}

@@ -68,6 +68,8 @@ class TableCoverageTest {
             "sheet-dismiss/escapeCases", "sheet-dismiss/escapeRuleCases",
             "media-chrome/modalCases", "media-chrome/modalAreaCases", "media-chrome/placementCases", "media-chrome/modalRuleCases", "media-chrome/shownCases",
             "motion/blurCases", "motion/glassCases",
+            // Schema 9.31.0: the bottom safe inset of a sheet.
+            "sheet-safe-bottom/placementCases", "sheet-safe-bottom/geometryCases", "sheet-safe-bottom/ruleCases",
             // Pictures: the proportion, the box, the file in the box, the radius, the circle.
             "media-chrome/ratioCases", "media-chrome/imageBoxCases", "media-chrome/paintCases", "media-chrome/radiusCases", "media-chrome/circleCases",
             "carousel/hostCases", "carousel/readCases", "carousel/cardCases", "carousel/stopCases", "carousel/activeCases",

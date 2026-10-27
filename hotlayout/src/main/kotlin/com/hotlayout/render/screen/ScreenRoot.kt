@@ -48,7 +48,7 @@ import com.hotlayout.theme.Sides
  * What the zones of a screen are, worked out from the document and the data: who is in which
  * zone, the lead and tail of the body, and the settings of the layout.
  */
-internal class ScreenPlan(root: DocumentNode, private val context: RenderContext, look: BoxLook, val insets: ScreenInsets, val shrinks: Boolean) {
+internal class ScreenPlan(root: DocumentNode, private val context: RenderContext, look: BoxLook, val insets: ScreenInsets, val shrinks: Boolean, sheet: Boolean = false) {
     val bar: DocumentNode?
     val topPinned: List<DocumentNode>
     val body: List<DocumentNode>
@@ -76,6 +76,9 @@ internal class ScreenPlan(root: DocumentNode, private val context: RenderContext
     val bodyAtScreenTop: Boolean
     val floats: Boolean
 
+    /** The inset of the platform under a sheet: in the box of the root, or under the content of the pinned block; never both. */
+    val sheetInset: SheetSafeBottom.Place
+
     init {
         fun shown(node: DocumentNode?): DocumentNode? = node?.takeIf { context.isShown(it) }
         // Who stands where in the width class of this screen, and where the navigation bar stands: one function answers both.
@@ -97,6 +100,7 @@ internal class ScreenPlan(root: DocumentNode, private val context: RenderContext
         firstPull = visibleBody.firstOrNull()?.let { child -> FlowPull.read(child, "Screen", root.props)?.let { context.resolver.spacing(it.first) } } ?: 0.0
         gap = context.resolver.spacing(root.props["gap"] ?: JsonValue.Str("sm")) ?: 0.0
         bodyAtScreenTop = ScreenAnatomy.bodyStartsAtScreenTop(bodyTop, WideChrome.topZoneOwner(place, bar != null))
+        sheetInset = if (sheet) SheetSafeBottom.placeOf(insets.bottom, pinned != null) else SheetSafeBottom.Place(0.0, 0.0)
         floats = nav?.let { NavBarRules.floats("bottom", it.props) } ?: false
     }
 
@@ -117,13 +121,13 @@ internal class ScreenPlan(root: DocumentNode, private val context: RenderContext
     val raise: Double get() = if (hasHeader && !bodyAtScreenTop) maxOf(0.0, firstPull - (if (bodyEmpty) 0.0 else gap)) else 0.0
 
     /** What lies under the last child: the gap of the screen above a pinned block, or the bottom padding of the root. */
-    val tail: Double get() = if (pinned != null) (if (bodyEmpty) 0.0 else gap) else paddingBottom
+    val tail: Double get() = if (pinned != null) (if (bodyEmpty) 0.0 else gap) else paddingBottom + sheetInset.root
 
     /** The lead of the top zone: the gap under the bar, or the inset and the top padding. */
     val topLead: Double get() = if (bar != null) gap else (if (topNav != null) 0.0 else insets.top) + paddingTop
 
     fun settings() = ScreenZonesSettings(
-        shrink = shrinks, paddingTop = paddingTop, paddingBottom = paddingBottom, paddingStart = paddingStart, paddingEnd = paddingEnd, gap = gap,
+        shrink = shrinks, paddingTop = paddingTop, paddingBottom = paddingBottom + sheetInset.root, paddingStart = paddingStart, paddingEnd = paddingEnd, gap = gap,
         bodyEmpty = bodyEmpty, firstPull = firstPull, bodyTop = bodyTop, safeTop = if (topNav != null) 0.0 else insets.top, safeBottom = insets.bottom, keyboard = insets.keyboard, navFloat = floats,
     )
 }
@@ -135,10 +139,11 @@ internal class ScreenPlan(root: DocumentNode, private val context: RenderContext
  *
  * @param shrinks a modal layer: as tall as its content, not taller than the room it is given.
  * @param insets the platform insets; the window's own (or the host's) when `null`.
+ * @param sheet a layer shown as a sheet: it takes the bottom inset of the platform inside its box ([SheetSafeBottom]).
  */
 @Composable
 internal fun AnatomyScreen(
-    root: DocumentNode, context: RenderContext, modifier: Modifier = Modifier, shrinks: Boolean = false, insets: ScreenInsets? = null, sheetWindow: Boolean = false,
+    root: DocumentNode, context: RenderContext, modifier: Modifier = Modifier, shrinks: Boolean = false, insets: ScreenInsets? = null, sheetWindow: Boolean = false, sheet: Boolean = false,
 ) {
     var style = NodeStyle.effective(root, context.scope)
     // A sheet shown as a window: the bottom corners it did not name take the radius of the top ones.
@@ -146,8 +151,13 @@ internal fun AnatomyScreen(
     val look = context.resolver.box(style, context.scope)
     val inner = context.copy(inherited = NodeStyle.inherited(context.inherited, style, context.resolver), listPosition = null, listNumber = null)
     val consumedInsets = rememberConsumedInsets()
-    val screenInsets = insets ?: rememberScreenInsets(consumedInsets)
-    val plan = ScreenPlan(root, context, look, screenInsets, shrinks)
+    val screenInsets = when {
+        insets == null -> rememberScreenInsets(consumedInsets)
+        // A sheet reaches the physical bottom: the bar lies over it. Above the keyboard the sheet is clear of the bar.
+        sheet -> rememberScreenInsets(consumedInsets).let { platform -> insets.copy(bottom = if (platform.keyboard > 0) 0.0 else platform.bottom) }
+        else -> insets
+    }
+    val plan = ScreenPlan(root, context, look, screenInsets, shrinks, sheet)
     val scroll = rememberScrollState()
     val report = remember { ZoneReport() }
     val density = LocalDensity.current.density

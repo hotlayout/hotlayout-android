@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "9.30.0",
+  "schemaVersion": "9.31.0",
   "documentId": "hero",
   "name": "App bar over a hero",
   "initialScreenId": "promo",
