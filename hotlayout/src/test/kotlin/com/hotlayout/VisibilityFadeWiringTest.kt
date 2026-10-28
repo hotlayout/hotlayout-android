@@ -3,6 +3,8 @@ package com.hotlayout
 import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.hasContentDescription
@@ -159,4 +161,29 @@ class VisibilityFadeWiringTest {
     @Test fun aChildOfAGridFades() = swap("""{"id":"grid","type":"Grid","props":{"columns":2},"children":[${fading("first", 0, "First")},${fading("second", 1, "Second")}]}""")
 
     @Test fun aChildOfAColumnFades() = swap("""{"id":"column","type":"Column","props":{},"children":[${fading("first", 0, "First")},${fading("second", 1, "Second")}]}""")
+
+    @Test fun aRowOfAListTemplateFadesAndItsNeighboursDoNot() {
+        fun records(second: Int) = JsonValue.Arr(listOf("A" to 1, "B" to second, "C" to 1).map { (name, on) ->
+            JsonValue.Obj(JsonObject(listOf("name" to JsonValue.Str(name), "on" to JsonValue.Num(on.toDouble()))))
+        })
+        val template = """{"id":"row","type":"Text","props":{"content":{"kind":"binding","path":"item.name","fallback":"-"}},"visibleIf":{"path":"item.on","op":"eq","value":1},"visibilityTransition":"fade"}"""
+        val document = Screens.document("a" to """{"id":"list","type":"Repeater","props":{"source":"items","item":"item"},"children":[$template]}""")
+        var data by androidx.compose.runtime.mutableStateOf<DataScope>(mapOf("items" to records(1)))
+        compose.setContent { Box(Modifier.size(360.dp, 640.dp)) { HotlayoutScreen(document, data = data) } }
+        compose.waitForIdle()
+        fun there(name: String) = compose.onAllNodesWithText(name).fetchSemanticsNodes().isNotEmpty()
+        assertTrue(there("A") && there("B") && there("C"))
+        compose.mainClock.autoAdvance = false
+        data = mapOf("items" to records(0))
+        repeat(6) { if (!tagged("leaving", "row")) compose.mainClock.advanceTimeByFrame() }
+        assertTrue("the row of B started to leave", tagged("leaving", "row"))
+        assertEquals("only one row fades", 1, compose.onAllNodesWithTag("fade:leaving:row", useUnmergedTree = true).fetchSemanticsNodes().size)
+        assertTrue("the neighbours stay", there("A") && there("C"))
+        advance(130)
+        assertTrue("B has left", !there("B") && !tagged("leaving", "row"))
+        assertTrue("the neighbours stay", there("A") && there("C"))
+        data = mapOf("items" to records(1))
+        repeat(12) { advance(50); compose.waitForIdle() }
+        assertTrue("B comes back after the wait", there("B"))
+    }
 }

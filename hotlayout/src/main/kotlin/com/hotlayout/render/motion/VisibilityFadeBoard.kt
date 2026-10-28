@@ -105,11 +105,13 @@ internal class VisibilityFadeBoard {
     companion object {
         const val SEPARATOR = '\u001F'
 
-        fun key(frame: Int, screenId: String, nodeId: String): String = "$frame$SEPARATOR$screenId$SEPARATOR$nodeId"
+        /** The node and the chain of template instances it stands in (as the state key of a carousel). */
+        fun key(frame: Int, screenId: String, nodeId: String, path: List<Int> = emptyList()): String =
+            "$frame$SEPARATOR$screenId$SEPARATOR${nodeId.length}:$nodeId|${path.joinToString(",")}"
     }
 }
 
-/** The nodes of a resolved screen tree that fade, outside list templates (a template is drawn once per record). */
+/** The nodes of a resolved screen tree that fade, outside list templates (the instances of a template are followed by the list itself). */
 internal fun fadeNodesOf(root: DocumentNode): List<DocumentNode> {
     val found = ArrayList<DocumentNode>()
     fun walk(node: DocumentNode) {
@@ -136,11 +138,19 @@ internal fun VisibilityFadeDriver(root: DocumentNode, context: RenderContext) {
 
 @Composable
 private fun FadeNodeDriver(node: DocumentNode, context: RenderContext, board: VisibilityFadeBoard, motion: Boolean) {
-    val key = VisibilityFadeBoard.key(context.frameIndex, context.screenId, node.id)
+    val key = VisibilityFadeBoard.key(context.frameIndex, context.screenId, node.id, context.instancePath)
     val condition = WidthRules.isShown(node, context.widthClass, context.scope)
     val signature = context.fadeSignature
     val animate = motion && context.frameIndex == board.top
     LaunchedEffect(key, condition, signature, animate) { board.reconcile(key, condition, signature, animate) }
     val state = board.entry(key)?.state
     LaunchedEffect(key, state) { board.run(key) }
+}
+
+/** Follows the conditions of the instances of a list template that fades: every record has its own entry. */
+@Composable
+internal fun VisibilityFadeInstances(template: DocumentNode, count: Int, instanceContext: (Int) -> RenderContext) {
+    val board = instanceContext(0).fades ?: return
+    val reduced = rememberReducedMotion()
+    for (index in 0 until count) key(index) { FadeNodeDriver(template, instanceContext(index), board, !reduced) }
 }

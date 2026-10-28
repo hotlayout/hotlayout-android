@@ -121,9 +121,9 @@ internal data class RenderContext(
         return if (key == null || scope !== this.scope) condition else fades!!.inLayout(key, condition, fadeSignature)
     }
 
-    /** The key of the fade of a node of this screen, or `null` when the node does not fade here (not the field, a zone of the screen, a list template). */
+    /** The key of the fade of a node of this screen, or `null` when the node does not fade here (not the field, a zone of the screen). */
     fun fadeKey(node: DocumentNode): String? =
-        if (fades != null && instances.isEmpty() && VisibilityFadeRules.reads(node, screenRoot)) VisibilityFadeBoard.key(frameIndex, screenId, node.id) else null
+        if (fades != null && VisibilityFadeRules.reads(node, screenRoot)) VisibilityFadeBoard.key(frameIndex, screenId, node.id, instancePath) else null
 
     /** What a fade was made for: a change of the language or of the width class puts a node at rest at once. */
     val fadeSignature: String get() = "${locale.translation}|$widthClass"

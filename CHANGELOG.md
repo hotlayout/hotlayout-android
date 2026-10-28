@@ -10,6 +10,17 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
+## [0.7.1] - Unreleased
+
+Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8.0).
+
+### Fixed
+
+- A row of a list from data fades too. When the template of a `Repeater` has `visibilityTransition: fade` and a
+  condition on the fields of the record, every row follows its own timeline (the key is the node and the indexes of
+  the template instances it stands in): a row whose condition stops holding fades out in place and the rows around
+  it do not move until it has left.
+
 ## [0.7.0] - Unreleased
 
 Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8.0).
@@ -28,7 +39,6 @@ Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8
   the width class, a change under a covered screen, and a system whose animation scale is zero. The zones of the
   screen follow the condition at once and do not read the field: a node with `pin` (bottom or top), a `NavBar`, a
   `NavItem` and an `AppBar` that is the first child of the screen root; an `AppBar` anywhere else fades like any node.
-  A node inside a list template is not faded yet and follows its condition at once.
 
 ## [0.6.0] - Unreleased
 

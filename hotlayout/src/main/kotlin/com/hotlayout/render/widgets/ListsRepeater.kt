@@ -22,6 +22,9 @@ import com.hotlayout.render.RenderContext
 import com.hotlayout.render.WidgetCall
 import com.hotlayout.render.dp
 import com.hotlayout.render.layout.AlignWord
+import com.hotlayout.render.motion.VisibilityFadeBoard
+import com.hotlayout.render.motion.VisibilityFadeInstances
+import com.hotlayout.render.motion.VisibilityFadeRules
 import com.hotlayout.render.roundToInt
 import com.hotlayout.render.takesNaturalWidth
 import kotlin.math.floor
@@ -39,7 +42,14 @@ internal fun RepeaterWidget(call: WidgetCall) {
     val context = call.context
     // The screen's budget says how many of the records this list may draw (the whole list when no screen asks).
     val allowed = context.listBudget?.allowed(node.id, context.instancePath) ?: Int.MAX_VALUE
-    val plan = RepeaterPlan(node, context.scope, allowed) { template, scope -> context.isShown(template, scope) }
+    // A template that fades keeps the record that is fading out in the list and holds the one that appears back.
+    val fades = context.fades?.takeIf { node.children.firstOrNull()?.let { VisibilityFadeRules.reads(it, context.screenRoot) } == true }
+    var next = 0
+    val plan = RepeaterPlan(node, context.scope, allowed) { template, scope ->
+        val condition = context.isShown(template, scope)
+        val index = next++
+        if (fades == null) condition else fades.inLayout(VisibilityFadeBoard.key(context.frameIndex, context.screenId, template.id, context.instancePath + index), condition, context.fadeSignature)
+    }
     if (plan.instances.isEmpty() || node.children.isEmpty()) return
     val template = node.children[0]
     val columns = RepeaterPlan.columns(node.props, overridden = node.columnsFromOverride)
@@ -57,6 +67,8 @@ internal fun RepeaterWidget(call: WidgetCall) {
             listNumber = if (numbered) instance.number?.let { ListNumber(it, plan.instances.size) } else null,
         )
     }
+
+    if (fades != null) VisibilityFadeInstances(template, plan.instances.size, ::itemContext)
 
     val carousel = CarouselRules.of(node)
     val isCarousel = node.props["carousel"] != null
