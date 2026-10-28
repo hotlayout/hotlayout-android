@@ -16,6 +16,9 @@ class PlacementTransportTest {
             java.net.URL("http://127.0.0.1:$port${address.file}").openConnection(java.net.Proxy.NO_PROXY) as java.net.HttpURLConnection
     }
 
+    /** How long the last download took, from the call to the answer (not counting the wait for the server thread). */
+    private var downloadMs = 0L
+
     private fun ask(deadlineMs: Long = 5_000, maxBytes: Int = 1024, etag: String? = null, serve: (Socket) -> Unit): Pair<PlacementResponse, String> {
         val server = ServerSocket(0)
         var seen = ""
@@ -31,9 +34,11 @@ class PlacementTransportTest {
             } catch (_: Exception) {
             }
         }.apply { start() }
+        val began = System.nanoTime()
         val answer = runBlocking {
             PlacementTransport.download("https://storage.example/x.json", etag, maxBytes, deadlineMs) { localConnection(server.localPort, it) }
         }
+        downloadMs = (System.nanoTime() - began) / 1_000_000
         server.close()
         thread.join(2_000)
         return answer to seen
@@ -79,13 +84,14 @@ class PlacementTransportTest {
     }
 
     @Test fun theDeadlineCoversTheBodyNotOnlyTheHeaders() {
-        val started = System.nanoTime()
         val (answer, _) = ask(deadlineMs = 400) {
             it.getOutputStream().say("HTTP/1.1 200 OK\r\nContent-Length: 100\r\n\r\n")
             repeat(50) { _ -> it.getOutputStream().say("x"); Thread.sleep(100) }
         }
         assertEquals(PlacementResponse.Unavailable, answer)
-        assertTrue("took ${(System.nanoTime() - started) / 1_000_000} ms", (System.nanoTime() - started) / 1_000_000 < 3_000)
+        // The server would go on for 5 s: ending far short of that is the deadline covering the body. The wait for
+        // the server thread after the answer is not part of the measure, so a loaded machine cannot fail it.
+        assertTrue("took $downloadMs ms", downloadMs < 3_000)
     }
 
     @Test fun aServerThatNeverAnswersIsNoAnswerAfterTheDeadline() {

@@ -16,6 +16,11 @@ Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8
 
 ### Fixed
 
+- A carousel that tells its stop follows the LAST value when the host changes it twice in a row while the first
+  animation is still running. Following compared the new number with the stop the animation was passing and
+  took it for "already there", so the carousel stayed where the cancelled move had been. "Where the carousel is"
+  is now the target of the reader's own move until that move has settled (a person's touch, wheel or key
+  clears it).
 - A row of a list from data fades too. When the template of a `Repeater` has `visibilityTransition: fade` and a
   condition on the fields of the record, every row follows its own timeline (the key is the node and the indexes of
   the template instances it stands in): a row whose condition stops holding fades out in place and the rows around

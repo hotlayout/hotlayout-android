@@ -204,4 +204,30 @@ class CarouselStopWiringTest {
             held = false
         }
     }
+
+    /**
+     * The host changes the number twice in a row (2 -> 0, then 1 about 80 ms later; the test takes the first frame that passes the stop) while the reader is still
+     * animating towards the first target. The animation passes the stop the second value names; following
+     * must not take that for "already there": the carousel ends on the SECOND target.
+     */
+    @Test fun aSecondValueMidAnimationMovesTheCarouselToItsOwnStop() {
+        val row = Contract.rows(table, "stopRunCases").first { it["name"]?.string?.startsWith("show with the value 2") == true }
+        show(row)
+        assertEquals(2, stopIndex())
+        compose.mainClock.autoAdvance = false
+        hostData = mapOf("account.cardIndex" to JsonValue.Num(0.0))
+        compose.mainClock.advanceTimeByFrame()
+        // Frame by frame, until the animation of the first move is passing the stop the second value names.
+        var passed = 0
+        while (stopIndex() != 1 && passed < 40) { compose.mainClock.advanceTimeBy(10); passed += 1 }
+        assertEquals("the animation of the first move passes the second target", 1, stopIndex())
+        hostData = mapOf("account.cardIndex" to JsonValue.Num(1.0))
+        compose.mainClock.advanceTimeByFrame()
+        compose.mainClock.advanceTimeBy(1_000)
+        compose.mainClock.autoAdvance = true
+        compose.waitForIdle()
+        assertEquals("the carousel ends on the second target", 1, stopIndex())
+        assertEquals("exactly on it, not where the cancelled move was passing", stopsPx()[1], offsetPx(), 0.5f)
+        assertEquals(emptyList<List<JsonValue>>(), log)
+    }
 }

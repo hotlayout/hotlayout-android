@@ -43,13 +43,20 @@ internal class CarouselStopTracker {
     private var holding = false
     private var pending = false
 
+    /**
+     * The stop the reader is scrolling towards (the target of its last own move) until that move has settled.
+     * While it is set, "where the carousel is" for following is this stop, not the one the animation passes.
+     */
+    var heading: Int? = null
+        private set
+
     /** Listens for a person on the row without taking any event from the scroll. */
     fun listen(): Modifier = Modifier
         .pointerInput(this) {
             awaitPointerEventScope {
                 while (true) {
                     val event = awaitPointerEvent(PointerEventPass.Initial)
-                    if (event.type == PointerEventType.Press || event.type == PointerEventType.Scroll) person = true
+                    if (event.type == PointerEventType.Press || event.type == PointerEventType.Scroll) { person = true; heading = null }
                     val wasHolding = holding
                     holding = event.changes.any { it.pressed }
                     if (wasHolding && !holding) settleIfPending()
@@ -58,6 +65,7 @@ internal class CarouselStopTracker {
         }
         .onPreviewKeyEvent {
             person = true
+            heading = null
             false
         }
 
@@ -107,10 +115,13 @@ internal class CarouselStopTracker {
         val stops = input.stopsPx
         if (stop !in stops.indices) return
         val to = stops[stop].coerceAtMost(scroll.maxValue.toFloat()).toInt()
-        if (kotlin.math.abs(scroll.value - to) < 1) return
+        if (heading == null && kotlin.math.abs(scroll.value - to) < 1) return
+        heading = stop
         byReader {
             if (input.reducedMotion) scroll.scrollTo(to) else scroll.animateScrollTo(to, tween(MOVE_MS, easing = FastOutSlowInEasing))
         }
+        // Reached only when the move was not cancelled by a newer one: a cancelled move leaves the heading to the next.
+        if (heading == stop) heading = null
     }
 }
 
@@ -134,7 +145,7 @@ internal fun CarouselStopEffects(tracker: CarouselStopTracker, scroll: ScrollSta
         val before = tracker.previous
         tracker.previous = input.value
         if (tracker.isHolding) return@LaunchedEffect
-        val active = CarouselRules.activeStop(input.stopsPx.map { it / input.density }, scroll.value / input.density)
+        val active = tracker.heading ?: CarouselRules.activeStop(input.stopsPx.map { it / input.density }, scroll.value / input.density)
         CarouselStopRules.follow(before, input.value, input.stopsPx.size, active)?.let { tracker.go(scroll, it) }
     }
 }
