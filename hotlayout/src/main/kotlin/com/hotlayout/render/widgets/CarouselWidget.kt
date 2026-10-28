@@ -93,6 +93,9 @@ internal fun CarouselRow(
     val resolver = context.resolver
     val padding = resolver.box(NodeStyle.effective(node, context.scope), context.scope).padding
     val density = LocalDensity.current.density
+    val stopPath = CarouselStopRules.path(node)
+    val told = rememberUpdatedState(stopPath?.let { context.scope[it] })
+    val tracker = remember { CarouselStopTracker() }
     var viewportPx by remember { mutableIntStateOf(0) }
     val widthsPx = remember { mutableStateMapOf<Int, Int>() }
     val scroll = rememberScrollState()
@@ -115,20 +118,24 @@ internal fun CarouselRow(
     val remembered = context.carousels?.stop(memoryKey)
     val active = when {
         plan == null -> 0
+        restored == 0 && stopPath != null -> CarouselStopRules.shown(told.value, plan.stops.size)
         restored == 0 && remembered != null -> remembered.coerceIn(0, plan.stops.size - 1)
         else -> CarouselRules.activeStop(plan.stops, scroll.value / density.toDouble())
     }
 
     // Put the scroll back on the stop the frame remembers, once the cards are measured at their final width.
+    // A carousel that tells its stop starts on the stop the value names instead: the content under it reads the same value.
+    val latest = rememberUpdatedState(plan)
     val settled = known && (cardWidth == null || measured.all { it!! >= cardWidth * density - 1 })
     LaunchedEffect(settled, stopsPx) {
         if (!settled || restored != 0) return@LaunchedEffect
         awaitFrame()
         restored = 1
-        val stop = remembered ?: 0
-        if (stop in 1 until stopsPx.size) scroll.scrollTo(stopsPx[stop].roundToInt())
+        val stop = if (stopPath != null) CarouselStopRules.shown(told.value, stopsPx.size) else remembered ?: 0
+        tracker.previous = told.value
+        if (stop in 1 until stopsPx.size) tracker.byReader { scroll.scrollTo(stopsPx[stop].roundToInt()) }
     }
-    val latest = rememberUpdatedState(plan)
+    CarouselStopEffects(tracker, scroll, CarouselStopInput(stopPath, told.value, stopsPx, density.toDouble(), restored != 0, reduced, context.write))
     LaunchedEffect(memoryKey) {
         snapshotFlow { scroll.value }.collect { value ->
             val now = latest.value ?: return@collect
@@ -150,7 +157,7 @@ internal fun CarouselRow(
         com.hotlayout.render.paint.ProvideGlassClip(vertical = false) { clip ->
         AlignedRow(
             gap, JustifyWord.Start, align, null, false,
-            Modifier.fillMaxWidth().then(clip).horizontalScroll(scroll, flingBehavior = fling).focusable()
+            Modifier.fillMaxWidth().then(clip).then(if (stopPath != null) tracker.listen() else Modifier).horizontalScroll(scroll, flingBehavior = fling).focusable()
                 .padding(start = padding.start.dp, top = padding.top.dp, end = padding.end.dp, bottom = padding.bottom.dp),
         ) {
             for (index in 0 until count) {

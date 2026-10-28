@@ -2397,6 +2397,12 @@
             "dots",
             "none"
           ]
+        },
+        "stopPath": {
+          "description": "A NUMBER path of the data contract (a literal, never read from data) for the active snap stop, from 0 (9.32.0): written after a person swipes and the scroll settles, read at show and on change — the carousel moves to that stop. No field — nothing is written. Rules — «x-carouselStop».",
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128
         }
       },
       "additionalProperties": false
@@ -6174,7 +6180,7 @@
   },
   "$id": "https://hotlayout.com/schema/ui-document.json",
   "title": "UiDocument",
-  "x-schemaVersion": "9.31.0",
+  "x-schemaVersion": "9.32.0",
   "x-compatibility": {
     "policy": {
       "majorMustMatch": true,
@@ -6512,7 +6518,8 @@
       "modalFocus": "9.28.0",
       "nodeName": "9.29.0",
       "longPressWrite": "9.30.0",
-      "sheetSafeBottom": "9.31.0"
+      "sheetSafeBottom": "9.31.0",
+      "carouselStop": "9.32.0"
     }
   },
   "x-budget": {
@@ -11530,6 +11537,62 @@
     "keys": "x-longPress.accessibility.keys and the named action write the same, at once",
     "olderReader": "9.26–9.29: a reader whose long press runs the one execution path of «action» (x-longPress.form) already writes; a reader that does not know the write actions treats the type as an unknown action",
     "cases": "contract/fixtures/long-press/long-press-write-cases.json"
+  },
+  "x-carouselStop": {
+    "refines": [
+      "x-style.layout.carousel.active"
+    ],
+    "prop": "carousel.stopPath",
+    "path": {
+      "is": "a-literal-of-the-document-never-read-from-data",
+      "maxLength": 128,
+      "type": "number",
+      "typeMatch": "exactly-number-checked-by-the-builder-against-the-data-contract",
+      "unreadable": "no-path-the-carousel-writes-nothing-and-starts-at-the-first-stop",
+      "misplaced": "x-style.layout.carousel.misplaced"
+    },
+    "value": {
+      "is": "the-index-of-the-active-snap-stop-from-0",
+      "counts": "stops-of-x-style.layout.carousel.snap-not-cards",
+      "written": "an-integer-number"
+    },
+    "write": {
+      "when": "a-person-moved-the-carousel-and-the-scroll-settled-on-a-stop-after-snapping",
+      "notWhen": [
+        "during-the-gesture",
+        "the-reader-moved-it-the-show-or-following-the-value",
+        "no-gesture-at-all"
+      ],
+      "sameValue": "not-written-again-x-actions.write.sameValue.equality",
+      "mechanism": "the-write-of-an-input-x-style.layout.inputs.rules.write",
+      "to": "session-of-the-reader-and-the-host-at-the-same-moment",
+      "gate": "the-writable-paths-of-the-host-like-every-input",
+      "host": {
+        "onWrite": "path-and-the-number",
+        "onAction": "not-called"
+      },
+      "track": "none"
+    },
+    "read": {
+      "layers": "x-dataScope.layers-with-the-data-scope-of-the-node",
+      "number": "a-number-with-an-integer-value-1-and-1.0-alike",
+      "notANumber": "the-first-stop",
+      "fraction": "the-first-stop",
+      "outOfRange": "clamped-to-the-first-or-the-last-stop",
+      "atShow": "the-carousel-starts-at-the-stop-the-value-names-once-the-stops-are-laid-out-without-animation",
+      "onChange": "the-carousel-moves-to-the-stop-the-new-value-names",
+      "change": "a-change-of-the-number-the-value-names-not-a-comparison-at-draw-time",
+      "refusedWrite": "the-carousel-stays-where-the-person-left-it",
+      "duringGesture": "the-gesture-wins-the-change-is-not-applied",
+      "reducedMotion": "x-style.layout.carousel.accessibility.reducedMotion",
+      "fewerStops": "x-style.layout.carousel.active.fewerStops"
+    },
+    "state": "x-style.layout.carousel.active.heldBy-unchanged-the-field-tells-the-data-where-the-state-is",
+    "ownDots": "nodes-with-styleWhen-on-the-same-path-and-setValue-of-a-number-no-new-widget",
+    "insideRepeater": "not-published-every-row-would-write-the-same-path",
+    "builder": "the-preview-writes-and-follows-the-canvas-of-the-editor-neither",
+    "olderReader": "skips-the-field-the-carousel-scrolls-nothing-is-written-and-it-starts-at-the-first-stop",
+    "cases": "contract/fixtures/carousel/carousel-cases.json"
   },
   "x-generatedFrom": "src/entities/component-schema — generated, do not edit by hand"
 }

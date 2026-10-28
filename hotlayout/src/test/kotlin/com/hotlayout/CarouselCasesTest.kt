@@ -24,7 +24,9 @@ class CarouselCasesTest {
 
     @Test fun everyGroupIsRun() {
         val run = setOf("hostCases", "readCases", "cardCases", "stopCases", "activeCases", "dotCases", "areaCases", "stateCases")
-        assertEquals(run, Contract.groups(table))
+        // The groups of the carousel that tells its stop are run by `CarouselStopCasesTest` and `CarouselStopWiringTest`.
+        val told = setOf("stopPathCases", "stopShownCases", "stopFollowCases", "stopWriteCases", "stopDocumentCases", "stopRunScreen", "stopRunCases", "stopRuleCases")
+        assertEquals(run + told, Contract.groups(table))
     }
 
     @Test fun defaultsAreTheTables() {

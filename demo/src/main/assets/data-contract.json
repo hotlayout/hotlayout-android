@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hotlayout.com/schema/data-contract.json",
   "title": "DataContract",
-  "x-dataContractVersion": "1.7.0",
+  "x-dataContractVersion": "1.8.0",
   "x-generatedFrom": "src/entities/component-schema/data-contract.ts — generated, do not edit by hand",
   "x-delivery": {
     "pathsShape": "flat-map",
@@ -496,6 +496,12 @@
         "type": "string",
         "label": "Task id",
         "sampleValue": "card-payments"
+      },
+      {
+        "path": "account.cardIndex",
+        "type": "number",
+        "label": "Account: card shown",
+        "sampleValue": 0
       }
     ],
     "collections": [

@@ -73,6 +73,7 @@ class TableCoverageTest {
             // Pictures: the proportion, the box, the file in the box, the radius, the circle.
             "media-chrome/ratioCases", "media-chrome/imageBoxCases", "media-chrome/paintCases", "media-chrome/radiusCases", "media-chrome/circleCases",
             "carousel/hostCases", "carousel/readCases", "carousel/cardCases", "carousel/stopCases", "carousel/activeCases",
+            "carousel/stopPathCases", "carousel/stopShownCases", "carousel/stopFollowCases", "carousel/stopWriteCases", "carousel/stopRunScreen", "carousel/stopRunCases", "carousel/stopRuleCases",
             "carousel/dotCases", "carousel/areaCases", "carousel/stateCases", "repeater-filter/carouselCases",
             // Adaptive: width classes, visibility and style by class, the wide places, `unset`.
             // Placements: the map, the source of the map, what a place draws.

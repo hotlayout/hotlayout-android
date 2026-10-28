@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "9.31.0",
+  "schemaVersion": "9.32.0",
   "documentId": "live-record",
   "name": "Live record of a page",
   "initialScreenId": "tasks",

@@ -10,6 +10,24 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
+## [0.6.0] - Unreleased
+
+Reads document contract 9.32.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8.0).
+
+### Added
+
+- A carousel that tells its active stop. The optional `carousel.stopPath` names a number path of the data
+  dictionary; its value is the number of the snap stop from 0 (stops, not cards). After a person's swipe has settled
+  on a stop the reader writes that number to the path, the very write an input field makes (the session of the
+  screen and `onWrite` of the host at the same moment, under `writablePaths`). It writes only for a move by a
+  person (a finger, the wheel, a key), never while the finger still holds the row, never for a move the reader made
+  itself, and never the same number again. When the carousel is shown it stands on the stop the value names
+  without animation (a number clamped to the stops; a fraction, a text or no value is the first stop), and it moves
+  to that stop when the number the value names changes, not while a finger holds the row. A write the host refused
+  leaves the carousel where the person put it. A pointer that was cancelled counts as released. A path on a row
+  that does not scroll, an empty one, one longer than 128 characters or one that is not a string is no path: the
+  carousel then scrolls as before and writes nothing.
+
 ## [0.5.0] - Unreleased
 
 Reads document contract 9.31.0 (theme 4.0.1, icon set 1.0.0).

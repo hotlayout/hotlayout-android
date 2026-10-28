@@ -1,5 +1,5 @@
 {
-  "description": "One table of cases for every reader (schema 9.11.0): the carousel — the «carousel» field on a Row with «scrollable» and on a Repeater laid out in a row. Rules: x-style.layout.carousel; policy rows carouselOutsideHost, unreadableCarousel, carouselCardWidth, carouselNested, carouselState, carouselGestures, carouselIndicator, carouselReducedMotion. Numbers are logical pixels under the theme below (the values of the built-in theme). Nothing is rounded: 85.33333333333333 is the expected width, compare with a tolerance of 1e-9. Offsets are distances from the LOGICAL start: in a right-to-left language the same numbers are measured from the right edge. «readerOnly» — a value the builder does not produce or does not publish; a reader may still receive it. «dotCases.viewport» is the width of the carousel area (the viewport of the stops): the row of dots is «stops × dotSize + (stops − 1) × dotGap» wide and is not drawn, with no room, when it is wider than the area. Written by hand, not generated.",
+  "description": "One table of cases for every reader (schema 9.11.0): the carousel — the «carousel» field on a Row with «scrollable» and on a Repeater laid out in a row. Rules: x-style.layout.carousel; policy rows carouselOutsideHost, unreadableCarousel, carouselCardWidth, carouselNested, carouselState, carouselGestures, carouselIndicator, carouselReducedMotion. Numbers are logical pixels under the theme below (the values of the built-in theme). Nothing is rounded: 85.33333333333333 is the expected width, compare with a tolerance of 1e-9. Offsets are distances from the LOGICAL start: in a right-to-left language the same numbers are measured from the right edge. «readerOnly» — a value the builder does not produce or does not publish; a reader may still receive it. «dotCases.viewport» is the width of the carousel area (the viewport of the stops): the row of dots is «stops × dotSize + (stops − 1) × dotGap» wide and is not drawn, with no room, when it is wider than the area. The «stop…» groups (schema 9.32.0) are the field «carousel.stopPath»: rules x-carouselStop; «stopRunCases» run on «stopRunScreen» with the widths of «stopRunLayout», «offset» is the scroll offset after the steps and «behavior» the last programmatic scroll. Written by hand, not generated.",
   "theme": {
     "spacing": { "none": 0, "xs": 4, "sm": 8, "md": 12, "lg": 16, "xl": 24 },
     "radius": { "pill": 72 },
@@ -159,5 +159,106 @@
     { "name": "340: two different nodes of the same row: two states", "a": { "node": "strip", "instance": [1] }, "b": { "node": "other", "instance": [1] }, "sameState": false },
     { "name": "340: a list inside a list: the whole chain of instances counts, not the last index", "a": { "node": "strip", "instance": [0, 1] }, "b": { "node": "strip", "instance": [1, 1] }, "sameState": false },
     { "name": "340: the chain [1] is not the chain [0, 1]", "a": { "node": "strip", "instance": [1] }, "b": { "node": "strip", "instance": [0, 1] }, "sameState": false }
+  ]
+  ,
+  "stopPathCases": [
+    { "name": "a scrolling row with a carousel and a path: the path is read", "type": "Row", "props": { "scrollable": true, "carousel": { "stopPath": "account.cardIndex" } }, "expect": "account.cardIndex" },
+    { "name": "a data list in a row with a carousel and a path: the path is read", "type": "Repeater", "props": { "source": "items", "direction": "row", "carousel": { "perView": 1, "stopPath": "account.cardIndex" } }, "expect": "account.cardIndex" },
+    { "name": "no field: no path, the carousel writes nothing", "type": "Row", "props": { "scrollable": true, "carousel": {} }, "expect": null },
+    { "name": "a row that does not scroll is not a carousel: the path is not read", "type": "Row", "props": { "scrollable": false, "carousel": { "stopPath": "account.cardIndex" } }, "readerOnly": true, "expect": null },
+    { "name": "an empty path: no path", "type": "Row", "props": { "scrollable": true, "carousel": { "stopPath": "" } }, "readerOnly": true, "expect": null },
+    { "name": "a path that is not a string: no path", "type": "Row", "props": { "scrollable": true, "carousel": { "stopPath": 7 } }, "readerOnly": true, "expect": null },
+    { "name": "a path longer than 128 characters: no path", "type": "Row", "props": { "scrollable": true, "carousel": { "stopPath": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" } }, "readerOnly": true, "expect": null },
+    { "name": "an unreadable carousel (not an object): no carousel, no path", "type": "Row", "props": { "scrollable": true, "carousel": "account.cardIndex" }, "readerOnly": true, "expect": null }
+  ],
+  "stopShownCases": [
+    { "name": "no value: the first stop", "stops": 3, "expect": 0 },
+    { "name": "null: the first stop", "value": null, "stops": 3, "expect": 0 },
+    { "name": "0: the first stop", "value": 0, "stops": 3, "expect": 0 },
+    { "name": "1: the second stop", "value": 1, "stops": 3, "expect": 1 },
+    { "name": "2: the last of three stops", "value": 2, "stops": 3, "expect": 2 },
+    { "name": "1.0 is the integer 1 (a double in Dart)", "value": 1.0, "stops": 3, "expect": 1 },
+    { "name": "7 with three stops: clamped to the last", "value": 7, "stops": 3, "expect": 2 },
+    { "name": "-1: clamped to the first", "value": -1, "stops": 3, "expect": 0 },
+    { "name": "a fraction names no stop: the first", "value": 1.5, "stops": 3, "expect": 0 },
+    { "name": "the text \"1\" is not a number: the first stop", "value": "1", "stops": 3, "expect": 0 },
+    { "name": "a flag is not a number: the first stop", "value": true, "stops": 3, "expect": 0 },
+    { "name": "content that fits has one stop: every value shows it", "value": 2, "stops": 1, "expect": 0 },
+    { "name": "stops, not cards: six cards three in view are four stops, 5 shows the last", "value": 5, "stops": 4, "expect": 3 }
+  ],
+  "stopFollowCases": [
+    { "name": "the value changed 0 → 2: move to stop 2", "previous": 0, "next": 2, "stops": 3, "active": 0, "expect": 2 },
+    { "name": "no value → 1: move to stop 1", "next": 1, "stops": 3, "active": 0, "expect": 1 },
+    { "name": "1 → no value: back to the first stop", "previous": 1, "stops": 3, "active": 1, "expect": 0 },
+    { "name": "the person wrote 2 and the value became 2: the carousel is there already, no move", "previous": 0, "next": 2, "stops": 3, "active": 2, "expect": null },
+    { "name": "the value did not change (a refused write): the carousel stays where the person left it", "previous": 1, "next": 1, "stops": 3, "active": 2, "expect": null },
+    { "name": "1 and 1.0 are one number: no change", "previous": 1, "next": 1.0, "stops": 3, "active": 0, "expect": null },
+    { "name": "\"x\" → no value: both name no stop, no change", "previous": "x", "stops": 3, "active": 1, "expect": null },
+    { "name": "1 → 9 with three stops: the change moves to the last stop", "previous": 1, "next": 9, "stops": 3, "active": 1, "expect": 2 },
+    { "name": "7 → 9 with three stops while at the last stop: no move", "previous": 7, "next": 9, "stops": 3, "active": 2, "expect": null }
+  ],
+  "stopWriteCases": [
+    { "name": "a person settled on stop 1, no value: write 1", "settled": 1, "byPerson": true, "expect": 1 },
+    { "name": "a person settled on the first stop, no value: write 0 — the person chose it", "settled": 0, "byPerson": true, "expect": 0 },
+    { "name": "a person settled on the stop already held: not written again", "settled": 2, "byPerson": true, "current": 2, "expect": null },
+    { "name": "held as 2.0: the same number, not written again", "settled": 2, "byPerson": true, "current": 2.0, "expect": null },
+    { "name": "held as the text \"2\": not the same value, write the number 2", "settled": 2, "byPerson": true, "current": "2", "expect": 2 },
+    { "name": "the reader moved it (show, following the value): never written", "settled": 1, "byPerson": false, "expect": null },
+    { "name": "the value is out of range and the person settled on the last stop: write the stop", "settled": 2, "byPerson": true, "current": 7, "expect": 2 }
+  ],
+  "stopDocumentCases": [
+    { "name": "a scrolling row with a number path: published", "nodes": [{ "id": "row", "type": "Row", "props": { "scrollable": true, "carousel": { "stopPath": "account.cardIndex" } }, "children": [] }], "schema": true, "expect": [] },
+    { "name": "a data list in a row with a number path: published", "nodes": [{ "id": "list", "type": "Repeater", "props": { "source": "items", "item": "item", "direction": "row", "carousel": { "perView": 1, "stopPath": "account.cardIndex" } }, "children": [{ "id": "item", "type": "Text", "props": { "content": { "kind": "binding", "path": "item.name", "fallback": "Item" } } }] }], "schema": true, "expect": [] },
+    { "name": "a path the data contract does not know: unknown_binding_path", "nodes": [{ "id": "row", "type": "Row", "props": { "scrollable": true, "carousel": { "stopPath": "account.nowhere" } }, "children": [] }], "schema": true, "expect": ["unknown_binding_path"] },
+    { "name": "a text path: binding_type_mismatch — the stop is a number", "nodes": [{ "id": "row", "type": "Row", "props": { "scrollable": true, "carousel": { "stopPath": "account.period" } }, "children": [] }], "schema": true, "expect": ["binding_type_mismatch"] },
+    { "name": "a flag path: binding_type_mismatch", "nodes": [{ "id": "row", "type": "Row", "props": { "scrollable": true, "carousel": { "stopPath": "account.balanceHidden" } }, "children": [] }], "schema": true, "expect": ["binding_type_mismatch"] },
+    { "name": "a carousel with a path in the template of a list from data: input_inside_repeater — every row would write the same path", "nodes": [{ "id": "list", "type": "Repeater", "props": { "source": "items", "item": "item" }, "children": [{ "id": "row", "type": "Row", "props": { "scrollable": true, "carousel": { "stopPath": "account.cardIndex" } }, "children": [] }] }], "schema": true, "expect": ["input_inside_repeater"] },
+    { "name": "a path on a row that does not scroll: the carousel outside its host (invalid_document), the whole carousel is not read", "nodes": [{ "id": "row", "type": "Row", "props": { "scrollable": false, "carousel": { "stopPath": "account.cardIndex" } }, "children": [] }], "schema": true, "expect": ["invalid_document"] },
+    { "name": "an empty path: rejected by the schema", "nodes": [{ "id": "row", "type": "Row", "props": { "scrollable": true, "carousel": { "stopPath": "" } }, "children": [] }], "schema": false, "expect": [] },
+    { "name": "a path of 129 characters: rejected by the schema", "nodes": [{ "id": "row", "type": "Row", "props": { "scrollable": true, "carousel": { "stopPath": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa" } }, "children": [] }], "schema": false, "expect": [] },
+    { "name": "a path that is not a string: rejected by the schema", "nodes": [{ "id": "row", "type": "Row", "props": { "scrollable": true, "carousel": { "stopPath": 0 } }, "children": [] }], "schema": false, "expect": [] }
+  ],
+  "stopRunLayout": { "viewport": 320, "paddingStart": 16, "paddingEnd": 16, "gap": 12, "cards": [268, 268, 268], "stops": [0, 280, 540] },
+  "stopRunScreen": [
+    { "id": "row", "type": "Row", "props": { "scrollable": true, "gap": "sm", "carousel": { "perView": 1, "indicator": "none", "stopPath": "account.cardIndex" } }, "children": [
+      { "id": "card-0", "type": "Text", "props": { "content": { "kind": "literal", "value": "Debit" } } },
+      { "id": "card-1", "type": "Text", "props": { "content": { "kind": "literal", "value": "Credit" } } },
+      { "id": "card-2", "type": "Text", "props": { "content": { "kind": "literal", "value": "New" } } }
+    ] },
+    { "id": "dots", "type": "Row", "props": { "gap": "xs" }, "children": [
+      { "id": "dot-0", "type": "Container", "props": { "direction": "row", "gap": "none", "label": { "kind": "literal", "value": "Card 1" }, "action": { "type": "setValue", "params": { "path": "account.cardIndex", "value": "0", "valueType": "number" } } }, "children": [] },
+      { "id": "dot-1", "type": "Container", "props": { "direction": "row", "gap": "none", "label": { "kind": "literal", "value": "Card 2" }, "action": { "type": "setValue", "params": { "path": "account.cardIndex", "value": "1", "valueType": "number" } } }, "children": [] },
+      { "id": "dot-2", "type": "Container", "props": { "direction": "row", "gap": "none", "label": { "kind": "literal", "value": "Card 3" }, "action": { "type": "setValue", "params": { "path": "account.cardIndex", "value": "2", "valueType": "number" } } }, "children": [] }
+    ] },
+    { "id": "details-0", "type": "Text", "props": { "content": { "kind": "literal", "value": "Debit balance" } }, "visibleIf": { "path": "account.cardIndex", "op": "eq", "value": 0 } },
+    { "id": "details-1", "type": "Text", "props": { "content": { "kind": "literal", "value": "Credit limit" } }, "visibleIf": { "path": "account.cardIndex", "op": "eq", "value": 1 } },
+    { "id": "details-2", "type": "Text", "props": { "content": { "kind": "literal", "value": "Open a card" } }, "visibleIf": { "path": "account.cardIndex", "op": "eq", "value": 2 } }
+  ],
+  "stopRunCases": [
+    { "name": "show with no value: the first stop, nothing written, nothing moved", "steps": [], "log": [], "offset": 0, "behavior": null, "shown": [] },
+    { "name": "show with the value 2: starts at stop 2 without animation, nothing written", "session": { "account.cardIndex": 2 }, "steps": [], "log": [], "offset": 540, "behavior": "instant", "shown": ["details-2"] },
+    { "name": "show with 7 and three stops: clamped to the last stop", "session": { "account.cardIndex": 7 }, "steps": [], "log": [], "offset": 540, "behavior": "instant", "shown": [] },
+    { "name": "a swipe settles on stop 1: writes 1, the content of card 2 shows", "steps": [{ "swipe": [140, 280] }], "log": [["write", "account.cardIndex", 1]], "offset": 280, "behavior": null, "shown": ["details-1"] },
+    { "name": "a swipe away and back to the first stop with no value: writes 0", "steps": [{ "swipe": [280, 0] }], "log": [["write", "account.cardIndex", 0]], "offset": 0, "behavior": null, "shown": ["details-0"] },
+    { "name": "a swipe back to the stop already held: not written again", "session": { "account.cardIndex": 1 }, "steps": [{ "swipe": [540, 280] }], "log": [], "offset": 280, "behavior": "instant", "shown": ["details-1"] },
+    { "name": "the scroll pauses while the finger still holds the row: nothing written", "steps": ["hold", { "scroll": 280 }, "scrollend", "quiet"], "log": [], "offset": 280, "behavior": null, "shown": [] },
+    { "name": "released where the scroll already stands (no momentum, no scrollend): written after the quiet time", "steps": ["hold", { "scroll": 280 }, "release", "quiet"], "log": [["write", "account.cardIndex", 1]], "offset": 280, "behavior": null, "shown": ["details-1"] },
+    { "name": "a scroll by the wheel settles by quiet time: written", "steps": ["wheel", { "scroll": 540 }, "quiet"], "log": [["write", "account.cardIndex", 2]], "offset": 540, "behavior": null, "shown": ["details-2"] },
+    { "name": "an own dot writes 2: the carousel moves to stop 2 and does not write again", "steps": [{ "tap": "dot-2" }], "log": [["write", "account.cardIndex", 2]], "offset": 540, "behavior": "smooth", "shown": ["details-2"] },
+    { "name": "an own dot with reduced motion: the move is not animated", "reducedMotion": true, "steps": [{ "tap": "dot-1" }], "log": [["write", "account.cardIndex", 1]], "offset": 280, "behavior": "instant", "shown": ["details-1"] },
+    { "name": "a dot, then a swipe: the dot writes 2, the swipe writes 1", "steps": [{ "tap": "dot-2" }, { "swipe": [400, 280] }], "log": [["write", "account.cardIndex", 2], ["write", "account.cardIndex", 1]], "offset": 280, "behavior": "smooth", "shown": ["details-1"] },
+    { "name": "the dot of the shown card: the value is held, nothing written, nothing moved", "session": { "account.cardIndex": 1 }, "steps": [{ "tap": "dot-1" }], "log": [], "offset": 280, "behavior": "instant", "shown": ["details-1"] },
+    { "name": "a carousel without the field: a swipe writes nothing", "field": false, "steps": [{ "swipe": [280] }], "log": [], "offset": 280, "behavior": null, "shown": [] }
+  ],
+  "stopRuleCases": [
+    { "name": "the block refines the active stop of x-style.layout.carousel", "rule": "refines", "expect": ["x-style.layout.carousel.active"] },
+    { "name": "the field", "rule": "prop", "expect": "carousel.stopPath" },
+    { "name": "the path is a number path", "rule": "path.type", "expect": "number" },
+    { "name": "the path is a literal of the document", "rule": "path.is", "expect": "a-literal-of-the-document-never-read-from-data" },
+    { "name": "the value counts stops, not cards", "rule": "value.counts", "expect": "stops-of-x-style.layout.carousel.snap-not-cards" },
+    { "name": "written only after a person moved it and the scroll settled", "rule": "write.when", "expect": "a-person-moved-the-carousel-and-the-scroll-settled-on-a-stop-after-snapping" },
+    { "name": "the same number is not written again", "rule": "write.sameValue", "expect": "not-written-again-x-actions.write.sameValue.equality" },
+    { "name": "a change of the number moves the carousel, not a comparison at draw time", "rule": "read.change", "expect": "a-change-of-the-number-the-value-names-not-a-comparison-at-draw-time" },
+    { "name": "inside a list from data: not published", "rule": "insideRepeater", "expect": "not-published-every-row-would-write-the-same-path" }
   ]
 }
