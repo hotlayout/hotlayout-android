@@ -10,6 +10,26 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
+## [0.7.0] - Unreleased
+
+Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8.0).
+
+### Added
+
+- A node that fades in and out when its condition changes. A node with `visibilityTransition: fade` and a
+  `visibleIf` no longer appears and disappears at once: a node whose condition stops holding keeps its place and
+  fades out in 120 ms, then leaves the layout; a node whose condition starts to hold waits 120 ms out of the layout,
+  then enters it transparent and fades in over 160 ms. There is no pairing: every node follows its own timeline, so
+  two neighbours with exclusive conditions change the layout once, when both are invisible. A change in the middle of
+  a transition goes to the new goal from the current opacity, the time scaled by the distance; a node still waiting
+  stays hidden. A fading-out node catches no press and is not heard by the screen reader; a fading-in node is a
+  control from the moment it enters the layout. The durations and curves are the data of the contract.
+- Everything else stays at once: the first show of a screen, going back to a screen, a change of the language or of
+  the width class, a change under a covered screen, and a system whose animation scale is zero. The zones of the
+  screen follow the condition at once and do not read the field: a node with `pin` (bottom or top), a `NavBar`, a
+  `NavItem` and an `AppBar` that is the first child of the screen root; an `AppBar` anywhere else fades like any node.
+  A node inside a list template is not faded yet and follows its condition at once.
+
 ## [0.6.0] - Unreleased
 
 Reads document contract 9.32.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8.0).

@@ -1224,6 +1224,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -1956,6 +1959,13 @@
         "none"
       ]
     },
+    "NodeVisibilityTransition": {
+      "description": "When «visibleIf» changes on the shown screen (9.33.0): «fade» — the leaving node fades out in place, the appearing one fades in after it — «x-visibilityFade». No field — at once.",
+      "type": "string",
+      "enum": [
+        "fade"
+      ]
+    },
     "NodeName": {
       "description": "Editor-only name of the node in the document tree (9.29.0), like a layer name in a design tool: «Mission card» instead of «Container». Readers ignore it: it is not drawn, it is not part of the accessible name, it is not sent with events, and it is not translated. 1…80 code points after trimming the edges, not only spaces or invisible characters. Not on the screen root — the screen entry already names it. No field — the tree shows the widget name.",
       "type": "string",
@@ -2039,6 +2049,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -2301,6 +2314,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -2517,6 +2533,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -2685,6 +2704,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -2813,6 +2835,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -2920,6 +2945,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -3011,6 +3039,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -3097,6 +3128,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -3189,6 +3223,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -3361,6 +3398,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -3526,6 +3566,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -3620,6 +3663,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -3710,6 +3756,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -3920,6 +3969,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -4067,6 +4119,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -4514,6 +4569,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -4672,6 +4730,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -4799,6 +4860,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -5129,6 +5193,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -5325,6 +5392,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -5479,6 +5549,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -5581,6 +5654,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -5674,6 +5750,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -5770,6 +5849,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -6001,6 +6083,9 @@
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
         },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -6086,6 +6171,9 @@
         },
         "pressFeedback": {
           "$ref": "#/$defs/NodePressFeedback"
+        },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -6180,7 +6268,7 @@
   },
   "$id": "https://hotlayout.com/schema/ui-document.json",
   "title": "UiDocument",
-  "x-schemaVersion": "9.32.0",
+  "x-schemaVersion": "9.33.0",
   "x-compatibility": {
     "policy": {
       "majorMustMatch": true,
@@ -6519,7 +6607,8 @@
       "nodeName": "9.29.0",
       "longPressWrite": "9.30.0",
       "sheetSafeBottom": "9.31.0",
-      "carouselStop": "9.32.0"
+      "carouselStop": "9.32.0",
+      "visibilityFade": "9.33.0"
     }
   },
   "x-budget": {
@@ -11593,6 +11682,50 @@
     "builder": "the-preview-writes-and-follows-the-canvas-of-the-editor-neither",
     "olderReader": "skips-the-field-the-carousel-scrolls-nothing-is-written-and-it-starts-at-the-first-stop",
     "cases": "contract/fixtures/carousel/carousel-cases.json"
+  },
+  "x-visibilityFade": {
+    "field": "visibilityTransition",
+    "words": [
+      "fade"
+    ],
+    "value": "«fade» — the node fades when its «visibleIf» changes on the shown screen; no field — it appears and disappears at once",
+    "out": {
+      "durationMs": 120,
+      "curve": [
+        0.4,
+        0,
+        1,
+        1
+      ],
+      "when": "the condition of a shown node stops holding",
+      "layout": "the node keeps its place while it fades and leaves the layout when it ends"
+    },
+    "in": {
+      "durationMs": 160,
+      "curve": [
+        0,
+        0,
+        0.2,
+        1
+      ],
+      "delayMs": 120,
+      "when": "the condition of a hidden node starts to hold",
+      "layout": "the node waits «delayMs» out of the layout, then enters it with opacity 0 and fades in"
+    },
+    "pair": "no pairing: every node follows its own timeline; two neighbours with mutually exclusive conditions are both invisible at «delayMs» and the layout changes once, at that moment",
+    "interrupted": "a change during a transition goes to the new goal from the current opacity, the duration scaled by the distance (out × opacity, in × (1 − opacity)); a node still waiting out of the layout stays hidden",
+    "interaction": "a leaving node catches no press and leaves the accessibility tree at once; an entering node is a control from the moment it enters the layout",
+    "notTransition": [
+      "the first show of the screen",
+      "going back to a screen",
+      "a change of the language or of the width class («showOn»)",
+      "reduced motion",
+      "the editor canvas"
+    ],
+    "scope": "the box of the node with its subtree; the zones of the screen (app bar, pinned block, navigation bar) and the drawn navigation items follow the condition at once",
+    "notRead": "a node without «visibleIf», the first child of the screen root that is an AppBar, a pinned node, a NavBar and a NavItem",
+    "olderReader": "at once",
+    "cases": "contract/fixtures/visibility-fade/visibility-fade-cases.json"
   },
   "x-generatedFrom": "src/entities/component-schema — generated, do not edit by hand"
 }

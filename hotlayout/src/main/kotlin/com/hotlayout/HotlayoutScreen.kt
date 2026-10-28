@@ -52,6 +52,8 @@ import com.hotlayout.render.screen.AnatomyScreen
 import com.hotlayout.render.screen.LocalSafeAreaOverride
 import com.hotlayout.render.screen.SafeAreaOverride
 import com.hotlayout.render.screen.ScreenInsets
+import com.hotlayout.render.motion.VisibilityFadeBoard
+import com.hotlayout.render.motion.VisibilityFadeDriver
 import com.hotlayout.render.widgets.CarouselMemory
 import com.hotlayout.render.widgets.InputFocusRegistries
 import com.hotlayout.render.widgets.InputForm
@@ -147,15 +149,20 @@ public fun HotlayoutScreen(
     val deviceNow = remember(document.documentId) { System.currentTimeMillis() }
     val imagePolicy = rememberEquivalent(images, ::sameImagePolicy)
     val carousels = host.carousels
+    val fades = host.fades
     val frames = host.flow.stack
-    SideEffect { carousels.prune(frames.map { it.screenId }) }
+    SideEffect {
+        carousels.prune(frames.map { it.screenId })
+        fades.prune(frames.map { it.screenId })
+        fades.top = frames.size - 1
+    }
     // One class for the whole screen, from the box the host gave it (not the window, not the device): a page takes the class
     // of that box, a modal layer is always compact. The box changes with a rotation or a resize, and the tree is resolved again.
     BoxWithConstraints(modifier) {
         val areaWidth = maxWidth.value.toDouble()
         val setup = ScreenSetup(
             document, resolver, resolution, rightToLeft, data, host.session, timeZone, (now ?: deviceNow).toDouble(), imagePolicy, fonts,
-            host.sink, host::perform, host::write, host.shownSerial, host.focusRegistries, autofill, carousels, frames, WidthClass.of(areaWidth), labels.back,
+            host.sink, host::perform, host::write, host.shownSerial, host.focusRegistries, autofill, carousels, fades, frames, WidthClass.of(areaWidth), labels.back,
             clockPinned = now != null,
         )
         CompositionLocalProvider(
@@ -193,6 +200,7 @@ private class FlowHost(
     val sink: ReportSink,
     val focusRegistries: InputFocusRegistries,
     val carousels: CarouselMemory,
+    val fades: VisibilityFadeBoard,
     flowState: MutableState<Flow>,
     sessionState: MutableState<DataScope>,
     announcedState: MutableState<Boolean>,
@@ -297,7 +305,7 @@ private fun rememberFlowHost(
     val dataState = rememberUpdatedState(data)
     val writableState = rememberUpdatedState(writablePaths)
     return remember(id) {
-        FlowHost(ReportSink(), InputFocusRegistries(), CarouselMemory(), flow, session, announced, callbacksState, dataState, writableState)
+        FlowHost(ReportSink(), InputFocusRegistries(), CarouselMemory(), VisibilityFadeBoard(), flow, session, announced, callbacksState, dataState, writableState)
     }
 }
 
@@ -413,6 +421,7 @@ private data class ScreenSetup(
     val focusRegistries: InputFocusRegistries,
     val autofill: Boolean,
     val carousels: CarouselMemory,
+    val fades: VisibilityFadeBoard,
     val frames: List<FlowFrame>,
     /** The width class of the box the host gave the screen. */
     val areaClass: WidthClass,
@@ -447,6 +456,7 @@ private data class ScreenSetup(
             backLabel = backLabel,
             form = InputForm(InputOrder.fields(root, scope, widthClass), focusRegistries.of(screen.screenId), autofill),
             carousels = carousels,
+            fades = fades,
             listBudget = budget,
             frameIndex = frames.indexOfFirst { it === frame }.coerceAtLeast(0),
             widthClass = widthClass,
@@ -475,6 +485,7 @@ private fun ScreenRoot(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup
     val root = remember(screen.root, widthClass) { screen.root.inWidthClass(widthClass) }
     val context = remember(setup, screen, frame, root, widthClass) { setup.context(screen, frame, root, widthClass) }
     SideEffect { setup.reportBudget(screen, context.listBudget) }
+    VisibilityFadeDriver(root, context)
     AnatomyScreen(
         root, context, Modifier.testTag("screen:${screen.screenId}"),
         shrinks = asLayer, insets = if (asLayer) ScreenInsets() else null, sheetWindow = sheetWindow, sheet = sheet,

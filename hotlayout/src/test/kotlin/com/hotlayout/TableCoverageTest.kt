@@ -70,6 +70,8 @@ class TableCoverageTest {
             "motion/blurCases", "motion/glassCases",
             // Schema 9.31.0: the bottom safe inset of a sheet.
             "sheet-safe-bottom/placementCases", "sheet-safe-bottom/geometryCases", "sheet-safe-bottom/ruleCases",
+            // Schema 9.33.0: the fade of a node when its condition changes.
+            "visibility-fade/curveCases", "visibility-fade/timelineCases", "visibility-fade/pairCases", "visibility-fade/animateCases", "visibility-fade/fieldCases", "visibility-fade/screenCases",
             // Pictures: the proportion, the box, the file in the box, the radius, the circle.
             "media-chrome/ratioCases", "media-chrome/imageBoxCases", "media-chrome/paintCases", "media-chrome/radiusCases", "media-chrome/circleCases",
             "carousel/hostCases", "carousel/readCases", "carousel/cardCases", "carousel/stopCases", "carousel/activeCases",

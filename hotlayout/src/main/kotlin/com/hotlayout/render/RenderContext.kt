@@ -14,6 +14,8 @@ import com.hotlayout.model.DocumentNode
 import com.hotlayout.model.ReportSink
 import com.hotlayout.model.WidthClass
 import com.hotlayout.model.WidthRules
+import com.hotlayout.render.motion.VisibilityFadeBoard
+import com.hotlayout.render.motion.VisibilityFadeRules
 import com.hotlayout.render.widgets.CarouselMemory
 import com.hotlayout.render.widgets.ChoiceScope
 import com.hotlayout.render.widgets.InputForm
@@ -89,6 +91,8 @@ internal data class RenderContext(
     val form: InputForm? = null,
     /** What the carousels of the stack remember, the frame of the stack this screen is, and the indexes of the list instances the node stands in. */
     val carousels: CarouselMemory? = null,
+    /** The fades of the nodes of the screens in the stack; `null` outside a screen (a node then follows its condition at once). */
+    val fades: VisibilityFadeBoard? = null,
     val frameIndex: Int = 0,
     val instancePath: List<Int> = emptyList(),
     /** The list budget of the screen being drawn (`x-listBudget`); `null` outside a screen: a list then draws every record it would. */
@@ -110,7 +114,19 @@ internal data class RenderContext(
      * Whether a node is shown: the ONE place that answers it. The width class lists it (`showOn`) AND its
      * condition holds now; the two are independent. A widget never asks either alone.
      */
-    fun isShown(node: DocumentNode, scope: DataScope = this.scope): Boolean = WidthRules.isShown(node, widthClass, scope)
+    fun isShown(node: DocumentNode, scope: DataScope = this.scope): Boolean {
+        val condition = WidthRules.isShown(node, widthClass, scope)
+        val key = fadeKey(node)
+        // A node that fades keeps its place while it fades out and takes it only after the wait (`visibilityTransition`).
+        return if (key == null || scope !== this.scope) condition else fades!!.inLayout(key, condition, fadeSignature)
+    }
+
+    /** The key of the fade of a node of this screen, or `null` when the node does not fade here (not the field, a zone of the screen, a list template). */
+    fun fadeKey(node: DocumentNode): String? =
+        if (fades != null && instances.isEmpty() && VisibilityFadeRules.reads(node, screenRoot)) VisibilityFadeBoard.key(frameIndex, screenId, node.id) else null
+
+    /** What a fade was made for: a change of the language or of the width class puts a node at rest at once. */
+    val fadeSignature: String get() = "${locale.translation}|$widthClass"
 
     fun press(action: JsonObject, node: DocumentNode) {
         run(action, node)

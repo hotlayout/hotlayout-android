@@ -1,0 +1,156 @@
+{
+  "about": "Fade of a node when its visibleIf changes on the shown screen (schema 9.33.0, x-visibilityFade). Times are milliseconds from the first change; opacity is compared within 0.001. The reader takes the durations and curves from x-visibilityFade: out 120 ms cubic-bezier(0.4, 0, 1, 1), in 160 ms cubic-bezier(0, 0, 0.2, 1) after a wait of 120 ms out of the layout.",
+  "curveNote": "Each curve maps the share of time x to the share of the way y; the reader evaluates the cubic Bezier through (0,0) and (1,1). Values are computed independently with bisection on the curve parameter.",
+  "curveCases": [
+    { "name": "out at the start", "curve": "out", "x": 0, "y": 0 },
+    { "name": "out at a quarter", "curve": "out", "x": 0.25, "y": 0.0986 },
+    { "name": "out at half", "curve": "out", "x": 0.5, "y": 0.3248 },
+    { "name": "out at three quarters", "curve": "out", "x": 0.75, "y": 0.6301 },
+    { "name": "out at the end", "curve": "out", "x": 1, "y": 1 },
+    { "name": "in at the start", "curve": "in", "x": 0, "y": 0 },
+    { "name": "in at a quarter", "curve": "in", "x": 0.25, "y": 0.5776 },
+    { "name": "in at half", "curve": "in", "x": 0.5, "y": 0.8392 },
+    { "name": "in at three quarters", "curve": "in", "x": 0.75, "y": 0.9642 },
+    { "name": "in at the end", "curve": "in", "x": 1, "y": 1 },
+    { "name": "below zero is the start", "curve": "in", "x": -0.5, "y": 0 },
+    { "name": "past one is the end", "curve": "out", "x": 1.5, "y": 1 }
+  ],
+  "timelineNote": "A node starts at rest («shown» true or false), its condition changes at the listed moments, and the frame is probed at «at». Phases: shown, leaving, hidden, waiting, entering. «interactive» — it catches presses and is heard by a screen reader.",
+  "timelineCases": [
+    {
+      "name": "a shown node fades out in place and then leaves the layout",
+      "shown": true,
+      "changes": [{ "at": 0, "shown": false }],
+      "probes": [
+        { "at": 0, "phase": "leaving", "inLayout": true, "opacity": 1, "interactive": false },
+        { "at": 30, "phase": "leaving", "inLayout": true, "opacity": 0.9014, "interactive": false },
+        { "at": 60, "phase": "leaving", "inLayout": true, "opacity": 0.6752, "interactive": false },
+        { "at": 90, "phase": "leaving", "inLayout": true, "opacity": 0.3699, "interactive": false },
+        { "at": 119, "phase": "leaving", "inLayout": true, "opacity": 0.0137, "interactive": false },
+        { "at": 120, "phase": "hidden", "inLayout": false, "opacity": 0, "interactive": false },
+        { "at": 1000, "phase": "hidden", "inLayout": false, "opacity": 0, "interactive": false }
+      ]
+    },
+    {
+      "name": "a hidden node waits out of the layout, then enters it transparent and fades in",
+      "shown": false,
+      "changes": [{ "at": 0, "shown": true }],
+      "probes": [
+        { "at": 0, "phase": "waiting", "inLayout": false, "opacity": 0, "interactive": false },
+        { "at": 119, "phase": "waiting", "inLayout": false, "opacity": 0, "interactive": false },
+        { "at": 120, "phase": "entering", "inLayout": true, "opacity": 0, "interactive": true },
+        { "at": 160, "phase": "entering", "inLayout": true, "opacity": 0.5776, "interactive": true },
+        { "at": 200, "phase": "entering", "inLayout": true, "opacity": 0.8392, "interactive": true },
+        { "at": 240, "phase": "entering", "inLayout": true, "opacity": 0.9642, "interactive": true },
+        { "at": 280, "phase": "shown", "inLayout": true, "opacity": 1, "interactive": true }
+      ]
+    },
+    {
+      "name": "the condition turns back while fading out: it fades in from the current opacity, the time scaled by the distance",
+      "shown": true,
+      "changes": [{ "at": 0, "shown": false }, { "at": 60, "shown": true }],
+      "probes": [
+        { "at": 60, "phase": "entering", "inLayout": true, "opacity": 0.6752, "interactive": true },
+        { "at": 85.985, "phase": "entering", "inLayout": true, "opacity": 0.9478, "interactive": true },
+        { "at": 112, "phase": "shown", "inLayout": true, "opacity": 1, "interactive": true }
+      ]
+    },
+    {
+      "name": "the condition turns back while waiting: the node stays hidden and nothing is seen",
+      "shown": false,
+      "changes": [{ "at": 0, "shown": true }, { "at": 60, "shown": false }],
+      "probes": [
+        { "at": 60, "phase": "hidden", "inLayout": false, "opacity": 0, "interactive": false },
+        { "at": 120, "phase": "hidden", "inLayout": false, "opacity": 0, "interactive": false },
+        { "at": 400, "phase": "hidden", "inLayout": false, "opacity": 0, "interactive": false }
+      ]
+    },
+    {
+      "name": "the condition turns back while fading in: it fades out from the current opacity, the time scaled by the opacity",
+      "shown": false,
+      "changes": [{ "at": 0, "shown": true }, { "at": 200, "shown": false }],
+      "probes": [
+        { "at": 200, "phase": "leaving", "inLayout": true, "opacity": 0.8392, "interactive": false },
+        { "at": 250.355, "phase": "leaving", "inLayout": true, "opacity": 0.5667, "interactive": false },
+        { "at": 301, "phase": "hidden", "inLayout": false, "opacity": 0, "interactive": false }
+      ]
+    },
+    {
+      "name": "the same value again changes nothing",
+      "shown": true,
+      "changes": [{ "at": 0, "shown": true }],
+      "probes": [{ "at": 0, "phase": "shown", "inLayout": true, "opacity": 1, "interactive": true }]
+    },
+    {
+      "name": "hidden again while fading out keeps the running fade",
+      "shown": true,
+      "changes": [{ "at": 0, "shown": false }, { "at": 60, "shown": false }],
+      "probes": [
+        { "at": 90, "phase": "leaving", "inLayout": true, "opacity": 0.3699, "interactive": false },
+        { "at": 120, "phase": "hidden", "inLayout": false, "opacity": 0, "interactive": false }
+      ]
+    },
+    {
+      "name": "shown again while waiting keeps the running wait",
+      "shown": false,
+      "changes": [{ "at": 0, "shown": true }, { "at": 60, "shown": true }],
+      "probes": [
+        { "at": 100, "phase": "waiting", "inLayout": false, "opacity": 0, "interactive": false },
+        { "at": 120, "phase": "entering", "inLayout": true, "opacity": 0, "interactive": true }
+      ]
+    },
+    {
+      "name": "a full round trip comes back to rest",
+      "shown": true,
+      "changes": [{ "at": 0, "shown": false }, { "at": 500, "shown": true }],
+      "probes": [
+        { "at": 499, "phase": "hidden", "inLayout": false, "opacity": 0, "interactive": false },
+        { "at": 500, "phase": "waiting", "inLayout": false, "opacity": 0, "interactive": false },
+        { "at": 780, "phase": "shown", "inLayout": true, "opacity": 1, "interactive": true }
+      ]
+    }
+  ],
+  "pairNote": "Two neighbours with mutually exclusive conditions change at the same moment. At no probe are both in the layout, and the layout changes once: the leaving one goes out and the appearing one comes in at the same moment.",
+  "pairCases": [
+    { "name": "one leaves, the other appears", "leaving": { "shown": true }, "appearing": { "shown": false }, "at": 0, "layoutChangesAt": 120, "probes": [0, 60, 119, 120, 121, 200, 280, 400] },
+    { "name": "the pair swaps again before the end: the first one comes back and the second never enters", "leaving": { "shown": true }, "appearing": { "shown": false }, "at": 0, "back": 60, "layoutChangesAt": null, "probes": [0, 60, 100, 120, 200, 400] }
+  ],
+  "animateNote": "A change that is not a transition — the first show, going back, the language or the width class changed, reduced motion, the editor canvas, a node without the field — puts the node at rest of the new value at once.",
+  "animateCases": [
+    { "name": "at once to hidden", "shown": true, "to": false, "phase": "hidden", "inLayout": false, "opacity": 0 },
+    { "name": "at once to shown", "shown": false, "to": true, "phase": "shown", "inLayout": true, "opacity": 1 },
+    { "name": "at once in the middle of a fade out", "shown": true, "midway": { "at": 60, "shown": false }, "to": true, "phase": "shown", "inLayout": true, "opacity": 1 },
+    { "name": "at once in the middle of a wait", "shown": false, "midway": { "at": 60, "shown": true }, "to": false, "phase": "hidden", "inLayout": false, "opacity": 0 }
+  ],
+  "fieldNote": "How the reader reads the field: only the word «fade»; anything else is no field.",
+  "fieldCases": [
+    { "name": "fade", "value": "fade", "reads": "fade" },
+    { "name": "no field", "reads": null },
+    { "name": "an unknown word", "value": "slide", "reads": null },
+    { "name": "not a string", "value": true, "reads": null },
+    { "name": "upper case", "value": "Fade", "reads": null }
+  ],
+  "documentNote": "Documents: «schema» — what Zod and the JSON Schema accept; «publishes» — what the builder lets through (the validator code otherwise).",
+  "documentCases": [
+    { "name": "a text with a condition and the field", "node": { "type": "Text", "visibleIf": true, "visibilityTransition": "fade" }, "schema": true, "publishes": true },
+    { "name": "a container with a condition and the field", "node": { "type": "Container", "visibleIf": true, "visibilityTransition": "fade" }, "schema": true, "publishes": true },
+    { "name": "an unknown word", "node": { "type": "Text", "visibleIf": true, "visibilityTransition": "slide" }, "schema": false },
+    { "name": "not a string", "node": { "type": "Text", "visibleIf": true, "visibilityTransition": true }, "schema": false },
+    { "name": "the field without a condition", "node": { "type": "Text", "visibilityTransition": "fade" }, "schema": true, "publishes": false, "code": "visibility_transition_not_read" },
+    { "name": "a pinned node", "node": { "type": "Button", "visibleIf": true, "pin": "bottom", "visibilityTransition": "fade" }, "schema": true, "publishes": false, "code": "visibility_transition_not_read" },
+    { "name": "an app bar of the screen", "node": { "type": "AppBar", "visibleIf": true, "visibilityTransition": "fade", "first": true }, "schema": true, "publishes": false, "code": "visibility_transition_not_read" },
+    { "name": "the screen root has no such field", "root": true, "schema": false }
+  ],
+  "screenNote": "The real finished screen of the frame visibility-fade-screens.json: a press on the dot of the second card writes 1 to account.cardIndex; the heading and the details of the first card fade out, those of the second wait and fade in. Phases are read from the attributes of the nodes, not from pixels.",
+  "screenCases": [
+    {
+      "name": "the second card",
+      "press": "dot-1",
+      "probes": [
+        { "at": 0, "leaving": ["heading-debit", "details-debit"], "waiting": ["heading-credit", "details-credit"], "hidden": ["heading-new", "details-new"] },
+        { "at": 121, "entering": ["heading-credit", "details-credit"], "hidden": ["heading-debit", "details-debit", "heading-new", "details-new"] },
+        { "at": 400, "shown": ["heading-credit", "details-credit"], "hidden": ["heading-debit", "details-debit", "heading-new", "details-new"] }
+      ]
+    }
+  ]
+}

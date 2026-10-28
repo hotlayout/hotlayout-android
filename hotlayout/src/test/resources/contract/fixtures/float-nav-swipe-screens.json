@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "9.32.0",
+  "schemaVersion": "9.33.0",
   "documentId": "float-nav-swipe",
   "name": "Floating bar, dot, swipe and dashes",
   "initialScreenId": "home",

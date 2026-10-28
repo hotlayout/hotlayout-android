@@ -67,7 +67,8 @@ internal fun NodeView(
     val box = if (node.widget in WidgetType.roleSurfaces) outerOfRole(look) else look
     val press = PressTarget.press(node)
     val long = PressTarget.longPress(node)
-    val outerBase = modifier.then(look.margin.paddingModifier())
+    val fade = context.fadeKey(node)?.let { context.fades?.modifierFor(it, node.id) } ?: Modifier
+    val outerBase = modifier.then(fade).then(look.margin.paddingModifier())
     val named = box.width != null || box.height != null
     // A role surface (button) fills the minimum its box names: the limits of the box do not reach the surface inside.
     val fillsMinimum = node.widget in WidgetType.roleSurfaces && (box.minWidth != null || box.minHeight != null)

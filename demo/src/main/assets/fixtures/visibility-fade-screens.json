@@ -1,0 +1,650 @@
+{
+  "schemaVersion": "9.33.0",
+  "documentId": "visibility-fade",
+  "name": "Fade on condition",
+  "initialScreenId": "cards",
+  "screens": [
+    {
+      "screenId": "cards",
+      "name": "Cards",
+      "root": {
+        "id": "fade-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "heading-debit",
+            "type": "Column",
+            "props": {
+              "gap": "none",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "heading-debit-name",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Debit card"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "heading-debit-balance",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "₴12 400.50"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              }
+            ],
+            "visibleIf": {
+              "path": "account.cardIndex",
+              "op": "eq",
+              "value": 0
+            },
+            "visibilityTransition": "fade"
+          },
+          {
+            "id": "heading-credit",
+            "type": "Column",
+            "props": {
+              "gap": "none",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "heading-credit-name",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Credit card"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "heading-credit-balance",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "₴48 000.00 limit"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              }
+            ],
+            "visibleIf": {
+              "path": "account.cardIndex",
+              "op": "eq",
+              "value": 1
+            },
+            "visibilityTransition": "fade"
+          },
+          {
+            "id": "heading-new",
+            "type": "Column",
+            "props": {
+              "gap": "none",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "heading-new-name",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "New card"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "heading-new-balance",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "No balance yet"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleM"
+                }
+              }
+            ],
+            "visibleIf": {
+              "path": "account.cardIndex",
+              "op": "eq",
+              "value": 2
+            },
+            "visibilityTransition": "fade"
+          },
+          {
+            "id": "cards",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": true,
+              "carousel": {
+                "perView": 1,
+                "peek": "lg",
+                "indicator": "none",
+                "stopPath": "account.cardIndex"
+              }
+            },
+            "children": [
+              {
+                "id": "card-debit",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "lg",
+                  "radius": "lg",
+                  "minHeight": 140,
+                  "background": {
+                    "kind": "color",
+                    "color": "primary"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "card-debit-number",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "•••• 4417"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "bodyM",
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "card-credit",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "lg",
+                  "radius": "lg",
+                  "minHeight": 140,
+                  "background": {
+                    "kind": "color",
+                    "color": "accent"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "card-credit-number",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "•••• 9032"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "bodyM",
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "card-new",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "lg",
+                  "radius": "lg",
+                  "minHeight": 140,
+                  "background": {
+                    "kind": "color",
+                    "color": "success"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "card-new-number",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Free in 2 minutes"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "bodyM",
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "dots",
+            "type": "Row",
+            "props": {
+              "gap": "xs",
+              "align": "center",
+              "justify": "center",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "dot-0",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "none",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Card 1"
+                  },
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "account.cardIndex",
+                      "value": "0",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "width": 8,
+                  "height": 8,
+                  "radius": "pill",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "primary",
+                      "opacity": 0.3
+                    }
+                  }
+                },
+                "children": [],
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "account.cardIndex",
+                      "op": "eq",
+                      "value": 0
+                    },
+                    "style": {
+                      "width": 24,
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "dot-1",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "none",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Card 2"
+                  },
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "account.cardIndex",
+                      "value": "1",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "width": 8,
+                  "height": 8,
+                  "radius": "pill",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "primary",
+                      "opacity": 0.3
+                    }
+                  }
+                },
+                "children": [],
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "account.cardIndex",
+                      "op": "eq",
+                      "value": 1
+                    },
+                    "style": {
+                      "width": 24,
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "dot-2",
+                "type": "Container",
+                "props": {
+                  "direction": "row",
+                  "gap": "none",
+                  "label": {
+                    "kind": "literal",
+                    "value": "Card 3"
+                  },
+                  "action": {
+                    "type": "setValue",
+                    "params": {
+                      "path": "account.cardIndex",
+                      "value": "2",
+                      "valueType": "number"
+                    }
+                  }
+                },
+                "style": {
+                  "width": 8,
+                  "height": 8,
+                  "radius": "pill",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "token": "primary",
+                      "opacity": 0.3
+                    }
+                  }
+                },
+                "children": [],
+                "styleWhen": [
+                  {
+                    "when": {
+                      "path": "account.cardIndex",
+                      "op": "eq",
+                      "value": 2
+                    },
+                    "style": {
+                      "width": 24,
+                      "background": {
+                        "kind": "color",
+                        "color": "primary"
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "details-debit",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "details-debit-caption",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Last payment"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "details-debit-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Coffee · −₴85"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyM"
+                }
+              }
+            ],
+            "visibleIf": {
+              "path": "account.cardIndex",
+              "op": "eq",
+              "value": 0
+            },
+            "visibilityTransition": "fade"
+          },
+          {
+            "id": "details-credit",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "details-credit-caption",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Last payment"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "details-credit-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Tickets · −₴1 250"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyM"
+                }
+              }
+            ],
+            "visibleIf": {
+              "path": "account.cardIndex",
+              "op": "eq",
+              "value": 1
+            },
+            "visibilityTransition": "fade"
+          },
+          {
+            "id": "details-new",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs"
+            },
+            "style": {
+              "padding": "lg",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              },
+              "shadow": "low"
+            },
+            "children": [
+              {
+                "id": "details-new-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Open a card to start"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyM"
+                }
+              }
+            ],
+            "visibleIf": {
+              "path": "account.cardIndex",
+              "op": "eq",
+              "value": 2
+            },
+            "visibilityTransition": "fade"
+          },
+          {
+            "id": "fade-footer",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "All cards"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS",
+              "color": "muted"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "cards/heading-debit-name/content": "Дебетова картка",
+        "cards/heading-debit-balance/content": "₴12 400,50",
+        "cards/heading-credit-name/content": "Кредитна картка",
+        "cards/heading-credit-balance/content": "ліміт ₴48 000,00",
+        "cards/heading-new-name/content": "Нова картка",
+        "cards/heading-new-balance/content": "Балансу ще немає",
+        "cards/card-debit-number/content": "•••• 4417",
+        "cards/card-credit-number/content": "•••• 9032",
+        "cards/card-new-number/content": "Безкоштовно за 2 хвилини",
+        "cards/dot-0/label": "Картка 1",
+        "cards/dot-1/label": "Картка 2",
+        "cards/dot-2/label": "Картка 3",
+        "cards/details-debit-caption/content": "Останній платіж",
+        "cards/details-debit-note/content": "Кава · −₴85",
+        "cards/details-credit-caption/content": "Останній платіж",
+        "cards/details-credit-note/content": "Квитки · −₴1 250",
+        "cards/details-new-note/content": "Відкрийте картку, щоб почати",
+        "cards/fade-footer/content": "Усі картки"
+      }
+    }
+  }
+}
