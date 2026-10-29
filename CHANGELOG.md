@@ -12,7 +12,19 @@ is stated in every entry.
 
 ## [0.7.1] - Unreleased
 
-Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8.0).
+Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8.0) and placement map 1.1.0.
+
+### Added
+
+- Placement schedule (placement map 1.1.0). A place may carry windows of time in which another document, or nothing
+  (a pause), stands in it instead of its permanent content. `HotlayoutPlacement` reads the place against the clock of
+  its `PlacementSource`, sets a timer at the next boundary of the schedule (cut to 2^31 - 1 ms and counted again at its
+  end) and decides again there, on every new reading of the map, and when the app returns to the foreground; the map
+  is not asked again at a boundary. `loadPlacement` reads the place at the same clock. `PlacementSource` has a new last
+  parameter `clock: () -> Long` (milliseconds since the epoch; the device clock by default) to pin time in tests. A
+  broken window is skipped on its own, a pause never reads its entry, overlapping windows go to the one that started
+  later. Every row of the `scheduleCases` group of `placements/placement-cases.json` is run. The README shows how a
+  host hides its own padding around a place that is empty.
 
 ### Fixed
 

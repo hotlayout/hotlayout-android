@@ -188,6 +188,49 @@ class PlacementCasesTest {
         }
     }
 
+    @Test fun scheduleCases() {
+        val rows = Contract.rows(table, "scheduleCases")
+        assertEquals(37, rows.size)
+        var checks = 0
+        for (row in rows) {
+            val read = row["text"]?.string?.let { PlacementRules.readMapText(it) }
+                ?: PlacementRules.readMap(row["json"] ?: error("${row.name()}: no json and no text"))
+            for (check in row["checks"]?.array.orEmpty().mapNotNull { it.obj }) {
+                val place = check["place"]?.string!!
+                val nowText = check["now"]?.string!!
+                val now = PlacementRules.instantMs(nowText) ?: error("${row.name()}: «$nowText» is no instant")
+                val label = "${row.name()} @ $nowText"
+                val actual = PlacementRules.resolveAt(read, place, now)
+                assertEquals("status: $label", check["status"]?.string, actual.status.name.replaceFirstChar { it.lowercase() })
+                assertEquals("documentId: $label", check["documentId"]?.string, actual.documentId)
+                assertEquals("entry: $label", check["entry"]?.string, actual.entry)
+                val next = check["next"]?.string?.let { PlacementRules.instantMs(it) ?: error("${row.name()}: «$it» is no instant") }
+                assertEquals("next: $label", next, PlacementRules.nextBoundary(read, place, now))
+                checks++
+            }
+        }
+        assertEquals(89, checks)
+    }
+
+    @Test fun anInstantIsTheContractFormOnly() {
+        assertEquals(1_798_761_600_000L, PlacementRules.instantMs("2027-01-01T00:00:00Z"))
+        assertEquals(951_868_800_000L, PlacementRules.instantMs("2000-03-01T00:00:00Z"))
+        for (bad in listOf("2026-02-29T00:00:00Z", "2026-06-31T00:00:00Z", "2026-13-01T00:00:00Z", "2026-01-01T24:00:00Z", "2026-01-01T00:00:00z",
+            "2026-01-01T00:00:00+02:00", "2026-01-01T00:00:00.5Z", "2026-01-01 00:00:00Z", "2100-01-01T00:00:00Z", "1999-12-31T23:59:59Z", " 2026-01-01T00:00:00Z", "2026-01-01T00:00:00Z\n")) {
+            assertEquals("«$bad»", null, PlacementRules.instantMs(bad))
+        }
+        assertTrue(PlacementRules.instantMs("2028-02-29T12:00:00Z") != null)
+        assertEquals(null, PlacementRules.instantMs("2100-02-29T00:00:00Z"))
+    }
+
+    @Test fun aTimerIsNeverNegativeAndNeverAboveWhatItCanHold() {
+        assertEquals(0L, PlacementRules.timerDelayMs(1_000, 5_000))
+        assertEquals(4_000L, PlacementRules.timerDelayMs(5_000, 1_000))
+        assertEquals(PlacementRules.MAX_TIMER_MS, PlacementRules.timerDelayMs(Long.MAX_VALUE, 0))
+        assertEquals(PlacementRules.MAX_TIMER_MS, PlacementRules.timerDelayMs(PlacementRules.MAX_TIMER_MS + 1, 0))
+        assertEquals(PlacementRules.MAX_TIMER_MS - 1, PlacementRules.timerDelayMs(PlacementRules.MAX_TIMER_MS, 1))
+    }
+
     @Test fun hostileNames() {
         val map = PlacementRules.readMapText("""{"placementsVersion":"1.0.0","placements":{"constructor":{"documentId":"d1"},"home.banner":{"documentId":"d2"}}}""")
         for (name in listOf("__proto__", "toString", "hashCode", "home.banner\n", "home.banner ", "HOME.banner", "home..banner", "..", "a/b", "../home.banner", "home.banner\u0000", "ｈome", "x".repeat(65), "a.".repeat(40) + "b")) {
@@ -222,6 +265,29 @@ class PlacementMirrorTest {
         assertEquals(limits["documentId"]?.get("pattern")?.string, PlacementRules.DOCUMENT_ID_PATTERN)
         assertEquals(limits["entry"]?.get("pattern")?.string, PlacementRules.ENTRY_PATTERN)
         assertEquals(limits["entry"]?.get("maxLength")?.number, PlacementRules.ENTRY_MAX.toDouble())
+    }
+
+    @Test fun theScheduleBlockIsTheOneTheReaderImplements() {
+        val schedule = artifact["x-placementSchedule"]!!
+        assertEquals(PlacementRules.INSTANT_PATTERN, schedule["instant"]?.get("pattern")?.string)
+        assertEquals("UTC", schedule["instant"]?.get("zone")?.string)
+        assertEquals("second", schedule["instant"]?.get("precision")?.string)
+        assertEquals("included", schedule["window"]?.get("from")?.string)
+        assertEquals("excluded", schedule["window"]?.get("until")?.string)
+        assertEquals(
+            mapOf(
+                "notAnArray" to "no-schedule", "brokenItem" to "skip", "emptyWindow" to "skip", "nullDocument" to "pause-empty",
+                "pauseEntry" to "ignore", "nullEntry" to "absent", "brokenPermanent" to "unreadable",
+                "overlap" to "latest-from-then-lowest-index", "unknownFields" to "ignore",
+            ),
+            schedule["reading"]?.obj?.associate { it.first to it.second.string },
+        )
+        assertEquals("active-scheduled-else-permanent", schedule["resolve"]?.string)
+        assertEquals("device", schedule["clock"]?.string)
+        assertEquals("earliest-edge-after-now", schedule["nextBoundary"]?.string)
+        assertEquals(listOf("next-boundary", "map-read", "app-foreground"), schedule["recompute"]?.array.orEmpty().mapNotNull { it.string })
+        assertEquals(PlacementRules.MAX_TIMER_MS.toDouble(), schedule["maxTimerMs"]?.number)
+        assertEquals("permanent-only", schedule["olderReaders"]?.string)
     }
 
     /** The words this reader implements; a new or changed word in the artifact fails here until the reader is looked at. */

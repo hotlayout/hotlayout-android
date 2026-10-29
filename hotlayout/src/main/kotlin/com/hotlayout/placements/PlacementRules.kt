@@ -11,7 +11,7 @@ import com.hotlayout.JsonValue
  */
 internal object PlacementRules {
     /** The version of the placement contract this reader is written against. */
-    const val CONTRACT_VERSION = "1.0.0"
+    const val CONTRACT_VERSION = "1.1.0"
 
     /** `MAJOR.MINOR.PATCH` without leading zeros, as the contract writes it; the major stays text so no number overflows. */
     private val VERSION = Regex("^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$")
@@ -173,6 +173,87 @@ internal object PlacementRules {
         val name = entry.string?.takeIf { it.length <= ENTRY_MAX && ENTRY.matches(it) } ?: return UNREADABLE
         return Resolution(Status.Document, documentId, name)
     }
+
+    /**
+     * An instant of the schedule is `YYYY-MM-DDTHH:MM:SSZ`: UTC, whole seconds, years 2000 to 2099, a real date only.
+     * The pattern is checked first, then the milliseconds are counted from its parts, so a date the calendar
+     * does not have is never carried over to the next month.
+     */
+    const val INSTANT_PATTERN =
+        "^(?:20\\d{2}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|02-(?:0[1-9]|1\\d|2[0-8]))" +
+            "|20(?:[02468][048]|[13579][26])-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$"
+    private val INSTANT = Regex(INSTANT_PATTERN)
+
+    /** The longest delay a timer is given; a longer wait is cut and counted again at its end. */
+    const val MAX_TIMER_MS = 2_147_483_647L
+
+    /** Milliseconds since the epoch for an instant of the contract form; `null` for anything else. */
+    fun instantMs(value: String): Long? {
+        if (!INSTANT.matches(value)) return null
+        val p = value.split('-', 'T', ':', 'Z').filter { it.isNotEmpty() }.map { it.toInt() }
+        return java.time.LocalDateTime.of(p[0], p[1], p[2], p[3], p[4], p[5]).toEpochSecond(java.time.ZoneOffset.UTC) * 1000
+    }
+
+    /** A window of the schedule after a tolerant read. A `null` [documentId] is a pause: the place is empty for the window. */
+    private class Scheduled(val documentId: String?, val entry: String?, val from: Long, val until: Long)
+
+    private fun readEntry(value: JsonValue?): Pair<Boolean, String?> {
+        if (value == null || value.isNull) return true to null
+        val name = value.string?.takeIf { it.length <= ENTRY_MAX && ENTRY.matches(it) } ?: return false to null
+        return true to name
+    }
+
+    /** One window; `null` when it is broken and must be skipped whole. */
+    private fun readScheduled(value: JsonValue): Scheduled? {
+        val item = value.obj ?: return null
+        val id = item["documentId"] ?: return null
+        val documentId = if (id.isNull) null else id.string?.takeIf { isDocumentId(it) } ?: return null
+        // A pause never reads its entry, not even a broken one.
+        val (valid, entry) = if (documentId == null) true to null else readEntry(item["entry"])
+        val from = item["from"]?.string?.let { instantMs(it) }
+        val until = item["until"]?.string?.let { instantMs(it) }
+        if (!valid || from == null || until == null || until <= from) return null
+        return Scheduled(documentId, entry, from, until)
+    }
+
+    /** The readable windows of a place entry, in the order of the array; a schedule that is no array is none. */
+    private fun readSchedule(place: JsonValue?): List<Scheduled> =
+        place?.obj?.get("schedule")?.array.orEmpty().mapNotNull { readScheduled(it) }
+
+    /** The windows of the place [name]; `null` when the place has no readable permanent content. */
+    private fun scheduleOf(map: MapRead, name: String): List<Scheduled>? {
+        if (map !is MapRead.Map) return null
+        val base = resolve(map, name)
+        if (base.status == Status.Unknown || base.status == Status.Unreadable) return null
+        return readSchedule(map.places[name])
+    }
+
+    /**
+     * What stands in the place [name] at the instant [nowMs]: the window that lasts (`from` included, `until`
+     * excluded), otherwise the permanent content. When windows overlap the one that started LATER wins; at an equal
+     * `from`, the earlier one in the array. Without a schedule it is [resolve].
+     */
+    fun resolveAt(map: MapRead, name: String, nowMs: Long): Resolution {
+        val base = resolve(map, name)
+        val schedule = scheduleOf(map, name) ?: return base
+        var winner: Scheduled? = null
+        for (item in schedule) {
+            if (item.from > nowMs || nowMs >= item.until) continue
+            if (winner == null || item.from > winner.from) winner = item
+        }
+        if (winner == null) return base
+        return if (winner.documentId == null) Resolution(Status.Empty) else Resolution(Status.Document, winner.documentId, winner.entry)
+    }
+
+    /**
+     * The earliest instant after [nowMs] at which [resolveAt] MAY give another answer: the smallest `from` or
+     * `until` of a readable window later than [nowMs]. `null`: the schedule changes nothing any more.
+     */
+    fun nextBoundary(map: MapRead, name: String, nowMs: Long): Long? =
+        scheduleOf(map, name).orEmpty().flatMap { listOf(it.from, it.until) }.filter { it > nowMs }.minOrNull()
+
+    /** How long to wait for [boundary] when the clock shows [nowMs]: not negative, cut to what a timer can hold. */
+    fun timerDelayMs(boundary: Long, nowMs: Long): Long = (boundary - nowMs).coerceIn(0L, MAX_TIMER_MS)
 
     /** What the network said about the map file. */
     sealed class Network {

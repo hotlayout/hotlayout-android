@@ -80,7 +80,7 @@ class TableCoverageTest {
             // Adaptive: width classes, visibility and style by class, the wide places, `unset`.
             // Placements: the map, the source of the map, what a place draws.
             "placements/readCases", "placements/sourceCases", "placements/showingCases",
-            "placements/bodyCases", "placements/transportCases", "placements/eventCases", "placements/cacheCases",
+            "placements/bodyCases", "placements/transportCases", "placements/eventCases", "placements/cacheCases", "placements/scheduleCases",
             "adaptive/classCases", "adaptive/layerCases", "adaptive/styleCases", "adaptive/propsCases", "adaptive/showCases", "adaptive/drawnCases", "adaptive/numberCases", "adaptive/tabCases", "adaptive/weightCases", "adaptive/zoneCases", "adaptive/formCases", "adaptive/validityCases", "adaptive/contentCases", "adaptive/gridCases", "adaptive/boxCases", "adaptive/ruleCases", "adaptive/chromeCases", "adaptive/wideNavItemCases", "adaptive/wideNavHeightCases", "adaptive/wideAppBarCases", "adaptive/wideNavBarCases", "adaptive/wideZoneCases", "adaptive/wideModalCases", "adaptive/wideModalRadiusCases", "adaptive/wideModalContentCases", "adaptive/wideRuleCases", "adaptive/unsetStyleCases", "adaptive/unsetStateCases", "adaptive/unsetPropsCases",
         )
 

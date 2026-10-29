@@ -1,6 +1,6 @@
 {
-  "about": "Shared case table for the placement map (contract/placements.json). Every reader runs every row. readCases: reading the map file and resolving names against it; publishable says whether the strict schema accepts the file (a builder publishes only such files), read and resolve are what a tolerant reader does. sourceCases: which map a reader uses (network, last known, bundled) and with which status. showingCases: what a placement draws once its document has been loaded. Limits on the number of placements and on the published file size are publish-side only and are not rows here. The groups after showingCases are the reader rules settled after the reader audit. bodyCases: the BYTES of a map body as a reader receives them; body is a list of parts joined in order, each part is either text (encoded as UTF-8) or hex (raw bytes, two lowercase digits per byte), repeated times times (default 1); read and resolve are as in readCases. transportCases: how an HTTP answer to the map request or to the placement document request is sorted; times are milliseconds from the start of the request, headersAtMs is when the status arrives (default completedAtMs), completedAtMs is when the body ends (null: never). Document rows carry no body: a reader under test answers 2xx with any readable document. Expected for the map is the kind of the network outcome (map, corrupt, notModified, notFound, offline); for the document it is read (handed to the document reader), missing or unreadable. eventCases: settled states of one placement in order and the events the host hears; there is an event for every change of status, report, mapStatus, documentId or entry, the first settled state included. cacheCases: steps of one reader on placement home.banner of two projects (a, b) whose map and document addresses differ only in the project; map is the network outcome of the map request (the map names document d1), document is how the request for d1 ended (ok, notFound, offline); the last known map is kept per map address, and a document that answered 404 is never shown from memory again.",
-  "placementsVersion": "1.0.0",
+  "about": "Shared case table for the placement map (contract/placements.json). Every reader runs every row. readCases: reading the map file and resolving names against it; publishable says whether the strict schema accepts the file (a builder publishes only such files), read and resolve are what a tolerant reader does. sourceCases: which map a reader uses (network, last known, bundled) and with which status. showingCases: what a placement draws once its document has been loaded. Limits on the number of placements and on the published file size are publish-side only and are not rows here. The groups after showingCases are the reader rules settled after the reader audit. bodyCases: the BYTES of a map body as a reader receives them; body is a list of parts joined in order, each part is either text (encoded as UTF-8) or hex (raw bytes, two lowercase digits per byte), repeated times times (default 1); read and resolve are as in readCases. transportCases: how an HTTP answer to the map request or to the placement document request is sorted; times are milliseconds from the start of the request, headersAtMs is when the status arrives (default completedAtMs), completedAtMs is when the body ends (null: never). Document rows carry no body: a reader under test answers 2xx with any readable document. Expected for the map is the kind of the network outcome (map, corrupt, notModified, notFound, offline); for the document it is read (handed to the document reader), missing or unreadable. eventCases: settled states of one placement in order and the events the host hears; there is an event for every change of status, report, mapStatus, documentId or entry, the first settled state included. cacheCases: steps of one reader on placement home.banner of two projects (a, b) whose map and document addresses differ only in the project; map is the network outcome of the map request (the map names document d1), document is how the request for d1 ended (ok, notFound, offline); the last known map is kept per map address, and a document that answered 404 is never shown from memory again. scheduleCases (placement contract 1.1.0): a placement with a schedule, resolved at the instant now. json or text is the map as in readCases; publishable is what the strict schema together with the publish rule accepts; shapeOnly marks rows the JSON Schema of the artifact accepts and only the publish rule (until later than from, no overlapping windows in one placement) rejects; problems are the publish problems in the order of placement names. Each check names a placement and an instant now (UTC, whole seconds); status, documentId and entry are what the placement shows at that instant (a scheduled item with documentId null is a pause: the placement is empty for its window), and next is the earliest boundary (a from or an until of a readable scheduled item) later than now, or null.",
+  "placementsVersion": "1.1.0",
   "readCases": [
     {
       "name": "full map: a document with an entry, a document without one, an empty placement",
@@ -1276,6 +1276,1094 @@
           "expected": { "status": "nothing", "report": "documentUnreadable", "mapStatus": "fresh" }
         }
       ]
+    }
+  ],
+  "scheduleCases": [
+    {
+      "name": "a scheduled document replaces the permanent one while its window lasts, from included and until excluded",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [{"documentId": "d-black-friday", "entry": "sale", "from": "2026-11-27T22:00:00Z", "until": "2026-11-30T22:00:00Z"}]
+          }
+        }
+      },
+      "publishable": true,
+      "problems": [],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-10-01T00:00:00Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2026-11-27T22:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-11-27T21:59:59Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2026-11-27T22:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-11-27T22:00:00Z",
+          "status": "document",
+          "documentId": "d-black-friday",
+          "entry": "sale",
+          "next": "2026-11-30T22:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-11-30T21:59:59Z",
+          "status": "document",
+          "documentId": "d-black-friday",
+          "entry": "sale",
+          "next": "2026-11-30T22:00:00Z"
+        },
+        { "place": "home.banner", "now": "2026-11-30T22:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null },
+        { "place": "home.banner", "now": "2027-03-01T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "summer time: until 30 June included in Kyiv is 1 July 00:00 Kyiv, which is 30 June 21:00 UTC",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": { "documentId": "d-everyday", "schedule": [{"documentId": "d-summer", "from": "2026-05-31T21:00:00Z", "until": "2026-06-30T21:00:00Z"}] }
+        }
+      },
+      "publishable": true,
+      "problems": [],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-05-31T20:59:59Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2026-05-31T21:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-06-30T20:59:59Z",
+          "status": "document",
+          "documentId": "d-summer",
+          "entry": null,
+          "next": "2026-06-30T21:00:00Z"
+        },
+        { "place": "home.banner", "now": "2026-06-30T21:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "an empty permanent placement shows a document only during the window",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "profile.top": { "documentId": null, "schedule": [{"documentId": "d-promo", "from": "2026-12-01T00:00:00Z", "until": "2026-12-02T00:00:00Z"}] }
+        }
+      },
+      "publishable": true,
+      "problems": [],
+      "checks": [
+        {
+          "place": "profile.top",
+          "now": "2026-11-30T23:59:59Z",
+          "status": "empty",
+          "documentId": null,
+          "entry": null,
+          "next": "2026-12-01T00:00:00Z"
+        },
+        {
+          "place": "profile.top",
+          "now": "2026-12-01T00:00:00Z",
+          "status": "document",
+          "documentId": "d-promo",
+          "entry": null,
+          "next": "2026-12-02T00:00:00Z"
+        },
+        { "place": "profile.top", "now": "2026-12-02T00:00:00Z", "status": "empty", "documentId": null, "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "the permanent entry is kept outside the window and the scheduled entry inside it",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "entry": "home",
+            "schedule": [{"documentId": "d-everyday", "from": "2026-12-01T00:00:00Z", "until": "2026-12-02T00:00:00Z"}]
+          }
+        }
+      },
+      "publishable": true,
+      "problems": [],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-11-30T00:00:00Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": "home",
+          "next": "2026-12-01T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-01T12:00:00Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2026-12-02T00:00:00Z"
+        },
+        { "place": "home.banner", "now": "2026-12-02T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": "home", "next": null }
+      ]
+    },
+    {
+      "name": "a queue a month ahead: adjacent windows in any array order, one ends exactly when the next starts",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-week-3", "from": "2026-12-15T00:00:00Z", "until": "2026-12-22T00:00:00Z" },
+              { "documentId": "d-week-1", "from": "2026-12-01T00:00:00Z", "until": "2026-12-08T00:00:00Z" },
+              { "documentId": "d-week-2", "entry": "quest", "from": "2026-12-08T00:00:00Z", "until": "2026-12-15T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": true,
+      "problems": [],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-11-30T12:00:00Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2026-12-01T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-07T23:59:59Z",
+          "status": "document",
+          "documentId": "d-week-1",
+          "entry": null,
+          "next": "2026-12-08T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-08T00:00:00Z",
+          "status": "document",
+          "documentId": "d-week-2",
+          "entry": "quest",
+          "next": "2026-12-15T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-15T00:00:00Z",
+          "status": "document",
+          "documentId": "d-week-3",
+          "entry": null,
+          "next": "2026-12-22T00:00:00Z"
+        },
+        { "place": "home.banner", "now": "2026-12-22T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "windows in different placements may overlap",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [{"documentId": "d-black-friday", "entry": "sale", "from": "2026-11-27T22:00:00Z", "until": "2026-11-30T22:00:00Z"}]
+          },
+          "promo.raffle-button": {
+            "documentId": "d-raffle",
+            "schedule": [{"documentId": "d-black-friday", "from": "2026-11-27T22:00:00Z", "until": "2026-11-30T22:00:00Z"}]
+          }
+        }
+      },
+      "publishable": true,
+      "problems": [],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-11-28T00:00:00Z",
+          "status": "document",
+          "documentId": "d-black-friday",
+          "entry": "sale",
+          "next": "2026-11-30T22:00:00Z"
+        },
+        {
+          "place": "promo.raffle-button",
+          "now": "2026-11-28T00:00:00Z",
+          "status": "document",
+          "documentId": "d-black-friday",
+          "entry": null,
+          "next": "2026-11-30T22:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "overlapping windows are not published; a reader shows the one that started later",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-a", "from": "2026-12-01T00:00:00Z", "until": "2026-12-10T00:00:00Z" },
+              { "documentId": "d-b", "from": "2026-12-05T00:00:00Z", "until": "2026-12-15T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "shapeOnly": true,
+      "problems": [{"place": "home.banner", "index": 1, "problem": "schedule_overlap", "with": 0}],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-04T23:59:59Z",
+          "status": "document",
+          "documentId": "d-a",
+          "entry": null,
+          "next": "2026-12-05T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "document",
+          "documentId": "d-b",
+          "entry": null,
+          "next": "2026-12-10T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-10T00:00:00Z",
+          "status": "document",
+          "documentId": "d-b",
+          "entry": null,
+          "next": "2026-12-15T00:00:00Z"
+        },
+        { "place": "home.banner", "now": "2026-12-15T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "the later start wins whatever the array order",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-b", "from": "2026-12-05T00:00:00Z", "until": "2026-12-15T00:00:00Z" },
+              { "documentId": "d-a", "from": "2026-12-01T00:00:00Z", "until": "2026-12-10T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "shapeOnly": true,
+      "problems": [{"place": "home.banner", "index": 1, "problem": "schedule_overlap", "with": 0}],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-07T00:00:00Z",
+          "status": "document",
+          "documentId": "d-b",
+          "entry": null,
+          "next": "2026-12-10T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "two windows with the same start: the earlier in the array wins",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-first", "from": "2026-12-01T00:00:00Z", "until": "2026-12-03T00:00:00Z" },
+              { "documentId": "d-second", "from": "2026-12-01T00:00:00Z", "until": "2026-12-05T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "shapeOnly": true,
+      "problems": [{"place": "home.banner", "index": 1, "problem": "schedule_overlap", "with": 0}],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-01T00:00:00Z",
+          "status": "document",
+          "documentId": "d-first",
+          "entry": null,
+          "next": "2026-12-03T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-03T00:00:00Z",
+          "status": "document",
+          "documentId": "d-second",
+          "entry": null,
+          "next": "2026-12-05T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "a window inside another: the inner one while it lasts, then the outer one again; each overlap names the first earlier window",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-month", "from": "2026-12-01T00:00:00Z", "until": "2027-01-01T00:00:00Z" },
+              { "documentId": "d-day", "from": "2026-12-24T00:00:00Z", "until": "2026-12-25T00:00:00Z" },
+              { "documentId": "d-week", "from": "2026-12-20T00:00:00Z", "until": "2026-12-27T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "shapeOnly": true,
+      "problems": [
+        { "place": "home.banner", "index": 1, "problem": "schedule_overlap", "with": 0 },
+        { "place": "home.banner", "index": 2, "problem": "schedule_overlap", "with": 0 }
+      ],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-23T00:00:00Z",
+          "status": "document",
+          "documentId": "d-week",
+          "entry": null,
+          "next": "2026-12-24T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-24T12:00:00Z",
+          "status": "document",
+          "documentId": "d-day",
+          "entry": null,
+          "next": "2026-12-25T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-25T00:00:00Z",
+          "status": "document",
+          "documentId": "d-week",
+          "entry": null,
+          "next": "2026-12-27T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-27T00:00:00Z",
+          "status": "document",
+          "documentId": "d-month",
+          "entry": null,
+          "next": "2027-01-01T00:00:00Z"
+        },
+        { "place": "home.banner", "now": "2027-01-01T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "until equal to from is not published, never shows and gives no boundary",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": { "documentId": "d-everyday", "schedule": [{"documentId": "d-x", "from": "2026-12-01T00:00:00Z", "until": "2026-12-01T00:00:00Z"}] }
+        }
+      },
+      "publishable": false,
+      "shapeOnly": true,
+      "problems": [{"place": "home.banner", "index": 0, "problem": "schedule_window_empty"}],
+      "checks": [
+        { "place": "home.banner", "now": "2026-11-30T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null },
+        { "place": "home.banner", "now": "2026-12-01T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "until before from is not published and never shows; the other windows still work",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-x", "from": "2026-12-10T00:00:00Z", "until": "2026-12-01T00:00:00Z" },
+              { "documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "shapeOnly": true,
+      "problems": [{"place": "home.banner", "index": 0, "problem": "schedule_window_empty"}],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-01T00:00:00Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2026-12-05T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "document",
+          "documentId": "d-ok",
+          "entry": null,
+          "next": "2026-12-06T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "an instant with an offset instead of Z is not an instant: that item is skipped, the others work",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-x", "from": "2026-12-01T02:00:00+02:00", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "2026-12-01T00:00:00+00:00", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-01T00:00:00Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2026-12-05T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "document",
+          "documentId": "d-ok",
+          "entry": null,
+          "next": "2026-12-06T00:00:00Z"
+        },
+        { "place": "home.banner", "now": "2026-12-10T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "fractional seconds, a missing second, a lowercase z and a space are not instants",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-x", "from": "2026-12-01T00:00:00.000Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "2026-12-01T00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "2026-12-01T00:00:00z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "2026-12-01 00:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-01T00:00:00Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2026-12-05T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "document",
+          "documentId": "d-ok",
+          "entry": null,
+          "next": "2026-12-06T00:00:00Z"
+        },
+        { "place": "home.banner", "now": "2026-12-10T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "a day that is not in the calendar is not an instant: 29 February of a common year, 31 April, month 13, hour 24, second 60",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-x", "from": "2027-02-29T00:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "2026-04-31T00:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "2026-13-01T00:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "2026-12-01T24:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "2026-12-01T23:59:60Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "2100-02-29T00:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-01T00:00:00Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2026-12-05T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "document",
+          "documentId": "d-ok",
+          "entry": null,
+          "next": "2026-12-06T00:00:00Z"
+        },
+        { "place": "home.banner", "now": "2026-12-10T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "years outside 2000 to 2099, a date without time, a number and an empty string are not instants",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-x", "from": "2100-01-01T00:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "1999-12-31T00:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "+02026-12-01T00:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "2026-12-01", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": 1796083200000, "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-x", "from": "", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-01T00:00:00Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2026-12-05T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "document",
+          "documentId": "d-ok",
+          "entry": null,
+          "next": "2026-12-06T00:00:00Z"
+        },
+        { "place": "home.banner", "now": "2026-12-10T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "29 February of a leap year and the last second of a year are instants",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-leap", "from": "2028-02-29T00:00:00Z", "until": "2028-03-01T00:00:00Z" },
+              { "documentId": "d-eve", "from": "2026-12-31T23:59:59Z", "until": "2027-01-01T00:00:00Z" },
+              { "documentId": "d-century", "from": "2000-02-29T00:00:00Z", "until": "2000-03-01T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": true,
+      "problems": [],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-31T23:59:59Z",
+          "status": "document",
+          "documentId": "d-eve",
+          "entry": null,
+          "next": "2027-01-01T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2027-01-01T00:00:00Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2028-02-29T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2028-02-29T23:59:59Z",
+          "status": "document",
+          "documentId": "d-leap",
+          "entry": null,
+          "next": "2028-03-01T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2000-02-29T12:00:00Z",
+          "status": "document",
+          "documentId": "d-century",
+          "entry": null,
+          "next": "2000-03-01T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "a scheduled item without a document or with a path for an id is skipped",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "from": "2026-12-01T00:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "../d-x", "from": "2026-12-01T00:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "..", "from": "2026-12-01T00:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": 7, "from": "2026-12-01T00:00:00Z", "until": "2026-12-20T00:00:00Z" },
+              { "documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-01T00:00:00Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2026-12-05T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "document",
+          "documentId": "d-ok",
+          "entry": null,
+          "next": "2026-12-06T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "a bad entry skips the item; entry null in an item is the same as no entry but is not published",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-x", "entry": "Sale!", "from": "2026-12-01T00:00:00Z", "until": "2026-12-03T00:00:00Z" },
+              { "documentId": "d-x", "entry": "", "from": "2026-12-01T00:00:00Z", "until": "2026-12-03T00:00:00Z" },
+              { "documentId": "d-null-entry", "entry": null, "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-02T00:00:00Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": null,
+          "next": "2026-12-05T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "document",
+          "documentId": "d-null-entry",
+          "entry": null,
+          "next": "2026-12-06T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "an item that is not an object is skipped",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              "d-x",
+              5,
+              null,
+              [{"documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z"}],
+              { "documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "document",
+          "documentId": "d-ok",
+          "entry": null,
+          "next": "2026-12-06T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "an unknown field in an item is ignored by a reader and not published",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [{"documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z", "priority": 1}]
+          }
+        }
+      },
+      "publishable": false,
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "document",
+          "documentId": "d-ok",
+          "entry": null,
+          "next": "2026-12-06T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "schedule that is an object is no schedule: the permanent content, no boundary",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": { "documentId": "d-everyday", "schedule": {"0": {"documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z"}} }
+        }
+      },
+      "publishable": false,
+      "checks": [{"place": "home.banner", "now": "2026-12-05T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null}]
+    },
+    {
+      "name": "schedule that is null is no schedule: the permanent content, no boundary",
+      "json": { "placementsVersion": "1.1.0", "placements": {"home.banner": {"documentId": "d-everyday", "schedule": null}} },
+      "publishable": false,
+      "checks": [{"place": "home.banner", "now": "2026-12-05T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null}]
+    },
+    {
+      "name": "schedule that is a string is no schedule: the permanent content, no boundary",
+      "json": { "placementsVersion": "1.1.0", "placements": {"home.banner": {"documentId": "d-everyday", "schedule": "d-ok"}} },
+      "publishable": false,
+      "checks": [{"place": "home.banner", "now": "2026-12-05T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null}]
+    },
+    {
+      "name": "an empty schedule is not published; a reader reads it as no schedule",
+      "json": { "placementsVersion": "1.1.0", "placements": {"home.banner": {"documentId": "d-everyday", "schedule": []}} },
+      "publishable": false,
+      "checks": [{"place": "home.banner", "now": "2026-12-05T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null}]
+    },
+    {
+      "name": "broken permanent content makes the placement unreadable even while a window lasts",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": { "documentId": 5, "schedule": [{"documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z"}] },
+          "profile.top": {
+            "documentId": "d1",
+            "entry": "Bad Entry",
+            "schedule": [{"documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z"}]
+          }
+        }
+      },
+      "publishable": false,
+      "checks": [
+        { "place": "home.banner", "now": "2026-12-05T00:00:00Z", "status": "unreadable", "documentId": null, "entry": null, "next": null },
+        { "place": "profile.top", "now": "2026-12-05T00:00:00Z", "status": "unreadable", "documentId": null, "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "a placement that is not in the map, or a name of the wrong form, is unknown and has no boundary",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": { "documentId": "d-everyday", "schedule": [{"documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z"}] }
+        }
+      },
+      "publishable": true,
+      "problems": [],
+      "checks": [
+        { "place": "cart.banner", "now": "2026-12-05T00:00:00Z", "status": "unknown", "documentId": null, "entry": null, "next": null },
+        { "place": "Home.Banner", "now": "2026-12-05T00:00:00Z", "status": "unknown", "documentId": null, "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "a map labelled 1.0.0 with a schedule is read with the schedule",
+      "json": {
+        "placementsVersion": "1.0.0",
+        "placements": {
+          "home.banner": { "documentId": "d-everyday", "schedule": [{"documentId": "d-ok", "from": "2026-12-05T00:00:00Z", "until": "2026-12-06T00:00:00Z"}] }
+        }
+      },
+      "publishable": true,
+      "problems": [],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "document",
+          "documentId": "d-ok",
+          "entry": null,
+          "next": "2026-12-06T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "a map that cannot be read: every placement is unreadable and has no boundary",
+      "text": "{\"placementsVersion\":\"1.1.0\",\"placements\":",
+      "checks": [{"place": "home.banner", "now": "2026-12-05T00:00:00Z", "status": "unreadable", "documentId": null, "entry": null, "next": null}]
+    },
+    {
+      "name": "a map of another major: unreadable, no boundary",
+      "text": "{\"placementsVersion\":\"2.0.0\",\"placements\":{\"home.banner\":{\"documentId\":\"d-everyday\",\"schedule\":[{\"documentId\":\"d-ok\",\"from\":\"2026-12-05T00:00:00Z\",\"until\":\"2026-12-06T00:00:00Z\"}]}}}",
+      "checks": [{"place": "home.banner", "now": "2026-12-05T00:00:00Z", "status": "unreadable", "documentId": null, "entry": null, "next": null}]
+    },
+    {
+      "name": "a pause over a permanent document: the placement is empty for the weekend, then the document is back",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "entry": "home",
+            "schedule": [{"documentId": null, "from": "2026-12-04T22:00:00Z", "until": "2026-12-06T22:00:00Z"}]
+          }
+        }
+      },
+      "publishable": true,
+      "problems": [],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-04T21:59:59Z",
+          "status": "document",
+          "documentId": "d-everyday",
+          "entry": "home",
+          "next": "2026-12-04T22:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-04T22:00:00Z",
+          "status": "empty",
+          "documentId": null,
+          "entry": null,
+          "next": "2026-12-06T22:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-06T21:59:59Z",
+          "status": "empty",
+          "documentId": null,
+          "entry": null,
+          "next": "2026-12-06T22:00:00Z"
+        },
+        { "place": "home.banner", "now": "2026-12-06T22:00:00Z", "status": "document", "documentId": "d-everyday", "entry": "home", "next": null }
+      ]
+    },
+    {
+      "name": "a pause over a permanent empty placement changes nothing but still has boundaries",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": { "profile.top": {"documentId": null, "schedule": [{"documentId": null, "from": "2026-12-04T22:00:00Z", "until": "2026-12-06T22:00:00Z"}]} }
+      },
+      "publishable": true,
+      "problems": [],
+      "checks": [
+        {
+          "place": "profile.top",
+          "now": "2026-12-04T00:00:00Z",
+          "status": "empty",
+          "documentId": null,
+          "entry": null,
+          "next": "2026-12-04T22:00:00Z"
+        },
+        {
+          "place": "profile.top",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "empty",
+          "documentId": null,
+          "entry": null,
+          "next": "2026-12-06T22:00:00Z"
+        },
+        { "place": "profile.top", "now": "2026-12-06T22:00:00Z", "status": "empty", "documentId": null, "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "a pause next to a scheduled document: the sale, then the weekend pause, then the permanent document",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-sale", "entry": "sale", "from": "2026-12-01T00:00:00Z", "until": "2026-12-04T22:00:00Z" },
+              { "documentId": null, "from": "2026-12-04T22:00:00Z", "until": "2026-12-06T22:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": true,
+      "problems": [],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-04T21:59:59Z",
+          "status": "document",
+          "documentId": "d-sale",
+          "entry": "sale",
+          "next": "2026-12-04T22:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-04T22:00:00Z",
+          "status": "empty",
+          "documentId": null,
+          "entry": null,
+          "next": "2026-12-06T22:00:00Z"
+        },
+        { "place": "home.banner", "now": "2026-12-06T22:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "a pause that overlaps a scheduled document is not published; a reader lets the later start win",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": "d-sale", "from": "2026-12-01T00:00:00Z", "until": "2026-12-10T00:00:00Z" },
+              { "documentId": null, "from": "2026-12-04T22:00:00Z", "until": "2026-12-06T22:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "shapeOnly": true,
+      "problems": [{"place": "home.banner", "index": 1, "problem": "schedule_overlap", "with": 0}],
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-04T00:00:00Z",
+          "status": "document",
+          "documentId": "d-sale",
+          "entry": null,
+          "next": "2026-12-04T22:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-05T00:00:00Z",
+          "status": "empty",
+          "documentId": null,
+          "entry": null,
+          "next": "2026-12-06T22:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-07T00:00:00Z",
+          "status": "document",
+          "documentId": "d-sale",
+          "entry": null,
+          "next": "2026-12-10T00:00:00Z"
+        }
+      ]
+    },
+    {
+      "name": "a pause with an entry is not published; a reader ignores the entry, even a broken one, and pauses",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": null, "entry": "sale", "from": "2026-12-01T00:00:00Z", "until": "2026-12-02T00:00:00Z" },
+              { "documentId": null, "entry": "Bad Entry!", "from": "2026-12-03T00:00:00Z", "until": "2026-12-04T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "checks": [
+        {
+          "place": "home.banner",
+          "now": "2026-12-01T00:00:00Z",
+          "status": "empty",
+          "documentId": null,
+          "entry": null,
+          "next": "2026-12-02T00:00:00Z"
+        },
+        {
+          "place": "home.banner",
+          "now": "2026-12-03T00:00:00Z",
+          "status": "empty",
+          "documentId": null,
+          "entry": null,
+          "next": "2026-12-04T00:00:00Z"
+        },
+        { "place": "home.banner", "now": "2026-12-04T00:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null }
+      ]
+    },
+    {
+      "name": "a pause with broken instants or a missing document key is skipped like any broken item",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": {
+          "home.banner": {
+            "documentId": "d-everyday",
+            "schedule": [
+              { "documentId": null, "from": "2026-12-01T00:00:00+02:00", "until": "2026-12-02T00:00:00Z" },
+              { "from": "2026-12-01T00:00:00Z", "until": "2026-12-02T00:00:00Z" }
+            ]
+          }
+        }
+      },
+      "publishable": false,
+      "checks": [{"place": "home.banner", "now": "2026-12-01T12:00:00Z", "status": "document", "documentId": "d-everyday", "entry": null, "next": null}]
+    },
+    {
+      "name": "broken permanent content stays unreadable during a pause",
+      "json": {
+        "placementsVersion": "1.1.0",
+        "placements": { "home.banner": {"documentId": 5, "schedule": [{"documentId": null, "from": "2026-12-04T22:00:00Z", "until": "2026-12-06T22:00:00Z"}]} }
+      },
+      "publishable": false,
+      "checks": [{"place": "home.banner", "now": "2026-12-05T00:00:00Z", "status": "unreadable", "documentId": null, "entry": null, "next": null}]
     }
   ]
 }

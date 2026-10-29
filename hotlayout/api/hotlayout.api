@@ -513,8 +513,8 @@ public final class com/hotlayout/PlacementSource {
 	public static final field $stable I
 	public static final field Companion Lcom/hotlayout/PlacementSource$Companion;
 	public static final field DEFAULT_REFRESH_MS J
-	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lcom/hotlayout/PlacementStore;Lcom/hotlayout/PlacementTransport;)V
-	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lcom/hotlayout/PlacementStore;Lcom/hotlayout/PlacementTransport;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lcom/hotlayout/PlacementStore;Lcom/hotlayout/PlacementTransport;Lkotlin/jvm/functions/Function0;)V
+	public synthetic fun <init> (Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lcom/hotlayout/PlacementStore;Lcom/hotlayout/PlacementTransport;Lkotlin/jvm/functions/Function0;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
 }
 
 public final class com/hotlayout/PlacementSource$Companion {

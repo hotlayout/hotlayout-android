@@ -202,6 +202,35 @@ runs off the main thread and never throws on a bad answer.
   (`report == null`). The last known copies are kept under the address of their file, and a document that
   answered 404 is dropped from the store (`PlacementStore.remove`).
 
+### Schedule
+
+A place may carry a schedule (placement map 1.1.0): windows of time in which another document, or nothing, stands in
+it instead of its permanent content. Your code does not change: `HotlayoutPlacement` reads the place against the
+clock and swaps the document at the right moment, with no network at that moment.
+
+- An instant is UTC, whole seconds (`2026-11-27T22:00:00Z`); a window lasts from its `from` (included) to its
+  `until` (excluded). A window with no document is a pause: the place is `Empty` for its length, and then the
+  permanent content is back. When two windows overlap, the one that started later wins.
+- The clock is the device clock. Pass `clock = { … }` (milliseconds since the epoch) to `PlacementSource` to pin or
+  shift time in tests. `loadPlacement` reads the place at that clock too.
+- `HotlayoutPlacement` sets one timer at the next boundary of the schedule and decides again there, on every new
+  reading of the map, and when the app returns to the foreground (the clock may have jumped). The map is not asked
+  again at a boundary. A broken window is skipped on its own; the place stays as it was.
+- `onPlacement` hears the swap like any other change (`documentId` / `entry`, and `Empty` with the document back). A
+  place that is `Empty` in a pause is not an error: hide the frame around it **and its own padding or margin**, and
+  keep `HotlayoutPlacement` itself in the composition, so the banner comes back on time:
+
+```kotlin
+var banner by remember { mutableStateOf(true) }
+Column(Modifier.padding(horizontal = 16.dp)) {
+    Box(Modifier.then(if (banner) Modifier.padding(bottom = 12.dp) else Modifier)) {
+        HotlayoutPlacement("home.banner", placements, onPlacement = { banner = it.document != null })
+    }
+}
+```
+
+A reader older than 1.1.0 shows the permanent content of a place and ignores its schedule.
+
 ## Window insets
 
 The reader adds the status bar, the cutout, the navigation bar and the keyboard itself, minus whatever an ancestor already

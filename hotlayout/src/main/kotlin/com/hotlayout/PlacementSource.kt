@@ -23,6 +23,8 @@ import kotlinx.coroutines.withContext
  * @param bundledDocuments the documents shipped with the app release: a document id to its JSON text.
  * @param store where the last known map and documents are kept; in memory by default.
  * @param transport how the requests go; `https` without cookies by default.
+ * @param clock the clock the schedule of a place is read against: milliseconds since the epoch. The device clock by
+ * default, no network; give your own to pin or shift time in tests.
  */
 public class PlacementSource(
     projectBase: String,
@@ -30,6 +32,7 @@ public class PlacementSource(
     internal val bundledDocuments: (documentId: String) -> String? = { null },
     internal val store: PlacementStore = MemoryPlacementStore(),
     internal val transport: PlacementTransport = PlacementTransport.Default,
+    internal val clock: () -> Long = { System.currentTimeMillis() },
 ) {
     internal val base: String = projectBase.trim().trimEnd('/')
 
@@ -133,12 +136,20 @@ public class PlacementSource(
 }
 
 /**
- * What the place [name] shows: asks the map (see [PlacementSource]), then the document it names. Runs off the main
- * thread and never throws on a bad answer — a bad answer is a [PlacementLoad] with a [PlacementLoad.report].
+ * What the place [name] shows now: asks the map (see [PlacementSource]), then the document it names. A scheduled
+ * window of the place that lasts at the moment of the source's clock replaces the permanent content. Runs off the
+ * main thread and never throws on a bad answer — a bad answer is a [PlacementLoad] with a [PlacementLoad.report].
  */
-public suspend fun loadPlacement(source: PlacementSource, name: String): PlacementLoad {
-    val decision = source.map()
-    val resolution = PlacementRules.resolve(decision.map, name)
+public suspend fun loadPlacement(source: PlacementSource, name: String): PlacementLoad =
+    decidePlacement(source, name, source.map(), source.clock()).load
+
+/** A settled place and the instant at which the clock may change it (`null`: never). */
+internal class PlacementRun(val load: PlacementLoad, val boundary: Long?)
+
+/** Decides the place [name] on a map already read, at the instant [nowMs]. */
+internal suspend fun decidePlacement(source: PlacementSource, name: String, decision: PlacementRules.Decision, nowMs: Long): PlacementRun {
+    val resolution = PlacementRules.resolveAt(decision.map, name, nowMs)
+    val boundary = PlacementRules.nextBoundary(decision.map, name, nowMs)
     var outcome: PlacementRules.DocumentOutcome? = null
     var document: HotlayoutDocument? = null
     if (resolution.status == PlacementRules.Status.Document) {
@@ -147,7 +158,7 @@ public suspend fun loadPlacement(source: PlacementSource, name: String): Placeme
         document = result.document
     }
     val showing = PlacementRules.showing(resolution, outcome)
-    return PlacementLoad(
+    val load = PlacementLoad(
         name = name,
         mapStatus = decision.status.toPublic(),
         mapOrigin = decision.origin.toPublic(),
@@ -156,6 +167,7 @@ public suspend fun loadPlacement(source: PlacementSource, name: String): Placeme
         entry = showing.entry,
         report = showing.report?.toPublic(),
     )
+    return PlacementRun(load, boundary)
 }
 
 private fun PlacementRules.Status.toPublic() = when (this) {

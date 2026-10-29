@@ -41,13 +41,75 @@
             "minLength": 1,
             "maxLength": 48,
             "pattern": "^[a-z0-9][a-z0-9-]*$"
+          },
+          "schedule": {
+            "minItems": 1,
+            "maxItems": 32,
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "documentId": {
+                  "anyOf": [
+                    {
+                      "type": "string",
+                      "pattern": "^(?!\\.+$)[A-Za-z0-9._-]{1,64}$"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                },
+                "entry": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 48,
+                  "pattern": "^[a-z0-9][a-z0-9-]*$"
+                },
+                "from": {
+                  "type": "string",
+                  "pattern": "^(?:20\\d{2}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|02-(?:0[1-9]|1\\d|2[0-8]))|20(?:[02468][048]|[13579][26])-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+                  "description": "Start of the window, included. UTC, whole seconds: 2026-11-27T22:00:00Z."
+                },
+                "until": {
+                  "type": "string",
+                  "pattern": "^(?:20\\d{2}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|02-(?:0[1-9]|1\\d|2[0-8]))|20(?:[02468][048]|[13579][26])-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+                  "description": "End of the window, excluded. UTC, whole seconds; later than from."
+                }
+              },
+              "required": [
+                "documentId",
+                "from",
+                "until"
+              ],
+              "additionalProperties": false,
+              "description": "A scheduled document: shown in the placement from `from` (included) until `until` (excluded). documentId null is a pause: the placement is empty for that window.",
+              "if": {
+                "properties": {
+                  "documentId": {
+                    "type": "null"
+                  }
+                },
+                "required": [
+                  "documentId"
+                ]
+              },
+              "then": {
+                "not": {
+                  "required": [
+                    "entry"
+                  ]
+                }
+              }
+            },
+            "description": "Scheduled documents (or pauses) of the placement. While one of their windows lasts, it is shown instead of documentId; windows of one placement must not overlap. Absent: the placement always shows documentId."
           }
         },
         "required": [
           "documentId"
         ],
         "additionalProperties": false,
-        "description": "One placement: the document shown there and, optionally, its entry point. documentId null means the placement is declared but empty.",
+        "description": "One placement: the document shown there and, optionally, its entry point. documentId null means the placement is declared but empty. schedule, when present, replaces that permanent content while one of its windows lasts.",
         "if": {
           "properties": {
             "documentId": {
@@ -76,7 +138,7 @@
   "additionalProperties": false,
   "title": "PlacementMap",
   "description": "The placement map of one project: which published document each named place of the app shows. Published as placements/published.json next to theme/published.json in the project base; read without a token.",
-  "x-placementsVersion": "1.0.0",
+  "x-placementsVersion": "1.1.0",
   "x-generatedFrom": "src/entities/placements — generated, do not edit by hand",
   "x-compatibility": {
     "policy": {
@@ -174,5 +236,47 @@
       "status": "document",
       "report": null
     }
+  },
+  "x-placementSchedule": {
+    "instant": {
+      "pattern": "^(?:20\\d{2}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|02-(?:0[1-9]|1\\d|2[0-8]))|20(?:[02468][048]|[13579][26])-02-29)T(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\dZ$",
+      "zone": "UTC",
+      "precision": "second"
+    },
+    "window": {
+      "from": "included",
+      "until": "excluded"
+    },
+    "publish": {
+      "untilAfterFrom": true,
+      "overlap": "forbidden",
+      "adjacent": "allowed",
+      "overlapReportedOn": "later-index-naming-first-earlier"
+    },
+    "limits": {
+      "maxPerPlacement": 32,
+      "total": "bounded-by-maxBytes"
+    },
+    "reading": {
+      "notAnArray": "no-schedule",
+      "brokenItem": "skip",
+      "emptyWindow": "skip",
+      "nullDocument": "pause-empty",
+      "pauseEntry": "ignore",
+      "nullEntry": "absent",
+      "brokenPermanent": "unreadable",
+      "overlap": "latest-from-then-lowest-index",
+      "unknownFields": "ignore"
+    },
+    "resolve": "active-scheduled-else-permanent",
+    "clock": "device",
+    "nextBoundary": "earliest-edge-after-now",
+    "recompute": [
+      "next-boundary",
+      "map-read",
+      "app-foreground"
+    ],
+    "maxTimerMs": 2147483647,
+    "olderReaders": "permanent-only"
   }
 }
