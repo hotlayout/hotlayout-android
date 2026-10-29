@@ -112,7 +112,16 @@ public fun interface PlacementTransport {
                 200 -> {
                     val length = connection.contentLengthLong
                     if (length > maxBytes) return PlacementResponse.TooLarge
-                    val bytes = connection.inputStream.use { readBody(it, maxBytes, endsAt) } ?: return PlacementResponse.Unavailable
+                    val stream = connection.inputStream
+                    var finished = false
+                    val bytes = try {
+                        readBody(stream, maxBytes, endsAt)?.also { finished = it.size <= maxBytes && (length < 0 || it.size.toLong() >= length) }
+                    } finally {
+                        // A stream closed before its fixed length is read drains the rest and blocks on a slow
+                        // server past the deadline: an unfinished read drops the connection first.
+                        if (!finished) runCatching { connection.disconnect() }
+                        runCatching { stream.close() }
+                    } ?: return PlacementResponse.Unavailable
                     when {
                         bytes.size > maxBytes -> PlacementResponse.TooLarge
                         length >= 0 && bytes.size < length -> PlacementResponse.Unavailable

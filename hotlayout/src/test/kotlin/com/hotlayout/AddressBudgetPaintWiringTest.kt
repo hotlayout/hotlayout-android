@@ -65,6 +65,8 @@ class AddressBudgetPaintWiringTest {
             ).joinToString(","),
         )
         show(document, images = ImagePolicy(fetch = { address, _ -> asked.add(address); null }))
+        // The request and the reports come from work off the main thread: wait for them, not for one idle moment.
+        compose.waitUntil(10_000) { asked.isNotEmpty() && reports.any { "javascript:alert(1)" in it.reason } && reports.any { "https://127.0.0.1/ppp" in it.reason } }
         assertEquals("only the public address is asked for", listOf("https://cdn.example.com/a.png"), asked.toList())
         val said = reports.map { it.reason }.distinct()
         assertTrue(said.toString(), said.any { "https://127.0.0.1/a.png" in it })
