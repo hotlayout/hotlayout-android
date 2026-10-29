@@ -3,6 +3,8 @@
 A Kotlin library that draws server-driven UI (SDUI) screens published by the [HotLayout](https://hotlayout.com) builder: a JSON
 document, a theme and your data become a native Jetpack Compose screen.
 
+**Quickstart:** [docs](https://hotlayout.com/docs/integrator/quickstart-android) · [video](https://youtu.be/4DzCQpgMoo8) · **Builder and access:** [hotlayout.com](https://hotlayout.com)
+
 It is a reader of the same contract as the React, Flutter and iOS readers and is measured by the same shared
 case tables.
 
