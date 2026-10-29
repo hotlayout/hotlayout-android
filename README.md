@@ -284,6 +284,13 @@ and uploads it to the Central Portal, where the deployment waits to be published
 - [docs/platform-notes.md](docs/platform-notes.md): where the Android platform and the shared tables differ, and what the reader does.
 - [docs/security.md](docs/security.md): the trust boundary and the tests that pin it.
 
+## Learn more
+
+- Website: [hotlayout.com](https://hotlayout.com)
+- Documentation: [hotlayout.com/docs](https://hotlayout.com/docs), including the [quickstart for this platform](https://hotlayout.com/docs/integrator/quickstart-android)
+- Video quickstart: [YouTube](https://youtu.be/4DzCQpgMoo8)
+- Getting the builder: screens are made in the HotLayout builder, hosted at hotlayout.com or self-hosted. To get access, use "Get access" on [hotlayout.com](https://hotlayout.com) or write to [contact@hotlayout.com](mailto:contact@hotlayout.com).
+
 ## License
 
 HotLayout for Android is licensed under the Apache License 2.0; see [LICENSE](LICENSE).
