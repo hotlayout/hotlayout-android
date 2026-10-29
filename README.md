@@ -29,7 +29,7 @@ The library is on Maven Central. With `mavenCentral()` among the repositories of
 
 ```kotlin
 dependencies {
-    implementation("com.hotlayout:hotlayout-android:0.3.0")
+    implementation("com.hotlayout:hotlayout-android:0.4.0")
 }
 ```
 

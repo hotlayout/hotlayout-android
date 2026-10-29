@@ -10,9 +10,9 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
-## [0.7.1] - Unreleased
+## [0.4.0] - 2026-10-29
 
-Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8.0) and placement map 1.1.0.
+Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8.0) and placement map 1.1.0. Folds in the entries that were prepared as 0.4.0 to 0.7.1 and never published (the last release is 0.3.0).
 
 ### Added
 
@@ -25,25 +25,6 @@ Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8
   broken window is skipped on its own, a pause never reads its entry, overlapping windows go to the one that started
   later. Every row of the `scheduleCases` group of `placements/placement-cases.json` is run. The README shows how a
   host hides its own padding around a place that is empty.
-
-### Fixed
-
-- A carousel that tells its stop follows the LAST value when the host changes it twice in a row while the first
-  animation is still running. Following compared the new number with the stop the animation was passing and
-  took it for "already there", so the carousel stayed where the cancelled move had been. "Where the carousel is"
-  is now the target of the reader's own move until that move has settled (a person's touch, wheel or key
-  clears it).
-- A row of a list from data fades too. When the template of a `Repeater` has `visibilityTransition: fade` and a
-  condition on the fields of the record, every row follows its own timeline (the key is the node and the indexes of
-  the template instances it stands in): a row whose condition stops holding fades out in place and the rows around
-  it do not move until it has left.
-
-## [0.7.0] - Unreleased
-
-Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8.0).
-
-### Added
-
 - A node that fades in and out when its condition changes. A node with `visibilityTransition: fade` and a
   `visibleIf` no longer appears and disappears at once: a node whose condition stops holding keeps its place and
   fades out in 120 ms, then leaves the layout; a node whose condition starts to hold waits 120 ms out of the layout,
@@ -56,13 +37,6 @@ Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8
   the width class, a change under a covered screen, and a system whose animation scale is zero. The zones of the
   screen follow the condition at once and do not read the field: a node with `pin` (bottom or top), a `NavBar`, a
   `NavItem` and an `AppBar` that is the first child of the screen root; an `AppBar` anywhere else fades like any node.
-
-## [0.6.0] - Unreleased
-
-Reads document contract 9.32.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8.0).
-
-### Added
-
 - A carousel that tells its active stop. The optional `carousel.stopPath` names a number path of the data
   dictionary; its value is the number of the snap stop from 0 (stops, not cards). After a person's swipe has settled
   on a stop the reader writes that number to the path, the very write an input field makes (the session of the
@@ -74,13 +48,6 @@ Reads document contract 9.32.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8
   leaves the carousel where the person put it. A pointer that was cancelled counts as released. A path on a row
   that does not scroll, an empty one, one longer than 128 characters or one that is not a string is no path: the
   carousel then scrolls as before and writes nothing.
-
-## [0.5.0] - Unreleased
-
-Reads document contract 9.31.0 (theme 4.0.1, icon set 1.0.0).
-
-### Added
-
 - The bottom safe inset of a modal sheet. A layer shown as a sheet (`presentation: modal`, no `modalPlacement` or
   `bottom`, in a compact area) still reaches the bottom of its area, and the reader now adds the navigation bar
   inset (or the `safeAreaBottom` the host passed) inside the box of the sheet, under its content: the background and
@@ -89,13 +56,6 @@ Reads document contract 9.31.0 (theme 4.0.1, icon set 1.0.0).
   The height of the sheet is its content plus the inset, no taller than the area; taller content scrolls above the
   inset. While the keyboard is shown the sheet rises above it and adds nothing. A window (`center`), a sheet shown
   as a window in a wider area and a page are unchanged, and a host that passes zero gets zero.
-
-## [0.4.0] - Unreleased
-
-Reads document contract 9.30.0 (theme 4.0.1, icon set 1.0.0).
-
-### Added
-
 - A write action on a long press. A node whose own action does not write may carry `setValue` or `toggleValue` in
   `longPress`; the hold (also Shift+F10 and the named action of a screen reader) performs it through the same write as
   a pressed action: the haptic request and the analytics event go first, then the write into the session and
@@ -103,6 +63,18 @@ Reads document contract 9.30.0 (theme 4.0.1, icon set 1.0.0).
   comes from `action` alone, so the node stays a plain button. Before, a write action on a long press was ignored.
 - The node field `name` (a label for the editor) is accepted and ignored: it is not drawn, not part of an accessible
   name and not passed to actions, events or reports.
+
+### Fixed
+
+- A carousel that tells its stop follows the LAST value when the host changes it twice in a row while the first
+  animation is still running. Following compared the new number with the stop the animation was passing and
+  took it for "already there", so the carousel stayed where the cancelled move had been. "Where the carousel is"
+  is now the target of the reader's own move until that move has settled (a person's touch, wheel or key
+  clears it).
+- A row of a list from data fades too. When the template of a `Repeater` has `visibilityTransition: fade` and a
+  condition on the fields of the record, every row follows its own timeline (the key is the node and the indexes of
+  the template instances it stands in): a row whose condition stops holding fades out in place and the rows around
+  it do not move until it has left.
 
 ## [0.3.0] - 2026-10-26
 
