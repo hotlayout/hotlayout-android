@@ -2,7 +2,11 @@ package com.hotlayout
 
 import com.hotlayout.placements.PlacementRules
 import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
@@ -43,6 +47,12 @@ public class PlacementSource(
     internal fun documentKey(id: String): String = "document:${documentAddress(id)}"
     private val gate = Mutex()
     private var recent: Recent? = null
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val keptKeys = LinkedHashSet<String>()
+    private val loading = HashSet<String>()
+
+    /** The background reading started last; tests wait for it. */
+    @Volatile internal var prefetching: Job? = null
 
     private class Recent(val at: Long, val decision: PlacementRules.Decision)
 
@@ -97,6 +107,7 @@ public class PlacementSource(
                 val fresh = readDocument(answer.bytes)
                 if (fresh != null) {
                     runCatching { store.write(key, StoredText(answer.text, answer.etag)) }
+                    keep(key)
                     return outcome(fresh)
                 }
             }
@@ -104,6 +115,7 @@ public class PlacementSource(
             // A document that was taken down must not live on from the cache; only the copy of the release stands in.
             PlacementResponse.NotFound -> {
                 runCatching { store.remove(key) }
+                synchronized(keptKeys) { keptKeys.remove(key) }
                 return bundledDocuments(id)?.let { readDocument(it.toByteArray(Charsets.UTF_8)) }?.let { outcome(it) }
                     ?: DocumentResult(PlacementRules.DocumentOutcome.Missing)
             }
@@ -111,6 +123,39 @@ public class PlacementSource(
         }
         val fallback = keptDocument ?: bundledDocuments(id)?.let { readDocument(it.toByteArray(Charsets.UTF_8)) }
         return fallback?.let { outcome(it) } ?: DocumentResult(PlacementRules.DocumentOutcome.Unreadable)
+    }
+
+    /** Counts the copy under [key] as the newest; above [MAX_KEPT_DOCUMENTS] the oldest one is dropped from the store. */
+    private fun keep(key: String) {
+        val dropped: String? = synchronized(keptKeys) {
+            keptKeys.remove(key)
+            keptKeys.add(key)
+            val oldest = if (keptKeys.size > MAX_KEPT_DOCUMENTS) keptKeys.first() else null
+            if (oldest != null) keptKeys.remove(oldest)
+            oldest
+        }
+        if (dropped != null) runCatching { store.remove(dropped) }
+    }
+
+    /**
+     * Reads, in the background, the documents of every window of the place [name] that are not kept yet, so a
+     * window opens with no network needed. A failed reading changes nothing: the last good copy stays.
+     */
+    internal fun prefetch(map: PlacementRules.MapRead, name: String) {
+        val wanted = PlacementRules.documentIds(map, name).filter { id ->
+            val key = documentKey(id)
+            runCatching { store.read(key) }.getOrNull() == null && synchronized(loading) { loading.add(key) }
+        }
+        if (wanted.isEmpty()) return
+        prefetching = scope.launch {
+            for (id in wanted) {
+                try {
+                    document(id)
+                } finally {
+                    synchronized(loading) { loading.remove(documentKey(id)) }
+                }
+            }
+        }
     }
 
     private suspend fun readDocument(bytes: ByteArray): HotlayoutDocument? = withContext(Dispatchers.Default) {
@@ -132,6 +177,7 @@ public class PlacementSource(
         internal const val MAP_MAX_BYTES = PlacementRules.MAX_BODY_BYTES
         internal const val DOCUMENT_MAX_BYTES = 4 * 1024 * 1024
         internal const val SHARE_MS = 2_000L
+        internal const val MAX_KEPT_DOCUMENTS = 64
     }
 }
 
@@ -158,6 +204,7 @@ internal suspend fun decidePlacement(source: PlacementSource, name: String, deci
         document = result.document
     }
     val showing = PlacementRules.showing(resolution, outcome)
+    source.prefetch(decision.map, name)
     val load = PlacementLoad(
         name = name,
         mapStatus = decision.status.toPublic(),

@@ -25,6 +25,11 @@ Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8
   broken window is skipped on its own, a pause never reads its entry, overlapping windows go to the one that started
   later. Every row of the `scheduleCases` group of `placements/placement-cases.json` is run. The README shows how a
   host hides its own padding around a place that is empty.
+- A place with a schedule shows its window on time and with no network. After the first decision of a place,
+  `PlacementSource` reads in the background the documents of every window of the schedule and keeps them in its
+  store (at most 64 documents; the oldest copy is dropped first). A failed reading keeps the last good copy, a 404
+  drops it, and deciding the place again at a boundary or on return to the foreground while offline does not blank the
+  document that stands there.
 - A node that fades in and out when its condition changes. A node with `visibilityTransition: fade` and a
   `visibleIf` no longer appears and disappears at once: a node whose condition stops holding keeps its place and
   fades out in 120 ms, then leaves the layout; a node whose condition starts to hold waits 120 ms out of the layout,

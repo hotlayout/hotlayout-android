@@ -252,6 +252,14 @@ internal object PlacementRules {
     fun nextBoundary(map: MapRead, name: String, nowMs: Long): Long? =
         scheduleOf(map, name).orEmpty().flatMap { listOf(it.from, it.until) }.filter { it > nowMs }.minOrNull()
 
+    /** Ids of the documents the place [name] can show: its permanent content and every readable window, in that order. */
+    fun documentIds(map: MapRead, name: String): List<String> {
+        val ids = LinkedHashSet<String>()
+        resolve(map, name).documentId?.let { ids.add(it) }
+        scheduleOf(map, name).orEmpty().forEach { item -> item.documentId?.let { ids.add(it) } }
+        return ids.toList()
+    }
+
     /** How long to wait for [boundary] when the clock shows [nowMs]: not negative, cut to what a timer can hold. */
     fun timerDelayMs(boundary: Long, nowMs: Long): Long = (boundary - nowMs).coerceIn(0L, MAX_TIMER_MS)
 
