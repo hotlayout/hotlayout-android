@@ -1,9 +1,20 @@
-# HotLayout for Android
+# HotLayout for Android — `com.hotlayout:hotlayout-android`
 
 A Kotlin library that draws server-driven UI (SDUI) screens published by the [HotLayout](https://hotlayout.com) builder: a JSON
 document, a theme and your data become a native Jetpack Compose screen.
 
-**Quickstart:** [docs](https://hotlayout.com/docs/integrator/quickstart-android) · [video](https://youtu.be/4DzCQpgMoo8) · **Builder and access:** [hotlayout.com](https://hotlayout.com)
+**Quickstart:** [docs](https://hotlayout.com/docs/integrator/quickstart-android) · [video](https://youtu.be/4DzCQpgMoo8) · **Builder and access:** [hotlayout.com](https://hotlayout.com) · [try the editor](https://hotlayout.com/try)
+
+[![Maven Central](https://img.shields.io/maven-central/v/com.hotlayout/hotlayout-android?label=Maven%20Central&color=0a6cc9)](https://central.sonatype.com/artifact/com.hotlayout/hotlayout-android)
+[![License](https://img.shields.io/badge/license-Apache--2.0-0a6cc9)](LICENSE)
+[![Docs](https://img.shields.io/badge/docs-hotlayout.com-0a6cc9)](https://hotlayout.com/docs)
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/hotlayout/.github/main/profile/assets/app-obsidian.png" alt="A rewards screen built in HotLayout, dark theme" width="240">
+  &nbsp;&nbsp;
+  <img src="https://raw.githubusercontent.com/hotlayout/.github/main/profile/assets/app-sunny.png" alt="The same kind of screen with another theme, light and playful" width="240">
+</p>
+<p align="center"><sub>Two screens built in HotLayout. Try the editor in your browser, no sign-up: <a href="https://hotlayout.com/try">https://hotlayout.com/try</a></sub></p>
 
 It is a reader of the same contract as the React, Flutter and iOS readers and is measured by the same shared
 case tables.
