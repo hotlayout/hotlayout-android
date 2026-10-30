@@ -11727,5 +11727,32 @@
     "olderReader": "at once",
     "cases": "contract/fixtures/visibility-fade/visibility-fade-cases.json"
   },
+  "x-valueLayout": {
+    "refines": [
+      "x-valueTransition.shown",
+      "x-valueAppear.shown"
+    ],
+    "rule": "while a value runs a transition (animateChanges) or an appearance (animateIn), the node takes the place of its FINAL text; the value between is only painted in that place",
+    "measure": {
+      "text": "the text of a Text node is measured with every transitioning number at its final value (the same format, plural word and template): the size, the line breaks and the height are those of the final text",
+      "once": "the layout changes once — at the moment the data change or the node is shown — and never on a frame of the motion",
+      "interrupted": "a new value during a transition: the layout is held by the NEW final value from that moment"
+    },
+    "paint": {
+      "place": "the text between is painted over the box of the final text, at the same start, with the same width, alignment, font and colour",
+      "digits": "the painted text uses figures of equal width (tabular figures) while the value runs, where the font has them",
+      "overflow": "a text between that is longer than the final one is not measured: it may overflow the box for the frames of the motion; a box with maxLines clips it as it clips the final text",
+      "end": "when the motion ends, the final text is painted in its own place — the box does not move"
+    },
+    "scale": {
+      "geometry": "the track and the ring do not depend on the shown value: the bar is as wide as its box, the ring diameter comes from the box, the ring label stands centred over the ring and is not measured",
+      "barLabel": "the label of a ProgressBar is a text under the bar: while the value runs it takes the place of the final label, like a Text"
+    },
+    "reducedMotion": "no transition, no appearance: the final value at once, nothing to hold",
+    "semantics": "the final text is the one the screen reader hears; the painted text between is hidden from it",
+    "editorCanvas": "not animated — nothing to hold",
+    "olderReader": "measures the painted value: the layout may jump on the frames of the motion",
+    "cases": "contract/fixtures/value-transition/value-transition-cases.json (layoutCases)"
+  },
   "x-generatedFrom": "src/entities/component-schema — generated, do not edit by hand"
 }

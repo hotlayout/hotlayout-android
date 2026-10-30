@@ -3,6 +3,7 @@ package com.hotlayout.render.widgets
 import androidx.compose.runtime.Composable
 import com.hotlayout.render.WidgetCall
 import com.hotlayout.render.motion.CountdownTicking
+import com.hotlayout.render.motion.HoldingFinalValue
 import com.hotlayout.render.motion.ValueTransitioned
 
 /**
@@ -14,7 +15,7 @@ import com.hotlayout.render.motion.ValueTransitioned
 internal fun TextWidget(call: WidgetCall) {
     CountdownTicking(call.node, call.context) { ticked ->
         ValueTransitioned(call.node, ticked) { shown ->
-            TextContent(call, ticked.copy(scope = shown.stepped))
+            HoldingFinalValue(shown.held, final = { TextContent(call, ticked) }, between = { TextContent(call, ticked.copy(scope = shown.stepped)) })
         }
     }
 }

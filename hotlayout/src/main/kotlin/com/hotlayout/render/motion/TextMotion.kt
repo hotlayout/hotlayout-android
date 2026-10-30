@@ -2,6 +2,7 @@ package com.hotlayout.render.motion
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
@@ -13,12 +14,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameMillis
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import com.hotlayout.JsonObject
 import com.hotlayout.JsonValue
 import com.hotlayout.model.DocumentNode
+import com.hotlayout.render.LocalTabularFigures
 import com.hotlayout.render.RenderContext
 import kotlin.math.floor
 import kotlinx.coroutines.delay
@@ -137,4 +141,24 @@ internal fun ValueTransitioned(node: DocumentNode, context: RenderContext, conte
         }
     }
     content(engine.shown(scope))
+}
+
+/**
+ * Lays a node out by its FINAL value while the value runs: [final] is measured and hidden from sight (its
+ * semantics stay, so a screen reader hears the final text), and [between] is painted over its box, at the
+ * same start, with figures of equal width, and hidden from the screen reader. Without a run only [final] is
+ * drawn, as the value itself.
+ */
+@Composable
+internal fun HoldingFinalValue(held: Boolean, modifier: Modifier = Modifier, final: @Composable () -> Unit, between: @Composable () -> Unit) {
+    if (!held) {
+        final()
+        return
+    }
+    Box(modifier) {
+        Box(Modifier.alpha(0f)) { final() }
+        Box(Modifier.matchParentSize().clearAndSetSemantics {}) {
+            CompositionLocalProvider(LocalTabularFigures provides true) { between() }
+        }
+    }
 }

@@ -2,6 +2,7 @@ package com.hotlayout.render
 
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -28,6 +29,9 @@ import com.hotlayout.render.dp
 import com.hotlayout.theme.Rgba
 import com.hotlayout.theme.TextStyleValue
 import kotlin.math.ceil
+
+/** Figures of equal width in every text below, while a number runs and is painted between its values. */
+internal val LocalTabularFigures = compositionLocalOf { false }
 
 /** The text alignment of a word of the contract: `start`, `center`, `end`; anything else is `start`. */
 internal fun textAlign(word: String?): TextAlign = when (word) {
@@ -59,6 +63,7 @@ internal fun composeTextStyle(
     val density = LocalDensity.current
     val familyName = context.theme.fontFamilies[if (style.role == "heading") "heading" else "body"]
     val family = familyName?.let(context.fonts::family) ?: FontFamily.Default
+    val tabular = LocalTabularFigures.current
     return with(density) {
         TextStyle(
             color = color.color,
@@ -70,6 +75,7 @@ internal fun composeTextStyle(
             lineHeight = (lineBlock ?: style.lineBox).toFloat().dp.toSp(),
             lineHeightStyle = LineHeightStyle(LineHeightStyle.Alignment.Center, LineHeightStyle.Trim.None),
             platformStyle = PlatformTextStyle(includeFontPadding = false),
+            fontFeatureSettings = if (tabular) "tnum" else null,
             textAlign = align,
             textDirection = if (context.rightToLeft) TextDirection.Rtl else TextDirection.Ltr,
             textDecoration = when (decoration) {

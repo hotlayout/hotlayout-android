@@ -174,9 +174,9 @@ internal class ValueTransitionEngine {
     data class Ends(val from: Double, val to: Double, val shown: Double)
 
     /** What the node reads in place of its own data. */
-    class Shown(val stepped: DataScope, val smooth: DataScope, val literal: Pair<Double, Double>?, val ends: Map<String, Ends>) {
+    class Shown(val stepped: DataScope, val smooth: DataScope, val literal: Pair<Double, Double>?, val ends: Map<String, Ends>, val held: Boolean = false) {
         companion object {
-            fun plain(scope: DataScope) = Shown(scope, scope, null, emptyMap())
+            fun plain(scope: DataScope) = Shown(scope, scope, null, emptyMap(), held = false)
         }
     }
 
@@ -291,6 +291,6 @@ internal class ValueTransitionEngine {
             step?.let { stepped[path] = JsonValue.Num(it) }
             flow?.let { smooth[path] = JsonValue.Num(it) }
         }
-        return Shown(stepped, smooth, literal, ends)
+        return Shown(stepped, smooth, literal, ends, held = true)
     }
 }

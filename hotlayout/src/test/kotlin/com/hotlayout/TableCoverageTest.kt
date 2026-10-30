@@ -51,7 +51,7 @@ class TableCoverageTest {
             "list-marker/layoutCases", "list-marker/naturalCases",
             "value-transition/curveCases", "value-transition/stepCases", "value-transition/digitsCases", "value-transition/decisionCases",
             "value-transition/targetCases", "value-transition/appearStepCases", "value-transition/appearDecisionCases",
-            "value-transition/appearTargetCases", "value-transition/appearFlowCases",
+            "value-transition/appearTargetCases", "value-transition/appearFlowCases", "value-transition/layoutCases",
             "align/readCases", "align/heightSourceCases", "align/shiftCases", "align/boxCases", "align/screenCases", "align/ruleCases",
             "offset/pullCases", "offset/pullReadCases",
             // Screen anatomy: zones, app bar, navigation bar, top zone, insets.

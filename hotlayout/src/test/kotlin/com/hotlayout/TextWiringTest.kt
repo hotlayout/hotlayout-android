@@ -241,7 +241,10 @@ class TextWiringTest {
         data = dataScopeOf("user.points" to 100)
         compose.waitForIdle()
         // At 350 ms of 700 the curve is at 0.875 and the step is cut towards the old value.
-        compose.onNodeWithText("87").assertExists()
+        // The screen reader hears the final text; the figures between are only painted over its place.
+        compose.onNodeWithText("100").assertExists()
+        compose.onNodeWithText("87", useUnmergedTree = true).assertExists()
+        compose.onNodeWithText("87").assertDoesNotExist()
     }
 
     @Test fun aNumberThatLeadsEndsOnTheNewValueOnTheRealClock() {
@@ -265,7 +268,9 @@ class TextWiringTest {
         }
         compose.waitForIdle()
         // 80 × 0.578125 = 46.25: whole steps cut towards zero.
-        compose.onNodeWithText("46").assertExists()
+        compose.onNodeWithText("80").assertExists()
+        compose.onNodeWithText("46", useUnmergedTree = true).assertExists()
+        compose.onNodeWithText("46").assertDoesNotExist()
     }
 
     @Test fun aNodeWithoutTheFieldsShowsTheValueAtOnce() {

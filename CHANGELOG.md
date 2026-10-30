@@ -10,6 +10,20 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
+## [Unreleased]
+
+### Fixed
+
+- A number that counts (`animateChanges`, `animateIn`) no longer moves the layout while it runs. The node is laid out
+  by its final text from the first frame, and the figures between are only painted over that place, at the same start
+  and with figures of equal width (`tnum`); when the motion ends the final text stands in its own place and the box
+  does not move. A text that wrapped at the final number no longer changes its height, and the nodes under it no
+  longer jump. The screen reader hears the final text; the painted one is hidden from it. A progress bar's label takes
+  the place of its final label the same way; the track and the ring do not depend on the shown value. A new value during
+  a motion holds the place by the new final value. Every row of the `layoutCases` group of
+  `value-transition/value-transition-cases.json` is run, and the new row of `carousel/carousel-cases.json` (one card
+  fills the viewport when every spacing is the zero token) passes.
+
 ## [0.4.0] - 2026-10-29
 
 Reads document contract 9.33.0 (theme 4.0.1, icon set 1.0.0, data dictionary 1.8.0) and placement map 1.1.0. Folds in the entries that were prepared as 0.4.0 to 0.7.1 and never published (the last release is 0.3.0).

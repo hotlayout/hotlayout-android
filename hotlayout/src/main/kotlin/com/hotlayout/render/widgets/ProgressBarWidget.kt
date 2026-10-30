@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.hotlayout.render.WidgetCall
 import com.hotlayout.render.composeTextStyle
 import com.hotlayout.render.dp
+import com.hotlayout.render.motion.HoldingFinalValue
 import com.hotlayout.render.motion.ValueTransition
 import com.hotlayout.render.motion.ValueTransitionEngine
 import com.hotlayout.render.motion.ValueTransitioned
@@ -89,16 +91,28 @@ private fun ProgressBarContent(call: WidgetCall, shown: ValueTransitionEngine.Sh
         if (label != null) {
             val style = theme.typography[ProgressRules.DEFAULT_LABEL_TYPOGRAPHY] ?: TextStyleValue(10.0, 1.2, 500)
             val color = theme.colorValue(ProgressRules.BAR_LABEL_COLOR) ?: Rgba(0.42, 0.45, 0.5)
-            BasicText(
-                text = AnnotatedString(label),
-                modifier = Modifier.align(Alignment.End),
-                style = composeTextStyle(style, color, context).copy(fontFeatureSettings = "tnum"),
-                maxLines = 1,
-                softWrap = false,
-                overflow = TextOverflow.Visible,
-            )
+            val finalLabel = ProgressRules.labelText(
+                props["labelFormat"]?.string ?: "valueOfMax", ProgressRules.number(props["value"], context.scope) ?: 0.0,
+                ProgressRules.number(props["max"], context.scope) ?: 100.0, atRest,
+            ) ?: label
+            val labelStyle = composeTextStyle(style, color, context).copy(fontFeatureSettings = "tnum")
+            // While the value runs the label takes the place of the final one and the figures between are only painted there.
+            if (shown.held) {
+                HoldingFinalValue(
+                    true, Modifier.align(Alignment.End),
+                    final = { BarLabel(finalLabel, labelStyle, Modifier) },
+                    between = { BarLabel(label, labelStyle, Modifier.fillMaxWidth().wrapContentWidth(Alignment.End, unbounded = true)) },
+                )
+            } else {
+                BarLabel(label, labelStyle, Modifier.align(Alignment.End))
+            }
         }
     }
+}
+
+@Composable
+private fun BarLabel(text: String, style: androidx.compose.ui.text.TextStyle, modifier: Modifier) {
+    BasicText(text = AnnotatedString(text), modifier = modifier, style = style, maxLines = 1, softWrap = false, overflow = TextOverflow.Visible)
 }
 
 /** The scale of a bar drawn in one pass over a canvas: continuous or in steps, the glow copy under it. */

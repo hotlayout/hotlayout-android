@@ -63,6 +63,7 @@
     { "name": "the peek by a number", "viewport": 320, "paddingStart": "lg", "gap": "md", "peek": 40, "perView": 1, "expect": 252 },
     { "name": "peek none: the gap after the last whole card still shows", "viewport": 320, "paddingStart": "none", "gap": "md", "peek": "none", "perView": 1, "expect": 308 },
     { "name": "no padding, no gap, no peek: the card is the viewport", "viewport": 320, "paddingStart": "none", "gap": "none", "peek": "none", "perView": 1, "expect": 320 },
+    { "name": "393: the zero token everywhere — one card fills the whole viewport, not its natural width", "viewport": 393, "paddingStart": "none", "paddingEnd": "none", "gap": "none", "peek": "none", "perView": 1, "expect": 393 },
     { "name": "the end padding does not enter the width", "viewport": 320, "paddingStart": "none", "paddingEnd": "xl", "gap": "md", "peek": "xl", "perView": 1, "expect": 284 },
     { "name": "six cards on 320", "viewport": 320, "paddingStart": "lg", "gap": "xs", "peek": "lg", "perView": 6, "expect": 44 },
     { "name": "exactly the smallest card", "viewport": 53, "paddingStart": "lg", "gap": "md", "peek": "xl", "perView": 1, "expect": 1 },

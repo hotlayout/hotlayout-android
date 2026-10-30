@@ -68,7 +68,7 @@ class CarouselCasesTest {
 
     @Test fun cardWidth() {
         val rows = Contract.rows(table, "cardCases")
-        assertEquals(17, rows.size)
+        assertEquals(18, rows.size)
         for (row in rows) {
             val peek = CarouselRules.peekPixels(row["peek"]?.takeIf { !it.isNull }) { spacing[it] }
             val width = CarouselRules.cardWidth(row["viewport"]?.number ?: 0.0, points(row["paddingStart"]), points(row["gap"]), peek, row["perView"]?.number?.toInt() ?: 1)

@@ -153,5 +153,21 @@
     { "name": "a change of data on a shown node is not a show", "moment": "dataChanged", "expected": "none" },
     { "name": "with animateChanges, a change of data during the appearance leads from the shown value", "moment": "dataChangedDuringAppearWithAnimateChanges", "expected": "transition" },
     { "name": "without animateChanges, a change of data during the appearance shows the new value at once", "moment": "dataChangedDuringAppear", "expected": "atOnce" }
+  ],
+  "layoutNote": "Clarification of 9.21.0 and 9.24.0, rules: x-valueLayout. While a value runs, the node takes the place of its FINAL value and only paints the value between there. «layoutCases» — a flow from «from» with «changes» (each at «at» ms; a change during a motion interrupts it and leads from the value shown at that moment): at «t», «expected.layout» is the value the reader MEASURES the node by, «expected.shown» the value it paints, «expected.held» whether the painted value lies over the place of the final one. «digits» absent means a scale.",
+  "layoutCases": [
+    { "name": "counting up from zero (an appearance): the place is that of the final value from the first frame", "from": 0, "changes": [{"at": 0, "to": 78}], "t": 0, "digits": 0, "expected": {"layout": 78, "shown": 0, "held": true} },
+    { "name": "counting up, a quarter in: 45 is painted in the place of 78", "from": 0, "changes": [{"at": 0, "to": 78}], "t": 175, "digits": 0, "expected": {"layout": 78, "shown": 45, "held": true} },
+    { "name": "counting up, half way", "from": 0, "changes": [{"at": 0, "to": 78}], "t": 350, "digits": 0, "expected": {"layout": 78, "shown": 68, "held": true} },
+    { "name": "counting up, the end: the final value in its own place, nothing held", "from": 0, "changes": [{"at": 0, "to": 78}], "t": 700, "digits": 0, "expected": {"layout": 78, "shown": 78, "held": false} },
+    { "name": "counting down to a shorter number: the place is that of the shorter final value", "from": 1000, "changes": [{"at": 0, "to": 5}], "t": 350, "digits": 0, "expected": {"layout": 5, "shown": 130, "held": true} },
+    { "name": "a value with a fraction: the place is that of the final value", "from": 12.5, "changes": [{"at": 0, "to": 99.99}], "t": 525, "digits": 2, "expected": {"layout": 99.99, "shown": 98.62, "held": true} },
+    { "name": "before the interrupting value arrives the place is that of the first final value", "from": 10, "changes": [{"at": 0, "to": 50},{"at": 350, "to": 20}], "t": 175, "digits": 0, "expected": {"layout": 50, "shown": 33, "held": true} },
+    { "name": "interrupted by a new value: the NEW final value holds the place from that moment", "from": 10, "changes": [{"at": 0, "to": 50},{"at": 350, "to": 20}], "t": 525, "digits": 0, "expected": {"layout": 20, "shown": 31, "held": true} },
+    { "name": "interrupted: the new transition ends in its own final place", "from": 10, "changes": [{"at": 0, "to": 50},{"at": 350, "to": 20}], "t": 1050, "digits": 0, "expected": {"layout": 20, "shown": 20, "held": false} },
+    { "name": "reduce motion: no transition, the final value at once, nothing held", "from": 10, "changes": [{"at": 0, "to": 78}], "t": 175, "digits": 0, "reducedMotion": true, "expected": {"layout": 78, "shown": 78, "held": false} },
+    { "name": "no change yet: the value shown is the value measured", "from": 40, "changes": [{"at": 100, "to": 60}], "t": 50, "digits": 0, "expected": {"layout": 40, "shown": 40, "held": false} },
+    { "name": "the same value: nothing runs", "from": 40, "changes": [{"at": 0, "to": 40}], "t": 175, "digits": 0, "expected": {"layout": 40, "shown": 40, "held": false} },
+    { "name": "a scale (no step): its fill runs, the place is that of the final value", "from": 2, "changes": [{"at": 0, "to": 7}], "t": 350, "expected": {"layout": 7, "shown": 6.375, "held": true} }
   ]
 }

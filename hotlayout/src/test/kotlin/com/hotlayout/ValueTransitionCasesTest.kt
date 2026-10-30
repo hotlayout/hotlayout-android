@@ -25,7 +25,7 @@ class ValueTransitionCasesTest {
 
     @Test fun everyGroupIsRun() {
         assertEquals(
-            setOf("curveCases", "stepCases", "digitsCases", "decisionCases", "targetCases", "appearStepCases", "appearDecisionCases", "appearTargetCases", "appearFlowCases"),
+            setOf("curveCases", "stepCases", "digitsCases", "decisionCases", "targetCases", "appearStepCases", "appearDecisionCases", "appearTargetCases", "appearFlowCases", "layoutCases"),
             Contract.groups(table),
         )
         assertEquals(ValueTransition.DURATION_MS, table["durationMs"]?.number ?: -1.0, 0.0)
@@ -95,6 +95,35 @@ class ValueTransitionCasesTest {
             val moment = ValueTransition.Moment.entries.firstOrNull { it.word == row["moment"]?.string }
             assertTrue("moment not read: ${row.name()}", moment != null)
             assertEquals(row.name(), row["expected"]?.string, ValueTransition.appear(moment!!).word)
+        }
+    }
+
+    /** Replays the flow of one row on the engine: each change at its moment, then the frame `t`. */
+    @Test fun layoutHoldsTheFinalValue() {
+        for (row in rows("layoutCases", 13)) {
+            val scale = row["digits"] == null
+            val target = ValueTransition.Target("n", scale, if (row["digits"]?.number == 2.0) "currency" else null, if (row["digits"]?.number == 2.0) "USD" else null)
+            val reduced = row["reducedMotion"]?.bool ?: false
+            val engine = ValueTransitionEngine()
+            var final = row["from"]?.number ?: 0.0
+            engine.sync(listOf(target), num(final), true, "en", reduced)
+            val t = row["t"]?.number ?: 0.0
+            for (change in row["changes"]?.array.orEmpty()) {
+                val at = change["at"]?.number ?: 0.0
+                if (at > t) break
+                engine.tick(at)
+                final = change["to"]?.number ?: 0.0
+                engine.sync(listOf(target), num(final), true, "en", reduced)
+                engine.tick(at)
+            }
+            engine.tick(t)
+            val expected = row["expected"]
+            val scope = mapOf("n" to JsonValue.Num(final))
+            val shown = engine.shown(scope)
+            assertEquals(row.name(), expected?.get("layout")?.number ?: -1.0, final, 1e-9)
+            assertEquals(row.name(), expected?.get("held")?.bool, shown.held)
+            val between = (if (scale) shown.smooth else shown.stepped)["n"]?.number
+            assertEquals(row.name(), expected?.get("shown")?.number ?: -1.0, between ?: final, 1e-9)
         }
     }
 
