@@ -140,6 +140,29 @@ class ProgressWiringTest {
         assertTrue("the bar itself is drawn over its glow", near(image.rgbAt(50, 20), fill))
     }
 
+    private val whitePage = """{"background":{"kind":"color","color":{"value":"#ffffff"}},"padding":"xl"}"""
+
+    private fun styledBar(props: String) =
+        """{"id":"b","type":"ProgressBar","props":{"value":${number(60.0)},"max":${number(100.0)},"color":"primary","thickness":8,"labelFormat":"none"$props},"style":{"radius":"lg","width":120,"height":8}}"""
+
+    @Test fun theGlowOfABarWithARadiusIsNotClippedByItsOwnBox() {
+        show(Screens.document("a" to styledBar(""","glow":"strong""""), rootStyle = whitePage))
+        val image = capture()
+        assertTrue("the glow reaches above the box of the bar", (18 until 24).any { !near(image.rgbAt(60, it), white, 3) })
+    }
+
+    @Test fun aSizedBarWithoutGlowStillClipsToItsBox() {
+        show(Screens.document("a" to styledBar(""), rootStyle = whitePage))
+        val image = capture()
+        assertTrue("nothing lies above the bar", (0 until 20).all { near(image.rgbAt(60, it), white, 1) })
+    }
+
+    @Test fun anUnknownGlowWordIsNoGlow() {
+        show(Screens.document("a" to styledBar(""","glow":"huge""""), rootStyle = whitePage))
+        val image = capture()
+        assertTrue("nothing lies above the bar", (0 until 20).all { near(image.rgbAt(60, it), white, 1) })
+    }
+
     @Test fun aBarWithoutGlowLeavesThePageWhite() {
         show(Screens.document("a" to bar(), rootStyle = """{"background":{"kind":"color","color":{"value":"#ffffff"}},"padding":"lg"}"""))
         assertTrue(near(capture().rgbAt(50, 16 - 3), white, 1))

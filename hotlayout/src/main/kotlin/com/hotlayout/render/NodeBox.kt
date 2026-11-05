@@ -79,8 +79,11 @@ internal fun BoxLook.withoutMargin(): BoxLook = copy(margin = Sides.Zero)
  *
  * A named size clips the content larger than the box; a role surface (a button) is clipped by its own shape inside, and the
  * shadow it paints outside its box must not be cut by this outer box, so it passes `clipsNamedSize = false`.
+ *
+ * A scale that glows passes `contentEscapes = true`: its glow is a blurred copy that lies outside the scale by its blur, and only
+ * an ancestor that clips may cut it, as it cuts a shadow. The radius still rounds the background.
  */
-internal fun Modifier.nodeBox(look: BoxLook, stretch: Boolean, rightToLeft: Boolean, clipsNamedSize: Boolean = true, backgroundImage: Modifier = Modifier): Modifier {
+internal fun Modifier.nodeBox(look: BoxLook, stretch: Boolean, rightToLeft: Boolean, clipsNamedSize: Boolean = true, backgroundImage: Modifier = Modifier, contentEscapes: Boolean = false): Modifier {
     val shape = (look.radius ?: Corners()).shape()
     val rounded = look.radius != null
     val border = look.borderWidth ?: 0.0
@@ -115,7 +118,7 @@ internal fun Modifier.nodeBox(look: BoxLook, stretch: Boolean, rightToLeft: Bool
     val contentShape = if (rounded && border > 0) (look.radius ?: Corners()).innerShape(border) else shape
     // The border takes room, as in CSS: the content starts inside it, and so does the clip.
     if (border > 0) modifier = modifier.padding(border.dp)
-    if (rounded || (clipsNamedSize && (look.width != null || look.height != null))) modifier = modifier.clip(contentShape)
+    if (!contentEscapes && (rounded || (clipsNamedSize && (look.width != null || look.height != null)))) modifier = modifier.clip(contentShape)
     modifier = modifier.then(backgroundImage)
     return modifier.then(look.padding.paddingModifier())
 }

@@ -25,6 +25,7 @@ import com.hotlayout.render.screen.AppBarRules
 import com.hotlayout.render.widgets.CarouselRules
 import com.hotlayout.render.widgets.ListNumber
 import com.hotlayout.render.widgets.ListPosition
+import com.hotlayout.render.widgets.ProgressRules
 import com.hotlayout.render.widgets.rememberBackgroundImage
 import com.hotlayout.theme.BoxLook
 import com.hotlayout.theme.Corners
@@ -65,6 +66,8 @@ internal fun NodeView(
     // The inset of the status bar lies inside the box of the app bar, above its padding.
     if (node.widget == WidgetType.AppBar && context.barInset > 0) look = look.copy(padding = look.padding.copy(top = look.padding.top + context.barInset))
     val box = if (node.widget in WidgetType.roleSurfaces) outerOfRole(look) else look
+    // A scale with a `glow` is not clipped by the box of its own node.
+    val glowEscapesBox = (node.widget == WidgetType.ProgressBar || node.widget == WidgetType.CircularProgress) && ProgressRules.Glow.of(node.props["glow"]) != null
     val press = PressTarget.press(node)
     val long = PressTarget.longPress(node)
     val fade = context.fadeKey(node)?.let { context.fades?.modifierFor(it, node.id) } ?: Modifier
@@ -84,7 +87,7 @@ internal fun NodeView(
         if (press != null || long != null) outer = outer.then(Modifier.pressableCard(node, inner, press, long))
         // A named size is the size of the content too: a stack, a column or a row inside it fills that box and aligns
         // its children by its own words (without this the content sat at the top start of the named box).
-        Box(outer.then(if (optionGroup) Modifier.selectableGroup() else Modifier).glass(box.backdropBlur, (box.radius ?: Corners()).shape()).nodeBox(box.withoutMargin(), placement.stretchWidth, context.rightToLeft, clipsNamedSize = node.widget !in WidgetType.roleSurfaces, backgroundImage = backgroundImage), propagateMinConstraints = named || fillsMinimum) {
+        Box(outer.then(if (optionGroup) Modifier.selectableGroup() else Modifier).glass(box.backdropBlur, (box.radius ?: Corners()).shape()).nodeBox(box.withoutMargin(), placement.stretchWidth, context.rightToLeft, clipsNamedSize = node.widget !in WidgetType.roleSurfaces, backgroundImage = backgroundImage, contentEscapes = glowEscapesBox), propagateMinConstraints = named || fillsMinimum) {
             CompositionLocalProvider(LocalGlassLevel provides LocalGlassLevel.current + if (box.backdropBlur != null) 1 else 0) {
             ProvideSiblings(node) { Widget(WidgetCall(node, inner, style, placement, depth, parentType, context.listPosition, context.listNumber)) }
             }
