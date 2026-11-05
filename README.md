@@ -144,6 +144,13 @@ Separate from the view: `checkDocumentVersion` (verdicts `Ok`, `NewerMinor`, `Ne
   assembled by hand is not trusted because of its type.
 - **Navigation** inside a document (`navigate`, `navigate.back`, `navigate.section`) is done by the
   reader; `openUrl`, `deeplink`, `close` and actions of your app go to `onAction`.
+- **Swipe fill**: a swipe button with `confirmTransition: 'ripple'` that leads to another screen fills the
+  screen with its colour before the screen changes. By default the fill lies over the `HotlayoutScreen` and the
+  reader changes its own screens under it. If your app keeps its own stack of screens (you cancel the change
+  with `onNavigate` and show your own view), pass `onScreenCovered`: the fill then lies in a layer over the
+  whole window, above your views. The handler gets `true` when a fill starts to cover the screen, before the
+  action reaches `onNavigate` or `onAction` (change your screen then, without a transition of your own), and
+  `false` once the last fill is gone.
 - **Fonts** are yours: the theme names a family, `HotlayoutFonts` gives the `FontFamily`. If the family
   has no Arabic (or other) letters, the platform draws them with a system fallback font, chosen by the
   weight of the typeface. Static font files per weight keep it. A variable font must be wrapped so each

@@ -72,6 +72,9 @@ class TableCoverageTest {
             "sheet-safe-bottom/placementCases", "sheet-safe-bottom/geometryCases", "sheet-safe-bottom/ruleCases",
             // Schema 9.33.0: the fade of a node when its condition changes.
             "visibility-fade/curveCases", "visibility-fade/timelineCases", "visibility-fade/pairCases", "visibility-fade/animateCases", "visibility-fade/fieldCases", "visibility-fade/screenCases",
+            // Schema 9.34.0: the motion of a swipe-to-confirm button and its fill over the screen.
+            "swipe-motion/labelCases", "swipe-motion/trailCases", "swipe-motion/thumbRadiusCases", "swipe-motion/collapseCases", "swipe-motion/rippleScaleCases",
+            "swipe-motion/rippleCases", "swipe-motion/revealCases", "swipe-motion/sequenceCases", "swipe-motion/busyReturnCases", "swipe-motion/fieldCases", "swipe-motion/ruleCases",
             // Pictures: the proportion, the box, the file in the box, the radius, the circle.
             "media-chrome/ratioCases", "media-chrome/imageBoxCases", "media-chrome/paintCases", "media-chrome/radiusCases", "media-chrome/circleCases",
             "carousel/hostCases", "carousel/readCases", "carousel/cardCases", "carousel/stopCases", "carousel/activeCases",

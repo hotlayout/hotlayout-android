@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.zIndex
 import com.hotlayout.ScreenShownCause
 import com.hotlayout.render.motion.rememberReducedMotion
+import com.hotlayout.render.widgets.LocalFillCovers
 
 /**
  * How a page replaces another one: the motion of a native app, not a field of the document.
@@ -74,7 +75,8 @@ private class PageHolder {
 /** Draws the page of [key]; when [key] changes with a [cause] that moves, the page it replaces stays drawn until the motion is over. */
 @Composable
 internal fun PageTransition(key: Any, cause: ScreenShownCause?, content: @Composable () -> Unit) {
-    val reduced = rememberReducedMotion()
+    // A fill that covers the screen is the motion: the screen changes under it with none of its own.
+    val reduced = rememberReducedMotion() || LocalFillCovers.current
     val holder = remember { PageHolder() }
     val kind = PageMotionRules.kindOf(cause)
     val outgoing = remember(key) { if (holder.key != null && kind != null && !reduced) holder.content else null }

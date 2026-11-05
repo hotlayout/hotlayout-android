@@ -23,6 +23,7 @@ import com.hotlayout.render.widgets.ListBudget
 import com.hotlayout.render.widgets.ListNumber
 import com.hotlayout.render.widgets.ListPosition
 import com.hotlayout.render.widgets.PressRun
+import com.hotlayout.render.widgets.SwipeRippleScope
 import com.hotlayout.text.BindableText
 import com.hotlayout.text.Localization
 import com.hotlayout.text.ShownText
@@ -107,6 +108,8 @@ internal data class RenderContext(
     val barNav: DocumentNode? = null,
     /** The navigation items are drawn at the top (in the app bar or a bar of their own): a row of glyph and label. */
     val navAtTop: Boolean = false,
+    /** Where a swipe button puts the fill over the screen (`confirmTransition`); `null` outside a screen: the button has no fill. */
+    val ripples: SwipeRippleScope? = null,
 ) {
     val theme: HotlayoutTheme get() = resolver.theme
 

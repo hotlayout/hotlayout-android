@@ -12,8 +12,41 @@ is stated in every entry.
 
 ## [Unreleased]
 
+Reads document contract **9.34.0**.
+
+### Added
+
+- **A "swipe to confirm" button has a motion.** While the thumb is dragged, a fill of the thumb's colour follows it
+  (from the place of rest to the far edge of the thumb, with its height and radius, under the thumb) and the label fades
+  with the travel. Released past the threshold, the thumb glides to the end (200 ms) and the button collapses into a
+  circle (600 ms, `cubic-bezier(0.4, 0, 0.2, 1)`): a pill the height of the button narrows towards the centre of its box,
+  the surface (background, border, shadow) fades, a halo of the thumb's colour at 0.4 opacity shows around a core of the
+  thumb's colour, and the busy indicator turns at the centre. That circle is now the look of "busy": when the host answers,
+  the circle expands back (600 ms) and then the thumb returns to the start (250 ms). The thumb radius is concentric with the
+  track: the track radius minus the inset, never below zero; a pill track keeps the thumb a circle. Under "reduce motion"
+  there is no circle: the thumb jumps to the end as before.
+- **`confirmTransition: 'ripple'` fills the screen before it changes.** On a swipe button whose action is `navigate` or
+  `navigate.back`, the circle grows over the whole screen (linearly, 800 ms, until its core covers the farthest corner), and
+  only then do the action and its `track` event run, once, with the next screen standing under the fill; then the fill fades
+  away over it (200 ms). The screen changes with no motion of its own meanwhile. The fill lies over everything the screen
+  draws (zones, navigation bar, modal layers), catches presses while it grows, and goes with the button if the button
+  leaves before the screen is covered (nothing runs). The keyboard, assistive technology and "reduce motion" run the action
+  at once, with no circle and no fill. A document that names the field on any other action draws the usual look; only the
+  word `ripple` is read.
+- **The fill plays when your app keeps the stack of screens.** The new `onScreenCovered` parameter of `HotlayoutScreen`
+  puts the fill in a layer over the whole window, above your views, so it outlives the screen the button was on. It is told
+  `true` when a fill starts to cover the screen (before the action reaches `onNavigate` or `onAction`) and `false` when the
+  last fill is gone, so you can change your screen without a transition of your own.
+
+### Changed
+
+- `HotlayoutScreen` has a new last parameter, `onScreenCovered`; code compiled against an earlier version must be rebuilt.
+
 ### Fixed
 
+- **The glow of a scale is no longer clipped by its own box.** A `ProgressBar` or a `CircularProgress` with `glow` and a
+  radius used to have its glow cut by the clip of the node box, at the edge of the scale. The box of a glowing scale no
+  longer clips its content; the radius still rounds the background, and a node without a glow clips as before.
 - A number that counts (`animateChanges`, `animateIn`) no longer moves the layout while it runs. The node is laid out
   by its final text from the first frame, and the figures between are only painted over that place, at the same start
   and with figures of equal width (`tnum`); when the motion ends the final text stands in its own place and the box
