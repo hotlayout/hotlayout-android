@@ -4639,6 +4639,13 @@
           "enum": [
             "swipe"
           ]
+        },
+        "confirmTransition": {
+          "description": "After a swipe (9.34.0): «ripple» — the circle the button collapses into grows over the screen, then the «navigate» / «navigate.back» action runs — «x-swipeConfirmMotion». No field — as usual.",
+          "type": "string",
+          "enum": [
+            "ripple"
+          ]
         }
       },
       "required": [
@@ -6268,7 +6275,7 @@
   },
   "$id": "https://hotlayout.com/schema/ui-document.json",
   "title": "UiDocument",
-  "x-schemaVersion": "9.33.0",
+  "x-schemaVersion": "9.34.0",
   "x-compatibility": {
     "policy": {
       "majorMustMatch": true,
@@ -6608,7 +6615,8 @@
       "longPressWrite": "9.30.0",
       "sheetSafeBottom": "9.31.0",
       "carouselStop": "9.32.0",
-      "visibilityFade": "9.33.0"
+      "visibilityFade": "9.33.0",
+      "swipeMotion": "9.34.0"
     }
   },
   "x-budget": {
@@ -11726,6 +11734,83 @@
     "notRead": "a node without «visibleIf», the first child of the screen root that is an AppBar, a pinned node, a NavBar and a NavItem",
     "olderReader": "at once",
     "cases": "contract/fixtures/visibility-fade/visibility-fade-cases.json"
+  },
+  "x-swipeConfirmMotion": {
+    "on": [
+      "Button"
+    ],
+    "when": "confirm-is-swipe",
+    "refines": [
+      "x-swipeConfirm.label",
+      "x-swipeConfirmBusy.busy.thumb",
+      "x-swipeConfirmBusy.release.atOrPastThreshold"
+    ],
+    "drag": {
+      "trail": "from-the-rest-place-of-the-thumb-to-its-far-edge-the-height-radius-and-fill-of-the-thumb-under-the-thumb",
+      "labelOpacity": "one-minus-the-progress"
+    },
+    "thumbShape": {
+      "radius": "the-track-radius-minus-the-inset-never-below-zero-concentric-with-the-track",
+      "trackRadius": "the-actual-radius-of-the-button-its-style-radius-or-else-the-radius-of-its-theme-role-capped-at-half-the-height",
+      "inset": "x-swipeConfirm.thumb.inset",
+      "pill": "a-track-radius-of-half-the-height-or-more-keeps-the-thumb-a-circle",
+      "trail": "the-radius-of-the-thumb-on-every-corner-no-corner-sticks-out",
+      "unchanged": "the-collapse-circle-the-halo-and-the-ripple-stay-round"
+    },
+    "collapse": {
+      "durationMs": 600,
+      "curve": [
+        0.4,
+        0,
+        0.2,
+        1
+      ],
+      "after": "the-glide-to-the-end",
+      "shape": "a-pill-the-height-of-the-button-narrowing-to-a-circle-at-the-centre-of-the-box",
+      "core": "the-fill-of-the-thumb-inset-by-the-border-plus-the-inset-on-every-side",
+      "halo": "the-fill-of-the-thumb-at-halo-opacity-between-the-core-and-the-edge",
+      "haloOpacity": 0.4,
+      "surface": "the-background-border-and-shadow-of-the-button-fade-out",
+      "label": "hidden",
+      "indicator": "the-busy-indicator-of-x-swipeConfirmBusy-at-the-centre",
+      "layout": "unchanged-the-box-keeps-its-size"
+    },
+    "busyLook": "the-collapsed-circle",
+    "expand": "the-collapse-played-backwards-then-the-thumb-returns",
+    "field": "confirmTransition",
+    "words": [
+      "ripple"
+    ],
+    "noField": "the-screen-changes-as-usual",
+    "ripple": {
+      "durationMs": 800,
+      "curve": "linear",
+      "plays": "after-a-swipe-on-a-navigate-or-navigate-back-action-without-reduced-motion",
+      "actions": [
+        "navigate",
+        "navigate.back"
+      ],
+      "after": "the-collapse",
+      "centre": "the-centre-of-the-collapsed-circle",
+      "scaleTo": "until-the-core-covers-the-farthest-corner-of-the-screen",
+      "layer": "above-everything-on-the-screen-including-the-zones-and-the-status-bar-area",
+      "then": "the-action-and-its-track-run-once-the-next-screen-is-under-the-fill"
+    },
+    "reveal": {
+      "durationMs": 200,
+      "curve": "linear",
+      "what": "the-fill-fades-out-over-the-next-screen"
+    },
+    "rippleNotPlayed": {
+      "keyboardAndAssistive": "the-action-at-once-no-ripple",
+      "reducedMotion": "the-action-at-once-no-collapse-no-ripple",
+      "otherActions": "not-published-confirm-transition-not-read"
+    },
+    "leavesBeforeAct": "nothing-runs-the-fill-goes-with-the-button",
+    "reducedMotion": "the-trail-follows-the-finger-no-collapse-no-ripple-the-busy-thumb-jumps-to-the-end-as-in-9-24",
+    "editorCanvas": "the-thumb-at-the-start-nothing-plays",
+    "olderReader": "the-look-of-9-24-and-the-screen-changes-as-usual",
+    "cases": "contract/fixtures/swipe-motion/swipe-motion-cases.json"
   },
   "x-valueLayout": {
     "refines": [

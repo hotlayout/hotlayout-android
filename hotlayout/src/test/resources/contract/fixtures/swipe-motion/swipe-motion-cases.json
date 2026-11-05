@@ -1,0 +1,810 @@
+{
+  "description": "Swipe to confirm: motion (9.34.0, «x-swipeConfirmMotion», «Button.confirmTransition»). Refines 9.22 and 9.24, whose tables stay as they are. Numbers are logical points from the inline START of the button; times are milliseconds. The pattern is the Flutter package swipeable_button_view: the fill follows the thumb, the button collapses into a circle with the busy indicator (600 ms, fastOutSlowIn = cubic-bezier(0.4, 0, 0.2, 1)), and with «ripple» the circle grows over the whole screen (800 ms, linear), then the action runs and the next screen shows from under the fill (200 ms, linear). Curve values were computed independently (bisection, 80 steps); compare to 1e-4.",
+  "labelCases": [
+    {
+      "name": "at rest the label is fully seen",
+      "progress": 0,
+      "expect": 1
+    },
+    {
+      "name": "half the travel — half seen",
+      "progress": 0.5,
+      "expect": 0.5
+    },
+    {
+      "name": "at the threshold",
+      "progress": 0.9,
+      "expect": 0.1
+    },
+    {
+      "name": "at the end the label is gone",
+      "progress": 1,
+      "expect": 0
+    },
+    {
+      "name": "past the end — clamped",
+      "progress": 1.4,
+      "expect": 0
+    },
+    {
+      "name": "below zero — clamped",
+      "progress": -0.2,
+      "expect": 1
+    }
+  ],
+  "trailCases": [
+    {
+      "name": "at rest the fill is exactly the thumb",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "progress": 0,
+      "expect": {
+        "start": 5,
+        "width": 38
+      }
+    },
+    {
+      "name": "half the travel: the thumb and half the travel",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "progress": 0.5,
+      "expect": {
+        "start": 5,
+        "width": 186.5
+      }
+    },
+    {
+      "name": "at the end the fill covers the track inside the border and the inset",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "progress": 1,
+      "expect": {
+        "start": 5,
+        "width": 335
+      }
+    },
+    {
+      "name": "no border, a narrower button",
+      "track": {
+        "height": 40,
+        "width": 200,
+        "border": 0,
+        "inset": 4
+      },
+      "progress": 0.25,
+      "expect": {
+        "start": 4,
+        "width": 72.0
+      }
+    }
+  ],
+  "thumbRadiusCases": [
+    {
+      "name": "a square track: the thumb is square",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "radius": 0,
+      "expect": 0
+    },
+    {
+      "name": "radius 8: the thumb is 4 - the track radius minus the inset",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "radius": 8,
+      "expect": 4
+    },
+    {
+      "name": "radius 12 (md): the thumb is 8",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "radius": 12,
+      "expect": 8
+    },
+    {
+      "name": "no style.radius: R is the radius of the button's theme role (12), the thumb is 8",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "radius": 12,
+      "expect": 8
+    },
+    {
+      "name": "radius 16: the thumb is 12",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "radius": 16,
+      "expect": 12
+    },
+    {
+      "name": "radius below the inset: never negative",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "radius": 3,
+      "expect": 0
+    },
+    {
+      "name": "a pill track (radius is half the height): the thumb stays a circle, radius 19",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "radius": 24,
+      "expect": 19
+    },
+    {
+      "name": "a radius past half the height is capped at half: still a circle",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "radius": 9999,
+      "expect": 19
+    },
+    {
+      "name": "radius not measured (no layout): a circle",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "radius": null,
+      "expect": 19
+    },
+    {
+      "name": "radius 20 gives 16, still under the circle",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "radius": 20,
+      "expect": 16
+    },
+    {
+      "name": "radius 23 gives 19, exactly the circle",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "radius": 23,
+      "expect": 19
+    },
+    {
+      "name": "a taller track 64, radius 16: the thumb is 12, the circle would be 28",
+      "track": {
+        "height": 64,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "radius": 16,
+      "expect": 12
+    }
+  ],
+  "collapseCases": [
+    {
+      "name": "the first frame changes nothing: the pill is the whole button, the halo is not seen",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "elapsed": 0,
+      "expect": {
+        "start": 0.0,
+        "width": 345.0,
+        "height": 48,
+        "ring": 5,
+        "surfaceOpacity": 1.0,
+        "haloOpacity": 0.0
+      }
+    },
+    {
+      "name": "a quarter of the time",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "elapsed": 150,
+      "expect": {
+        "start": 35.133223,
+        "width": 274.733554,
+        "height": 48,
+        "ring": 5,
+        "surfaceOpacity": 0.763413,
+        "haloOpacity": 0.094635
+      }
+    },
+    {
+      "name": "half the time — past half the way (fastOutSlowIn)",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "elapsed": 300,
+      "expect": {
+        "start": 115.170855,
+        "width": 114.658291,
+        "height": 48,
+        "ring": 5,
+        "surfaceOpacity": 0.224439,
+        "haloOpacity": 0.310225
+      }
+    },
+    {
+      "name": "three quarters of the time",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "elapsed": 450,
+      "expect": {
+        "start": 142.466109,
+        "width": 60.067782,
+        "height": 48,
+        "ring": 5,
+        "surfaceOpacity": 0.040632,
+        "haloOpacity": 0.383747
+      }
+    },
+    {
+      "name": "the end: a circle the height of the button at the centre of the box",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "elapsed": 600,
+      "expect": {
+        "start": 148.5,
+        "width": 48.0,
+        "height": 48,
+        "ring": 5,
+        "surfaceOpacity": 0.0,
+        "haloOpacity": 0.4
+      }
+    },
+    {
+      "name": "after the end it stays a circle",
+      "track": {
+        "height": 48,
+        "width": 345,
+        "border": 1,
+        "inset": 4
+      },
+      "elapsed": 900,
+      "expect": {
+        "start": 148.5,
+        "width": 48.0,
+        "height": 48,
+        "ring": 5,
+        "surfaceOpacity": 0.0,
+        "haloOpacity": 0.4
+      }
+    },
+    {
+      "name": "a narrower button without a border, half the time",
+      "track": {
+        "height": 40,
+        "width": 200,
+        "border": 0,
+        "inset": 4
+      },
+      "elapsed": 300,
+      "expect": {
+        "start": 62.044905,
+        "width": 75.91019,
+        "height": 40,
+        "ring": 4,
+        "surfaceOpacity": 0.224439,
+        "haloOpacity": 0.310225
+      }
+    }
+  ],
+  "rippleScaleCases": [
+    {
+      "name": "a circle low in the middle of a phone: the core reaches the top corners",
+      "area": {
+        "centerX": 196.5,
+        "centerY": 700,
+        "screenWidth": 393,
+        "screenHeight": 852,
+        "core": 40
+      },
+      "expect": 36.352863
+    },
+    {
+      "name": "a circle at the centre: every corner is as far",
+      "area": {
+        "centerX": 196.5,
+        "centerY": 426,
+        "screenWidth": 393,
+        "screenHeight": 852,
+        "core": 40
+      },
+      "expect": 23.456782
+    },
+    {
+      "name": "a circle near the inline start",
+      "area": {
+        "centerX": 40,
+        "centerY": 800,
+        "screenWidth": 393,
+        "screenHeight": 852,
+        "core": 38
+      },
+      "expect": 46.022065
+    },
+    {
+      "name": "no core — the scale stays one",
+      "area": {
+        "centerX": 100,
+        "centerY": 100,
+        "screenWidth": 393,
+        "screenHeight": 852,
+        "core": 0
+      },
+      "expect": 1
+    }
+  ],
+  "rippleCases": [
+    {
+      "name": "the start: the collapsed circle",
+      "scale": 21.5,
+      "elapsed": 0,
+      "expect": 1.0
+    },
+    {
+      "name": "a quarter — linear",
+      "scale": 21.5,
+      "elapsed": 200,
+      "expect": 6.125
+    },
+    {
+      "name": "half",
+      "scale": 21.5,
+      "elapsed": 400,
+      "expect": 11.25
+    },
+    {
+      "name": "the end: the screen is covered",
+      "scale": 21.5,
+      "elapsed": 800,
+      "expect": 21.5
+    },
+    {
+      "name": "after the end",
+      "scale": 21.5,
+      "elapsed": 1200,
+      "expect": 21.5
+    }
+  ],
+  "revealCases": [
+    {
+      "name": "the action has run: the fill still covers",
+      "elapsed": 0,
+      "expect": 1
+    },
+    {
+      "name": "half — linear",
+      "elapsed": 100,
+      "expect": 0.5
+    },
+    {
+      "name": "the next screen is shown, the fill is gone",
+      "elapsed": 200,
+      "expect": 0
+    },
+    {
+      "name": "after the end",
+      "elapsed": 500,
+      "expect": 0
+    }
+  ],
+  "sequenceCases": [
+    {
+      "name": "a swipe on navigate with ripple: glide, collapse, ripple, then the action, then the reveal",
+      "input": {
+        "runner": "reader",
+        "actionType": "navigate",
+        "transition": "ripple",
+        "way": "swipe",
+        "reducedMotion": false
+      },
+      "expect": [
+        "glide",
+        "collapse",
+        "ripple",
+        "act",
+        "reveal"
+      ]
+    },
+    {
+      "name": "a swipe on navigate.back with ripple — the same",
+      "input": {
+        "runner": "reader",
+        "actionType": "navigate.back",
+        "transition": "ripple",
+        "way": "swipe",
+        "reducedMotion": false
+      },
+      "expect": [
+        "glide",
+        "collapse",
+        "ripple",
+        "act",
+        "reveal"
+      ]
+    },
+    {
+      "name": "navigate without the field: the action at once, the screen changes as usual",
+      "input": {
+        "runner": "reader",
+        "actionType": "navigate",
+        "way": "swipe",
+        "reducedMotion": false
+      },
+      "expect": [
+        "act",
+        "glide",
+        "collapse",
+        "busy"
+      ]
+    },
+    {
+      "name": "the keyboard on navigate with ripple: the action at once, no ripple",
+      "input": {
+        "runner": "reader",
+        "actionType": "navigate",
+        "transition": "ripple",
+        "way": "keyboard",
+        "reducedMotion": false
+      },
+      "expect": [
+        "act",
+        "glide",
+        "collapse",
+        "busy"
+      ]
+    },
+    {
+      "name": "reduced motion on navigate with ripple: the action at once, no collapse, no ripple",
+      "input": {
+        "runner": "reader",
+        "actionType": "navigate",
+        "transition": "ripple",
+        "way": "swipe",
+        "reducedMotion": true
+      },
+      "expect": [
+        "act",
+        "busy"
+      ]
+    },
+    {
+      "name": "an action of the host: the action at once, then the collapsed circle waits",
+      "input": {
+        "runner": "host",
+        "actionType": "submit",
+        "way": "swipe",
+        "reducedMotion": false
+      },
+      "expect": [
+        "act",
+        "glide",
+        "collapse",
+        "busy"
+      ]
+    },
+    {
+      "name": "an action of the host with the field (not published): no ripple",
+      "input": {
+        "runner": "host",
+        "actionType": "submit",
+        "transition": "ripple",
+        "way": "swipe",
+        "reducedMotion": false
+      },
+      "expect": [
+        "act",
+        "glide",
+        "collapse",
+        "busy"
+      ]
+    },
+    {
+      "name": "an action of the host, reduced motion: the thumb jumps to the end busy",
+      "input": {
+        "runner": "host",
+        "actionType": "submit",
+        "way": "swipe",
+        "reducedMotion": true
+      },
+      "expect": [
+        "act",
+        "busy"
+      ]
+    },
+    {
+      "name": "the action none: the thumb returns at once",
+      "input": {
+        "runner": "none",
+        "actionType": "none",
+        "transition": "ripple",
+        "way": "swipe",
+        "reducedMotion": false
+      },
+      "expect": [
+        "act",
+        "return"
+      ]
+    },
+    {
+      "name": "an invalid action: the thumb returns at once",
+      "input": {
+        "runner": "invalid",
+        "actionType": "navigate",
+        "transition": "ripple",
+        "way": "swipe",
+        "reducedMotion": false
+      },
+      "expect": [
+        "act",
+        "return"
+      ]
+    }
+  ],
+  "busyReturnCases": [
+    {
+      "name": "busy ends with a return: the circle expands back, then the thumb returns",
+      "reducedMotion": false,
+      "expect": [
+        "expand",
+        "return"
+      ]
+    },
+    {
+      "name": "reduced motion: the thumb jumps back",
+      "reducedMotion": true,
+      "expect": [
+        "return"
+      ]
+    }
+  ],
+  "fieldCases": [
+    {
+      "name": "«ripple» is read",
+      "props": {
+        "confirmTransition": "ripple"
+      },
+      "reads": "ripple"
+    },
+    {
+      "name": "no field — as usual",
+      "props": {},
+      "reads": null
+    },
+    {
+      "name": "an unknown word — no field",
+      "props": {
+        "confirmTransition": "fade"
+      },
+      "reads": null
+    },
+    {
+      "name": "not a string — no field",
+      "props": {
+        "confirmTransition": true
+      },
+      "reads": null
+    }
+  ],
+  "documentCases": [
+    {
+      "name": "swipe, navigate, ripple — published",
+      "props": {
+        "confirm": "swipe",
+        "confirmTransition": "ripple",
+        "action": {
+          "type": "navigate",
+          "params": {
+            "screenId": "next"
+          }
+        }
+      },
+      "schema": true,
+      "publishes": true
+    },
+    {
+      "name": "swipe, navigate.back, ripple — published",
+      "props": {
+        "confirm": "swipe",
+        "confirmTransition": "ripple",
+        "action": {
+          "type": "navigate.back"
+        }
+      },
+      "schema": true,
+      "publishes": true
+    },
+    {
+      "name": "ripple without swipe — not published",
+      "props": {
+        "confirmTransition": "ripple",
+        "action": {
+          "type": "navigate",
+          "params": {
+            "screenId": "next"
+          }
+        }
+      },
+      "schema": true,
+      "publishes": false,
+      "code": "confirm_transition_not_read"
+    },
+    {
+      "name": "ripple on an action of the host — not published",
+      "props": {
+        "confirm": "swipe",
+        "confirmTransition": "ripple",
+        "action": {
+          "type": "submit"
+        }
+      },
+      "schema": true,
+      "publishes": false,
+      "code": "confirm_transition_not_read"
+    },
+    {
+      "name": "ripple on the action none — not published",
+      "props": {
+        "confirm": "swipe",
+        "confirmTransition": "ripple",
+        "action": {
+          "type": "none"
+        }
+      },
+      "schema": true,
+      "publishes": false,
+      "code": "confirm_transition_not_read"
+    },
+    {
+      "name": "an unknown word — the schema refuses it",
+      "props": {
+        "confirm": "swipe",
+        "confirmTransition": "fade",
+        "action": {
+          "type": "navigate",
+          "params": {
+            "screenId": "next"
+          }
+        }
+      },
+      "schema": false,
+      "publishes": false
+    }
+  ],
+  "ruleCases": [
+    {
+      "name": "the collapse lasts 600 ms",
+      "rule": "collapse.durationMs",
+      "expect": 600
+    },
+    {
+      "name": "the curve of the collapse is fastOutSlowIn",
+      "rule": "collapse.curve",
+      "expect": [
+        0.4,
+        0,
+        0.2,
+        1
+      ]
+    },
+    {
+      "name": "the halo is the fill at 0.4",
+      "rule": "collapse.haloOpacity",
+      "expect": 0.4
+    },
+    {
+      "name": "the ripple lasts 800 ms",
+      "rule": "ripple.durationMs",
+      "expect": 800
+    },
+    {
+      "name": "the ripple is linear",
+      "rule": "ripple.curve",
+      "expect": "linear"
+    },
+    {
+      "name": "the reveal lasts 200 ms",
+      "rule": "reveal.durationMs",
+      "expect": 200
+    },
+    {
+      "name": "the ripple plays on these actions",
+      "rule": "ripple.actions",
+      "expect": [
+        "navigate",
+        "navigate.back"
+      ]
+    },
+    {
+      "name": "the field",
+      "rule": "field",
+      "expect": "confirmTransition"
+    },
+    {
+      "name": "its one word",
+      "rule": "words",
+      "expect": [
+        "ripple"
+      ]
+    },
+    {
+      "name": "the thumb radius is concentric with the track",
+      "rule": "thumbShape.radius",
+      "expect": "the-track-radius-minus-the-inset-never-below-zero-concentric-with-the-track"
+    },
+    {
+      "name": "the inset is read from the 9.22 block, not copied",
+      "rule": "thumbShape.inset",
+      "expect": "x-swipeConfirm.thumb.inset"
+    },
+    {
+      "name": "the fill behind the thumb has the thumb radius on every corner",
+      "rule": "thumbShape.trail",
+      "expect": "the-radius-of-the-thumb-on-every-corner-no-corner-sticks-out"
+    }
+  ]
+}

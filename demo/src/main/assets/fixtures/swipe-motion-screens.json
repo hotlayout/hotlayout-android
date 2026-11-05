@@ -1,0 +1,296 @@
+{
+  "schemaVersion": "9.34.0",
+  "documentId": "swipe-motion",
+  "name": "Swipe to confirm motion",
+  "initialScreenId": "pay",
+  "screens": [
+    {
+      "screenId": "pay",
+      "name": "Pay",
+      "root": {
+        "id": "pay-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "pay-bar",
+            "type": "AppBar",
+            "props": {
+              "title": {
+                "kind": "literal",
+                "value": "Payment"
+              },
+              "showBack": false
+            },
+            "style": {
+              "padding": {
+                "top": "sm",
+                "bottom": "sm"
+              }
+            }
+          },
+          {
+            "id": "pay-amount",
+            "type": "Column",
+            "props": {
+              "gap": "none",
+              "align": "center"
+            },
+            "children": [
+              {
+                "id": "pay-currency",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "EUR"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              },
+              {
+                "id": "pay-sum",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "20.00"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "displayL"
+                }
+              }
+            ]
+          },
+          {
+            "id": "pay-order",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "xs"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "onSurface",
+                  "opacity": 0.04
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "pay-order-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "First order"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyM"
+                }
+              },
+              {
+                "id": "pay-order-detail",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Order details"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS",
+                  "color": "muted"
+                }
+              }
+            ]
+          },
+          {
+            "id": "pay-swipe",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Slide to pay"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate",
+                "params": {
+                  "screenId": "paid"
+                }
+              },
+              "fullWidth": true,
+              "size": "lg",
+              "confirm": "swipe",
+              "confirmTransition": "ripple"
+            },
+            "style": {
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.12
+                }
+              },
+              "color": "primary"
+            }
+          },
+          {
+            "id": "pay-tip",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Slide to add a tip"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "submit"
+              },
+              "fullWidth": true,
+              "icon": "heart",
+              "confirm": "swipe"
+            },
+            "style": {
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "onSurface",
+                  "opacity": 0.06
+                }
+              }
+            }
+          },
+          {
+            "id": "pay-pill",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Slide to round off"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "submit"
+              },
+              "fullWidth": true,
+              "confirm": "swipe"
+            },
+            "style": {
+              "radius": "pill",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "onSurface",
+                  "opacity": 0.06
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "paid",
+      "name": "Paid",
+      "root": {
+        "id": "paid-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg",
+          "align": "center",
+          "justify": "center"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "primary"
+          }
+        },
+        "children": [
+          {
+            "id": "paid-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Payment sent"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL",
+              "color": "onPrimary"
+            }
+          },
+          {
+            "id": "paid-back",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Back"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "pay/pay-bar/title": "Оплата",
+        "pay/pay-currency/content": "EUR",
+        "pay/pay-sum/content": "20,00",
+        "pay/pay-order-title/content": "Перше замовлення",
+        "pay/pay-order-detail/content": "Подробиці замовлення",
+        "pay/pay-swipe/label": "Проведи, щоб оплатити",
+        "pay/pay-tip/label": "Проведи, щоб додати чайові",
+        "pay/pay-pill/label": "Проведи, щоб округлити",
+        "paid/paid-title/content": "Оплачено",
+        "paid/paid-back/label": "Назад"
+      }
+    }
+  }
+}
