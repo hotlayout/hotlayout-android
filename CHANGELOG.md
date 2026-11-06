@@ -10,7 +10,7 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
-## [Unreleased]
+## [0.5.0] - 2026-11-06
 
 Reads document contract **9.34.0**.
 
