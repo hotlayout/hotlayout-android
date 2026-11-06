@@ -19,7 +19,7 @@ document, a theme and your data become a native Jetpack Compose screen.
 
 ```kotlin
 dependencies {
-    implementation("com.hotlayout:hotlayout-android:0.5.0")
+    implementation("com.hotlayout:hotlayout-android:0.5.1")
 }
 ```
 
@@ -120,6 +120,20 @@ Things to know:
   already consumed.
 - Fonts are yours: the theme names a family and `HotlayoutFonts` gives the `FontFamily`.
 - Standard actions go through `runStandardAction`, which checks an action again before it opens anything.
+- An app that keeps its own stack of screens (it changes the screen in `onNavigate`) passes `onScreenCovered` and puts
+  `HotlayoutOverlayHost` above its routes, at the root of the window. The fill of a swipe button then lies over the
+  whole box of the host, so it outlives the screen the button was on and fades away over the next one;
+  `onScreenCovered(true)` comes before the action, `onScreenCovered(false)` once the last fill is gone, even if your
+  routes have dropped the screen by then. Without a `HotlayoutOverlayHost` above the screen there is no fill: the
+  action runs at once and `onScreenCovered` is never called.
+
+```kotlin
+setContent {
+    HotlayoutOverlayHost(Modifier.fillMaxSize()) {
+        NavHost(navController, startDestination = "home") { /* routes with HotlayoutScreen(onScreenCovered = …) */ }
+    }
+}
+```
 
 ## Full reference
 

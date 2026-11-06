@@ -65,7 +65,7 @@ import com.hotlayout.render.widgets.SwipeConfirmRules
 import com.hotlayout.render.widgets.SwipeRippleLayers
 import com.hotlayout.render.widgets.SwipeRippleScope
 import com.hotlayout.render.widgets.SwipeRippleStore
-import com.hotlayout.render.widgets.SwipeRippleWindowLayer
+import com.hotlayout.render.widgets.LocalRippleHost
 import com.hotlayout.text.Localization
 import com.hotlayout.text.TextDirectionRule
 import com.hotlayout.theme.NodeStyle
@@ -114,7 +114,7 @@ public data class ActionSource(val nodeId: String, val screenId: String, val rec
  * @param onScreenChange the top of the stack changed (the screen was shown, with the cause).
  * @param onReport what the reader skipped or replaced while reading the document, the theme or the data; never shown to the person.
  * @param safeAreaTop the top inset the host has already accounted for, instead of the window's (status bar, cutout); zero for a host that did.
- * @param onScreenCovered for an app that keeps its own stack of screens. A swipe button with `confirmTransition: 'ripple'` fills the screen before it changes; with this handler the fill lies in a layer over the whole window, above your views, so it outlives the screen the button was on. It is told `true` when a fill starts to cover the screen, before the action reaches [onNavigate] or [onAction] (change your screen then, without a transition of your own), and `false` once the last fill is gone. Without it the fill lies over this view, and the reader changes its own screens under it.
+ * @param onScreenCovered for an app that keeps its own stack of screens. A swipe button with `confirmTransition: 'ripple'` fills the screen before it changes; with this handler the fill lies in the [HotlayoutOverlayHost] you put above your routes, so it outlives the screen the button was on; without such a host there is no fill and the action runs at once. It is told `true` when a fill starts to cover the screen, before the action reaches [onNavigate] or [onAction] (change your screen then, without a transition of your own), and `false` once the last fill is gone. Without it the fill lies over this view, and the reader changes its own screens under it.
  * @param safeAreaBottom the same for the bottom (navigation bar); the reader adds it only under a bottom zone, and in a modal sheet (inside its box, once).
  */
 @Composable
@@ -160,9 +160,12 @@ public fun HotlayoutScreen(
     val fades = host.fades
     val frames = host.flow.stack
     val rippleScope = rememberCoroutineScope()
-    val ripples = remember(host) { SwipeRippleStore(rippleScope) }
+    val ownRipples = remember(host) { SwipeRippleStore(rippleScope) }
+    // A host that keeps its own stack puts the fills in its HotlayoutOverlayHost; without one there is no place for a fill.
+    val hostRipples = LocalRippleHost.current
+    val ripples = if (onScreenCovered != null) hostRipples else ownRipples
     val coveredHandler = rememberUpdatedState(onScreenCovered)
-    val ripplePlace = remember(ripples) { SwipeRippleScope(ripples) { coveredHandler.value } }
+    val ripplePlace = remember(ripples) { ripples?.let { store -> SwipeRippleScope(store) { coveredHandler.value } } }
     SideEffect {
         carousels.prune(frames.map { it.screenId })
         fades.prune(frames.map { it.screenId })
@@ -180,12 +183,11 @@ public fun HotlayoutScreen(
         CompositionLocalProvider(
             LocalLayoutDirection provides if (rightToLeft) LayoutDirection.Rtl else LayoutDirection.Ltr,
             LocalSafeAreaOverride provides SafeAreaOverride(safeAreaTop, safeAreaBottom),
-            LocalFillCovers provides ripples.covers,
+            LocalFillCovers provides (ripples?.covers ?: false),
         ) {
             ProvideReducedMotion { ScreenStack(host, setup, areaWidth, handleSystemBack) }
             // Over everything the screen draws: the zones, the navigation bar, the modal layers.
-            SwipeRippleLayers(ripples, inWindow = false)
-            SwipeRippleWindowLayer(ripples)
+            if (onScreenCovered == null) SwipeRippleLayers(ownRipples)
         }
     }
 }

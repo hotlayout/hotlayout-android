@@ -10,6 +10,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithContentDescription
+import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.platform.testTag
+import com.hotlayout.render.widgets.LAYER_TAG
 import androidx.compose.ui.test.performKeyInput
 import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.performTouchInput
@@ -145,11 +148,13 @@ class SwipeRippleMechanismTest {
     @Test fun aHostThatKeepsItsStackHearsTheCoverBeforeTheAction() {
         val log = ArrayList<String>()
         show {
-            HotlayoutScreen(
-                document,
-                onNavigate = { log.add("navigate:${it.toScreenId}"); false },
-                onScreenCovered = { log.add("covered:$it") },
-            )
+            HotlayoutOverlayHost {
+                HotlayoutScreen(
+                    document,
+                    onNavigate = { log.add("navigate:${it.toScreenId}"); false },
+                    onScreenCovered = { log.add("covered:$it") },
+                )
+            }
         }
         swipePay()
         advance(1500)
@@ -158,6 +163,106 @@ class SwipeRippleMechanismTest {
         assertEquals(listOf("covered:true", "navigate:paid"), log)
         advance(400)
         assertEquals(listOf("covered:true", "navigate:paid", "covered:false"), log)
+    }
+
+    /** A host whose routes drop the screen the moment it is told to navigate. */
+    private fun hostThatRemovesTheScreen(log: MutableList<String>, hostModifier: Modifier = Modifier) {
+        var visible by mutableStateOf(true)
+        show {
+            HotlayoutOverlayHost(hostModifier) {
+                if (visible) {
+                    HotlayoutScreen(
+                        document,
+                        onNavigate = { log.add("navigate:${it.toScreenId}"); visible = false; false },
+                        onScreenCovered = { log.add("covered:$it") },
+                    )
+                }
+            }
+        }
+    }
+
+    @Test fun hostRemovesScreenOnNavigate() {
+        val log = ArrayList<String>()
+        hostThatRemovesTheScreen(log)
+        swipePay()
+        advance(1700)
+        assertEquals(listOf("covered:true", "navigate:paid"), log)
+        advance(400)
+        assertEquals(listOf("covered:true", "navigate:paid", "covered:false"), log)
+    }
+
+    @Test fun hostRemovesScreenBeforeCover() {
+        val log = ArrayList<String>()
+        var visible by mutableStateOf(true)
+        show {
+            HotlayoutOverlayHost {
+                if (visible) HotlayoutScreen(document, onScreenCovered = { log.add("covered:$it") })
+            }
+        }
+        swipePay()
+        advance(1100)
+        assertEquals(listOf("covered:true"), log)
+        // The host takes the screen away while the circle is still growing: the fill goes with the button, nothing runs.
+        visible = false
+        advance(300)
+        assertEquals(listOf("covered:true", "covered:false"), log)
+        advance(2000)
+        assertEquals(listOf("covered:true", "covered:false"), log)
+    }
+
+    @Test fun theFillFadesAwayOverTheNextScreenOfTheHost() {
+        val log = ArrayList<String>()
+        hostThatRemovesTheScreen(log)
+        swipePay()
+        advance(1500)
+        while ("navigate:paid" !in log) advance(10)
+        // The screen is gone from the host's routes; the fill is still there, over what stands in its place.
+        compose.onNodeWithTag(LAYER_TAG).assertExists()
+        assertTrue("the corner is still the colour of the fill: ${rgbAt(5, 5)}", !near(rgbAt(5, 5), 0xFFFFFF, 40))
+        advance(100)
+        compose.onNodeWithTag(LAYER_TAG).assertExists()
+        advance(150)
+        compose.onNodeWithTag(LAYER_TAG).assertDoesNotExist()
+    }
+
+    @Test fun theFillLiesOverTheWholeBoxOfTheOverlayHost() {
+        hostThatRemovesTheScreen(ArrayList(), Modifier.testTag("host").size(320.dp, 600.dp))
+        swipePay()
+        advance(1000)
+        val host = compose.onNodeWithTag("host").fetchSemanticsNode().boundsInRoot
+        val layer = compose.onNodeWithTag(LAYER_TAG).fetchSemanticsNode().boundsInRoot
+        assertEquals(host, layer)
+        assertEquals(600f, layer.height, 1f)
+    }
+
+    @Test fun aHostWithoutAnOverlayHostGetsNoFillAndTheActionRunsAtOnce() {
+        val log = ArrayList<String>()
+        show {
+            HotlayoutScreen(
+                document,
+                onNavigate = { log.add("navigate:${it.toScreenId}"); false },
+                onScreenCovered = { log.add("covered:$it") },
+            )
+        }
+        swipePay()
+        advance(700)
+        compose.onNodeWithTag(LAYER_TAG).assertDoesNotExist()
+        advance(100)
+        assertEquals(listOf("navigate:paid"), log)
+        advance(2000)
+        assertEquals(listOf("navigate:paid"), log)
+    }
+
+    @Test fun aButtonThatLeavesBeforeTheCoverTakesTheHostFillWithIt() {
+        val log = ArrayList<String>()
+        var entry by mutableStateOf<String?>(null)
+        show { HotlayoutOverlayHost { HotlayoutScreen(document, entry = entry, onNavigate = { log.add("navigate"); false }, onScreenCovered = { log.add("covered:$it") }) } }
+        swipePay()
+        advance(900)
+        entry = "elsewhere"
+        advance(2000)
+        assertEquals(listOf("covered:true", "covered:false"), log)
+        compose.onNodeWithTag(LAYER_TAG).assertDoesNotExist()
     }
 
     @Test fun theHostsAnswerExpandsTheCircleBackBeforeTheThumbReturns() {
@@ -201,7 +306,7 @@ class SwipeRippleStoreTest {
     @Test fun theReportComesBeforeTheActionAndTheLastFillEndsIt() = runTest {
         val log = ArrayList<String>()
         val store = SwipeRippleStore(this)
-        store.start(spec(log), { log.add("report:$it") }, overWindow = false)
+        store.start(spec(log), { log.add("report:$it") })
         assertEquals(listOf("report:true"), log)
         assertTrue(store.covers)
         advanceTimeBy(801)
@@ -215,7 +320,7 @@ class SwipeRippleStoreTest {
     @Test fun aFillCancelledBeforeTheCoverRunsNothing() = runTest {
         val log = ArrayList<String>()
         val store = SwipeRippleStore(this)
-        store.start(spec(log), { log.add("report:$it") }, overWindow = true).cancel()
+        store.start(spec(log), { log.add("report:$it") }).cancel()
         assertFalse(store.covers)
         advanceTimeBy(2000)
         assertEquals(listOf("report:true", "report:false"), log)
@@ -224,20 +329,12 @@ class SwipeRippleStoreTest {
     @Test fun aFillThatHasActedGoesOnToItsEnd() = runTest {
         val log = ArrayList<String>()
         val store = SwipeRippleStore(this)
-        val handle = store.start(spec(log), null, overWindow = false)
+        val handle = store.start(spec(log), null)
         advanceTimeBy(801)
         handle.cancel()
         assertTrue("it belongs to the screen now", store.covers)
         advanceTimeBy(250)
         assertFalse(store.covers)
         assertEquals(listOf("act"), log)
-    }
-
-    @Test fun theWindowLayerIsOnlyForFillsThatAskedForIt() = runTest {
-        val store = SwipeRippleStore(this)
-        store.start(spec(ArrayList()), null, overWindow = false)
-        assertFalse(store.hasWindowLayer)
-        store.start(spec(ArrayList()), null, overWindow = true)
-        assertTrue(store.hasWindowLayer)
     }
 }

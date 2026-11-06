@@ -10,6 +10,32 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
+## [0.5.1] - 2026-11-06
+
+Reads document contract **9.34.0**.
+
+### Added
+
+- **`HotlayoutOverlayHost`**, the place for the fill when your app keeps the stack of screens. Put it above your routes, at the
+  root of the window (over the `NavHost`); the fill of a swipe button lies over its whole box, and a box that fills an
+  edge-to-edge window covers the navigation bar too.
+
+### Changed
+
+- **A `HotlayoutScreen` with `onScreenCovered` draws the fill only inside a `HotlayoutOverlayHost`.** With no host above it
+  there is no place for a fill: the swipe button acts at once, with no circle, and `onScreenCovered` is not called. Apps
+  that passed `onScreenCovered` in 0.5.0 wrap their routes in `HotlayoutOverlayHost`. A screen without `onScreenCovered`
+  is unchanged: the fill lies over its own box.
+
+### Fixed
+
+- `onScreenCovered(false)` now always follows `onScreenCovered(true)`. When the host removed the screen in `onNavigate`, the
+  timer that ends the fill went with the screen and the host stayed "covered" for good.
+- The fill outlives the screen it started on: it stays over the next screen and fades away over it (200 ms) instead of
+  vanishing in the frame the action ran.
+- The fill lies over the whole box of the host. It was drawn in a pop-up window that stopped short of the navigation bar
+  (about 73 dp of the screen bottom stayed uncovered).
+
 ## [0.5.0] - 2026-11-06
 
 Reads document contract **9.34.0**.

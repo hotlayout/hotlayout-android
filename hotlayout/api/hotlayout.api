@@ -119,6 +119,10 @@ public final class com/hotlayout/HotlayoutLoadException$NotADocument : com/hotla
 	public final fun getReason ()Ljava/lang/String;
 }
 
+public final class com/hotlayout/HotlayoutOverlayHostKt {
+	public static final fun HotlayoutOverlayHost (Landroidx/compose/ui/Modifier;Lkotlin/jvm/functions/Function2;Landroidx/compose/runtime/Composer;II)V
+}
+
 public final class com/hotlayout/HotlayoutPlacementKt {
 	public static final fun HotlayoutPlacement-RKr0Zlc (Ljava/lang/String;Lcom/hotlayout/PlacementSource;Landroidx/compose/ui/Modifier;Ljava/lang/Long;Lcom/hotlayout/HotlayoutThemeSet;Ljava/lang/String;Ljava/util/Map;Ljava/lang/String;Ljava/util/TimeZone;Ljava/lang/Long;Lcom/hotlayout/ImagePolicy;Lcom/hotlayout/HotlayoutFonts;Lcom/hotlayout/WritablePaths;ZZLcom/hotlayout/HotlayoutLabels;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function2;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Landroidx/compose/ui/unit/Dp;Landroidx/compose/ui/unit/Dp;Landroidx/compose/runtime/Composer;IIII)V
 }

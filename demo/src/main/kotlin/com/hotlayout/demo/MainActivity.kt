@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -28,7 +29,9 @@ import androidx.core.view.WindowCompat
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.hotlayout.HotlayoutOverlayHost
 import com.hotlayout.HotlayoutScreen
+import com.hotlayout.NavigateRequest
 import com.hotlayout.runStandardAction
 
 /**
@@ -38,6 +41,9 @@ import com.hotlayout.runStandardAction
  *
  *     adb shell am start -n com.hotlayout.demo/.MainActivity \
  *       --es fixture rewards-showcase-screens --es screen home --es locale en
+ *
+ * `--ez hoststack true` shows the fixture the way an app that keeps its own stack of screens would: it changes the screen
+ * itself in `onNavigate`, inside a `HotlayoutOverlayHost`, so a swipe fill outlives the screen it started on.
  *
  * Without `fixture` the app opens the Obsidian showcase; `--es fixture list` lists everything. The showcase apps are
  * `showcase-obsidian`, `showcase-sunny` and `showcase-orbit` (the last one takes `--es scenario default|newMember|afterPayment`).
@@ -52,16 +58,35 @@ class MainActivity : ComponentActivity() {
         val screen = intent.getStringExtra("screen")
         val locale = intent.getStringExtra("locale")
         val scenario = intent.getStringExtra("scenario")
+        val hostStack = intent.getBooleanExtra("hoststack", false)
         setContent {
             // Edge to edge: the reader reads the window insets itself and paints the status bar and the navigation bar
             // areas with the background of the screen (the app bar, the bottom zone, the root), so nothing wraps it.
             Box(Modifier.fillMaxSize().background(Color.Black)) {
-                when (fixture) {
+                when {
+                    hostStack && fixture != null -> HostStackFixture(fixture, screen, locale)
+                    else -> when (fixture) {
                     null -> FixtureScreen(Showcases.FIRST, screen, locale, scenario = scenario)
                     "list" -> FixtureList()
                     else -> FixtureScreen(fixture, screen, locale, scenario = scenario)
+                    }
                 }
             }
+        }
+    }
+}
+
+/** A host with a stack of its own: it drops the screen the reader was asked to leave and puts the next one in its place. */
+@Composable
+private fun HostStackFixture(name: String, first: String?, locale: String?) {
+    var current by remember { mutableStateOf(first) }
+    HotlayoutOverlayHost(Modifier.fillMaxSize()) {
+        key(current) {
+            FixtureScreen(
+                name, current, locale,
+                onNavigate = { request: NavigateRequest -> current = request.toScreenId; false },
+                onScreenCovered = { Log.i("HotLayoutDemo", "covered $it") },
+            )
         }
     }
 }
@@ -88,7 +113,7 @@ private fun FixtureList() {
 
 /** One fixture drawn by the reader with the demo's data, fonts and theme. */
 @Composable
-fun FixtureScreen(name: String, screenId: String?, locale: String?, now: Long? = null, scenario: String? = null, safeAreaTop: androidx.compose.ui.unit.Dp? = null, safeAreaBottom: androidx.compose.ui.unit.Dp? = null) {
+fun FixtureScreen(name: String, screenId: String?, locale: String?, now: Long? = null, scenario: String? = null, safeAreaTop: androidx.compose.ui.unit.Dp? = null, safeAreaBottom: androidx.compose.ui.unit.Dp? = null, onNavigate: ((NavigateRequest) -> Boolean)? = null, onScreenCovered: ((Boolean) -> Unit)? = null) {
     val context = LocalContext.current
     val view = LocalView.current
     val showcase = Showcases.isShowcase(name)
@@ -130,5 +155,7 @@ fun FixtureScreen(name: String, screenId: String?, locale: String?, now: Long? =
             }
         },
         onReport = { reports -> reports.forEach { Log.i("HotLayoutDemo", "report $it") } },
+        onNavigate = onNavigate,
+        onScreenCovered = onScreenCovered,
     )
 }

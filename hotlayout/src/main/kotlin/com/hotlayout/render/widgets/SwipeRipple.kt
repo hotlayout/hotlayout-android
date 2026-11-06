@@ -28,19 +28,17 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInWindow
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntRect
-import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.ui.window.Popup
-import androidx.compose.ui.window.PopupPositionProvider
-import androidx.compose.ui.window.PopupProperties
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
+
+/** The test tag of the box the fills lie in. */
+internal const val LAYER_TAG = "hotlayout-swipe-ripple"
 
 /** What a swipe button hands over to start the fill over the screen; lengths are in pixels of the window. */
 internal class SwipeRippleSpec(
@@ -72,7 +70,7 @@ internal class SwipeRippleHandle(private val store: SwipeRippleStore, private va
  */
 @Stable
 internal class SwipeRippleStore(private val scope: CoroutineScope) {
-    class Entry(val id: Int, val spec: SwipeRippleSpec, val inWindow: Boolean) {
+    class Entry(val id: Int, val spec: SwipeRippleSpec) {
         /** The action has run and the fill fades away. */
         var revealed by mutableStateOf(false)
     }
@@ -85,19 +83,16 @@ internal class SwipeRippleStore(private val scope: CoroutineScope) {
     /** Whether a fill covers the screen now: the screen then changes with no motion of its own. */
     val covers: Boolean get() = entries.isNotEmpty()
 
-    /** Whether a fill lies over the window, not over the screen. */
-    val hasWindowLayer: Boolean get() = entries.any { it.inWindow }
-
     /**
      * Starts a fill. [report] hears `true` before the action when the screen starts to be covered, `false` once the last
      * fill is gone.
      */
-    fun start(spec: SwipeRippleSpec, report: ((Boolean) -> Unit)?, overWindow: Boolean): SwipeRippleHandle {
+    fun start(spec: SwipeRippleSpec, report: ((Boolean) -> Unit)?): SwipeRippleHandle {
         val wasCovering = covers
         next += 1
         val id = next
         if (report != null) this.report = report
-        entries.add(Entry(id, spec, overWindow))
+        entries.add(Entry(id, spec))
         timers[id] = scope.launch {
             delay(SwipeMotion.RIPPLE_MS.toLong())
             covered(id)
@@ -134,41 +129,28 @@ internal class SwipeRippleStore(private val scope: CoroutineScope) {
     }
 }
 
-/** The place a button asks for a fill: the store of the screen it is in. */
+/** The place a button asks for a fill: a store, and who hears that it covers the screen (read when a fill starts). */
 @Stable
 internal class SwipeRippleScope(private val store: SwipeRippleStore, private val report: (() -> ((Boolean) -> Unit)?)) {
-    /** A host that hears `onScreenCovered` keeps its own routes: the fill then lies over the whole window. */
-    fun start(spec: SwipeRippleSpec): SwipeRippleHandle {
-        val reporter = report()
-        return store.start(spec, reporter, overWindow = reporter != null)
-    }
+    fun start(spec: SwipeRippleSpec): SwipeRippleHandle = store.start(spec, report())
 }
+
+/** The store of the nearest [HotlayoutOverlayHost] above, if any. */
+internal val LocalRippleHost = compositionLocalOf<SwipeRippleStore?> { null }
 
 /** Whether a fill covers the screen: a change of screen then shows no motion of its own. */
 internal val LocalFillCovers = compositionLocalOf { false }
 
 /** The fills of a store over the box they are laid in, cut by its edges. */
 @Composable
-internal fun SwipeRippleLayers(store: SwipeRippleStore, inWindow: Boolean) {
-    val shown = store.entries.filter { it.inWindow == inWindow }
+internal fun SwipeRippleLayers(store: SwipeRippleStore) {
+    val shown = store.entries.toList()
     if (shown.isEmpty()) return
     var origin by remember { mutableStateOf(Offset.Zero) }
-    BoxWithConstraints(Modifier.fillMaxSize().clipToBounds().onGloballyPositioned { origin = it.positionInWindow() }) {
+    BoxWithConstraints(Modifier.fillMaxSize().testTag(LAYER_TAG).clipToBounds().onGloballyPositioned { origin = it.positionInWindow() }) {
         val size = androidx.compose.ui.geometry.Size(constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat())
         for (entry in shown) androidx.compose.runtime.key(entry.id) { SwipeRippleLayer(entry, size, origin) }
     }
-}
-
-/** The layer over the window of a host that keeps its own stack of screens: above the host's views, so the fill outlives its screen. */
-@Composable
-internal fun SwipeRippleWindowLayer(store: SwipeRippleStore) {
-    if (!store.hasWindowLayer) return
-    Popup(
-        popupPositionProvider = object : PopupPositionProvider {
-            override fun calculatePosition(anchorBounds: IntRect, windowSize: IntSize, layoutDirection: LayoutDirection, popupContentSize: IntSize) = IntOffset.Zero
-        },
-        properties = PopupProperties(focusable = false, clippingEnabled = false),
-    ) { SwipeRippleLayers(store, inWindow = true) }
 }
 
 @Composable
