@@ -1,0 +1,38 @@
+name: Bug report
+description: Something is drawn or behaves differently from what the contract says.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. Please do not report security vulnerabilities here — see SECURITY.md.
+  - type: input
+    id: sdk-version
+    attributes:
+      label: Android SDK version
+      placeholder: e.g. 0.5.0
+    validations:
+      required: true
+  - type: input
+    id: contract-version
+    attributes:
+      label: Document schemaVersion
+      description: The `schemaVersion` field of the document you render.
+      placeholder: e.g. 9.34.0
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Android version / API level, device, Compose BOM
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened, and what you expected
+    validations:
+      required: true
+  - type: textarea
+    id: document
+    attributes:
+      label: Smallest document that shows it
+      description: A JSON document (and theme, if it matters). Please remove anything private.
+      render: json

@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://hotlayout.com/docs
+    about: Guides and the reference for every SDK.
+  - name: Security vulnerability
+    url: https://github.com/hotlayout/hotlayout-android/security/policy
+    about: Please report vulnerabilities privately, not as an issue.

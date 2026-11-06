@@ -5,6 +5,7 @@ document, a theme and your data become a native Jetpack Compose screen.
 
 **Quickstart:** [docs](https://hotlayout.com/docs/integrator/quickstart-android) · [video](https://youtu.be/4DzCQpgMoo8) · **Builder and access:** [hotlayout.com](https://hotlayout.com) · [try the editor](https://hotlayout.com/try)
 
+[![CI](https://github.com/hotlayout/hotlayout-android/actions/workflows/ci.yml/badge.svg)](https://github.com/hotlayout/hotlayout-android/actions/workflows/ci.yml)
 [![Maven Central](https://img.shields.io/maven-central/v/com.hotlayout/hotlayout-android?label=Maven%20Central&color=0a6cc9)](https://central.sonatype.com/artifact/com.hotlayout/hotlayout-android)
 [![License](https://img.shields.io/badge/license-Apache--2.0-0a6cc9)](LICENSE)
 [![Docs](https://img.shields.io/badge/docs-hotlayout.com-0a6cc9)](https://hotlayout.com/docs)
@@ -16,59 +17,41 @@ document, a theme and your data become a native Jetpack Compose screen.
 </p>
 <p align="center"><sub>Two screens built in HotLayout. Try the editor in your browser, no sign-up: <a href="https://hotlayout.com/try">https://hotlayout.com/try</a></sub></p>
 
-It is a reader of the same contract as the React, Flutter and iOS readers and is measured by the same shared
-case tables.
-
-**Status: complete for contract 9.34.0.** Every widget of the contract is drawn: text and rich text, buttons,
-lists and list rows, stacks and layers, progress bars and rings, the form controls and text fields (with forms
-and their validation), the screen anatomy (app bar, body, bottom zone and navigation bar), modal layers with
-the system back key, carousels, node motion and glass, images, and the adaptive width classes, plus the
-alignment rules on both axes. The rules of the contract (versions, data, conditions, text, numbers, dates,
-plurals, locale, actions and navigation) pass the shared case tables. The reader is also exercised by
-instrumented tests on a device or emulator.
-
-Known platform limit: the blur under a modal layer and the glass of a node need a render effect, which exists
-from API 31, so below that the picture stays sharp and nothing is blurred.
-
-## Requirements
-
-- Android 8.0 (API 26) and later, Jetpack Compose
-- No third-party dependencies besides AndroidX and Compose
-
-## Install
-
-The library is on Maven Central. With `mavenCentral()` among the repositories of your
-`settings.gradle.kts`, add the dependency:
-
 ```kotlin
 dependencies {
     implementation("com.hotlayout:hotlayout-android:0.5.0")
 }
 ```
 
-Your project needs the Compose compiler plugin, as any Compose app does.
+The integration is one composable, `HotlayoutScreen`, inside a screen of your own app. The library is on Maven
+Central, so `mavenCentral()` must be among the repositories of your `settings.gradle.kts`, and your project needs
+the Compose compiler plugin, as any Compose app does.
 
-To work on the library itself, include its module from a clone of this repository:
+## What you get
 
-```kotlin
-include(":hotlayout")
-project(":hotlayout").projectDir = file("../hotlayout-android/hotlayout")
-```
+- **One composable.** `HotlayoutScreen` draws a document with its own stack of screens and handles the system back key.
+- **Three separate inputs.** The document (screens), the theme (token values) and your data (`dataScopeOf(...)`) are
+  loaded and replaced independently.
+- **Contract 9.34.0, complete.** Every widget is drawn: text, buttons, lists, stacks, progress, form controls and
+  validation, screen anatomy, modal layers, carousels, node motion, glass, images and the adaptive width classes.
+  The rules of the contract pass the case tables shared by all HotLayout readers.
+- **Languages and right-to-left.** A document carries its translations; the reader picks the language, the formats
+  and the direction from the locale.
+- **The document is untrusted input.** A piece of the wrong shape is skipped and reported (`onReport`), never a
+  crash. The reader opens nothing itself: links and deep links reach your code checked. See
+  [docs/security.md](docs/security.md).
+- **Placements.** `HotlayoutPlacement` draws whichever published document stands in a named place of your app
+  (`home.banner`), with schedules, so a screen changes without a release.
+- **The same document everywhere.** [`@hotlayout/react`](https://www.npmjs.com/package/@hotlayout/react),
+  [`hotlayout_flutter`](https://pub.dev/packages/hotlayout_flutter) and the iOS reader
+  (`https://github.com/hotlayout/hotlayout-ios`) draw the same JSON. All readers follow the open
+  [contract](https://github.com/hotlayout/contract).
 
-and depend on it with `implementation(project(":hotlayout"))`. You can also run `./gradlew :hotlayout:publishToMavenLocal` and depend on the artifact from `mavenLocal()`.
+Requirements: Android 8.0 (API 26) and later, Jetpack Compose, no third-party dependencies besides AndroidX and
+Compose. Known platform limit: the blur under a modal layer and the glass of a node need a render effect, which
+exists from API 31; below that the picture stays sharp.
 
-The library does not declare the `INTERNET` permission. The default picture loader downloads over the
-network, so an app that shows pictures from `https:` addresses adds it to its own manifest:
-
-```xml
-<uses-permission android:name="android.permission.INTERNET" />
-```
-
-An app that loads pictures through its own client (`ImagePolicy.fetch`) does not need it for the reader.
-
-## Use
-
-The whole public API is in the package `com.hotlayout`.
+## Quickstart
 
 ```kotlin
 import android.util.Log
@@ -125,184 +108,32 @@ fun PromoScreen(documentJson: String, themeJson: String, inter: FontFamily) {
 }
 ```
 
-`locale` defaults to the device locale. Pass `labels = HotlayoutLabels(back = …)` to give what assistive
-technology hears in your language.
+Things to know:
 
-Separate from the view: `checkDocumentVersion` (verdicts `Ok`, `NewerMinor`, `NewerMajor`, `OlderMajor`,
-`Unparsable`; it takes JSON text, bytes or a `JsonValue`), `loadDocument`, `HotlayoutThemeSet.read`,
-`resolveLocale`, `loadPlacement`.
+- `locale` defaults to the device locale. `labels = HotlayoutLabels(back = …)` gives what assistive technology
+  hears in your language.
+- The library does not declare the `INTERNET` permission. The default picture loader downloads over `https:`
+  only, so an app that shows pictures adds `<uses-permission android:name="android.permission.INTERNET" />` to its
+  manifest, or loads pictures through its own client with `ImagePolicy.fetch`.
+- Give the activity `android:windowSoftInputMode="adjustResize"` and draw edge to edge (`enableEdgeToEdge()`): the
+  reader adds the status bar, the cutout, the navigation bar and the keyboard itself, minus what an ancestor
+  already consumed.
+- Fonts are yours: the theme names a family and `HotlayoutFonts` gives the `FontFamily`.
+- Standard actions go through `runStandardAction`, which checks an action again before it opens anything.
 
-- **Documents and themes are untrusted input.** A piece of the wrong shape is skipped and reported
-  (`onReport`), never a crash. A screen deeper than 32 levels is skipped (and reported); the other screens of the
-  document still load. A number of a theme outside the bounds of the theme schema (or not finite) is replaced by the value of
-  the same token in the built-in theme of the same brightness, otherwise by the nearest bound, and reported; every length of a document is made finite, not negative and bounded.
-  See [docs/security.md](docs/security.md).
-- **Images** load only over `https:` by default; pass an `ImagePolicy` to decide yourself. Its limits:
-  - `maxDownloadBytes` (10 MB): a larger picture is drawn as the placeholder, announced or streamed;
-  - `maxPixelSide` (4096): a picture is decoded sampled down so its longest side is at most this, the ratio kept;
-  - `totalDeadlineMs` (30 s): the whole transfer, not only the silence between two reads, so a server that drips
-    bytes is disconnected;
-  - `fetch`: your own transport, `suspend (address, maxBytes) -> ByteArray?`, called with an address that has passed
-    `resolve`. With it the reader makes no request of its own, so use it to give pictures a client with its own
-    cookie jar, proxy and certificates. Return at most `maxBytes`; the call is held to `totalDeadlineMs`.
-  - The default loader sends and stores **no cookies**. `HttpURLConnection` cannot skip a global handler, so if your
-    app has installed a `java.net.CookieHandler` (`CookieHandler.getDefault() != null`), the default loader
-    refuses to fetch (the placeholder is drawn and the reason goes to `onReport`). Hosts with a global cookie
-    handler pass `fetch`.
-  - `data:` addresses never touch the network (the cap and `maxPixelSide` apply).
-- **Standard actions**: `runStandardAction` and `StandardActions.url` check an action again before they open it
-  (the form of the address, the scheme of a deeplink against the allowed ones, no `invalid`), so an action
-  assembled by hand is not trusted because of its type.
-- **Navigation** inside a document (`navigate`, `navigate.back`, `navigate.section`) is done by the
-  reader; `openUrl`, `deeplink`, `close` and actions of your app go to `onAction`.
-- **Swipe fill**: a swipe button with `confirmTransition: 'ripple'` that leads to another screen fills the
-  screen with its colour before the screen changes. By default the fill lies over the `HotlayoutScreen` and the
-  reader changes its own screens under it. If your app keeps its own stack of screens (you cancel the change
-  with `onNavigate` and show your own view), pass `onScreenCovered`: the fill then lies in a layer over the
-  whole window, above your views. The handler gets `true` when a fill starts to cover the screen, before the
-  action reaches `onNavigate` or `onAction` (change your screen then, without a transition of your own), and
-  `false` once the last fill is gone.
-- **Fonts** are yours: the theme names a family, `HotlayoutFonts` gives the `FontFamily`. If the family
-  has no Arabic (or other) letters, the platform draws them with a system fallback font, chosen by the
-  weight of the typeface. Static font files per weight keep it. A variable font must be wrapped so each
-  weight is its own typeface built with `Typeface.Builder(...).setFontVariationSettings("'wght' N").setWeight(N)`
-  (an `AndroidFont` with a `TypefaceLoader`; see `DemoFonts` in the demo) — `Font(resId, weight,
-  variationSettings = …)` alone draws bold Arabic regular.
-- **Labels**: the few texts the reader says to assistive technology (the name of the back arrow) are not in the
-  document. Pass `HotlayoutLabels` in the language of your app; the defaults are English.
+## Full reference
 
-## Placements
+The reference lives on the documentation site:
+[hotlayout.com/docs/integrator/android-reference](https://hotlayout.com/docs/integrator/android-reference). It covers
+loading and version checks, images and the `ImagePolicy` limits, actions and navigation, swipe fill, fonts,
+labels, placements and their schedule, and window insets.
 
-A placement is a named place of your app (`home.banner`). Which published document stands in it is decided in the
-admin, not in your code: you write the name once, and the screen changes without a release.
-
-```kotlin
-// Once, in your application object: one source serves every placement of the app.
-val placements = PlacementSource(
-    projectBase = "https://storage.example/orgs/acme/projects/app",
-    bundledMap = context.assets.open("placements.json").bufferedReader().readText(),   // optional: the map of this release
-)
-
-@Composable
-fun HomeBanner() {
-    HotlayoutPlacement(
-        name = "home.banner",
-        source = placements,
-        onAction = { action, _ -> /* as for HotlayoutScreen */ },
-        onPlacement = { load -> if (load.report != null) Log.i("placement", "${load.name}: ${load.report}") },
-    )
-}
-```
-
-`HotlayoutPlacement` draws the document of the place with `HotlayoutScreen` (it takes the same parameters, and
-starts on the entry point the map names) and **nothing** when the place is empty, unknown, unreadable, or its
-document cannot be had. `onPlacement` hears every result with a `PlacementLoad`: `report` is `Empty`, `Unknown`,
-`Unreadable`, `DocumentMissing`, `DocumentUnreadable`, or `EntryMissing` (the entry point is gone from the
-document, which is drawn from its first screen), and `null` when all is well, so you can hide the frame around a
-place that draws nothing. Without Compose, `loadPlacement(source, name)` is the same as a suspend function; it
-runs off the main thread and never throws on a bad answer.
-
-- The map is `placements/published.json` under `projectBase`, read without a token and asked again every
-  `refreshIntervalMs` (a minute by default, `null` for once) with its `ETag`, so an unchanged map costs no body.
-- The network wins. When it is silent, broken, or of another major version, the last known map is used, then
-  `bundledMap`. Only a fresh, readable map from the network becomes the last known one. A fresh map is the whole
-  answer: a place it does not have is `Unknown`, it is not looked up in an older map.
-- `PlacementLoad.mapStatus` tells the cases apart: `Offline` (the network was silent), `Corrupt` (it answered with
-  something that is not a map), `Unsupported` (another major), `NotPublished` (404: the project has no placements).
-- Documents go the same way: the network, the last known copy, then `bundledDocuments`. The last known map and
-  documents live in memory; give `PlacementStore` a file or preferences to keep them over a restart.
-- A name that is not the name of a place is `Unknown` without a look at the map; a place of the map is found only by
-  its own key. The map and the documents come from the network, so their ids are checked by form before they
-  become an address. The default transport is `https` only, follows no redirects, sends no credentials of its own (an app-wide
-  `CookieHandler` does not stop it and may add cookies the app itself stored for the storage host), gives a request 20 seconds from start to the end of the body, and reads
-  at most 256 KB (262 144 bytes) of map; give `PlacementTransport` to use your own client. A map body must be
-  UTF-8 (one leading byte order mark is skipped) and at most 32 levels deep, or it is `Corrupt`.
-- `onPlacement` is called for the first result and whenever the place changes: what is drawn, the report, the map
-  status, the document or the entry point. A placement that comes back to a shown document is told too
-  (`report == null`). The last known copies are kept under the address of their file, and a document that
-  answered 404 is dropped from the store (`PlacementStore.remove`).
-
-### Schedule
-
-A place may carry a schedule (placement map 1.1.0): windows of time in which another document, or nothing, stands in
-it instead of its permanent content. Your code does not change: `HotlayoutPlacement` reads the place against the
-clock and swaps the document at the right moment, with no network at that moment.
-
-- An instant is UTC, whole seconds (`2026-11-27T22:00:00Z`); a window lasts from its `from` (included) to its
-  `until` (excluded). A window with no document is a pause: the place is `Empty` for its length, and then the
-  permanent content is back. When two windows overlap, the one that started later wins.
-- The clock is the device clock. Pass `clock = { … }` (milliseconds since the epoch) to `PlacementSource` to pin or
-  shift time in tests. `loadPlacement` reads the place at that clock too.
-- `HotlayoutPlacement` sets one timer at the next boundary of the schedule and decides again there, on every new
-  reading of the map, and when the app returns to the foreground (the clock may have jumped). The map is not asked
-  again at a boundary. A broken window is skipped on its own; the place stays as it was.
-- `onPlacement` hears the swap like any other change (`documentId` / `entry`, and `Empty` with the document back). A
-  place that is `Empty` in a pause is not an error: hide the frame around it **and its own padding or margin**, and
-  keep `HotlayoutPlacement` itself in the composition, so the banner comes back on time:
-
-```kotlin
-var banner by remember { mutableStateOf(true) }
-Column(Modifier.padding(horizontal = 16.dp)) {
-    Box(Modifier.then(if (banner) Modifier.padding(bottom = 12.dp) else Modifier)) {
-        HotlayoutPlacement("home.banner", placements, onPlacement = { banner = it.document != null })
-    }
-}
-```
-
-A reader older than 1.1.0 shows the permanent content of a place and ignores its schedule.
-
-## Window insets
-
-The reader adds the status bar, the cutout, the navigation bar and the keyboard itself, minus whatever an ancestor already
-consumed (`safeDrawingPadding()`, a `Scaffold`, `consumeWindowInsets`). The recommended host draws edge to edge
-(`enableEdgeToEdge()`) and lets the reader add them; a host that pads works as well and gets nothing added twice.
-`safeAreaTop` / `safeAreaBottom` still override the window's values.
-
-Give the activity `android:windowSoftInputMode="adjustResize"` (with an edge-to-edge window it only reports the keyboard
-as an inset and does not resize anything). With the default the system may pan the whole window when the keyboard comes,
-and a field low on the screen is then shifted instead of scrolled above the keyboard.
-
-## Shared case tables
-
-The rules of the contract are checked against the case tables the readers share (`contract/fixtures/*/*-cases.json`).
-`./gradlew test` runs every group of every table, except the groups that are verdicts of the builder's validator
-(which a reader does not have). `TableCoverageTest` fails when a table has a group that is neither run nor named
-as a validator verdict, so a new group in the contract cannot be ignored silently. A few rows where the platform's
-CLDR data writes other characters than the table are listed by name (`docs/platform-notes.md`).
-
-The tests also compare every shipped copy of contract data (built-in theme, icon set, versions, action forms,
-widget list) with the artifacts, draw every fixture screen, and check the wiring of each capability through the
-real screen.
-
-## Build and test
-
-```sh
-scripts/sync-contract.sh <path-to-contract>   # copy the contract (artifacts, tables, fixtures); or set HOTLAYOUT_CONTRACT
-./gradlew test                                # rules, tables and pixels on the JVM (Robolectric)
-./gradlew :hotlayout:apiCheck                 # the public API against hotlayout/api/hotlayout.api
-./gradlew :hotlayout:apiDump                  # after an intended change of the public API
-./gradlew :demo:recordRoborazziDebug          # frames of fixtures into demo/frames/
-./gradlew :demo:assembleDebug
-
-adb shell am start -n com.hotlayout.demo/.MainActivity \
-  --es fixture rewards-showcase-screens --es screen home --es locale en
-```
-
-Without extras the demo opens the Obsidian showcase; `--es fixture list` lists everything. The three showcase apps of the
-product site (`showcase-obsidian`, `showcase-sunny`, `showcase-orbit`, the last one takes `--es scenario
-default|newMember|afterPayment`) live in `demo/src/main/assets/showcase/`: the demo draws edge to edge, resolves their
-site-relative pictures against `https://hotlayout.com` through its own `ImagePolicy`, and bundles their fonts. `demo/frames/` holds frames of the fixtures drawn by this reader, for
-comparing the readers side by side; `./gradlew test` draws them again without writing.
-
-`./gradlew :hotlayout:publishToMavenLocal` builds the artifact (`com.hotlayout:hotlayout-android`) with its sources
-and javadoc jars. Signing uses the key given by the Gradle properties `signingInMemoryKey` and
-`signingInMemoryKeyPassword`; without them nothing is signed. `scripts/publish-central.sh` builds the signed release
-and uploads it to the Central Portal, where the deployment waits to be published by hand.
-
-## Documentation
+Also in this repository:
 
 - [docs/platform-notes.md](docs/platform-notes.md): where the Android platform and the shared tables differ, and what the reader does.
 - [docs/security.md](docs/security.md): the trust boundary and the tests that pin it.
+- [CONTRIBUTING.md](CONTRIBUTING.md): building, testing and running the demo.
+- [CHANGELOG.md](CHANGELOG.md)
 
 ## Learn more
 
