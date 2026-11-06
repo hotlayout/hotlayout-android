@@ -95,7 +95,7 @@ class ActionsHardeningTest {
             "https://127.0.0.1/", "https://2130706433/", "https://0x7f.0.0.1/", "https://0177.0.0.1/", "https://[::1]/",
             "https://localhost/", "https://localhost:8080/", "https://intranet/", "https://10.0.0.1/admin", "https://192.168.1.1/",
             "https://bank.example.com@evil.example/", "https://evil.example\\@bank.example.com/", "https://example.com/\n",
-            "https://example.com/ x", "https://exa mple.com/", "HTTPS://example.com/", " https://example.com/", "https://example.com/‮",
+            "https://example.com/ x", "https://exa mple.com/", "HTTPS://example.com/", " https://example.com/", "https://example.com/\u202E",
             "https://exаmple.com/", "https://example.com:0/", "https://example.com:65536/", "https://example.com:/",
             "https://-example.com/", "https://example.com./", "https://example.123/", "https://example.com#\u0000",
             "http://example.com/", "javascript:alert(1)//https://example.com/", "file:///etc/hosts", "data:text/html,x",

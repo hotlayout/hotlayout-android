@@ -6,9 +6,11 @@ import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 
 /** What the network said to a request of the placement source. */
@@ -72,26 +74,34 @@ public fun interface PlacementTransport {
             val address = try { URL(url) } catch (_: IOException) { return PlacementResponse.Unavailable }
             if (address.host.isNullOrEmpty() || address.userInfo != null) return PlacementResponse.Unavailable
             val endsAt = System.nanoTime() + deadlineMs * 1_000_000
-            return coroutineScope {
-                var connection: HttpURLConnection? = null
-                val work = async(Dispatchers.IO) {
-                    try {
-                        val opened = open(address) ?: return@async PlacementResponse.Unavailable
-                        connection = opened
-                        exchange(opened, etag, maxBytes, endsAt)
-                    } catch (_: IOException) {
-                        PlacementResponse.Unavailable
-                    } catch (_: RuntimeException) {
-                        PlacementResponse.Unavailable
-                    }
+            val opened = arrayOfNulls<HttpURLConnection>(1)
+            // The work is not a child of the caller: a read past the deadline can stay blocked for seconds (the JDK
+            // drains a keep-alive body on a cleaner thread that holds the stream's lock), and the answer must not
+            // wait for it.
+            val work = detached.async {
+                try {
+                    val connection = open(address) ?: return@async PlacementResponse.Unavailable
+                    synchronized(opened) { opened[0] = connection }
+                    exchange(connection, etag, maxBytes, endsAt)
+                } catch (_: IOException) {
+                    PlacementResponse.Unavailable
+                } catch (_: RuntimeException) {
+                    PlacementResponse.Unavailable
                 }
-                val answer = withTimeoutOrNull(deadlineMs) { work.await() }
-                // Past the deadline, disconnecting releases a read that waits for a server that is silent or drips.
-                runCatching { connection?.disconnect() }
-                if (answer == null) work.cancel()
-                answer ?: PlacementResponse.Unavailable
+            }
+            try {
+                return withTimeoutOrNull(deadlineMs) { work.await() } ?: PlacementResponse.Unavailable
+            } finally {
+                work.cancel()
+                // Disconnecting releases a read that waits for a server that is silent or drips; it can block on the
+                // same lock, so it runs off the caller's thread.
+                val connection = synchronized(opened) { opened[0] }
+                if (connection != null) detached.launch { runCatching { connection.disconnect() } }
             }
         }
+
+        /** Where the work of a request and its disconnect run, apart from the caller that waits for the answer. */
+        private val detached = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
         private fun remainingMs(endsAt: Long): Int = ((endsAt - System.nanoTime()) / 1_000_000).coerceIn(1, Int.MAX_VALUE.toLong()).toInt()
 

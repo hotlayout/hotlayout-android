@@ -117,8 +117,8 @@ internal object MoneyFormat {
     )
     const val PLUS = "+"
     const val MINUS = "−"
-    const val ISOLATE_OPEN = "⁦"
-    const val ISOLATE_CLOSE = "⁩"
+    const val ISOLATE_OPEN = "\u2066"
+    const val ISOLATE_CLOSE = "\u2069"
 
     fun pieces(value: JsonValue, binding: JsonObject, locale: String?, environment: TextEnvironment): List<FormattedPiece>? {
         val format = binding["format"]?.string
