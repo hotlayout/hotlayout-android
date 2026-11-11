@@ -1,0 +1,419 @@
+{
+  "schemaVersion": "9.42.0",
+  "documentId": "motion-turn",
+  "name": "Spin, sway and appear",
+  "initialScreenId": "win",
+  "screens": [
+    {
+      "screenId": "win",
+      "name": "Win",
+      "root": {
+        "id": "motion-turn-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "win-heading",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "You won!"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL"
+            },
+            "appear": {
+              "kind": "fade",
+              "duration": 500
+            }
+          },
+          {
+            "id": "prize",
+            "type": "Stack",
+            "props": {
+              "alignHorizontal": "center",
+              "alignVertical": "center"
+            },
+            "children": [
+              {
+                "id": "prize-anchor",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "height": 200
+                },
+                "children": []
+              },
+              {
+                "id": "burst-a",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "width": 150,
+                  "height": 150,
+                  "radius": "md",
+                  "background": {
+                    "kind": "gradient",
+                    "gradient": {
+                      "angle": 45,
+                      "stops": [
+                        {
+                          "color": {
+                            "token": "accent",
+                            "opacity": 0.55
+                          },
+                          "position": 0
+                        },
+                        {
+                          "color": {
+                            "token": "primary",
+                            "opacity": 0.15
+                          },
+                          "position": 1
+                        }
+                      ]
+                    }
+                  }
+                },
+                "children": [],
+                "motion": {
+                  "kind": "spin",
+                  "direction": "clockwise",
+                  "duration": 12000
+                }
+              },
+              {
+                "id": "burst-b",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "width": 150,
+                  "height": 150,
+                  "radius": "md",
+                  "background": {
+                    "kind": "gradient",
+                    "gradient": {
+                      "angle": 45,
+                      "stops": [
+                        {
+                          "color": {
+                            "token": "accent",
+                            "opacity": 0.55
+                          },
+                          "position": 0
+                        },
+                        {
+                          "color": {
+                            "token": "primary",
+                            "opacity": 0.15
+                          },
+                          "position": 1
+                        }
+                      ]
+                    }
+                  }
+                },
+                "children": [],
+                "layer": {
+                  "rotate": 45
+                },
+                "motion": {
+                  "kind": "spin",
+                  "direction": "counterclockwise",
+                  "duration": 16000
+                }
+              },
+              {
+                "id": "prize-trophy",
+                "type": "Icon",
+                "props": {
+                  "name": "trophy",
+                  "size": "lg"
+                },
+                "style": {
+                  "color": "onPrimary",
+                  "padding": "md",
+                  "radius": "pill",
+                  "background": {
+                    "kind": "color",
+                    "color": "primary"
+                  }
+                },
+                "appear": {
+                  "kind": "rise",
+                  "distance": 24,
+                  "duration": 600,
+                  "delay": 150
+                }
+              }
+            ]
+          },
+          {
+            "id": "swingers",
+            "type": "Row",
+            "props": {
+              "gap": "xl",
+              "align": "center",
+              "justify": "center",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "bell",
+                "type": "Icon",
+                "props": {
+                  "name": "bell-ring",
+                  "size": "lg"
+                },
+                "style": {
+                  "color": "accent"
+                },
+                "motion": {
+                  "kind": "sway",
+                  "angle": 18,
+                  "pivot": "top",
+                  "duration": 1400
+                }
+              },
+              {
+                "id": "gift",
+                "type": "Icon",
+                "props": {
+                  "name": "gift",
+                  "size": "lg"
+                },
+                "style": {
+                  "color": "primary"
+                },
+                "motion": {
+                  "kind": "sway",
+                  "angle": 8,
+                  "pivot": "bottom",
+                  "duration": 1800,
+                  "delay": 300
+                }
+              }
+            ]
+          },
+          {
+            "id": "reward-1",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "reward-1-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "500 points"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "reward-1-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Added to your balance."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            },
+            "appear": {
+              "kind": "rise",
+              "distance": 16,
+              "duration": 400
+            }
+          },
+          {
+            "id": "reward-2",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "reward-2-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Free delivery"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "reward-2-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "For your next three orders."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            },
+            "appear": {
+              "kind": "rise",
+              "distance": 16,
+              "duration": 400,
+              "delay": 120
+            }
+          },
+          {
+            "id": "reward-3",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "reward-3-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Mystery box"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "reward-3-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Opens tomorrow."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "bodyS"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "background": {
+                "kind": "color",
+                "color": {
+                  "token": "primary",
+                  "opacity": 0.08
+                }
+              }
+            },
+            "appear": {
+              "kind": "rise",
+              "distance": 16,
+              "duration": 400,
+              "delay": 240
+            },
+            "motion": {
+              "kind": "float",
+              "axis": "vertical",
+              "amplitude": 4,
+              "duration": 3600
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "win/win-heading/content": "Ви виграли!",
+        "win/reward-1-title/content": "500 балів",
+        "win/reward-1-note/content": "Додано на ваш рахунок.",
+        "win/reward-2-title/content": "Безкоштовна доставка",
+        "win/reward-2-note/content": "На три наступні замовлення.",
+        "win/reward-3-title/content": "Коробка-сюрприз",
+        "win/reward-3-note/content": "Відкриється завтра."
+      }
+    }
+  }
+}

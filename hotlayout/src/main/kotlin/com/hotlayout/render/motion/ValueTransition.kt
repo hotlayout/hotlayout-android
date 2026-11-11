@@ -120,6 +120,14 @@ internal object ValueTransition {
 
     fun animatesIn(props: JsonObject): Boolean = props["animateIn"]?.bool == true
 
+    /**
+     * Whether a node writes its text in figures of equal width ALWAYS (at rest, between values and in the place that is held): a
+     * `Text` or the label of a `ProgressBar` with `animateIn` or `animateChanges` set to the literal `true`. A node with neither
+     * keeps the figures of its font. The label of a ring is tabular whatever its fields say.
+     */
+    fun tabularFigures(type: String, props: JsonObject): Boolean =
+        (type == "Text" || type == "ProgressBar") && (animatesChanges(props) || animatesIn(props))
+
     /** Text formats counted through: none, `number` and `currency`; a date, `daysUntil` and a countdown part are not. */
     private fun transitionsInText(format: String?) = format == null || format == "number" || format == "currency"
 

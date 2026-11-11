@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "9.34.0",
+  "schemaVersion": "9.42.0",
   "documentId": "glow-press",
   "name": "Glow, tinted shadow, press and haptic",
   "initialScreenId": "progress",
@@ -519,6 +519,9 @@
               "size": "md",
               "action": {
                 "type": "share",
+                "params": {
+                  "text": "My cards"
+                },
                 "haptic": "light"
               }
             }

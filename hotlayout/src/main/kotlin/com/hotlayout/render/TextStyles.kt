@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.LayoutDirection
 import com.hotlayout.render.dp
 import com.hotlayout.theme.Rgba
+import com.hotlayout.theme.TextShadowLayer
 import com.hotlayout.theme.TextStyleValue
 import kotlin.math.ceil
 
@@ -140,12 +141,16 @@ internal fun StyledText(
     maxLines: Int = Int.MAX_VALUE,
     /** `false` for a text that must never shrink or break (the trailing column of a row): it takes the width it needs. */
     softWrap: Boolean = true,
+    /** The shadow of the glyphs (`style.textShadow`): it takes no room and lies under the text. */
+    shadows: List<TextShadowLayer> = emptyList(),
 ) {
     val keeper = remember(style.lineBox) { LineBoxKeeper(style.lineBox) }
+    val drawn = composeTextStyle(style, color, context, italic, decoration, align)
+    val copy = ShadowCopy(AnnotatedString(text), drawn.copy(color = androidx.compose.ui.graphics.Color.Transparent), maxLines, softWrap)
     BasicText(
         text = AnnotatedString(text),
-        modifier = modifier.then(if (softWrap) Modifier else Modifier.neverNarrowerThanItsLine(align == TextAlign.End)).then(keeper.modifier).semantics { this.text = AnnotatedString(text) },
-        style = composeTextStyle(style, color, context, italic, decoration, align),
+        modifier = modifier.then(if (softWrap) Modifier else Modifier.neverNarrowerThanItsLine(align == TextAlign.End)).then(keeper.modifier).textShadowBehind(shadows, copy).semantics { this.text = AnnotatedString(text) },
+        style = drawn,
         maxLines = maxLines,
         softWrap = softWrap,
         overflow = TextOverflow.Ellipsis,

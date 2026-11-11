@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "9.34.0",
+  "schemaVersion": "9.42.0",
   "documentId": "swipe-motion",
   "name": "Swipe to confirm motion",
   "initialScreenId": "pay",
@@ -170,7 +170,7 @@
                 "kind": "literal",
                 "value": "Slide to add a tip"
               },
-              "variant": "secondary",
+              "variant": "primary",
               "action": {
                 "type": "submit"
               },
@@ -186,7 +186,8 @@
                   "token": "onSurface",
                   "opacity": 0.06
                 }
-              }
+              },
+              "color": "primary"
             }
           },
           {
@@ -197,7 +198,7 @@
                 "kind": "literal",
                 "value": "Slide to round off"
               },
-              "variant": "secondary",
+              "variant": "primary",
               "action": {
                 "type": "submit"
               },
@@ -212,7 +213,8 @@
                   "token": "onSurface",
                   "opacity": 0.06
                 }
-              }
+              },
+              "color": "primary"
             }
           }
         ]

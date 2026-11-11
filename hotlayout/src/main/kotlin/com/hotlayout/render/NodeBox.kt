@@ -30,6 +30,7 @@ import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
 import com.hotlayout.render.dp
 import com.hotlayout.render.paint.dashedBorder
+import com.hotlayout.render.paint.innerShadows
 import com.hotlayout.theme.BackgroundValue
 import com.hotlayout.theme.BoxLook
 import com.hotlayout.theme.Corners
@@ -114,6 +115,8 @@ internal fun Modifier.nodeBox(look: BoxLook, stretch: Boolean, rightToLeft: Bool
     if (solidBorder) modifier = modifier.solidBorderOver(border, borderColor!!.color, look.radius ?: Corners())
     if (borderColor != null && border > 0 && look.borderDashed) modifier = modifier.dashedBorder(border, borderColor.color, look.radius)
     modifier = modifier.backgroundOf(look.background, shape, rightToLeft)
+    // The inner layers of the shadow lie over the background and under the content, inside the border.
+    modifier = modifier.innerShadows(look.shadow, look.radius, border)
     // The content is clipped by the INNER edge of the border (the padding box): the outer radius less the border width.
     val contentShape = if (rounded && border > 0) (look.radius ?: Corners()).innerShape(border) else shape
     // The border takes room, as in CSS: the content starts inside it, and so does the clip.
@@ -141,7 +144,7 @@ internal fun Modifier.backgroundOf(background: BackgroundValue?, shape: Shape, r
     is BackgroundValue.Color -> background(background.color.color, shape)
     is BackgroundValue.Gradient -> drawBehind {
         val outline = shape.createOutline(size, layoutDirection, this)
-        drawOutlineBrush(outline, cssLinearGradient(background.gradient, size, rightToLeft))
+        drawOutlineBrush(outline, cssGradient(background.gradient, size, rightToLeft))
     }
     else -> this
 }
@@ -152,6 +155,23 @@ private fun DrawScope.drawOutlineBrush(outline: Outline, brush: Brush) {
         is Outline.Rounded -> drawPath(Path().apply { addRoundRect(outline.roundRect) }, brush)
         is Outline.Generic -> drawPath(outline.path, brush)
     }
+}
+
+/** A gradient of the contract for a box of a [size]: a circle when the gradient names one, a line otherwise. */
+internal fun cssGradient(gradient: GradientValue, size: Size, rightToLeft: Boolean): Brush {
+    val radial = gradient.radial ?: return cssLinearGradient(gradient, size, rightToLeft)
+    return radialBrush(gradient, radial, size)
+}
+
+/**
+ * A circle at (x·w, y·h) whose radius is a share of the distance from that point to the farthest corner (`x-radialGradient`). The
+ * stops are shares of the radius, the first colour fills the inside and the last one the outside of the circle; the centre is
+ * physical: it is not mirrored in right-to-left text.
+ */
+private fun radialBrush(gradient: GradientValue, radial: GradientValue.Radial, size: Size): Brush {
+    val radius = radial.radiusIn(size.width.toDouble(), size.height.toDouble()).toFloat().coerceAtLeast(0.01f)
+    val stops = gradient.stops.map { it.position.toFloat() to it.color.color }.toTypedArray()
+    return Brush.radialGradient(*stops, center = Offset((radial.centerX * size.width).toFloat(), (radial.centerY * size.height).toFloat()), radius = radius)
 }
 
 /**
@@ -198,14 +218,15 @@ internal fun cssLinearGradient(gradient: GradientValue, size: Size, @Suppress("U
  * CSS outer shadows: drawn only OUTSIDE the box (the inside is clipped out), so a box without a
  * background shows no shadow through itself. Blur is a Gaussian of half the CSS blur radius.
  */
-internal fun Modifier.cssShadows(layers: List<ShadowLayer>, shape: Shape): Modifier = drawBehind {
+internal fun Modifier.cssShadows(layers: List<ShadowLayer>, shape: Shape): Modifier = if (layers.none { !it.inset }) this else drawBehind {
     val outline = shape.createOutline(size, layoutDirection, this)
     val boxPath = Path().apply { addOutline(outline) }
     drawIntoCanvas { canvas ->
         val native = canvas.nativeCanvas
         native.save()
         native.clipOutPath(boxPath.asAndroidPath())
-        for (layer in layers) {
+        // The inner layers lie inside the box (`innerShadows`); only the outer ones are drawn behind it.
+        for (layer in layers.filter { !it.inset }) {
             val paint = android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG)
             paint.color = layer.color.argb()
             val sigma = (layer.blur / 2).toFloat() * density

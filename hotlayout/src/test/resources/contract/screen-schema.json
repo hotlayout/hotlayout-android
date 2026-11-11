@@ -110,6 +110,9 @@
           "type": "boolean",
           "const": false
         },
+        "transition": {
+          "$ref": "#/$defs/ScreenTransition"
+        },
         "root": {
           "$ref": "#/$defs/ScreenNode"
         }
@@ -120,6 +123,14 @@
         "root"
       ],
       "additionalProperties": false
+    },
+    "ScreenTransition": {
+      "description": "How this screen comes and goes (9.38.0): «fade» — a cross-dissolve, «none» — at once. No field — the platform default («x-screenTransition»).",
+      "type": "string",
+      "enum": [
+        "fade",
+        "none"
+      ]
     },
     "ScreenNode": {
       "type": "object",
@@ -254,6 +265,9 @@
           "description": "Gradient painted on the GLYPHS of the text (9.23.0): a gradient token of the theme or an own gradient of the same form as a gradient «background». It lies over the whole content box of the text, not line by line; a part of the text that names its own colour keeps it. «color» stays the fallback: an older reader and a gradient that does not resolve paint the text with it. Not inherited; read by Text only. Rules — «x-textGradient».",
           "$ref": "#/$defs/GradientRef"
         },
+        "textShadow": {
+          "$ref": "#/$defs/TextShadow"
+        },
         "padding": {
           "$ref": "#/$defs/BoxSpacing"
         },
@@ -359,7 +373,7 @@
         "fontSize": {
           "type": "number",
           "minimum": 8,
-          "maximum": 96
+          "maximum": 400
         },
         "fontWeight": {
           "type": "integer",
@@ -376,13 +390,24 @@
           "type": "number",
           "minimum": -2,
           "maximum": 8
+        },
+        "letterSpacingEm": {
+          "type": "number",
+          "minimum": -0.1,
+          "maximum": 0.5
         }
       },
       "required": [
         "token"
       ],
       "additionalProperties": false,
-      "minProperties": 2
+      "minProperties": 2,
+      "not": {
+        "required": [
+          "letterSpacing",
+          "letterSpacingEm"
+        ]
+      }
     },
     "TextFontStyle": {
       "type": "string",
@@ -415,6 +440,16 @@
       "description": "Name of a «gradient» token of the project theme. The schema checks only the shape of the name; whether the theme declares it is a semantic rule checked against the active theme."
     },
     "CustomGradient": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/LinearGradient"
+        },
+        {
+          "$ref": "#/$defs/RadialGradient"
+        }
+      ]
+    },
+    "LinearGradient": {
       "type": "object",
       "properties": {
         "angle": {
@@ -457,6 +492,112 @@
       "required": [
         "angle",
         "stops"
+      ],
+      "additionalProperties": false
+    },
+    "RadialGradient": {
+      "type": "object",
+      "properties": {
+        "shape": {
+          "type": "string",
+          "const": "radial"
+        },
+        "center": {
+          "$ref": "#/$defs/RadialGradientCenter"
+        },
+        "radius": {
+          "type": "number",
+          "minimum": 0.05,
+          "maximum": 2
+        },
+        "stops": {
+          "minItems": 2,
+          "maxItems": 8,
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "color": {
+                "$ref": "#/$defs/ColorRef"
+              },
+              "position": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 1
+              }
+            },
+            "required": [
+              "color",
+              "position"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": [
+        "shape",
+        "center",
+        "radius",
+        "stops"
+      ],
+      "additionalProperties": false
+    },
+    "RadialGradientCenter": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "y": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      },
+      "required": [
+        "x",
+        "y"
+      ],
+      "additionalProperties": false
+    },
+    "TextShadow": {
+      "minItems": 1,
+      "maxItems": 2,
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/TextShadowLayer"
+      },
+      "description": "Shadow of the glyphs (9.39.0), the first layer on top; no effect on layout. Read by Text only. Rules — «x-textShadow»."
+    },
+    "TextShadowLayer": {
+      "type": "object",
+      "properties": {
+        "offsetX": {
+          "type": "number",
+          "minimum": -64,
+          "maximum": 64
+        },
+        "offsetY": {
+          "type": "number",
+          "minimum": -64,
+          "maximum": 64
+        },
+        "blur": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 128
+        },
+        "color": {
+          "$ref": "#/$defs/ColorRef"
+        }
+      },
+      "required": [
+        "offsetX",
+        "offsetY",
+        "blur",
+        "color"
       ],
       "additionalProperties": false
     },
@@ -737,6 +878,11 @@
         },
         "color": {
           "$ref": "#/$defs/ColorRef"
+        },
+        "inset": {
+          "description": "Inner shadow (9.39.0): inside the border, over the background, under the content. No field — outer. Rules — «x-insetShadow».",
+          "type": "boolean",
+          "const": true
         }
       },
       "required": [
@@ -997,6 +1143,7 @@
           "fontStyle",
           "textDecoration",
           "textGradient",
+          "textShadow",
           "padding",
           "radius",
           "border",
@@ -1148,6 +1295,9 @@
           "$ref": "#/$defs/BadgeNode"
         },
         {
+          "$ref": "#/$defs/ChartNode"
+        },
+        {
           "$ref": "#/$defs/NavBarNode"
         },
         {
@@ -1226,6 +1376,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -1598,6 +1751,9 @@
           "description": "Gradient painted on the GLYPHS of the text (9.23.0): a gradient token of the theme or an own gradient of the same form as a gradient «background». It lies over the whole content box of the text, not line by line; a part of the text that names its own colour keeps it. «color» stays the fallback: an older reader and a gradient that does not resolve paint the text with it. Not inherited; read by Text only. Rules — «x-textGradient».",
           "$ref": "#/$defs/GradientRef"
         },
+        "textShadow": {
+          "$ref": "#/$defs/TextShadow"
+        },
         "padding": {
           "$ref": "#/$defs/BoxSpacing"
         },
@@ -1847,6 +2003,7 @@
           "fontStyle",
           "textDecoration",
           "textGradient",
+          "textShadow",
           "padding",
           "margin",
           "width",
@@ -1867,7 +2024,7 @@
       "uniqueItems": true
     },
     "NodeMotion": {
-      "description": "An endless motion of this node that never changes the layout (9.20.0): only a paint transform. «float» — the node drifts along «axis» by up to «amplitude» logical pixels; «pulse» — it breathes in scale and, optionally, opacity. One cycle lasts «duration» ms, the first starts after «delay» ms. The curve is a sine, not a field; the pose at any moment, the clock, «reduce motion», taps and clipping — «x-motion». No field — the node stands still, exactly as before 9.20.0.",
+      "description": "An endless motion of this node that never changes the layout (9.20.0): only a paint transform. «float» — the node drifts along «axis» by up to «amplitude» logical pixels; «pulse» — it breathes in scale and, optionally, opacity; «spin» (9.40.0) — it turns at a constant speed; «sway» (9.40.0) — it rocks by up to «angle» degrees about «pivot». One cycle lasts «duration» ms, the first starts after «delay» ms. The pose at any moment, the clock, «reduce motion», taps and clipping — «x-motion» and «x-motionTurn». No field — the node stands still.",
       "oneOf": [
         {
           "type": "object",
@@ -1949,6 +2106,82 @@
             "duration"
           ],
           "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "spin"
+            },
+            "direction": {
+              "type": "string",
+              "enum": [
+                "clockwise",
+                "counterclockwise"
+              ]
+            },
+            "duration": {
+              "type": "integer",
+              "minimum": 400,
+              "maximum": 60000,
+              "description": "Length of one cycle, in milliseconds."
+            },
+            "delay": {
+              "description": "Milliseconds the node stands at rest before its first cycle. No field — the cycle starts at once.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60000
+            }
+          },
+          "required": [
+            "kind",
+            "direction",
+            "duration"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "sway"
+            },
+            "angle": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 45,
+              "description": "Largest turn to each side, whole degrees."
+            },
+            "pivot": {
+              "type": "string",
+              "enum": [
+                "center",
+                "top",
+                "bottom"
+              ]
+            },
+            "duration": {
+              "type": "integer",
+              "minimum": 400,
+              "maximum": 60000,
+              "description": "Length of one cycle, in milliseconds."
+            },
+            "delay": {
+              "description": "Milliseconds the node stands at rest before its first cycle. No field — the cycle starts at once.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60000
+            }
+          },
+          "required": [
+            "kind",
+            "angle",
+            "pivot",
+            "duration"
+          ],
+          "additionalProperties": false
         }
       ]
     },
@@ -1964,6 +2197,70 @@
       "type": "string",
       "enum": [
         "fade"
+      ]
+    },
+    "NodeAppear": {
+      "description": "A one-time appearance when the screen is shown (9.40.0), a paint only: «fade» — opacity 0 → 1; «rise» — also from «distance» px below. Rules — «x-appear». No field — at once.",
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "fade"
+            },
+            "duration": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 2000,
+              "description": "Milliseconds."
+            },
+            "delay": {
+              "description": "Milliseconds after the show, the node invisible. No field — at once.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60000
+            }
+          },
+          "required": [
+            "kind",
+            "duration"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "rise"
+            },
+            "distance": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 48,
+              "description": "Logical pixels below its place at the start."
+            },
+            "duration": {
+              "type": "integer",
+              "minimum": 100,
+              "maximum": 2000,
+              "description": "Milliseconds."
+            },
+            "delay": {
+              "description": "Milliseconds after the show, the node invisible. No field — at once.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60000
+            }
+          },
+          "required": [
+            "kind",
+            "distance",
+            "duration"
+          ],
+          "additionalProperties": false
+        }
       ]
     },
     "NodeName": {
@@ -2052,6 +2349,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -2317,6 +2617,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -2419,8 +2722,32 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 128
+        },
+        "autoAdvance": {
+          "description": "Moves to the next stop by itself (9.42.0). No field — only a person moves it. Rules — «x-carouselAutoAdvance».",
+          "$ref": "#/$defs/CarouselAutoAdvance"
         }
       },
+      "additionalProperties": false
+    },
+    "CarouselAutoAdvance": {
+      "type": "object",
+      "properties": {
+        "intervalMs": {
+          "type": "integer",
+          "minimum": 2000,
+          "maximum": 15000,
+          "description": "Milliseconds on a stop before the next one."
+        },
+        "loop": {
+          "description": "After the last stop — the first. No field — it stays on the last.",
+          "type": "boolean",
+          "const": true
+        }
+      },
+      "required": [
+        "intervalMs"
+      ],
       "additionalProperties": false
     },
     "RowPropsOn": {
@@ -2535,6 +2862,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -2707,6 +3037,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -2736,7 +3069,7 @@
           "description": "How many cells go in a row. The cell width is the same across the grid: (grid width − gaps) ÷ number of columns.",
           "type": "integer",
           "minimum": 2,
-          "maximum": 4
+          "maximum": 6
         },
         "gap": {
           "default": "sm",
@@ -2837,6 +3170,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -2948,6 +3284,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -3042,6 +3381,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -3131,6 +3473,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -3226,6 +3571,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -3401,6 +3749,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -3446,7 +3797,7 @@
           "description": "How many copies of the template go in a row. No field — one per row. The cell width is computed exactly as in Grid: (width − gaps) ÷ columns.",
           "type": "integer",
           "minimum": 2,
-          "maximum": 4
+          "maximum": 6
         },
         "limit": {
           "type": "integer",
@@ -3569,6 +3920,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -3666,6 +4020,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -3759,6 +4116,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -3972,6 +4332,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -4122,6 +4485,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -4572,6 +4938,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -4740,6 +5109,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         },
@@ -4870,6 +5242,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -5203,6 +5578,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -5250,7 +5628,7 @@
         },
         "gradient": {
           "description": "Gradient of the fill, stronger than «color» while it resolves. It runs along the FILLED part: position 0 — the start of the scale, position 1 — the end of the fill («x-style.layout.progress.gradient»); the angle is not read. No field, an unknown token or unordered stops — the fill is the solid «color».",
-          "$ref": "#/$defs/GradientRef"
+          "$ref": "#/$defs/LinearGradientRef"
         },
         "cap": {
           "description": "Ends of the scale (9.21.0). «round» — the ends of the ring arc and of the bar track and fill are half-circles of the thickness, kept INSIDE the filled part: geometry — «x-style.layout.progressCap». No field or an unknown word — square ends of the ring arc and the theme «pill» radius of the bar, exactly as before 9.21.0.",
@@ -5334,6 +5712,16 @@
         }
       ]
     },
+    "LinearGradientRef": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/GradientToken"
+        },
+        {
+          "$ref": "#/$defs/LinearGradient"
+        }
+      ]
+    },
     "ProgressGlow": {
       "description": "Glow of the FILLED part of the scale (9.25.0): a blurred copy of the fill under it, in its own colour or gradient — «soft» or «strong», numbers in «x-progressGlow». A bar with steps lights one step: the current one when «currentColor» paints it, otherwise the last step with any fill. It changes no layout and is not clipped by the own box of the node. No field or an unknown word — no glow, exactly as before 9.25.0.",
       "type": "string",
@@ -5402,6 +5790,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -5460,7 +5851,7 @@
         },
         "gradient": {
           "description": "Gradient of the fill, stronger than «color» while it resolves. It runs along the FILLED part: position 0 — the start of the scale, position 1 — the end of the fill («x-style.layout.progress.gradient»); the angle is not read. No field, an unknown token or unordered stops — the fill is the solid «color».",
-          "$ref": "#/$defs/GradientRef"
+          "$ref": "#/$defs/LinearGradientRef"
         },
         "cap": {
           "description": "Ends of the scale (9.21.0). «round» — the ends of the ring arc and of the bar track and fill are half-circles of the thickness, kept INSIDE the filled part: geometry — «x-style.layout.progressCap». No field or an unknown word — square ends of the ring arc and the theme «pill» radius of the bar, exactly as before 9.21.0.",
@@ -5559,6 +5950,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -5601,6 +5995,248 @@
       "required": [
         "label",
         "tone"
+      ],
+      "additionalProperties": false
+    },
+    "ChartNode": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "type": {
+          "type": "string",
+          "const": "Chart"
+        },
+        "props": {
+          "$ref": "#/$defs/ChartProps"
+        },
+        "visibleIf": {
+          "$ref": "#/$defs/VisibilityCondition"
+        },
+        "style": {
+          "$ref": "#/$defs/NodeStyle"
+        },
+        "styleWhen": {
+          "minItems": 1,
+          "maxItems": 4,
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/StyleCase"
+          }
+        },
+        "fill": {
+          "type": "boolean",
+          "const": true
+        },
+        "weight": {
+          "$ref": "#/$defs/NodeWeight"
+        },
+        "layer": {
+          "$ref": "#/$defs/NodeLayer"
+        },
+        "pull": {
+          "$ref": "#/$defs/NodePull"
+        },
+        "pin": {
+          "$ref": "#/$defs/NodePin"
+        },
+        "showOn": {
+          "$ref": "#/$defs/ShowOn"
+        },
+        "styleOn": {
+          "$ref": "#/$defs/StyleOn"
+        },
+        "motion": {
+          "$ref": "#/$defs/NodeMotion"
+        },
+        "pressFeedback": {
+          "$ref": "#/$defs/NodePressFeedback"
+        },
+        "visibilityTransition": {
+          "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
+        "name": {
+          "$ref": "#/$defs/NodeName"
+        }
+      },
+      "required": [
+        "id",
+        "type",
+        "props"
+      ],
+      "additionalProperties": false
+    },
+    "ChartProps": {
+      "type": "object",
+      "properties": {
+        "variant": {
+          "default": "bars",
+          "description": "«bars» — a bar per point; «line» — a line through the points, from edge to edge («x-chart.bars», «x-chart.line»).",
+          "type": "string",
+          "enum": [
+            "bars",
+            "line"
+          ]
+        },
+        "data": {
+          "$ref": "#/$defs/ChartData"
+        },
+        "color": {
+          "default": "primary",
+          "description": "Colour of the bars or of the line and of the area under it.",
+          "$ref": "#/$defs/ColorRef"
+        },
+        "labels": {
+          "description": "Labels under the points, in a band at the bottom of the box («x-chart.labels»). No field — no labels.",
+          "type": "boolean",
+          "const": true
+        },
+        "highlight": {
+          "description": "One point painted with «highlightColor»: «last» — the last point («today»), «max» — the last point with the largest value, when it is above zero. A bar takes the colour; a line gets a dot. No field — «none».",
+          "type": "string",
+          "enum": [
+            "none",
+            "last",
+            "max"
+          ]
+        },
+        "highlightColor": {
+          "description": "Colour of the highlighted point. No field (or a token the theme does not declare) — «x-chart.defaults.highlightColor».",
+          "$ref": "#/$defs/ColorRef"
+        },
+        "barRadius": {
+          "description": "Radius of the TOP corners of a bar («bars» only). No field — «x-chart.defaults.barRadius».",
+          "$ref": "#/$defs/RadiusRef"
+        },
+        "barGap": {
+          "description": "Gap between bars («bars» only). No field — «x-chart.defaults.barGap».",
+          "$ref": "#/$defs/SpacingRef"
+        },
+        "lineWidth": {
+          "description": "Stroke of the line, dp («line» only). No field — «x-chart.defaults.lineWidth».",
+          "type": "number",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "curve": {
+          "description": "«straight» — segments; «smooth» — a monotone cubic curve that never leaves the values («x-chart.smooth»). «line» only. No field — «straight».",
+          "type": "string",
+          "enum": [
+            "straight",
+            "smooth"
+          ]
+        },
+        "area": {
+          "description": "Fill under the line, fading from the colour of the line to transparent at the bottom («x-chart.area»). «line» only.",
+          "type": "boolean",
+          "const": true
+        },
+        "animateIn": {
+          "description": "When the node is SHOWN, its value grows from zero to its own (9.24.0): a number of a text with a numeric format counts up from 0 with the same curve, duration and steps as «animateChanges»; a ProgressBar or CircularProgress fills from empty. Shown — the first show of the screen, a screen shown again («back»), a node that appears (condition, width class, a new record). Rules — «x-valueAppear». No field — the value is there at once, exactly as before 9.24.0.",
+          "type": "boolean",
+          "const": true
+        },
+        "alt": {
+          "$ref": "#/$defs/AltText"
+        }
+      },
+      "required": [
+        "variant",
+        "data",
+        "color"
+      ],
+      "additionalProperties": false
+    },
+    "ChartData": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "literal"
+            },
+            "points": {
+              "minItems": 2,
+              "maxItems": 31,
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/ChartPoint"
+              }
+            }
+          },
+          "required": [
+            "kind",
+            "points"
+          ],
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "string",
+              "const": "collection"
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "description": "Name of a collection from the data contract, for example «spending»."
+            },
+            "item": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "description": "Prefix of a record of the collection, as in «Repeater.item»: «spending» gives «spend»."
+            },
+            "valueField": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128,
+              "description": "Number field of a record, by full path: «spend.amount»."
+            },
+            "labelField": {
+              "description": "String field of a record, by full path: «spend.day». No field — no labels.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          },
+          "required": [
+            "kind",
+            "source",
+            "item",
+            "valueField"
+          ],
+          "additionalProperties": false
+        }
+      ],
+      "description": "Points of the chart: «literal» — the points in the document; «collection» — one point per record of a collection, in the order of the data, the first «x-chart.points.max» records. How a record value becomes a point — «x-chart.points»."
+    },
+    "ChartPoint": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000000000000,
+          "description": "Value of the point. Zero or more: the base line of the chart is zero."
+        },
+        "label": {
+          "description": "Label under the point, drawn with «labels». Not translated in 9.37.0.",
+          "type": "string",
+          "maxLength": 24
+        }
+      },
+      "required": [
+        "value"
       ],
       "additionalProperties": false
     },
@@ -5663,6 +6299,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -5760,6 +6399,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -5859,6 +6501,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -6093,6 +6738,9 @@
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
         },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
+        },
         "name": {
           "$ref": "#/$defs/NodeName"
         }
@@ -6181,6 +6829,9 @@
         },
         "visibilityTransition": {
           "$ref": "#/$defs/NodeVisibilityTransition"
+        },
+        "appear": {
+          "$ref": "#/$defs/NodeAppear"
         },
         "name": {
           "$ref": "#/$defs/NodeName"
@@ -6275,7 +6926,7 @@
   },
   "$id": "https://hotlayout.com/schema/ui-document.json",
   "title": "UiDocument",
-  "x-schemaVersion": "9.34.0",
+  "x-schemaVersion": "9.42.0",
   "x-compatibility": {
     "policy": {
       "majorMustMatch": true,
@@ -6503,7 +7154,8 @@
       "NavItem": "9.12.0",
       "TextField": "9.13.0",
       "Switch": "9.13.0",
-      "Checkbox": "9.13.0"
+      "Checkbox": "9.13.0",
+      "Chart": "9.37.0"
     },
     "features": {
       "localization": "7.2.0",
@@ -6616,7 +7268,18 @@
       "sheetSafeBottom": "9.31.0",
       "carouselStop": "9.32.0",
       "visibilityFade": "9.33.0",
-      "swipeMotion": "9.34.0"
+      "swipeMotion": "9.34.0",
+      "displayTypography": "9.35.0",
+      "radialGradient": "9.36.0",
+      "chart": "9.37.0",
+      "screenTransition": "9.38.0",
+      "insetShadow": "9.39.0",
+      "textShadow": "9.39.0",
+      "motionTurn": "9.40.0",
+      "nodeAppear": "9.40.0",
+      "copyShareActions": "9.41.0",
+      "gridSixColumns": "9.41.0",
+      "carouselAutoAdvance": "9.42.0"
     }
   },
   "x-budget": {
@@ -11812,6 +12475,640 @@
     "olderReader": "the-look-of-9-24-and-the-screen-changes-as-usual",
     "cases": "contract/fixtures/swipe-motion/swipe-motion-cases.json"
   },
+  "x-displayTypography": {
+    "on": "TypographyOverride",
+    "fontSize": {
+      "min": 8,
+      "max": 400,
+      "themeMax": 96,
+      "theme": "the tokens of the theme keep their bounds; only the font size of a node override reaches «max»"
+    },
+    "textScale": {
+      "ceiling": 96,
+      "rule": "effective = s ≤ 1 ? f × s : max(f, min(f, ceiling) × s), where f is the font size and s the system text scale",
+      "belowCeiling": "a font size up to the ceiling scales exactly as before: f × s",
+      "aboveCeiling": "a font size above the ceiling grows not beyond ceiling × s and never below f",
+      "monotonic": "continuous and non-decreasing in f: a larger font size is never drawn smaller",
+      "lineHeight": "a multiplier of the effective font size",
+      "appliesTo": "every text whose font size the system text scale multiplies, wherever the size comes from"
+    },
+    "letterSpacingEm": {
+      "field": "letterSpacingEm",
+      "min": -0.1,
+      "max": 0.5,
+      "unit": "a share of the font size",
+      "pixels": "letterSpacingEm × the effective font size (after the system text scale)",
+      "replaces": "the letter spacing of the token",
+      "exclusive": [
+        "letterSpacing",
+        "letterSpacingEm"
+      ]
+    },
+    "olderReader": "a font size above the old bound is clamped to it; «letterSpacingEm» is skipped and the letter spacing of the token applies",
+    "cases": "contract/fixtures/display-typography/display-typography-cases.json"
+  },
+  "x-radialGradient": {
+    "on": [
+      "CustomGradient",
+      "ThemeGradient"
+    ],
+    "shape": {
+      "field": "shape",
+      "value": "radial",
+      "absent": "linear: { angle, stops } exactly as before 9.36.0"
+    },
+    "coordinates": "center.x and center.y in the normalized box: (0,0) top-left, (1,1) bottom-right, y grows downwards; 0…1 inclusive",
+    "circle": "always a circle, never an ellipse, in a box of any proportions",
+    "radius": {
+      "min": 0.05,
+      "max": 2,
+      "unit": "share of the distance from the center to the FARTHEST corner of the box; radius 1 with the center in the middle exactly covers the box",
+      "pixels": "R = radius · max over the four corners of the distance from the center to that corner"
+    },
+    "stops": "position is a share of the radius R: 0 — the center, 1 — the circle of radius R",
+    "beyondStops": "clamp: before the first stop — the colour of the first, beyond the last — the colour of the last (CSS does it itself, Flutter TileMode.clamp)",
+    "equalStops": "ordered",
+    "stopOrder": "non-descending, as for a linear gradient; unordered stops — not drawn (unorderedGradient)",
+    "direction": "physical: not mirrored in right-to-left scripts",
+    "css": "radial-gradient(circle farthest-corner at X% Y%, c1 (p1·radius·100)%, …), X = center.x·100, Y = center.y·100",
+    "flutter": "RadialGradient(center: Alignment(2x−1, 2y−1), radius: R / shortestSide, tileMode: TileMode.clamp)",
+    "native": "iOS drawRadialGradient and Android RadialGradient: a circle at (x·w, y·h) of radius R in pixels, extended beyond both ends",
+    "where": "every place of a gradient token or an own gradient: style.background, style.textGradient, a gradient token of the theme. Progress.gradient takes an own LINEAR gradient only (its fill runs along the scale); a radial theme token there is an open question of the contract",
+    "olderReader": "A reader older than 9.36.0 does not draw a radial own gradient: the background is omitted and the rest of the style is drawn, text in style.textGradient takes its solid colour. A radial token of a theme 4.1.0 is an entry of the wrong shape for a 4.0 reader: it is dropped (theme report), a core token takes the built-in value of the same brightness, an own token is unknown, so a reference to it is not drawn",
+    "cases": "contract/fixtures/radial-gradient/radial-gradient-cases.json"
+  },
+  "x-chart": {
+    "on": "Chart",
+    "units": "dp in the content box of the node; origin top-left, y grows down; «W» — the width of the box, «H» — the height of the plot area",
+    "box": {
+      "width": "the whole width the parent gives (the chart stretches like a ProgressBar)",
+      "height": "style.height of the node; no field — defaultHeight. The label band lies INSIDE this height",
+      "defaultHeight": 120,
+      "plotHeight": "H = max(0, height − (labels ? labelLine + labelGap : 0))",
+      "direction": "the first point stands at the start of the reading direction: right-to-left mirrors the drawing and the labels"
+    },
+    "points": {
+      "min": 2,
+      "max": 31,
+      "literal": "data.points in order",
+      "collection": "one point per record of data.source, in the order of the data, the first «max» records; a record field is read by full path or by short name, as in Repeater",
+      "value": "a finite number — itself, a negative number — 0; not a number, infinity, null or no field — 0. The point keeps its place",
+      "label": "a string — itself; anything else — an empty label",
+      "tooFew": "fewer than «min» points — the chart is empty: nothing is drawn, the box stays",
+      "unknownData": "an unknown shape of «data» — the chart is empty"
+    },
+    "scale": {
+      "bottom": "zero",
+      "top": "the largest value of the points",
+      "ratio": "r_k = v_k / top; all values zero — every ratio is 0 (no division)"
+    },
+    "bars": {
+      "slots": "n equal slots over the whole width, the gap only between bars: barWidth = (W − gap × (n − 1)) / n",
+      "tightGap": "a gap with which a bar is narrower than 1 dp becomes 0",
+      "x": "x_k = k × (barWidth + gap)",
+      "height": "h_k = r_k × H, standing on the bottom of the plot area; a bar of height 0 is not drawn",
+      "radius": "the TOP corners only: min(barRadius, barWidth / 2, h_k); the bottom corners are square"
+    },
+    "line": {
+      "inset": "i = lineWidth / 2; with a highlight — max(lineWidth / 2, dotRadius)",
+      "x": "x_k = i + k × (W − 2i) / (n − 1): from edge to edge",
+      "y": "y_k = i + (1 − r_k) × (H − 2i): zero at H − i, the top at i",
+      "stroke": "round caps and joins"
+    },
+    "smooth": {
+      "name": "monotone cubic spline (Steffen 1990; the same as curveMonotoneX of d3)",
+      "twoPoints": "two points — a straight segment",
+      "secant": "s_k = (y_{k+1} − y_k) / h, where h is the equal horizontal step",
+      "tangent": "inside: m_k = (sign(s_{k−1}) + sign(s_k)) × min(|s_{k−1}|, |s_k|, |s_{k−1} + s_k| / 4); ends: m_0 = (3 s_0 − m_1) / 2, m_{n−1} = (3 s_{n−2} − m_{n−2}) / 2",
+      "segment": "a cubic Bézier per pair: c1 = (x_k + h/3, y_k + m_k × h/3), c2 = (x_{k+1} − h/3, y_{k+1} − m_{k+1} × h/3)",
+      "bounded": "monotone between neighbours: the curve never goes below zero nor above the top, and a peak lies exactly on its point",
+      "coordinates": "computed in drawing coordinates (after the scale): an affine map keeps the curve the same"
+    },
+    "area": {
+      "shape": "the line (straight or smooth), then down to the bottom of the plot area (y = H) and back to the first point",
+      "paint": "a vertical linear gradient: the colour of the line with its opacity × topOpacity at the top of the plot area, transparent at the bottom",
+      "topOpacity": 0.24,
+      "under": "drawn under the line"
+    },
+    "highlight": {
+      "none": "no point",
+      "last": "the last point",
+      "max": "the LAST point with the largest value, only when that value is above zero",
+      "bars": "the bar takes highlightColor",
+      "line": "a dot of radius dotRadius = lineWidth + dotExtra at the point, in highlightColor, over the line",
+      "dotExtra": 2,
+      "unknownWord": "none"
+    },
+    "labels": {
+      "band": "one line of the label typography plus labelGap, at the bottom of the box",
+      "typography": "caption",
+      "color": "muted",
+      "labelGap": "xs",
+      "box": "width W / n; centred under the middle of the bar or under the point of the line; shifted inside [0, W]",
+      "thinning": "when W / n < minWidth every k-th point is labelled, k = ceil(minWidth / (W / n)), counting from the LAST point",
+      "minWidth": 28,
+      "text": "one line, centred in its box, an ellipsis when it does not fit; an empty chart draws no labels but keeps the band"
+    },
+    "defaults": {
+      "highlight": "none",
+      "highlightColor": "accent",
+      "barRadius": "sm",
+      "barGap": "xs",
+      "lineWidth": 2,
+      "curve": "straight",
+      "unknownToken": "a token the theme does not declare — the default of the field"
+    },
+    "lineWidth": {
+      "min": 1,
+      "max": 8,
+      "outOfRange": "clamped"
+    },
+    "notRead": "barRadius and barGap are read by «bars» only; lineWidth, curve and area by «line» only; highlightColor only with a highlight",
+    "appear": {
+      "prop": "animateIn",
+      "rule": "when the node is shown, every value grows from 0: v_k × e(t), where e is the curve of x-valueTransition over durationMs; the top of the scale stands at once",
+      "durationMs": 700,
+      "shown": "the moments of x-valueAppear.shown",
+      "reducedMotion": "system «reduce motion» — the final chart at once",
+      "dataChanged": "a change of data on a shown chart — the new chart at once",
+      "editorCanvas": "not animated"
+    },
+    "semantics": {
+      "role": "an image: one element for the screen reader, not a table",
+      "name": "the «alt» text (a string or a string of the document: binding, template); empty or no field — hidden from the screen reader, as a decorative image"
+    },
+    "olderReader": "a reader older than 9.37 does not know the type and draws an unknown widget — its children, of which a chart has none",
+    "cases": "contract/fixtures/chart/chart-cases.json"
+  },
+  "x-screenTransition": {
+    "field": "transition",
+    "on": "ScreenEntry",
+    "words": [
+      "fade",
+      "none"
+    ],
+    "value": "how this screen comes and goes: «fade» — a cross-dissolve (a page: the old one fades out over the new one; a layer: opacity only, no slide and no zoom), «none» — at once; no field — the platform default below",
+    "decides": "the screen that comes decides when the stack grows or a section is switched; the screen that leaves decides when the stack shrinks",
+    "unknownWord": "as no field — the platform default",
+    "page": {
+      "push": {
+        "durationMs": 300,
+        "curve": [
+          0.2,
+          0,
+          0,
+          1
+        ],
+        "parallax": 0.3,
+        "curveCss": "cubic-bezier(0.2, 0, 0, 1)",
+        "incoming": "slides in from the end edge over the whole width (x from 1 to 0)",
+        "outgoing": "slides back by «parallax» of the width (x from 0 to −parallax) and stays under the incoming page"
+      },
+      "pop": {
+        "durationMs": 300,
+        "curve": [
+          0.2,
+          0,
+          0,
+          1
+        ],
+        "parallax": 0.3,
+        "curveCss": "cubic-bezier(0.2, 0, 0, 1)",
+        "outgoing": "slides out to the end edge (x from 0 to 1) above the incoming page",
+        "incoming": "comes back from −parallax to 0 under it"
+      },
+      "direction": "x is a share of the screen width towards the end edge: right in a left-to-right language, left in a right-to-left one",
+      "background": "each page slides with its own screen background; no shadow and no dimming under the incoming page"
+    },
+    "sheet": {
+      "open": {
+        "durationMs": 280,
+        "curve": [
+          0.2,
+          0,
+          0,
+          1
+        ],
+        "curveCss": "cubic-bezier(0.2, 0, 0, 1)",
+        "layer": "rises from below by its own height (y from 1 to 0)"
+      },
+      "close": {
+        "durationMs": 220,
+        "curve": [
+          0.4,
+          0,
+          1,
+          1
+        ],
+        "curveCss": "cubic-bezier(0.4, 0, 1, 1)",
+        "layer": "goes down by its own height (y from 0 to 1)"
+      },
+      "shape": "a modal screen shown as a sheet at the bottom («modalShapeOf» is «sheet»)",
+      "dragged": "a sheet dismissed by the drag gesture («x-sheetDismiss») has already reached the bottom: the pop plays nothing more"
+    },
+    "window": {
+      "open": {
+        "durationMs": 200,
+        "curve": [
+          0.2,
+          0,
+          0,
+          1
+        ],
+        "scaleFrom": 0.96,
+        "curveCss": "cubic-bezier(0.2, 0, 0, 1)",
+        "layer": "opacity from 0 to 1, scale from «scaleFrom» to 1 around the centre of the window"
+      },
+      "close": {
+        "durationMs": 150,
+        "curve": [
+          0.4,
+          0,
+          1,
+          1
+        ],
+        "curveCss": "cubic-bezier(0.4, 0, 1, 1)",
+        "layer": "opacity from 1 to 0, no scale"
+      },
+      "shape": "a window in the centre and a sheet shown as a window on a wide area («modalShapeOf» is «window» or «sheetWindow»)"
+    },
+    "fade": {
+      "durationMs": 200,
+      "curve": [
+        0.4,
+        0,
+        0.2,
+        1
+      ],
+      "curveCss": "cubic-bezier(0.4, 0, 0.2, 1)",
+      "page": "the outgoing page fades out (opacity from 1 to 0) above the incoming page, which stands still",
+      "layer": "the layer only changes its opacity: from 0 to 1 when it opens, from 1 to 0 when it closes"
+    },
+    "scrim": "the scrim and the backdrop blur under a layer fade together with the layer on the same curve, from 0 to their resting opacity and back, when a page is on the other side; between two layers they stay",
+    "section": "switching a section («navigate.section», a NavBar item) — no motion; «fade» on the target screen cross-dissolves, «none» keeps it at once",
+    "notTransition": [
+      "the first show of the document, a new entry, a stack rebuilt by the host",
+      "reduced motion",
+      "the editor canvas and thumbnails",
+      "a step made under the swipe-button ripple that covers the screen («x-swipeConfirmMotion.ripple») — the ripple is the transition",
+      "a sheet dismissed by the drag gesture"
+    ],
+    "interaction": "the outgoing screen catches no touch and leaves the accessibility tree from the first frame; the incoming screen is a control from the first frame; focus is handled as after any step",
+    "interrupted": "a new step during a transition finishes the current one at once; the new transition starts from the final state — layers never pile up",
+    "layers": "the outgoing page lies under the incoming one on push and above it on pop and on a cross-dissolve",
+    "visibilityFade": "a node with «visibilityTransition» stands in its rest state when its screen is shown («x-visibilityFade.notTransition»)",
+    "olderReader": "at once",
+    "cases": "contract/fixtures/screen-transition/screen-transition-cases.json"
+  },
+  "x-insetShadow": {
+    "prop": "style.shadow[].inset",
+    "on": "CustomShadowLayer — the own layers of a node shadow (style.shadow, styleWhen, styleOn, styleScrolled); never a theme elevation token",
+    "value": "true — an inner shadow; no field — an outer shadow exactly as before 9.39.0; false is not accepted",
+    "mixing": "one list may mix outer and inner layers; the same bound MAX_SHADOW_LAYERS; the first layer is the nearest to the element and painted on top",
+    "numbers": "offsetX, offsetY, blur and spread mean what they mean in CSS box-shadow inset; the same bounds as an outer layer",
+    "spread": "a positive spread NARROWS the inner outline (the shadow grows thicker), a negative one widens it",
+    "where": "inside the border: along the inner edge of the border (the padding box), clipped by the corner radius reduced by the border width",
+    "paintOrder": [
+      "outer layers of style.shadow (outside the box)",
+      "backdropBlur (under the background)",
+      "background: colour, gradient (linear or radial) or image",
+      "inner layers of style.shadow",
+      "content and children",
+      "border"
+    ],
+    "noBackground": "painted all the same: an inner shadow does not depend on the background",
+    "geometry": {
+      "clip": "x = y = borderWidth; width − 2·borderWidth; height − 2·borderWidth; radius max(0, r − borderWidth)",
+      "hole": "the clip narrowed by spread on every side and moved by (offsetX, offsetY); sides not below zero; radius max(0, clipRadius − spread), a zero radius stays zero",
+      "paint": "fill everything OUTSIDE the hole with the colour of the layer, blur it, and clip the result by the clip"
+    },
+    "blur": "the same blur as an outer layer of this reader: CSS takes the number as is (sigma = blur / 2); a reader that paints the inner shadow by hand converts blur to a sigma exactly as its outer shadows do",
+    "shadowColor": "style.shadowColor tints inner layers exactly as outer ones",
+    "css": "box-shadow: inset X Y BLUR SPREAD COLOR, in the order of the list together with the outer layers",
+    "flutter": "BoxShadow has no inset: paint the layer with a CustomPainter in the foreground of the decoration and under the child — clip to the clip rrect, fill (a big rect minus the hole rrect) with MaskFilter.blur(BlurStyle.normal, sigma)",
+    "native": "iOS and Android have no inner box shadow either: the same clip-and-hole paint (UIBezierPath with even-odd fill and a shadow, or Canvas.clipPath + Paint.setMaskFilter(BlurMaskFilter))",
+    "theme": "theme elevation tokens have no inner layers (theme contract 4.1.0 unchanged); a custom shadow with an inner layer cannot be saved as a token",
+    "olderReader": "A reader older than 9.39.0 does not know the field and skips it: an inner layer is drawn as an OUTER shadow with the same numbers. Publish an inner shadow when readers 9.39 are in the hands of users",
+    "cases": "contract/fixtures/shadow-effects/shadow-effects-cases.json#insetCases"
+  },
+  "x-textShadow": {
+    "prop": "style.textShadow",
+    "value": "1…2 layers { offsetX, offsetY, blur, color }; no spread, no inset; no tokens; an empty list is not accepted",
+    "bounds": "the bounds of a box shadow layer: offset ±64, blur 0…128",
+    "color": "a colour reference; its opacity is the opacity of the layer",
+    "readers": [
+      "Text"
+    ],
+    "inherited": false,
+    "order": "the first layer is the nearest to the text and painted on top, as CSS text-shadow; a reader that paints the list from the bottom (Flutter TextStyle.shadows) reverses it",
+    "paints": "under the glyphs; the shadow takes the SHAPE of the glyphs and the colour of the layer, whatever paints the glyphs",
+    "layout": "none: the text measures exactly as without the shadow; the shadow may extend beyond the box of the text and is clipped only by what already clips content",
+    "parts": "applies to the whole text with its parts (spans); a part has no shadow of its own",
+    "decoration": "the line of textDecoration and the marker of a list item get the shadow too, as glyphs of the same text",
+    "textGradient": {
+      "together": "allowed",
+      "rule": "the shadow never shows through glyphs painted with the gradient: where the gradient is opaque, the glyph covers its shadow, exactly as a solid colour does",
+      "web": "text-shadow on a transparent fill with background-clip: text shows through the glyphs — paint the shadow from a copy of the text under the gradient text (same layout, transparent fill, aria-hidden), not with filter: drop-shadow (it chains the layers and takes the opacity of the gradient)",
+      "flutter": "paint the gradient with TextStyle.foreground (Paint.shader) and the shadows with TextStyle.shadows; a gradient painted through ShaderMask would paint the shadow with the gradient too — then draw the shadows from a Text beneath with a transparent colour"
+    },
+    "textScale": "numbers are dp: the system text scale does not multiply them (9.35 scales the font size only)",
+    "blur": "the blur radius of CSS text-shadow and Flutter Shadow.blurRadius",
+    "css": "text-shadow: X Y BLUR COLOR[, X Y BLUR COLOR]",
+    "flutter": "TextStyle.shadows: [Shadow(offset: Offset(x, y), blurRadius: blur, color: c)] in REVERSED order",
+    "native": "a platform that takes one shadow per text (NSShadow, Paint.setShadowLayer) draws the second layer as the glyph outlines filled with the layer colour and blurred, under the first",
+    "states": "styleWhen and styleOn may name it, merged as every style field",
+    "otherWidgets": "not-published-text_shadow_not_read",
+    "olderReader": "A reader older than 9.39.0 skips the field: the text is drawn without a shadow",
+    "cases": "contract/fixtures/shadow-effects/shadow-effects-cases.json#textShadowCases"
+  },
+  "x-motionTurn": {
+    "prop": "motion",
+    "kinds": [
+      "spin",
+      "sway"
+    ],
+    "shares": "x-motion: «on», «clock», «phase», «reducedMotion», «layout», «opacity», «clip» and the bounds of duration and delay are those of x-motion",
+    "spin": {
+      "directions": [
+        "clockwise",
+        "counterclockwise"
+      ],
+      "rotate": "r = s * 360deg * ((t - delay) mod duration) / duration; s = +1 clockwise, -1 counterclockwise; while t < delay r = 0",
+      "curve": "none — a constant speed: an even turn is the point of spinning; a sine would jerk at every turn",
+      "pivot": "the centre of the box",
+      "rightToLeft": "not mirrored: a turn has no direction of the line"
+    },
+    "sway": {
+      "pivots": [
+        "center",
+        "top",
+        "bottom"
+      ],
+      "rotate": "r = angle * sin(theta), degrees, positive — clockwise; theta of x-motion.phase",
+      "curve": "sine — not a field, as in x-motion",
+      "pivot": {
+        "center": "the centre of the box",
+        "top": "the middle of the top edge of the box",
+        "bottom": "the middle of the bottom edge of the box"
+      },
+      "rightToLeft": "mirrored: r = -angle * sin(theta)"
+    },
+    "order": "after the node own place («layer» offset and rotation): the turn is about the pivot of the box as the layer placed it, so it adds to the layer rotation about that pivot",
+    "rest": {
+      "rotate": 0
+    },
+    "taps": "the rule of x-motion.taps holds as written: promised inside the box at rest where the turned node is also drawn — not the bounding rectangle of the turned node, not the whole box at rest",
+    "ranges": {
+      "duration": {
+        "min": 400,
+        "max": 60000
+      },
+      "delay": {
+        "min": 1,
+        "max": 60000
+      },
+      "angle": {
+        "min": 1,
+        "max": 45
+      }
+    },
+    "olderReader": "a value of an unknown kind — the node stands at rest (x-motion.olderReader)",
+    "cases": "contract/fixtures/motion/motion-turn-cases.json"
+  },
+  "x-appear": {
+    "prop": "appear",
+    "on": "every node except the root «Screen»; on a zone of the screen it is not published",
+    "kinds": [
+      "fade",
+      "rise"
+    ],
+    "fade": {
+      "opacity": "e"
+    },
+    "rise": {
+      "opacity": "e",
+      "y": "distance * (1 - e), down"
+    },
+    "progress": "p = clamp((t - delay) / duration, 0, 1); e = the curve at p",
+    "curve": {
+      "is": "x-visibilityFade.in.curve",
+      "bezier": [
+        0,
+        0,
+        0.2,
+        1
+      ]
+    },
+    "beforeDelay": "the start pose: opacity 0 and, for «rise», the full shift — the node is invisible, its box is in the layout",
+    "rest": {
+      "y": 0,
+      "opacity": 1
+    },
+    "shown": "x-valueAppear.shown — the same moments as «animateIn»: the first show, a screen pushed on top, a screen shown again by «back» or a section switch; closing a layer above is not a show",
+    "notOnShownScreen": "a node that appears on a screen already shown (its condition starts to hold, a width class, a new record of a list) does not play the appearance: it follows «visibilityTransition» or appears at once",
+    "hiddenAtShow": "a node not visible when the screen is shown does not play the appearance later",
+    "withVisibilityTransition": "both fields may stand on one node: the appearance plays at the show, «visibilityTransition» on every later change of the condition",
+    "withMotion": "both start at the show: the endless motion runs from t = 0 under the appearance; the appearance shift and opacity are applied over the motion pose",
+    "stagger": "none — every node starts at the show; a cascade is the own «delay» of each node",
+    "reducedMotion": "rest — the node is there at once",
+    "notPlayed": [
+      "the editor canvas",
+      "thumbnails and still images of a screen",
+      "reduce motion"
+    ],
+    "layout": "unchanged: the box stands at its place from the first frame",
+    "order": "after the node own place («layer» offset and rotation): the shift goes along the screen vertical",
+    "opacity": "multiplies the node own opacity («style.opacity») and the opacity of «pulse»",
+    "taps": "the node catches presses from the first frame, at its place at rest",
+    "zones": "not read on a zone of the screen — the first child of the screen root that is an AppBar, a pinned node, a NavBar and a NavItem: zones are the frame of the screen and come with it at once",
+    "ranges": {
+      "duration": {
+        "min": 100,
+        "max": 2000
+      },
+      "delay": {
+        "min": 1,
+        "max": 60000
+      },
+      "distance": {
+        "min": 1,
+        "max": 48
+      }
+    },
+    "olderReader": "skips the field — the node is there at once",
+    "cases": "contract/fixtures/motion/motion-turn-cases.json"
+  },
+  "x-copyShare": {
+    "executor": "host",
+    "catalog": [
+      {
+        "type": "copy",
+        "executor": "host",
+        "params": [
+          {
+            "name": "text",
+            "required": true,
+            "form": "text",
+            "bindable": true
+          }
+        ]
+      },
+      {
+        "type": "share",
+        "executor": "host",
+        "params": [
+          {
+            "name": "text",
+            "required": false,
+            "form": "text",
+            "bindable": true
+          },
+          {
+            "name": "url",
+            "required": false,
+            "form": "httpsUrl",
+            "bindable": true
+          }
+        ],
+        "oneOf": [
+          "text",
+          "url"
+        ]
+      }
+    ],
+    "pickerOrder": "right-after-close-in-the-editor-list",
+    "forms": {
+      "text": {
+        "minLength": 1,
+        "maxLength": 2048,
+        "otherForm": "none"
+      },
+      "httpsUrl": "x-actions.forms.httpsUrl"
+    },
+    "problems": "x-actions.problems",
+    "problemOrder": "each-named-param-in-catalog-order-then-one-of",
+    "oneOf": {
+      "meaning": "at-least-one-param-of-the-list-has-a-value-after-data-substitution",
+      "otherwise": {
+        "problem": "missing",
+        "param": "the-first-of-the-list"
+      },
+      "inDocument": "a-non-empty-literal-or-a-binding-counts-as-a-value"
+    },
+    "paramBinding": "x-actions.paramBinding",
+    "handed": {
+      "standardTypes": [
+        "copy",
+        "share"
+      ],
+      "copy": {
+        "type": "copy",
+        "fields": [
+          "text"
+        ]
+      },
+      "share": {
+        "type": "share",
+        "fields": [
+          "text",
+          "url"
+        ],
+        "absentField": "key-left-out"
+      },
+      "invalid": "no-standard-the-host-still-gets-type-and-params"
+    },
+    "reader": "hands-the-action-to-the-host-never-touches-the-clipboard-or-opens-a-share-sheet",
+    "hostAdvice": {
+      "copy": "the-host-copies-and-usually-confirms-with-a-short-copied-toast-the-contract-has-no-toast",
+      "share": "the-host-opens-the-system-share-sheet-with-the-text-and-the-link"
+    },
+    "olderReader": "hands-copy-and-share-as-an-action-of-the-app-without-standard",
+    "cases": "contract/fixtures/actions/action-cases.json"
+  },
+  "x-carouselAutoAdvance": {
+    "refines": [
+      "x-style.layout.carousel.active",
+      "x-carouselStop.write"
+    ],
+    "prop": "carousel.autoAdvance",
+    "field": {
+      "is": "an-object-its-presence-turns-the-timer-on",
+      "intervalMs": {
+        "min": 2000,
+        "max": 15000,
+        "unit": "ms",
+        "outOfRange": "clamped-literalOutOfRange",
+        "notANumber": "the-lower-bound-nonNumericLiteral"
+      },
+      "loop": {
+        "is": "the-literal-true",
+        "absent": "stay-on-the-last-stop-the-timer-stops",
+        "otherValue": "as-absent"
+      },
+      "notAnObject": "no-auto-advance",
+      "misplaced": "x-style.layout.carousel.misplaced"
+    },
+    "timer": {
+      "counts": "the-time-the-carousel-stood-on-the-current-stop-without-a-pause",
+      "step": "to-the-next-stop-of-x-style.layout.carousel.snap-not-the-next-card",
+      "at": "the-count-reaches-intervalMs",
+      "lastStop": {
+        "withoutLoop": "no-step-the-timer-stops-until-the-stop-changes-otherwise",
+        "withLoop": "to-the-first-stop"
+      },
+      "oneStop": "no-timer",
+      "stopChangedOtherwise": "the-count-restarts-from-0-at-the-new-stop-once-nothing-pauses-the-timer",
+      "otherwise": [
+        "a-person-moved-it",
+        "the-stopPath-value-moved-it",
+        "fewer-stops-clamped-it"
+      ],
+      "longGap": "one-step-at-most-per-tick-the-count-restarts-from-0",
+      "atShow": "the-count-starts-from-0-once-the-screen-is-shown"
+    },
+    "pauses": {
+      "list": [
+        "held",
+        "keyboardFocus",
+        "moving",
+        "notShown",
+        "screenReader"
+      ],
+      "effect": "the-count-is-frozen-and-resumes-with-what-was-left",
+      "held": "a-finger-or-a-pointer-button-is-down-on-the-carousel",
+      "keyboardFocus": "keyboard-focus-is-inside-the-carousel-WCAG-2.2.2",
+      "moving": "the-scroll-is-still-moving-a-gesture-momentum-or-the-step-animation",
+      "notShown": [
+        "the-screen-is-not-the-top-of-the-stack",
+        "a-modal-layer-covers-it",
+        "the-app-is-in-the-background",
+        "the-surface-is-a-still-picture"
+      ],
+      "screenReader": "a-screen-reader-is-on-voiceover-talkback-no-timer-while-it-runs"
+    },
+    "motion": {
+      "step": "animated-like-following-the-value-x-carouselStop.read.onChange",
+      "reducedMotion": "the-step-is-instant-the-timer-still-runs",
+      "personDuringStep": "the-person-takes-over-the-gesture-wins"
+    },
+    "write": {
+      "when": "a-step-of-the-timer-with-carousel.stopPath",
+      "value": "the-index-of-the-new-stop-at-the-moment-of-the-step",
+      "sameValue": "not-written-again-x-actions.write.sameValue.equality",
+      "mechanism": "x-carouselStop.write.mechanism",
+      "exception": "the-only-reader-move-that-writes-without-it-a-segmented-bar-on-the-same-path-would-not-follow",
+      "noLoop": "the-timer-writes-the-stop-it-is-already-moving-to-following-the-value-finds-the-carousel-there-and-the-settle-of-a-reader-move-writes-nothing",
+      "refusedWrite": "the-carousel-stays-on-the-new-stop"
+    },
+    "insideRepeater": "every-instance-of-the-template-has-its-own-timer",
+    "notPublished": {
+      "rowWithFewerThanTwoCards": "carousel_auto_advance_not_read"
+    },
+    "ownProgress": "a-segmented-ProgressBar-bound-to-carousel.stopPath-follows-the-steps-the-fill-of-the-current-segment-over-time-is-not-in-the-contract",
+    "builder": "the-preview-runs-the-timer-the-canvas-of-the-editor-and-still-pictures-do-not",
+    "olderReader": "skips-the-field-only-a-person-moves-the-carousel",
+    "cases": "contract/fixtures/carousel/carousel-cases.json"
+  },
   "x-valueLayout": {
     "refines": [
       "x-valueTransition.shown",
@@ -11825,9 +13122,10 @@
     },
     "paint": {
       "place": "the text between is painted over the box of the final text, at the same start, with the same width, alignment, font and colour",
-      "digits": "the painted text uses figures of equal width (tabular figures) while the value runs, where the font has them",
-      "overflow": "a text between that is longer than the final one is not measured: it may overflow the box for the frames of the motion; a box with maxLines clips it as it clips the final text",
-      "end": "when the motion ends, the final text is painted in its own place — the box does not move"
+      "digits": "a node with animateIn or animateChanges (the literal true) writes figures of equal width (tabular figures, where the font has them) in ALL its text and ALWAYS: at rest, on the frames of the motion, and in the transparent final text that holds the place; a node without these fields keeps the figures of its font",
+      "digitsWidth": "with figures of equal width a text between with as many digits as the final one, or fewer, is never wider than the final text: it does not wrap where the final text does not, and the layout at rest is the layout while the value runs",
+      "overflow": "a text between that is longer than the final one (more digits: counting down 10 000 → 9 000, the first frames have one digit more) is not measured: it may overflow the box for the frames of the motion; a box with maxLines clips it as it clips the final text",
+      "end": "when the motion ends, the final text is painted in its own place with the same figures — the box does not move"
     },
     "scale": {
       "geometry": "the track and the ring do not depend on the shown value: the bar is as wide as its box, the ring diameter comes from the box, the ring label stands centred over the ring and is not measured",
@@ -11837,7 +13135,7 @@
     "semantics": "the final text is the one the screen reader hears; the painted text between is hidden from it",
     "editorCanvas": "not animated — nothing to hold",
     "olderReader": "measures the painted value: the layout may jump on the frames of the motion",
-    "cases": "contract/fixtures/value-transition/value-transition-cases.json (layoutCases)"
+    "cases": "contract/fixtures/value-transition/value-transition-cases.json (layoutCases, figureCases)"
   },
   "x-generatedFrom": "src/entities/component-schema — generated, do not edit by hand"
 }

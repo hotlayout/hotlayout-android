@@ -1,0 +1,323 @@
+{
+  "schemaVersion": "9.42.0",
+  "documentId": "radial-gradient",
+  "name": "Radial gradient",
+  "initialScreenId": "radial",
+  "screens": [
+    {
+      "screenId": "radial",
+      "name": "Radial",
+      "root": {
+        "id": "radial-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "glass-card",
+            "type": "Stack",
+            "props": {
+              "alignHorizontal": "center",
+              "alignVertical": "center"
+            },
+            "children": [
+              {
+                "id": "card-base",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "height": 200
+                },
+                "children": []
+              },
+              {
+                "id": "spot-top-left",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "radius": "lg",
+                  "background": {
+                    "kind": "gradient",
+                    "gradient": {
+                      "shape": "radial",
+                      "center": {
+                        "x": 0,
+                        "y": 0
+                      },
+                      "radius": 0.7,
+                      "stops": [
+                        {
+                          "color": {
+                            "token": "accent",
+                            "opacity": 1
+                          },
+                          "position": 0
+                        },
+                        {
+                          "color": {
+                            "token": "accent",
+                            "opacity": 0
+                          },
+                          "position": 1
+                        }
+                      ]
+                    }
+                  }
+                },
+                "children": [],
+                "fill": true
+              },
+              {
+                "id": "spot-bottom-right",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "none"
+                },
+                "style": {
+                  "radius": "lg",
+                  "background": {
+                    "kind": "gradient",
+                    "gradient": {
+                      "shape": "radial",
+                      "center": {
+                        "x": 1,
+                        "y": 1
+                      },
+                      "radius": 0.7,
+                      "stops": [
+                        {
+                          "color": {
+                            "token": "accent",
+                            "opacity": 0.85
+                          },
+                          "position": 0
+                        },
+                        {
+                          "color": {
+                            "token": "accent",
+                            "opacity": 0
+                          },
+                          "position": 1
+                        }
+                      ]
+                    }
+                  }
+                },
+                "children": [],
+                "fill": true
+              },
+              {
+                "id": "card-content",
+                "type": "Column",
+                "props": {
+                  "gap": "xs",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "card-kicker",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "GOLD TIER"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption"
+                    }
+                  },
+                  {
+                    "id": "card-balance",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "12 480 points"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "displayL"
+                    }
+                  },
+                  {
+                    "id": "card-note",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Two accent spots, one in each corner."
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "bodyS"
+                    }
+                  }
+                ],
+                "fill": true,
+                "style": {
+                  "padding": "lg",
+                  "color": "surface"
+                }
+              }
+            ],
+            "style": {
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "onSurface"
+              }
+            }
+          },
+          {
+            "id": "top-glow",
+            "type": "Column",
+            "props": {
+              "gap": "xs",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "glow-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Glow"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "displayL",
+                  "color": "primary",
+                  "textGradient": {
+                    "shape": "radial",
+                    "center": {
+                      "x": 0,
+                      "y": 0.5
+                    },
+                    "radius": 1,
+                    "stops": [
+                      {
+                        "color": "accent",
+                        "position": 0
+                      },
+                      {
+                        "color": "primary",
+                        "position": 1
+                      }
+                    ]
+                  }
+                }
+              },
+              {
+                "id": "glow-note",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "A glow from the top edge, in the accent colour."
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              }
+            ],
+            "style": {
+              "height": 140,
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "gradient",
+                "gradient": {
+                  "shape": "radial",
+                  "center": {
+                    "x": 0.5,
+                    "y": 0
+                  },
+                  "radius": 0.9,
+                  "stops": [
+                    {
+                      "color": {
+                        "token": "accent",
+                        "opacity": 0.6
+                      },
+                      "position": 0
+                    },
+                    {
+                      "color": {
+                        "token": "accent",
+                        "opacity": 0
+                      },
+                      "position": 1
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": "radial-button",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Claim the reward"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            },
+            "style": {
+              "background": {
+                "kind": "gradient",
+                "gradient": "brandBackdrop"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "radial/card-kicker/content": "ЗОЛОТИЙ РІВЕНЬ",
+        "radial/card-balance/content": "12 480 балів",
+        "radial/card-note/content": "Дві плями accent, по одній у кутах.",
+        "radial/glow-title/content": "Сяйво",
+        "radial/glow-note/content": "Сяйво з верхнього краю кольором accent.",
+        "radial/radial-button/label": "Забрати нагороду"
+      }
+    }
+  }
+}

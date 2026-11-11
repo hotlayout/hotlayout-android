@@ -37,6 +37,7 @@ import com.hotlayout.render.WidgetCall
 import com.hotlayout.render.backgroundOf
 import com.hotlayout.render.color
 import com.hotlayout.render.cssShadows
+import com.hotlayout.render.paint.innerShadows
 import com.hotlayout.render.dp
 import com.hotlayout.render.interaction.PressFeedbackRules
 import com.hotlayout.render.interaction.controlSemantics
@@ -107,11 +108,13 @@ internal data class RoleSurface(
 
 /** Draws the box of a role surface around the content: shadow, shape, fill, border, padding. */
 @Composable
-internal fun Modifier.roleBox(surface: RoleSurface, shape: Shape, padding: Sides, rightToLeft: Boolean): Modifier {
+internal fun Modifier.roleBox(surface: RoleSurface, corners: Corners, padding: Sides, rightToLeft: Boolean): Modifier {
+    val shape = corners.shape()
     var modifier = this.glass(surface.backdropBlur, shape)
     if (surface.shadow.isNotEmpty()) modifier = modifier.cssShadows(surface.shadow, shape)
     modifier = modifier.clip(shape)
     modifier = modifier.backgroundOf(surface.gradient ?: surface.background?.let(BackgroundValue::Color), shape, rightToLeft)
+    modifier = modifier.innerShadows(surface.shadow, corners, surface.borderWidth)
     val border = surface.borderColor
     if (border != null && surface.borderWidth > 0) {
         modifier = if (surface.borderDashed) modifier.dashedBorder(surface.borderWidth, border.color, surface.corners) else modifier.border(surface.borderWidth.dp, border.color, shape)
@@ -214,7 +217,7 @@ internal fun ButtonWidget(call: WidgetCall) {
         }
         .pressInput(true, false, { if (!disabled) context.press(action, node) }, {}) { pressed = it }
         .pressPose(PressFeedbackRules.kind(node, disabled), pressed)
-        .roleBox(surface, shape, padding, context.rightToLeft)
+        .roleBox(surface, corners, padding, context.rightToLeft)
     Box(box, contentAlignment = Alignment.Center) {
         IconBesideText(icon, node.props["iconPosition"]?.string, typography, gap, surface.foreground.color, context) {
             if (label.isNotEmpty()) StyledText(label, typography, surface.foreground, context, align = TextAlign.Center)
@@ -236,7 +239,7 @@ internal fun BadgeWidget(call: WidgetCall) {
     val block = theme.spacing["xs"] ?: 4.0
     val inline = theme.spacing["sm"] ?: 8.0
     val padding = surface.padding ?: Sides(block, inline, block, inline)
-    val shape = (surface.corners ?: Corners.all(theme.radius["pill"] ?: 72.0)).shape()
+    val corners = surface.corners ?: Corners.all(theme.radius["pill"] ?: 72.0)
     val icon = IconBesideTextRules.resolve(node.props, "icon", context.scope)
     val label = context.text(node, "label")
     Box(
@@ -245,7 +248,7 @@ internal fun BadgeWidget(call: WidgetCall) {
                 text = AnnotatedString(label)
                 contentDescription = label
             }
-            .roleBox(surface, shape, padding, context.rightToLeft),
+            .roleBox(surface, corners, padding, context.rightToLeft),
     ) {
         IconBesideText(icon, node.props["iconPosition"]?.string, typography, theme.spacing[IconBesideTextRules.GAP_TOKEN] ?: 4.0, surface.foreground.color, context) {
             StyledText(label, typography, surface.foreground, context, maxLines = 1)

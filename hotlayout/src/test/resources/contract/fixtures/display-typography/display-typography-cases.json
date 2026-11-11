@@ -1,0 +1,495 @@
+{
+  "about": "Display typography (schema 9.35.0, block x-displayTypography). scaleCases: the effective font size after the system text scale, effective = s <= 1 ? f * s : max(f, min(f, 96) * s). trackingCases: letter spacing in pixels for the effective size; letterSpacingEm is a share of the effective size, letterSpacing (pixels) is not scaled. lineCases: the line block is the effective size times the line height multiplier. documentCases: a typography override in node.style; schema is what both Zod and the JSON Schema decide, code is the validator code of a refusal.",
+  "scaleCases": [
+    {
+      "name": "font size 8 at text scale 0.85",
+      "fontSize": 8,
+      "scale": 0.85,
+      "effective": 6.8
+    },
+    {
+      "name": "font size 16 at text scale 0.85",
+      "fontSize": 16,
+      "scale": 0.85,
+      "effective": 13.6
+    },
+    {
+      "name": "font size 48 at text scale 0.85",
+      "fontSize": 48,
+      "scale": 0.85,
+      "effective": 40.8
+    },
+    {
+      "name": "font size 96 at text scale 0.85",
+      "fontSize": 96,
+      "scale": 0.85,
+      "effective": 81.6
+    },
+    {
+      "name": "font size 97 at text scale 0.85",
+      "fontSize": 97,
+      "scale": 0.85,
+      "effective": 82.45
+    },
+    {
+      "name": "font size 100 at text scale 0.85",
+      "fontSize": 100,
+      "scale": 0.85,
+      "effective": 85
+    },
+    {
+      "name": "font size 124.8 at text scale 0.85",
+      "fontSize": 124.8,
+      "scale": 0.85,
+      "effective": 106.08
+    },
+    {
+      "name": "font size 128 at text scale 0.85",
+      "fontSize": 128,
+      "scale": 0.85,
+      "effective": 108.8
+    },
+    {
+      "name": "font size 200 at text scale 0.85",
+      "fontSize": 200,
+      "scale": 0.85,
+      "effective": 170
+    },
+    {
+      "name": "font size 240 at text scale 0.85",
+      "fontSize": 240,
+      "scale": 0.85,
+      "effective": 204
+    },
+    {
+      "name": "font size 400 at text scale 0.85",
+      "fontSize": 400,
+      "scale": 0.85,
+      "effective": 340
+    },
+    {
+      "name": "font size 8 at text scale 1",
+      "fontSize": 8,
+      "scale": 1,
+      "effective": 8
+    },
+    {
+      "name": "font size 16 at text scale 1",
+      "fontSize": 16,
+      "scale": 1,
+      "effective": 16
+    },
+    {
+      "name": "font size 48 at text scale 1",
+      "fontSize": 48,
+      "scale": 1,
+      "effective": 48
+    },
+    {
+      "name": "font size 96 at text scale 1",
+      "fontSize": 96,
+      "scale": 1,
+      "effective": 96
+    },
+    {
+      "name": "font size 97 at text scale 1",
+      "fontSize": 97,
+      "scale": 1,
+      "effective": 97
+    },
+    {
+      "name": "font size 100 at text scale 1",
+      "fontSize": 100,
+      "scale": 1,
+      "effective": 100
+    },
+    {
+      "name": "font size 124.8 at text scale 1",
+      "fontSize": 124.8,
+      "scale": 1,
+      "effective": 124.8
+    },
+    {
+      "name": "font size 128 at text scale 1",
+      "fontSize": 128,
+      "scale": 1,
+      "effective": 128
+    },
+    {
+      "name": "font size 200 at text scale 1",
+      "fontSize": 200,
+      "scale": 1,
+      "effective": 200
+    },
+    {
+      "name": "font size 240 at text scale 1",
+      "fontSize": 240,
+      "scale": 1,
+      "effective": 240
+    },
+    {
+      "name": "font size 400 at text scale 1",
+      "fontSize": 400,
+      "scale": 1,
+      "effective": 400
+    },
+    {
+      "name": "font size 8 at text scale 1.3",
+      "fontSize": 8,
+      "scale": 1.3,
+      "effective": 10.4
+    },
+    {
+      "name": "font size 16 at text scale 1.3",
+      "fontSize": 16,
+      "scale": 1.3,
+      "effective": 20.8
+    },
+    {
+      "name": "font size 48 at text scale 1.3",
+      "fontSize": 48,
+      "scale": 1.3,
+      "effective": 62.4
+    },
+    {
+      "name": "font size 96 at text scale 1.3",
+      "fontSize": 96,
+      "scale": 1.3,
+      "effective": 124.8
+    },
+    {
+      "name": "font size 97 at text scale 1.3",
+      "fontSize": 97,
+      "scale": 1.3,
+      "effective": 124.8
+    },
+    {
+      "name": "font size 100 at text scale 1.3",
+      "fontSize": 100,
+      "scale": 1.3,
+      "effective": 124.8
+    },
+    {
+      "name": "font size 124.8 at text scale 1.3",
+      "fontSize": 124.8,
+      "scale": 1.3,
+      "effective": 124.8
+    },
+    {
+      "name": "font size 128 at text scale 1.3",
+      "fontSize": 128,
+      "scale": 1.3,
+      "effective": 128
+    },
+    {
+      "name": "font size 200 at text scale 1.3",
+      "fontSize": 200,
+      "scale": 1.3,
+      "effective": 200
+    },
+    {
+      "name": "font size 240 at text scale 1.3",
+      "fontSize": 240,
+      "scale": 1.3,
+      "effective": 240
+    },
+    {
+      "name": "font size 400 at text scale 1.3",
+      "fontSize": 400,
+      "scale": 1.3,
+      "effective": 400
+    },
+    {
+      "name": "font size 8 at text scale 2",
+      "fontSize": 8,
+      "scale": 2,
+      "effective": 16
+    },
+    {
+      "name": "font size 16 at text scale 2",
+      "fontSize": 16,
+      "scale": 2,
+      "effective": 32
+    },
+    {
+      "name": "font size 48 at text scale 2",
+      "fontSize": 48,
+      "scale": 2,
+      "effective": 96
+    },
+    {
+      "name": "font size 96 at text scale 2",
+      "fontSize": 96,
+      "scale": 2,
+      "effective": 192
+    },
+    {
+      "name": "font size 97 at text scale 2",
+      "fontSize": 97,
+      "scale": 2,
+      "effective": 192
+    },
+    {
+      "name": "font size 100 at text scale 2",
+      "fontSize": 100,
+      "scale": 2,
+      "effective": 192
+    },
+    {
+      "name": "font size 124.8 at text scale 2",
+      "fontSize": 124.8,
+      "scale": 2,
+      "effective": 192
+    },
+    {
+      "name": "font size 128 at text scale 2",
+      "fontSize": 128,
+      "scale": 2,
+      "effective": 192
+    },
+    {
+      "name": "font size 200 at text scale 2",
+      "fontSize": 200,
+      "scale": 2,
+      "effective": 200
+    },
+    {
+      "name": "font size 240 at text scale 2",
+      "fontSize": 240,
+      "scale": 2,
+      "effective": 240
+    },
+    {
+      "name": "font size 400 at text scale 2",
+      "fontSize": 400,
+      "scale": 2,
+      "effective": 400
+    }
+  ],
+  "trackingCases": [
+    {
+      "name": "poster figure, tight",
+      "fontSize": 240,
+      "scale": 1,
+      "letterSpacingEm": -0.06,
+      "effective": 240,
+      "trackingPx": -14.4
+    },
+    {
+      "name": "poster figure, tight, text scale 0.85",
+      "fontSize": 240,
+      "scale": 0.85,
+      "letterSpacingEm": -0.06,
+      "effective": 204,
+      "trackingPx": -12.24
+    },
+    {
+      "name": "poster figure, tight, text scale 2 (size does not grow)",
+      "fontSize": 240,
+      "scale": 2,
+      "letterSpacingEm": -0.06,
+      "effective": 240,
+      "trackingPx": -14.4
+    },
+    {
+      "name": "heading 100 at text scale 1.3 follows the effective size",
+      "fontSize": 100,
+      "scale": 1.3,
+      "letterSpacingEm": -0.02,
+      "effective": 124.8,
+      "trackingPx": -2.496
+    },
+    {
+      "name": "eyebrow caps, wide, text scale 1.3",
+      "fontSize": 12,
+      "scale": 1.3,
+      "letterSpacingEm": 0.2,
+      "effective": 15.6,
+      "trackingPx": 3.12
+    },
+    {
+      "name": "lowest bound",
+      "fontSize": 48,
+      "scale": 1,
+      "letterSpacingEm": -0.1,
+      "effective": 48,
+      "trackingPx": -4.8
+    },
+    {
+      "name": "highest bound",
+      "fontSize": 48,
+      "scale": 2,
+      "letterSpacingEm": 0.5,
+      "effective": 96,
+      "trackingPx": 48
+    },
+    {
+      "name": "pixels are not scaled",
+      "fontSize": 16,
+      "scale": 2,
+      "letterSpacing": 1.5,
+      "effective": 32,
+      "trackingPx": 1.5
+    },
+    {
+      "name": "pixels on a poster size",
+      "fontSize": 240,
+      "scale": 1.3,
+      "letterSpacing": -2,
+      "effective": 240,
+      "trackingPx": -2
+    },
+    {
+      "name": "no override: zero",
+      "fontSize": 16,
+      "scale": 1,
+      "effective": 16,
+      "trackingPx": 0
+    }
+  ],
+  "lineCases": [
+    {
+      "name": "font size 240, line height 1, text scale 2",
+      "fontSize": 240,
+      "lineHeight": 1,
+      "scale": 2,
+      "lineBlock": 240
+    },
+    {
+      "name": "font size 240, line height 1, text scale 1.3",
+      "fontSize": 240,
+      "lineHeight": 1,
+      "scale": 1.3,
+      "lineBlock": 240
+    },
+    {
+      "name": "font size 128, line height 1.1, text scale 2",
+      "fontSize": 128,
+      "lineHeight": 1.1,
+      "scale": 2,
+      "lineBlock": 211.2
+    },
+    {
+      "name": "font size 100, line height 1.2, text scale 1.3",
+      "fontSize": 100,
+      "lineHeight": 1.2,
+      "scale": 1.3,
+      "lineBlock": 149.76
+    },
+    {
+      "name": "font size 16, line height 1.5, text scale 1.3",
+      "fontSize": 16,
+      "lineHeight": 1.5,
+      "scale": 1.3,
+      "lineBlock": 31.2
+    },
+    {
+      "name": "font size 16, line height 1.5, text scale 0.85",
+      "fontSize": 16,
+      "lineHeight": 1.5,
+      "scale": 0.85,
+      "lineBlock": 20.4
+    }
+  ],
+  "documentCases": [
+    {
+      "name": "poster size 240 with tracking in shares",
+      "typography": {
+        "token": "displayL",
+        "fontSize": 240,
+        "letterSpacingEm": -0.06
+      },
+      "schema": true
+    },
+    {
+      "name": "highest font size 400",
+      "typography": {
+        "token": "displayL",
+        "fontSize": 400
+      },
+      "schema": true
+    },
+    {
+      "name": "font size above 400",
+      "typography": {
+        "token": "displayL",
+        "fontSize": 401
+      },
+      "schema": false
+    },
+    {
+      "name": "font size below 8",
+      "typography": {
+        "token": "bodyM",
+        "fontSize": 7.5
+      },
+      "schema": false
+    },
+    {
+      "name": "theme ceiling 96 is still allowed",
+      "typography": {
+        "token": "bodyM",
+        "fontSize": 96
+      },
+      "schema": true
+    },
+    {
+      "name": "tracking in shares alone is an override",
+      "typography": {
+        "token": "bodyS",
+        "letterSpacingEm": 0.2
+      },
+      "schema": true
+    },
+    {
+      "name": "tracking in shares at the lowest bound",
+      "typography": {
+        "token": "bodyS",
+        "letterSpacingEm": -0.1
+      },
+      "schema": true
+    },
+    {
+      "name": "tracking in shares at the highest bound",
+      "typography": {
+        "token": "bodyS",
+        "letterSpacingEm": 0.5
+      },
+      "schema": true
+    },
+    {
+      "name": "tracking in shares below the bound",
+      "typography": {
+        "token": "bodyS",
+        "letterSpacingEm": -0.11
+      },
+      "schema": false
+    },
+    {
+      "name": "tracking in shares above the bound",
+      "typography": {
+        "token": "bodyS",
+        "letterSpacingEm": 0.51
+      },
+      "schema": false
+    },
+    {
+      "name": "tracking in shares as a string",
+      "typography": {
+        "token": "bodyS",
+        "letterSpacingEm": "0.1"
+      },
+      "schema": false
+    },
+    {
+      "name": "tracking in pixels and in shares at once",
+      "typography": {
+        "token": "bodyS",
+        "letterSpacing": 1,
+        "letterSpacingEm": 0.1
+      },
+      "schema": false,
+      "code": "typography_tracking_both"
+    }
+  ]
+}

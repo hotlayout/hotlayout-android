@@ -26,21 +26,25 @@ import androidx.compose.ui.text.withStyle
 import com.hotlayout.model.DocumentNode
 import com.hotlayout.render.LineBoxKeeper
 import com.hotlayout.render.RenderContext
+import com.hotlayout.render.ShadowCopy
 import com.hotlayout.render.StyledText
 import com.hotlayout.render.WidgetCall
 import com.hotlayout.render.color
 import com.hotlayout.render.composeSpanStyle
 import com.hotlayout.render.composeTextStyle
-import com.hotlayout.render.cssLinearGradient
+import com.hotlayout.render.cssGradient
 import com.hotlayout.render.dp
 import com.hotlayout.render.neverNarrowerThanItsLine
 import com.hotlayout.render.textAlign
+import com.hotlayout.render.textShadowBehind
 import com.hotlayout.text.BindableText
 import com.hotlayout.text.TemplateRun
 import com.hotlayout.theme.GradientValue
 import com.hotlayout.theme.NodeStyle
 import com.hotlayout.theme.Rgba
 import com.hotlayout.theme.StyleResolver
+import com.hotlayout.theme.TextShadowLayer
+import com.hotlayout.theme.TextShadowRules
 import com.hotlayout.theme.TextStyleValue
 
 // `Text` with parts of its own style, emphasis, a list marker or a gradient on the glyphs. A text
@@ -107,10 +111,12 @@ internal fun TextContent(call: WidgetCall, context: RenderContext) {
     val align = node.props["align"]?.string
     val maxLines = if (node.props["overflow"]?.string == "visible") Int.MAX_VALUE else node.props["maxLines"]?.number?.coerceIn(1.0, 20.0)?.toInt() ?: Int.MAX_VALUE
     val modifier = if (call.placement.stretchWidth) Modifier.fillMaxWidth() else Modifier
+    val shadows = TextShadowRules.layers(node.type, style, context.resolver).orEmpty()
     if (marker == null && active.isEmpty() && gradient == null) {
         StyledText(
             text = context.text(node, "content"), style = context.inherited.typography, color = context.inherited.color, context = context,
             modifier = modifier, italic = context.inherited.italic, decoration = context.inherited.decoration, align = textAlign(align), maxLines = maxLines,
+            shadows = shadows,
         )
         return
     }
@@ -119,13 +125,13 @@ internal fun TextContent(call: WidgetCall, context: RenderContext) {
     val emphasis = TextEmphasis(if (context.inherited.italic) "italic" else "normal", context.inherited.decoration ?: "none")
     val plan = TextRichPlan.make(runs, active, context.inherited.typography, context.inherited.color, emphasis, context.resolver)
     if (marker == null) {
-        RichParagraph(plan, context, gradient, textAlign(align), maxLines, modifier)
+        RichParagraph(plan, context, gradient, textAlign(align), maxLines, modifier, shadows)
         return
     }
     val position = call.position
     val number = call.number?.number ?: position?.number ?: 1
     val groupSize = call.number?.groupSize ?: position?.groupSize ?: 1
-    MarkerRow(marker, plan, context, gradient, number, groupSize, textAlign(align), maxLines, modifier)
+    MarkerRow(marker, plan, context, gradient, number, groupSize, textAlign(align), maxLines, modifier, shadows)
 }
 
 /**
@@ -136,25 +142,27 @@ internal fun TextContent(call: WidgetCall, context: RenderContext) {
 @Composable
 private fun MarkerRow(
     marker: DrawnMarker, plan: TextRichPlan, context: RenderContext, gradient: GradientValue?,
-    number: Int, groupSize: Int, align: TextAlign, maxLines: Int, modifier: Modifier,
+    number: Int, groupSize: Int, align: TextAlign, maxLines: Int, modifier: Modifier, shadows: List<TextShadowLayer>,
 ) {
     val geometry = ListMarkerRules.geometry(marker, plan.base.fontSize, groupSize)
     val glyph = ListMarkerRules.text(marker, number, context.locale.formatting)
     val glyphStyle = composeTextStyle(plan.base, context.inherited.color, context, align = TextAlign.End, lineBlock = plan.lineBlock)
     val markerKeeper = androidx.compose.runtime.remember(plan.lineBlock) { LineBoxKeeper(plan.lineBlock) }
+    // The marker is shadowed as a glyph of the same text.
+    val markerCopy = ShadowCopy(AnnotatedString(glyph), glyphStyle.copy(color = androidx.compose.ui.graphics.Color.Transparent), 1, false)
     Row(modifier, horizontalArrangement = Arrangement.spacedBy(geometry.gap.dp), verticalAlignment = Alignment.Top) {
         Box(Modifier.width(geometry.column.dp).clearAndSetSemantics { testTag = "marker:$glyph" }, contentAlignment = Alignment.TopEnd) {
             // The column may be narrower than the glyph («١.» in Arabic-Indic digits): the marker overflows toward
             // the start of the item (`visible-toward-start`) instead of being clipped to its column.
-            BasicText(AnnotatedString(glyph), Modifier.wrapContentWidth(Alignment.End, unbounded = true).neverNarrowerThanItsLine(endAligned = true).then(markerKeeper.modifier), style = glyphStyle, maxLines = 1, softWrap = false, onTextLayout = markerKeeper.onTextLayout)
+            BasicText(AnnotatedString(glyph), Modifier.wrapContentWidth(Alignment.End, unbounded = true).neverNarrowerThanItsLine(endAligned = true).then(markerKeeper.modifier).textShadowBehind(shadows, markerCopy), style = glyphStyle, maxLines = 1, softWrap = false, onTextLayout = markerKeeper.onTextLayout)
         }
-        RichParagraph(plan, context, gradient, align, maxLines, Modifier.weight(1f))
+        RichParagraph(plan, context, gradient, align, maxLines, Modifier.weight(1f), shadows)
     }
 }
 
 /** A CSS gradient over the box of the text it paints: one transition across every line. */
 private fun gradientBrush(gradient: GradientValue, rightToLeft: Boolean): Brush = object : ShaderBrush() {
-    override fun createShader(size: Size): Shader = (cssLinearGradient(gradient, size, rightToLeft) as ShaderBrush).createShader(size)
+    override fun createShader(size: Size): Shader = (cssGradient(gradient, size, rightToLeft) as ShaderBrush).createShader(size)
 }
 
 /**
@@ -162,7 +170,9 @@ private fun gradientBrush(gradient: GradientValue, rightToLeft: Boolean): Brush 
  * run that takes the gradient is painted by a brush; a part with a colour of its own keeps it.
  */
 @Composable
-private fun RichParagraph(plan: TextRichPlan, context: RenderContext, gradient: GradientValue?, align: TextAlign, maxLines: Int, modifier: Modifier) {
+private fun RichParagraph(
+    plan: TextRichPlan, context: RenderContext, gradient: GradientValue?, align: TextAlign, maxLines: Int, modifier: Modifier, shadows: List<TextShadowLayer>,
+) {
     val brush = gradient?.let { gradientBrush(it, context.rightToLeft) }
     val styles = plan.runs.map { run ->
         val takes = brush != null && !run.namesColor
@@ -171,10 +181,20 @@ private fun RichParagraph(plan: TextRichPlan, context: RenderContext, gradient: 
     val text = buildAnnotatedString { plan.runs.forEachIndexed { index, run -> withStyle(styles[index]) { append(run.text) } } }
     val whole = plan.runs.joinToString("") { it.text }
     val keeper = androidx.compose.runtime.remember(plan.lineBlock) { LineBoxKeeper(plan.lineBlock) }
+    val baseStyle = composeTextStyle(plan.base, context.inherited.color, context, align = align, lineBlock = plan.lineBlock)
+    // The copy a shadow is cast from: the same pieces with no colour and no brush on any of them.
+    val copy = if (shadows.isEmpty()) {
+        null
+    } else {
+        val clear = Rgba(0.0, 0.0, 0.0, 0.0)
+        val copyStyles = plan.runs.map { run -> composeSpanStyle(run.typography, clear, context, run.emphasis.fontStyle, run.emphasis.textDecoration) }
+        val copyText = buildAnnotatedString { plan.runs.forEachIndexed { index, run -> withStyle(copyStyles[index]) { append(run.text) } } }
+        ShadowCopy(copyText, baseStyle.copy(color = androidx.compose.ui.graphics.Color.Transparent), maxLines, true)
+    }
     BasicText(
         text = text,
-        modifier = modifier.then(keeper.modifier).semantics { this.text = AnnotatedString(whole) },
-        style = composeTextStyle(plan.base, context.inherited.color, context, align = align, lineBlock = plan.lineBlock),
+        modifier = modifier.then(keeper.modifier).then(if (copy == null) Modifier else Modifier.textShadowBehind(shadows, copy)).semantics { this.text = AnnotatedString(whole) },
+        style = baseStyle,
         maxLines = maxLines,
         overflow = TextOverflow.Ellipsis,
         onTextLayout = keeper.onTextLayout,

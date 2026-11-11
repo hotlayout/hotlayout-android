@@ -10,10 +10,10 @@ import com.hotlayout.model.checkVersion
  */
 public object HotlayoutVersions {
     /** Widget schema (`x-schemaVersion` of `screen-schema.json`). */
-    public const val SCHEMA: String = "9.34.0"
+    public const val SCHEMA: String = "9.42.0"
 
     /** Theme contract (`x-themeContractVersion` of `theme.json`). */
-    public const val THEME: String = "4.0.1"
+    public const val THEME: String = "4.1.0"
 
     /** Icon set (`iconSetVersion` of `icons.json`). */
     public const val ICON_SET: String = "1.0.0"

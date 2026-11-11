@@ -1,0 +1,736 @@
+{
+  "schemaVersion": "9.42.0",
+  "documentId": "screen-transition",
+  "name": "Screen transitions",
+  "initialScreenId": "welcome",
+  "screens": [
+    {
+      "screenId": "welcome",
+      "name": "Welcome",
+      "root": {
+        "id": "welcome-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "xl",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "welcome-hero",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "minHeight": 160,
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "primary"
+              }
+            },
+            "children": []
+          },
+          {
+            "id": "welcome-number",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Step 1 of 3"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "welcome-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Welcome"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL"
+            }
+          },
+          {
+            "id": "welcome-body",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Earn points for everyday payments."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            }
+          },
+          {
+            "id": "welcome-actions",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "welcome-next",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Next"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "interests"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "welcome-news",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "What's new"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "news"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "welcome-skip",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Skip"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "skip"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "interests",
+      "name": "Interests",
+      "root": {
+        "id": "interests-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "xl",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "interests-hero",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "minHeight": 160,
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "accent"
+              }
+            },
+            "children": []
+          },
+          {
+            "id": "interests-number",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Step 2 of 3"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "interests-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Pick your rewards"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL"
+            }
+          },
+          {
+            "id": "interests-body",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Cashback, miles or gifts — change it any time."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            }
+          },
+          {
+            "id": "interests-actions",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "interests-next",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Next"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "alerts"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "interests-back",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "navigate.back"
+                  },
+                  "fullWidth": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "alerts",
+      "name": "Alerts",
+      "root": {
+        "id": "alerts-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "xl",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "alerts-hero",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "minHeight": 160,
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "success"
+              }
+            },
+            "children": []
+          },
+          {
+            "id": "alerts-number",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Step 3 of 3"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyS",
+              "color": "muted"
+            }
+          },
+          {
+            "id": "alerts-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Stay in the loop"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL"
+            }
+          },
+          {
+            "id": "alerts-body",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "We tell you when a reward is ready."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            }
+          },
+          {
+            "id": "alerts-actions",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "alerts-done",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Finish"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "done"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "alerts-terms",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Read the terms"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "navigate",
+                    "params": {
+                      "screenId": "terms"
+                    }
+                  },
+                  "fullWidth": true
+                }
+              },
+              {
+                "id": "alerts-back",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Back"
+                  },
+                  "variant": "secondary",
+                  "action": {
+                    "type": "navigate.back"
+                  },
+                  "fullWidth": true
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "terms",
+      "name": "Terms",
+      "presentation": "modal",
+      "root": {
+        "id": "terms-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "xl",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "radius": {
+            "topStart": "lg",
+            "topEnd": "lg"
+          }
+        },
+        "children": [
+          {
+            "id": "terms-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Terms"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "terms-body",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Points expire after twelve months without a payment."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            }
+          },
+          {
+            "id": "terms-close",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Got it"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "done",
+      "name": "Done",
+      "presentation": "modal",
+      "modalPlacement": "center",
+      "root": {
+        "id": "done-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md",
+          "align": "center"
+        },
+        "style": {
+          "padding": "xl",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          },
+          "radius": "lg"
+        },
+        "children": [
+          {
+            "id": "done-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "All set"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "done-body",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Your first reward is waiting."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            }
+          },
+          {
+            "id": "done-close",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Close"
+              },
+              "variant": "primary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "news",
+      "name": "News",
+      "transition": "fade",
+      "root": {
+        "id": "news-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "xl",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "news-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "A calmer look"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL"
+            }
+          },
+          {
+            "id": "news-body",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "This page dissolves in instead of sliding."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            }
+          },
+          {
+            "id": "news-back",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Back"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "skip",
+      "name": "Skipped",
+      "transition": "none",
+      "root": {
+        "id": "skip-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "xl",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "skip-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Skipped"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL"
+            }
+          },
+          {
+            "id": "skip-body",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "This page appears at once."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            }
+          },
+          {
+            "id": "skip-back",
+            "type": "Button",
+            "props": {
+              "label": {
+                "kind": "literal",
+                "value": "Back"
+              },
+              "variant": "secondary",
+              "action": {
+                "type": "navigate.back"
+              },
+              "fullWidth": true
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "welcome/welcome-number/content": "Крок 1 з 3",
+        "welcome/welcome-title/content": "Вітаємо",
+        "welcome/welcome-body/content": "Отримуйте бали за щоденні платежі.",
+        "welcome/welcome-next/label": "Далі",
+        "welcome/welcome-news/label": "Що нового",
+        "welcome/welcome-skip/label": "Пропустити",
+        "interests/interests-number/content": "Крок 2 з 3",
+        "interests/interests-title/content": "Оберіть винагороди",
+        "interests/interests-body/content": "Кешбек, милі чи подарунки — змінити можна будь-коли.",
+        "interests/interests-next/label": "Далі",
+        "interests/interests-back/label": "Назад",
+        "alerts/alerts-number/content": "Крок 3 з 3",
+        "alerts/alerts-title/content": "Будьте в курсі",
+        "alerts/alerts-body/content": "Ми скажемо, коли винагорода готова.",
+        "alerts/alerts-done/label": "Готово",
+        "alerts/alerts-terms/label": "Умови",
+        "alerts/alerts-back/label": "Назад",
+        "terms/terms-title/content": "Умови",
+        "terms/terms-body/content": "Бали згорають через дванадцять місяців без платежів.",
+        "terms/terms-close/label": "Зрозуміло",
+        "done/done-title/content": "Усе готово",
+        "done/done-body/content": "Перша винагорода вже чекає.",
+        "done/done-close/label": "Закрити",
+        "news/news-title/content": "Спокійніший вигляд",
+        "news/news-body/content": "Ця сторінка проявляється, а не заїжджає.",
+        "news/news-back/label": "Назад",
+        "skip/skip-title/content": "Пропущено",
+        "skip/skip-body/content": "Ця сторінка з’являється одразу.",
+        "skip/skip-back/label": "Назад"
+      }
+    }
+  }
+}

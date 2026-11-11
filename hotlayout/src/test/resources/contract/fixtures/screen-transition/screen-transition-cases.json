@@ -1,0 +1,256 @@
+{
+  "about": "Default screen transitions (schema 9.38.0, x-screenTransition). A step of the stack is described by what happened to it (start, push, pop, switch), the top screen before and after it, the width of the area the host gave the stack, and the reduced-motion setting. The reader takes the durations and curves from x-screenTransition: a page 300 ms cubic-bezier(0.2, 0, 0, 1) with a parallax of 0.3; a sheet opens in 280 ms cubic-bezier(0.2, 0, 0, 1) and closes in 220 ms cubic-bezier(0.4, 0, 1, 1); a window opens in 200 ms cubic-bezier(0.2, 0, 0, 1) from a scale of 0.96 and closes in 150 ms cubic-bezier(0.4, 0, 1, 1); a fade takes 200 ms cubic-bezier(0.4, 0, 0.2, 1).",
+  "curveNote": "Each curve maps the share of time x to the share of the way y through the cubic Bezier from (0,0) to (1,1). Values are computed independently with bisection on the curve parameter.",
+  "curveCases": [
+    { "name": "page at the start", "curve": "page", "x": 0, "y": 0 },
+    { "name": "page at a quarter", "curve": "page", "x": 0.25, "y": 0.6072 },
+    { "name": "page at half", "curve": "page", "x": 0.5, "y": 0.8778 },
+    { "name": "page at three quarters", "curve": "page", "x": 0.75, "y": 0.9755 },
+    { "name": "page at the end", "curve": "page", "x": 1, "y": 1 },
+    { "name": "sheet close at a quarter", "curve": "sheetClose", "x": 0.25, "y": 0.0986 },
+    { "name": "sheet close at half", "curve": "sheetClose", "x": 0.5, "y": 0.3248 },
+    { "name": "sheet close at three quarters", "curve": "sheetClose", "x": 0.75, "y": 0.6301 },
+    { "name": "fade at a quarter", "curve": "fade", "x": 0.25, "y": 0.2366 },
+    { "name": "fade at half", "curve": "fade", "x": 0.5, "y": 0.7756 },
+    { "name": "fade at three quarters", "curve": "fade", "x": 0.75, "y": 0.9594 },
+    { "name": "past one is the end", "curve": "page", "x": 1.5, "y": 1 }
+  ],
+  "planNote": "A screen is given by the fields of its record that the rule reads: presentation, modalPlacement and transition. A field that is not listed is absent. «expect» lists what the reader plays: the motion and its numbers, or «none» with the reason. «areaWidth» 393 is a phone (compact), 1280 is a wide area.",
+  "planCases": [
+    {
+      "name": "a page pushed with no field slides in from the end edge with a parallax",
+      "kind": "push", "from": {}, "to": {}, "areaWidth": 393,
+      "expect": { "motion": "push", "durationMs": 300, "curve": [0.2, 0, 0, 1], "parallax": 0.3 }
+    },
+    {
+      "name": "going back from a page with no field mirrors the push",
+      "kind": "pop", "from": {}, "to": {}, "areaWidth": 393,
+      "expect": { "motion": "pop", "durationMs": 300, "curve": [0.2, 0, 0, 1], "parallax": 0.3 }
+    },
+    {
+      "name": "a modal screen with no placement on a phone rises as a sheet and the scrim fades in",
+      "kind": "push", "from": {}, "to": { "presentation": "modal" }, "areaWidth": 393,
+      "expect": { "motion": "sheet-in", "durationMs": 280, "curve": [0.2, 0, 0, 1], "scrim": "fade" }
+    },
+    {
+      "name": "closing a sheet over a page takes it down and the scrim fades out",
+      "kind": "pop", "from": { "presentation": "modal", "modalPlacement": "bottom" }, "to": {}, "areaWidth": 393,
+      "expect": { "motion": "sheet-out", "durationMs": 220, "curve": [0.4, 0, 1, 1], "scrim": "fade" }
+    },
+    {
+      "name": "a window in the centre fades in from a slight zoom",
+      "kind": "push", "from": {}, "to": { "presentation": "modal", "modalPlacement": "center" }, "areaWidth": 393,
+      "expect": { "motion": "window-in", "durationMs": 200, "curve": [0.2, 0, 0, 1], "scaleFrom": 0.96, "scrim": "fade" }
+    },
+    {
+      "name": "closing a window fades it out",
+      "kind": "pop", "from": { "presentation": "modal", "modalPlacement": "center" }, "to": {}, "areaWidth": 393,
+      "expect": { "motion": "window-out", "durationMs": 150, "curve": [0.4, 0, 1, 1], "scrim": "fade" }
+    },
+    {
+      "name": "a sheet on a wide area is shown as a window and opens as a window",
+      "kind": "push", "from": {}, "to": { "presentation": "modal" }, "areaWidth": 1280,
+      "expect": { "motion": "window-in", "durationMs": 200, "curve": [0.2, 0, 0, 1], "scaleFrom": 0.96, "scrim": "fade" }
+    },
+    {
+      "name": "a sheet opened over another layer keeps the scrim still",
+      "kind": "push", "from": { "presentation": "modal", "modalPlacement": "center" }, "to": { "presentation": "modal" }, "areaWidth": 393,
+      "expect": { "motion": "sheet-in", "durationMs": 280, "curve": [0.2, 0, 0, 1], "scrim": "still" }
+    },
+    {
+      "name": "closing a sheet back to another layer keeps the scrim still",
+      "kind": "pop", "from": { "presentation": "modal" }, "to": { "presentation": "modal" }, "areaWidth": 393,
+      "expect": { "motion": "sheet-out", "durationMs": 220, "curve": [0.4, 0, 1, 1], "scrim": "still" }
+    },
+    {
+      "name": "a page opened from a layer slides in over everything",
+      "kind": "push", "from": { "presentation": "modal" }, "to": {}, "areaWidth": 393,
+      "expect": { "motion": "push", "durationMs": 300, "curve": [0.2, 0, 0, 1], "parallax": 0.3 }
+    },
+    {
+      "name": "switching a section has no motion",
+      "kind": "switch", "from": {}, "to": {}, "areaWidth": 393,
+      "expect": { "motion": "none", "reason": "section" }
+    },
+    {
+      "name": "switching to a section whose screen says fade cross-dissolves",
+      "kind": "switch", "from": {}, "to": { "transition": "fade" }, "areaWidth": 393,
+      "expect": { "motion": "crossfade", "durationMs": 200, "curve": [0.4, 0, 0.2, 1] }
+    },
+    {
+      "name": "a page that says fade cross-dissolves in",
+      "kind": "push", "from": {}, "to": { "transition": "fade" }, "areaWidth": 393,
+      "expect": { "motion": "crossfade", "durationMs": 200, "curve": [0.4, 0, 0.2, 1] }
+    },
+    {
+      "name": "going back from a page that says fade cross-dissolves out",
+      "kind": "pop", "from": { "transition": "fade" }, "to": {}, "areaWidth": 393,
+      "expect": { "motion": "crossfade", "durationMs": 200, "curve": [0.4, 0, 0.2, 1] }
+    },
+    {
+      "name": "the screen that leaves decides on the way back: a page under a fade page still slides back",
+      "kind": "pop", "from": {}, "to": { "transition": "fade" }, "areaWidth": 393,
+      "expect": { "motion": "pop", "durationMs": 300, "curve": [0.2, 0, 0, 1], "parallax": 0.3 }
+    },
+    {
+      "name": "the screen that comes decides on the way forward: a fade page under a new page does not matter",
+      "kind": "push", "from": { "transition": "fade" }, "to": {}, "areaWidth": 393,
+      "expect": { "motion": "push", "durationMs": 300, "curve": [0.2, 0, 0, 1], "parallax": 0.3 }
+    },
+    {
+      "name": "a sheet that says fade only fades in, the scrim with it",
+      "kind": "push", "from": {}, "to": { "presentation": "modal", "transition": "fade" }, "areaWidth": 393,
+      "expect": { "motion": "layer-fade-in", "durationMs": 200, "curve": [0.4, 0, 0.2, 1], "scrim": "fade" }
+    },
+    {
+      "name": "a window that says fade only fades out on close",
+      "kind": "pop", "from": { "presentation": "modal", "modalPlacement": "center", "transition": "fade" }, "to": {}, "areaWidth": 393,
+      "expect": { "motion": "layer-fade-out", "durationMs": 200, "curve": [0.4, 0, 0.2, 1], "scrim": "fade" }
+    },
+    {
+      "name": "a page that says none appears at once",
+      "kind": "push", "from": {}, "to": { "transition": "none" }, "areaWidth": 393,
+      "expect": { "motion": "none", "reason": "field-none" }
+    },
+    {
+      "name": "going back from a sheet that says none closes it at once",
+      "kind": "pop", "from": { "presentation": "modal", "transition": "none" }, "to": {}, "areaWidth": 393,
+      "expect": { "motion": "none", "reason": "field-none" }
+    },
+    {
+      "name": "a section that says none switches at once",
+      "kind": "switch", "from": {}, "to": { "transition": "none" }, "areaWidth": 393,
+      "expect": { "motion": "none", "reason": "field-none" }
+    },
+    {
+      "name": "an unknown word is read as no field: the platform default",
+      "kind": "push", "from": {}, "to": { "transition": "zoom" }, "areaWidth": 393,
+      "expect": { "motion": "push", "durationMs": 300, "curve": [0.2, 0, 0, 1], "parallax": 0.3 }
+    },
+    {
+      "name": "the first show is at once",
+      "kind": "start", "to": {}, "areaWidth": 393,
+      "expect": { "motion": "none", "reason": "start" }
+    },
+    {
+      "name": "a stack rebuilt by the host is at once even with fade",
+      "kind": "start", "from": {}, "to": { "transition": "fade" }, "areaWidth": 393,
+      "expect": { "motion": "none", "reason": "start" }
+    },
+    {
+      "name": "reduced motion is at once",
+      "kind": "push", "from": {}, "to": {}, "areaWidth": 393, "reducedMotion": true,
+      "expect": { "motion": "none", "reason": "reduced-motion" }
+    },
+    {
+      "name": "reduced motion closes a sheet at once",
+      "kind": "pop", "from": { "presentation": "modal" }, "to": {}, "areaWidth": 393, "reducedMotion": true,
+      "expect": { "motion": "none", "reason": "reduced-motion" }
+    },
+    {
+      "name": "a step under the swipe-button ripple plays nothing: the ripple is the transition",
+      "kind": "push", "from": {}, "to": {}, "areaWidth": 393, "covered": true,
+      "expect": { "motion": "none", "reason": "covered" }
+    },
+    {
+      "name": "a sheet dismissed by the drag gesture has already gone down",
+      "kind": "pop", "from": { "presentation": "modal" }, "to": {}, "areaWidth": 393, "dragged": true,
+      "expect": { "motion": "none", "reason": "dragged" }
+    },
+    {
+      "name": "the drag gesture does not concern a window",
+      "kind": "pop", "from": { "presentation": "modal", "modalPlacement": "center" }, "to": {}, "areaWidth": 393, "dragged": true,
+      "expect": { "motion": "window-out", "durationMs": 150, "curve": [0.4, 0, 1, 1], "scrim": "fade" }
+    }
+  ],
+  "frameNote": "A frame of the planned motion at «at» milliseconds. «x» is a share of the screen width towards the end edge (the reader mirrors the sign in a right-to-left language), «y» a share of the layer's own height downwards, «opacity» and «scale» as drawn; «scrim» is the share of the resting opacity of the scrim under a layer (1 — at rest, 0 — not seen). Compared within 0.001.",
+  "frameCases": [
+    {
+      "name": "push",
+      "plan": { "kind": "push", "from": {}, "to": {}, "areaWidth": 393 },
+      "probes": [
+        { "at": 0, "incoming": { "x": 1 }, "outgoing": { "x": 0 } },
+        { "at": 75, "incoming": { "x": 0.3928 }, "outgoing": { "x": -0.1822 } },
+        { "at": 150, "incoming": { "x": 0.1222 }, "outgoing": { "x": -0.2634 } },
+        { "at": 300, "incoming": { "x": 0 }, "outgoing": { "x": -0.3 } }
+      ]
+    },
+    {
+      "name": "pop",
+      "plan": { "kind": "pop", "from": {}, "to": {}, "areaWidth": 393 },
+      "probes": [
+        { "at": 0, "incoming": { "x": -0.3 }, "outgoing": { "x": 0 } },
+        { "at": 75, "incoming": { "x": -0.1178 }, "outgoing": { "x": 0.6072 } },
+        { "at": 300, "incoming": { "x": 0 }, "outgoing": { "x": 1 } }
+      ]
+    },
+    {
+      "name": "sheet in",
+      "plan": { "kind": "push", "from": {}, "to": { "presentation": "modal" }, "areaWidth": 393 },
+      "probes": [
+        { "at": 0, "incoming": { "y": 1 }, "scrim": 0 },
+        { "at": 70, "incoming": { "y": 0.3928 }, "scrim": 0.6072 },
+        { "at": 280, "incoming": { "y": 0 }, "scrim": 1 }
+      ]
+    },
+    {
+      "name": "sheet out",
+      "plan": { "kind": "pop", "from": { "presentation": "modal" }, "to": {}, "areaWidth": 393 },
+      "probes": [
+        { "at": 0, "outgoing": { "y": 0 }, "scrim": 1 },
+        { "at": 110, "outgoing": { "y": 0.3248 }, "scrim": 0.6752 },
+        { "at": 220, "outgoing": { "y": 1 }, "scrim": 0 }
+      ]
+    },
+    {
+      "name": "window in",
+      "plan": { "kind": "push", "from": {}, "to": { "presentation": "modal", "modalPlacement": "center" }, "areaWidth": 393 },
+      "probes": [
+        { "at": 0, "incoming": { "opacity": 0, "scale": 0.96 }, "scrim": 0 },
+        { "at": 50, "incoming": { "opacity": 0.6072, "scale": 0.9843 }, "scrim": 0.6072 },
+        { "at": 200, "incoming": { "opacity": 1, "scale": 1 }, "scrim": 1 }
+      ]
+    },
+    {
+      "name": "window out",
+      "plan": { "kind": "pop", "from": { "presentation": "modal", "modalPlacement": "center" }, "to": {}, "areaWidth": 393 },
+      "probes": [
+        { "at": 75, "outgoing": { "opacity": 0.6752, "scale": 1 }, "scrim": 0.6752 },
+        { "at": 150, "outgoing": { "opacity": 0 }, "scrim": 0 }
+      ]
+    },
+    {
+      "name": "cross-dissolve: the old page fades out over the new one",
+      "plan": { "kind": "push", "from": {}, "to": { "transition": "fade" }, "areaWidth": 393 },
+      "probes": [
+        { "at": 0, "incoming": { "opacity": 1, "x": 0 }, "outgoing": { "opacity": 1, "x": 0 } },
+        { "at": 100, "incoming": { "opacity": 1 }, "outgoing": { "opacity": 0.2244 } },
+        { "at": 200, "outgoing": { "opacity": 0 } }
+      ]
+    },
+    {
+      "name": "between two layers the scrim stays",
+      "plan": { "kind": "push", "from": { "presentation": "modal", "modalPlacement": "center" }, "to": { "presentation": "modal" }, "areaWidth": 393 },
+      "probes": [
+        { "at": 0, "incoming": { "y": 1 }, "scrim": 1 },
+        { "at": 140, "incoming": { "y": 0.1222 }, "scrim": 1 }
+      ]
+    }
+  ],
+  "fieldNote": "How the reader reads the field: only a word of the list counts, anything else is no field.",
+  "fieldCases": [
+    { "name": "no field", "reads": null },
+    { "name": "fade", "value": "fade", "reads": "fade" },
+    { "name": "none", "value": "none", "reads": "none" },
+    { "name": "an unknown word", "value": "slide", "reads": null },
+    { "name": "not a string", "value": true, "reads": null }
+  ],
+  "documentNote": "The field on a screen record: «schema» — the schema accepts the document; a document it accepts publishes, since a page and a layer both read the field.",
+  "documentCases": [
+    { "name": "fade on a page", "screen": { "transition": "fade" }, "schema": true },
+    { "name": "none on a page", "screen": { "transition": "none" }, "schema": true },
+    { "name": "fade on a modal screen", "screen": { "presentation": "modal", "transition": "fade" }, "schema": true, "initial": false },
+    { "name": "a word outside the list is refused", "screen": { "transition": "slide" }, "schema": false },
+    { "name": "an empty string is refused", "screen": { "transition": "" }, "schema": false }
+  ]
+}

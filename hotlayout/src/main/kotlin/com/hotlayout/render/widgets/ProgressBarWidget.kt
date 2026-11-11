@@ -95,7 +95,11 @@ private fun ProgressBarContent(call: WidgetCall, shown: ValueTransitionEngine.Sh
                 props["labelFormat"]?.string ?: "valueOfMax", ProgressRules.number(props["value"], context.scope) ?: 0.0,
                 ProgressRules.number(props["max"], context.scope) ?: 100.0, atRest,
             ) ?: label
-            val labelStyle = composeTextStyle(style, color, context).copy(fontFeatureSettings = "tnum")
+            // The label of a bar whose value runs is written in figures of equal width always; the label of any other bar keeps the
+            // figures of its font.
+            val labelStyle = composeTextStyle(style, color, context).let {
+                if (ValueTransition.tabularFigures(node.type, props)) it.copy(fontFeatureSettings = "tnum") else it
+            }
             // While the value runs the label takes the place of the final one and the figures between are only painted there.
             if (shown.held) {
                 HoldingFinalValue(

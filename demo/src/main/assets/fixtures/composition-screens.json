@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "9.34.0",
+  "schemaVersion": "9.42.0",
   "documentId": "composition",
   "name": "Free composition",
   "initialScreenId": "home",
@@ -237,7 +237,10 @@
               "direction": "column",
               "gap": "none",
               "action": {
-                "type": "share"
+                "type": "share",
+                "params": {
+                  "text": "Offer of the week"
+                }
               },
               "label": {
                 "kind": "literal",

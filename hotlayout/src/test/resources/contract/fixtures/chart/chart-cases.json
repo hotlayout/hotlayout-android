@@ -1,0 +1,1414 @@
+{
+  "about": "Chart (9.37.0): how a record becomes a point, the scale, the highlighted point, bars, the line, the monotone curve and the label boxes. Numbers in dp, rounded to 6 decimals; compare with a tolerance of 1e-6. Computed by an implementation independent of the reference code.",
+  "pointCases": [
+    {
+      "name": "literal points in order",
+      "data": {
+        "kind": "literal",
+        "points": [
+          {
+            "value": 3,
+            "label": "Mon"
+          },
+          {
+            "value": 5
+          }
+        ]
+      },
+      "collections": {},
+      "expect": [
+        {
+          "value": 3,
+          "label": "Mon"
+        },
+        {
+          "value": 5,
+          "label": ""
+        }
+      ]
+    },
+    {
+      "name": "collection: full and short field names, negative, string, null, not an object",
+      "data": {
+        "kind": "collection",
+        "source": "spending",
+        "item": "spend",
+        "valueField": "spend.amount",
+        "labelField": "spend.day"
+      },
+      "collections": {
+        "spending": [
+          {
+            "spend.amount": 12,
+            "spend.day": "Mon"
+          },
+          {
+            "amount": -4,
+            "day": "Tue"
+          },
+          {
+            "spend.amount": "7",
+            "spend.day": 3
+          },
+          {
+            "spend.amount": null
+          },
+          "not a record",
+          {
+            "spend.amount": 9
+          }
+        ]
+      },
+      "expect": [
+        {
+          "value": 12,
+          "label": "Mon"
+        },
+        {
+          "value": 0,
+          "label": "Tue"
+        },
+        {
+          "value": 0,
+          "label": ""
+        },
+        {
+          "value": 0,
+          "label": ""
+        },
+        {
+          "value": 0,
+          "label": ""
+        },
+        {
+          "value": 9,
+          "label": ""
+        }
+      ]
+    },
+    {
+      "name": "collection without labelField: no labels",
+      "data": {
+        "kind": "collection",
+        "source": "spending",
+        "item": "spend",
+        "valueField": "spend.amount"
+      },
+      "collections": {
+        "spending": [
+          {
+            "spend.amount": 1,
+            "spend.day": "Mon"
+          },
+          {
+            "spend.amount": 2,
+            "spend.day": "Tue"
+          }
+        ]
+      },
+      "expect": [
+        {
+          "value": 1,
+          "label": ""
+        },
+        {
+          "value": 2,
+          "label": ""
+        }
+      ]
+    },
+    {
+      "name": "collection: only the first 31 records",
+      "data": {
+        "kind": "collection",
+        "source": "days",
+        "item": "day",
+        "valueField": "day.n"
+      },
+      "collections": {
+        "days": [
+          {
+            "n": 0
+          },
+          {
+            "n": 1
+          },
+          {
+            "n": 2
+          },
+          {
+            "n": 3
+          },
+          {
+            "n": 4
+          },
+          {
+            "n": 5
+          },
+          {
+            "n": 6
+          },
+          {
+            "n": 7
+          },
+          {
+            "n": 8
+          },
+          {
+            "n": 9
+          },
+          {
+            "n": 10
+          },
+          {
+            "n": 11
+          },
+          {
+            "n": 12
+          },
+          {
+            "n": 13
+          },
+          {
+            "n": 14
+          },
+          {
+            "n": 15
+          },
+          {
+            "n": 16
+          },
+          {
+            "n": 17
+          },
+          {
+            "n": 18
+          },
+          {
+            "n": 19
+          },
+          {
+            "n": 20
+          },
+          {
+            "n": 21
+          },
+          {
+            "n": 22
+          },
+          {
+            "n": 23
+          },
+          {
+            "n": 24
+          },
+          {
+            "n": 25
+          },
+          {
+            "n": 26
+          },
+          {
+            "n": 27
+          },
+          {
+            "n": 28
+          },
+          {
+            "n": 29
+          },
+          {
+            "n": 30
+          },
+          {
+            "n": 31
+          },
+          {
+            "n": 32
+          },
+          {
+            "n": 33
+          },
+          {
+            "n": 34
+          },
+          {
+            "n": 35
+          },
+          {
+            "n": 36
+          },
+          {
+            "n": 37
+          },
+          {
+            "n": 38
+          },
+          {
+            "n": 39
+          }
+        ]
+      },
+      "expect": [
+        {
+          "value": 0,
+          "label": ""
+        },
+        {
+          "value": 1,
+          "label": ""
+        },
+        {
+          "value": 2,
+          "label": ""
+        },
+        {
+          "value": 3,
+          "label": ""
+        },
+        {
+          "value": 4,
+          "label": ""
+        },
+        {
+          "value": 5,
+          "label": ""
+        },
+        {
+          "value": 6,
+          "label": ""
+        },
+        {
+          "value": 7,
+          "label": ""
+        },
+        {
+          "value": 8,
+          "label": ""
+        },
+        {
+          "value": 9,
+          "label": ""
+        },
+        {
+          "value": 10,
+          "label": ""
+        },
+        {
+          "value": 11,
+          "label": ""
+        },
+        {
+          "value": 12,
+          "label": ""
+        },
+        {
+          "value": 13,
+          "label": ""
+        },
+        {
+          "value": 14,
+          "label": ""
+        },
+        {
+          "value": 15,
+          "label": ""
+        },
+        {
+          "value": 16,
+          "label": ""
+        },
+        {
+          "value": 17,
+          "label": ""
+        },
+        {
+          "value": 18,
+          "label": ""
+        },
+        {
+          "value": 19,
+          "label": ""
+        },
+        {
+          "value": 20,
+          "label": ""
+        },
+        {
+          "value": 21,
+          "label": ""
+        },
+        {
+          "value": 22,
+          "label": ""
+        },
+        {
+          "value": 23,
+          "label": ""
+        },
+        {
+          "value": 24,
+          "label": ""
+        },
+        {
+          "value": 25,
+          "label": ""
+        },
+        {
+          "value": 26,
+          "label": ""
+        },
+        {
+          "value": 27,
+          "label": ""
+        },
+        {
+          "value": 28,
+          "label": ""
+        },
+        {
+          "value": 29,
+          "label": ""
+        },
+        {
+          "value": 30,
+          "label": ""
+        }
+      ]
+    },
+    {
+      "name": "one record: fewer than two points, the chart is empty",
+      "data": {
+        "kind": "collection",
+        "source": "spending",
+        "item": "spend",
+        "valueField": "spend.amount"
+      },
+      "collections": {
+        "spending": [
+          {
+            "spend.amount": 5
+          }
+        ]
+      },
+      "expect": []
+    },
+    {
+      "name": "no collection in the data: empty",
+      "data": {
+        "kind": "collection",
+        "source": "spending",
+        "item": "spend",
+        "valueField": "spend.amount"
+      },
+      "collections": {},
+      "expect": []
+    },
+    {
+      "name": "unknown shape of data: empty",
+      "data": {
+        "kind": "series",
+        "values": [
+          1,
+          2,
+          3
+        ]
+      },
+      "collections": {},
+      "expect": []
+    }
+  ],
+  "highlightCases": [
+    {
+      "values": [
+        1,
+        3,
+        2
+      ],
+      "highlight": "last",
+      "expect": 2,
+      "ratios": [
+        0.333333,
+        1.0,
+        0.666667
+      ]
+    },
+    {
+      "values": [
+        1,
+        3,
+        3,
+        2
+      ],
+      "highlight": "max",
+      "expect": 2,
+      "ratios": [
+        0.333333,
+        1.0,
+        1.0,
+        0.666667
+      ]
+    },
+    {
+      "values": [
+        0,
+        0,
+        0
+      ],
+      "highlight": "max",
+      "expect": null,
+      "ratios": [
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "values": [
+        4,
+        1
+      ],
+      "highlight": "none",
+      "expect": null,
+      "ratios": [
+        1.0,
+        0.25
+      ]
+    },
+    {
+      "values": [
+        4,
+        1
+      ],
+      "highlight": "today",
+      "expect": null,
+      "ratios": [
+        1.0,
+        0.25
+      ]
+    },
+    {
+      "values": [],
+      "highlight": "last",
+      "expect": null,
+      "ratios": []
+    }
+  ],
+  "barCases": [
+    {
+      "name": "a week, gap 4, radius 8, today highlighted",
+      "values": [
+        30,
+        45,
+        20,
+        60,
+        35,
+        50,
+        40
+      ],
+      "shown": 1,
+      "width": 280,
+      "height": 100,
+      "gap": 4,
+      "radius": 8,
+      "highlight": "last",
+      "expect": [
+        {
+          "x": 0.0,
+          "y": 50.0,
+          "width": 36.571429,
+          "height": 50.0,
+          "radius": 8,
+          "highlighted": false
+        },
+        {
+          "x": 40.571429,
+          "y": 25.0,
+          "width": 36.571429,
+          "height": 75.0,
+          "radius": 8,
+          "highlighted": false
+        },
+        {
+          "x": 81.142857,
+          "y": 66.666667,
+          "width": 36.571429,
+          "height": 33.333333,
+          "radius": 8,
+          "highlighted": false
+        },
+        {
+          "x": 121.714286,
+          "y": 0.0,
+          "width": 36.571429,
+          "height": 100.0,
+          "radius": 8,
+          "highlighted": false
+        },
+        {
+          "x": 162.285714,
+          "y": 41.666667,
+          "width": 36.571429,
+          "height": 58.333333,
+          "radius": 8,
+          "highlighted": false
+        },
+        {
+          "x": 202.857143,
+          "y": 16.666667,
+          "width": 36.571429,
+          "height": 83.333333,
+          "radius": 8,
+          "highlighted": false
+        },
+        {
+          "x": 243.428571,
+          "y": 33.333333,
+          "width": 36.571429,
+          "height": 66.666667,
+          "radius": 8,
+          "highlighted": true
+        }
+      ]
+    },
+    {
+      "name": "radius larger than half a bar and than a short bar",
+      "values": [
+        1,
+        10
+      ],
+      "shown": 1,
+      "width": 40,
+      "height": 50,
+      "gap": 4,
+      "radius": 100,
+      "highlight": "none",
+      "expect": [
+        {
+          "x": 0.0,
+          "y": 45.0,
+          "width": 18.0,
+          "height": 5.0,
+          "radius": 5.0,
+          "highlighted": false
+        },
+        {
+          "x": 22.0,
+          "y": 0.0,
+          "width": 18.0,
+          "height": 50.0,
+          "radius": 9.0,
+          "highlighted": false
+        }
+      ]
+    },
+    {
+      "name": "31 bars on 40 dp: the gap becomes 0",
+      "values": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27,
+        28,
+        29,
+        30,
+        31
+      ],
+      "shown": 1,
+      "width": 40,
+      "height": 60,
+      "gap": 4,
+      "radius": 2,
+      "highlight": "max",
+      "expect": [
+        {
+          "x": 0.0,
+          "y": 58.064516,
+          "width": 1.290323,
+          "height": 1.935484,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 1.290323,
+          "y": 56.129032,
+          "width": 1.290323,
+          "height": 3.870968,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 2.580645,
+          "y": 54.193548,
+          "width": 1.290323,
+          "height": 5.806452,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 3.870968,
+          "y": 52.258065,
+          "width": 1.290323,
+          "height": 7.741935,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 5.16129,
+          "y": 50.322581,
+          "width": 1.290323,
+          "height": 9.677419,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 6.451613,
+          "y": 48.387097,
+          "width": 1.290323,
+          "height": 11.612903,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 7.741935,
+          "y": 46.451613,
+          "width": 1.290323,
+          "height": 13.548387,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 9.032258,
+          "y": 44.516129,
+          "width": 1.290323,
+          "height": 15.483871,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 10.322581,
+          "y": 42.580645,
+          "width": 1.290323,
+          "height": 17.419355,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 11.612903,
+          "y": 40.645161,
+          "width": 1.290323,
+          "height": 19.354839,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 12.903226,
+          "y": 38.709677,
+          "width": 1.290323,
+          "height": 21.290323,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 14.193548,
+          "y": 36.774194,
+          "width": 1.290323,
+          "height": 23.225806,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 15.483871,
+          "y": 34.83871,
+          "width": 1.290323,
+          "height": 25.16129,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 16.774194,
+          "y": 32.903226,
+          "width": 1.290323,
+          "height": 27.096774,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 18.064516,
+          "y": 30.967742,
+          "width": 1.290323,
+          "height": 29.032258,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 19.354839,
+          "y": 29.032258,
+          "width": 1.290323,
+          "height": 30.967742,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 20.645161,
+          "y": 27.096774,
+          "width": 1.290323,
+          "height": 32.903226,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 21.935484,
+          "y": 25.16129,
+          "width": 1.290323,
+          "height": 34.83871,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 23.225806,
+          "y": 23.225806,
+          "width": 1.290323,
+          "height": 36.774194,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 24.516129,
+          "y": 21.290323,
+          "width": 1.290323,
+          "height": 38.709677,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 25.806452,
+          "y": 19.354839,
+          "width": 1.290323,
+          "height": 40.645161,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 27.096774,
+          "y": 17.419355,
+          "width": 1.290323,
+          "height": 42.580645,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 28.387097,
+          "y": 15.483871,
+          "width": 1.290323,
+          "height": 44.516129,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 29.677419,
+          "y": 13.548387,
+          "width": 1.290323,
+          "height": 46.451613,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 30.967742,
+          "y": 11.612903,
+          "width": 1.290323,
+          "height": 48.387097,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 32.258065,
+          "y": 9.677419,
+          "width": 1.290323,
+          "height": 50.322581,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 33.548387,
+          "y": 7.741935,
+          "width": 1.290323,
+          "height": 52.258065,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 34.83871,
+          "y": 5.806452,
+          "width": 1.290323,
+          "height": 54.193548,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 36.129032,
+          "y": 3.870968,
+          "width": 1.290323,
+          "height": 56.129032,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 37.419355,
+          "y": 1.935484,
+          "width": 1.290323,
+          "height": 58.064516,
+          "radius": 0.645161,
+          "highlighted": false
+        },
+        {
+          "x": 38.709677,
+          "y": 0.0,
+          "width": 1.290323,
+          "height": 60.0,
+          "radius": 0.645161,
+          "highlighted": true
+        }
+      ]
+    },
+    {
+      "name": "all zero: no bar has height",
+      "values": [
+        0,
+        0,
+        0
+      ],
+      "shown": 1,
+      "width": 90,
+      "height": 40,
+      "gap": 4,
+      "radius": 4,
+      "highlight": "max",
+      "expect": [
+        {
+          "x": 0.0,
+          "y": 40,
+          "width": 27.333333,
+          "height": 0,
+          "radius": 0,
+          "highlighted": false
+        },
+        {
+          "x": 31.333333,
+          "y": 40,
+          "width": 27.333333,
+          "height": 0,
+          "radius": 0,
+          "highlighted": false
+        },
+        {
+          "x": 62.666667,
+          "y": 40,
+          "width": 27.333333,
+          "height": 0,
+          "radius": 0,
+          "highlighted": false
+        }
+      ]
+    },
+    {
+      "name": "appearance at 0.5: the top stays, the values grow",
+      "values": [
+        2,
+        4
+      ],
+      "shown": 0.5,
+      "width": 100,
+      "height": 80,
+      "gap": 8,
+      "radius": 0,
+      "highlight": "none",
+      "expect": [
+        {
+          "x": 0.0,
+          "y": 60.0,
+          "width": 46.0,
+          "height": 20.0,
+          "radius": 0,
+          "highlighted": false
+        },
+        {
+          "x": 54.0,
+          "y": 40.0,
+          "width": 46.0,
+          "height": 40.0,
+          "radius": 0,
+          "highlighted": false
+        }
+      ]
+    }
+  ],
+  "lineCases": [
+    {
+      "name": "five points, width 2, no highlight",
+      "values": [
+        4,
+        4,
+        0,
+        7,
+        2
+      ],
+      "width": 300,
+      "height": 80,
+      "lineWidth": 2,
+      "highlight": "none",
+      "expect": {
+        "points": [
+          {
+            "x": 1.0,
+            "y": 34.428571
+          },
+          {
+            "x": 75.5,
+            "y": 34.428571
+          },
+          {
+            "x": 150.0,
+            "y": 79.0
+          },
+          {
+            "x": 224.5,
+            "y": 1.0
+          },
+          {
+            "x": 299.0,
+            "y": 56.714286
+          }
+        ],
+        "inset": 1.0,
+        "dot": null,
+        "baseline": 80
+      }
+    },
+    {
+      "name": "spending, width 3, the largest highlighted",
+      "values": [
+        420,
+        260,
+        580,
+        310,
+        760,
+        540,
+        690
+      ],
+      "width": 310,
+      "height": 100,
+      "lineWidth": 3,
+      "highlight": "max",
+      "expect": {
+        "points": [
+          {
+            "x": 5.0,
+            "y": 45.263158
+          },
+          {
+            "x": 55.0,
+            "y": 64.210526
+          },
+          {
+            "x": 105.0,
+            "y": 26.315789
+          },
+          {
+            "x": 155.0,
+            "y": 58.289474
+          },
+          {
+            "x": 205.0,
+            "y": 5.0
+          },
+          {
+            "x": 255.0,
+            "y": 31.052632
+          },
+          {
+            "x": 305.0,
+            "y": 13.289474
+          }
+        ],
+        "inset": 5,
+        "dot": {
+          "x": 205.0,
+          "y": 5.0,
+          "radius": 5
+        },
+        "baseline": 100
+      }
+    },
+    {
+      "name": "all zero: flat at the bottom",
+      "values": [
+        0,
+        0
+      ],
+      "width": 100,
+      "height": 40,
+      "lineWidth": 2,
+      "highlight": "last",
+      "expect": {
+        "points": [
+          {
+            "x": 4.0,
+            "y": 36
+          },
+          {
+            "x": 96.0,
+            "y": 36
+          }
+        ],
+        "inset": 4,
+        "dot": {
+          "x": 96.0,
+          "y": 36,
+          "radius": 4
+        },
+        "baseline": 40
+      }
+    }
+  ],
+  "smoothCases": [
+    {
+      "name": "rising then falling: the peak tangent is zero",
+      "points": [
+        {
+          "x": 0,
+          "y": 50
+        },
+        {
+          "x": 10,
+          "y": 20
+        },
+        {
+          "x": 20,
+          "y": 0
+        },
+        {
+          "x": 30,
+          "y": 30
+        },
+        {
+          "x": 40,
+          "y": 40
+        }
+      ],
+      "expectTangents": [
+        -3.25,
+        -2.5,
+        0.0,
+        2.0,
+        0.5
+      ]
+    },
+    {
+      "name": "monotone rise",
+      "points": [
+        {
+          "x": 0,
+          "y": 90
+        },
+        {
+          "x": 10,
+          "y": 70
+        },
+        {
+          "x": 20,
+          "y": 40
+        },
+        {
+          "x": 30,
+          "y": 30
+        },
+        {
+          "x": 40,
+          "y": 0
+        }
+      ],
+      "expectTangents": [
+        -1.75,
+        -2.5,
+        -2.0,
+        -2.0,
+        -3.5
+      ]
+    },
+    {
+      "name": "flat neighbours keep the curve flat",
+      "points": [
+        {
+          "x": 0,
+          "y": 40
+        },
+        {
+          "x": 10,
+          "y": 40
+        },
+        {
+          "x": 20,
+          "y": 40
+        },
+        {
+          "x": 30,
+          "y": 10
+        }
+      ],
+      "expectTangents": [
+        0.0,
+        0.0,
+        -0.0,
+        -4.5
+      ]
+    },
+    {
+      "name": "two points: straight",
+      "points": [
+        {
+          "x": 0,
+          "y": 10
+        },
+        {
+          "x": 10,
+          "y": 30
+        }
+      ],
+      "expectTangents": [
+        0,
+        0
+      ]
+    }
+  ],
+  "labelCases": [
+    {
+      "name": "seven bars on 280",
+      "centers": [
+        20,
+        60,
+        100,
+        140,
+        180,
+        220,
+        260
+      ],
+      "width": 280,
+      "expect": [
+        {
+          "index": 0,
+          "left": 0.0,
+          "width": 40.0
+        },
+        {
+          "index": 1,
+          "left": 40.0,
+          "width": 40.0
+        },
+        {
+          "index": 2,
+          "left": 80.0,
+          "width": 40.0
+        },
+        {
+          "index": 3,
+          "left": 120.0,
+          "width": 40.0
+        },
+        {
+          "index": 4,
+          "left": 160.0,
+          "width": 40.0
+        },
+        {
+          "index": 5,
+          "left": 200.0,
+          "width": 40.0
+        },
+        {
+          "index": 6,
+          "left": 240.0,
+          "width": 40.0
+        }
+      ]
+    },
+    {
+      "name": "line from edge to edge: boxes shifted inside",
+      "centers": [
+        1.0,
+        75.5,
+        150.0,
+        224.5,
+        299.0
+      ],
+      "width": 300,
+      "expect": [
+        {
+          "index": 0,
+          "left": 0,
+          "width": 60.0
+        },
+        {
+          "index": 1,
+          "left": 45.5,
+          "width": 60.0
+        },
+        {
+          "index": 2,
+          "left": 120.0,
+          "width": 60.0
+        },
+        {
+          "index": 3,
+          "left": 194.5,
+          "width": 60.0
+        },
+        {
+          "index": 4,
+          "left": 240.0,
+          "width": 60.0
+        }
+      ]
+    },
+    {
+      "name": "31 points on 310: every third, counting from the last",
+      "centers": [
+        5,
+        15,
+        25,
+        35,
+        45,
+        55,
+        65,
+        75,
+        85,
+        95,
+        105,
+        115,
+        125,
+        135,
+        145,
+        155,
+        165,
+        175,
+        185,
+        195,
+        205,
+        215,
+        225,
+        235,
+        245,
+        255,
+        265,
+        275,
+        285,
+        295,
+        305
+      ],
+      "width": 310,
+      "expect": [
+        {
+          "index": 0,
+          "left": 0.0,
+          "width": 10.0
+        },
+        {
+          "index": 3,
+          "left": 30.0,
+          "width": 10.0
+        },
+        {
+          "index": 6,
+          "left": 60.0,
+          "width": 10.0
+        },
+        {
+          "index": 9,
+          "left": 90.0,
+          "width": 10.0
+        },
+        {
+          "index": 12,
+          "left": 120.0,
+          "width": 10.0
+        },
+        {
+          "index": 15,
+          "left": 150.0,
+          "width": 10.0
+        },
+        {
+          "index": 18,
+          "left": 180.0,
+          "width": 10.0
+        },
+        {
+          "index": 21,
+          "left": 210.0,
+          "width": 10.0
+        },
+        {
+          "index": 24,
+          "left": 240.0,
+          "width": 10.0
+        },
+        {
+          "index": 27,
+          "left": 270.0,
+          "width": 10.0
+        },
+        {
+          "index": 30,
+          "left": 300.0,
+          "width": 10.0
+        }
+      ]
+    }
+  ],
+  "plotHeightCases": [
+    {
+      "height": 120,
+      "labels": true,
+      "labelLine": 16,
+      "labelGap": 4,
+      "expect": 100
+    },
+    {
+      "height": 120,
+      "labels": false,
+      "labelLine": 16,
+      "labelGap": 4,
+      "expect": 120
+    },
+    {
+      "height": 10,
+      "labels": true,
+      "labelLine": 16,
+      "labelGap": 4,
+      "expect": 0
+    }
+  ]
+}

@@ -76,6 +76,7 @@ import com.hotlayout.render.RenderContext
 import com.hotlayout.render.StyledText
 import com.hotlayout.render.color
 import com.hotlayout.render.cssShadows
+import com.hotlayout.render.paint.innerShadows
 import com.hotlayout.render.dp
 import com.hotlayout.render.motion.rememberReducedMotion
 import com.hotlayout.render.paint.dashedBorder
@@ -562,6 +563,7 @@ private fun Modifier.swipeSurface(look: SwipeConfirmLook): Modifier {
         .cssShadows(look.shadow, shape)
         .clip(shape)
         .background(look.trackFill?.color ?: Color.Transparent, shape)
+        .innerShadows(look.shadow, look.corners, look.borderWidth)
         .then(
             if (look.borderWidth > 0 && look.borderColor != null) {
                 if (look.dashedBorder) Modifier.dashedBorder(look.borderWidth, look.borderColor.color, look.corners) else Modifier.border(look.borderWidth.dp, look.borderColor.color, shape)

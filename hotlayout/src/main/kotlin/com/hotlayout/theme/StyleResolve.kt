@@ -115,10 +115,16 @@ internal class StyleResolver(internal val theme: HotlayoutTheme) {
         is JsonValue.Str -> theme.typography[ref.value]
         is JsonValue.Obj -> ref["token"]?.string?.let { theme.typography[it] }?.let { base ->
             var style = base
-            ref["fontSize"]?.number?.let { style = style.copy(fontSize = it.coerceIn(8.0, 96.0)) }
+            ref["fontSize"]?.number?.let { style = style.copy(fontSize = it.coerceIn(8.0, DisplayTypography.MAX_OVERRIDE_FONT_SIZE)) }
             ref["fontWeight"]?.number?.let { style = style.copy(fontWeight = it.coerceIn(100.0, 900.0).toInt()) }
             ref["lineHeight"]?.number?.let { style = style.copy(lineHeight = it.coerceIn(0.8, 3.0)) }
             ref["letterSpacing"]?.number?.let { style = style.copy(letterSpacing = it.coerceIn(-2.0, 8.0)) }
+            // Tracking in shares of the font size wins over pixels (a document that names both is not published; a reader that
+            // gets it takes the shares) and replaces the tracking of the token.
+            ref["letterSpacingEm"]?.number?.let {
+                val share = it.coerceIn(DisplayTypography.MIN_TRACKING_SHARE, DisplayTypography.MAX_TRACKING_SHARE)
+                style = style.copy(letterSpacing = DisplayTypography.trackingPx(letterSpacingEm = share, effectiveFontSize = style.fontSize))
+            }
             style
         }
         else -> null
@@ -135,16 +141,53 @@ internal class StyleResolver(internal val theme: HotlayoutTheme) {
                 (layer["blur"]?.number ?: 0.0).coerceIn(0.0, 128.0),
                 (layer["spread"]?.number ?: 0.0).coerceIn(-64.0, 64.0),
                 shade,
+                // Only the flag `true` makes a layer inner; any other value leaves it an outer one.
+                layer["inset"]?.bool == true,
             )
         }
         else -> null
     }
 
+    /**
+     * The shadow of the glyphs of a text (`style.textShadow`): one or two layers, the first nearest the text and on top. An
+     * empty list, more than two layers or a layer that does not read is no shadow.
+     */
+    internal fun textShadow(ref: JsonValue?): List<TextShadowLayer>? {
+        val layers = ref?.array ?: return null
+        if (layers.size !in 1..DisplayTypography.MAX_TEXT_SHADOW_LAYERS) return null
+        return layers.map { layer ->
+            if (layer.obj == null) return null
+            val shade = color(layer["color"]) ?: return null
+            TextShadowLayer(
+                (layer["offsetX"]?.number ?: 0.0).coerceIn(-64.0, 64.0),
+                (layer["offsetY"]?.number ?: 0.0).coerceIn(-64.0, 64.0),
+                (layer["blur"]?.number ?: 0.0).coerceIn(0.0, 128.0),
+                shade,
+            )
+        }
+    }
+
     internal fun gradient(ref: JsonValue?): GradientValue? = when (ref) {
         is JsonValue.Str -> theme.gradient[ref.value]
         is JsonValue.Obj -> {
-            val angle = ref["angle"]?.number
             val stops = ref["stops"]?.array
+            // The form first: a circle names its `shape` and has a centre and a radius, a line has an angle and none of them. An
+            // unknown shape, or one form wearing the fields of the other, is no gradient.
+            var angle: Double? = null
+            var radial: GradientValue.Radial? = null
+            if (ref["shape"] != null) {
+                val center = ref["center"]?.obj
+                if (ref["shape"]?.string == "radial" && ref["angle"] == null && center != null && center.get("x") != null && center.get("y") != null && ref["radius"] != null) {
+                    angle = 0.0
+                    radial = GradientValue.Radial(
+                        (center["x"]?.number ?: 0.0).coerceIn(0.0, 1.0),
+                        (center["y"]?.number ?: 0.0).coerceIn(0.0, 1.0),
+                        (ref["radius"]?.number ?: ThemeBounds.RADIAL_RADIUS.start).coerceIn(ThemeBounds.RADIAL_RADIUS.start, ThemeBounds.RADIAL_RADIUS.endInclusive),
+                    )
+                }
+            } else if (ref["center"] == null && ref["radius"] == null) {
+                angle = ref["angle"]?.number
+            }
             if (angle == null || stops == null || stops.size !in 2..8) {
                 null
             } else {
@@ -154,7 +197,7 @@ internal class StyleResolver(internal val theme: HotlayoutTheme) {
                     GradientValue.Stop(shade, position.coerceIn(0.0, 1.0))
                 }
                 // Stops out of order are not drawn (`unorderedGradient: 'do-not-draw'`).
-                if (read.zipWithNext().all { (a, b) -> a.position <= b.position }) GradientValue(angle, read) else null
+                if (read.zipWithNext().all { (a, b) -> a.position <= b.position }) GradientValue(angle, read, radial) else null
             }
         }
         else -> null

@@ -1,0 +1,1030 @@
+{
+  "about": "Inner shadow and text shadow (schema 9.39.0). Numbers are computed independently of the reference implementation. Colours of the CSS rows are own hex values without opacity, written as they are.",
+  "insetCases": {
+    "css": [
+      {
+        "name": "outer only, as before 9.39",
+        "layers": [
+          {
+            "offsetX": 0,
+            "offsetY": 4,
+            "blur": 12,
+            "spread": 0,
+            "color": {
+              "value": "#000000"
+            }
+          }
+        ],
+        "css": "0 4px 12px #000000"
+      },
+      {
+        "name": "one inner layer",
+        "layers": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 0,
+            "spread": 0,
+            "color": {
+              "value": "#ffffff"
+            },
+            "inset": true
+          }
+        ],
+        "css": "inset 0 2px 0 #ffffff"
+      },
+      {
+        "name": "inner layer with spread",
+        "layers": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 8,
+            "spread": 4,
+            "color": {
+              "value": "#000000"
+            },
+            "inset": true
+          }
+        ],
+        "css": "inset 0 0 8px 4px #000000"
+      },
+      {
+        "name": "inner layer with negative offsets and spread",
+        "layers": [
+          {
+            "offsetX": -3,
+            "offsetY": -5,
+            "blur": 6,
+            "spread": -2,
+            "color": {
+              "value": "#ff0000"
+            },
+            "inset": true
+          }
+        ],
+        "css": "inset -3px -5px 6px -2px #ff0000"
+      },
+      {
+        "name": "tactile 3D: inner highlight, inner shade, outer drop",
+        "layers": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 0,
+            "spread": 0,
+            "color": {
+              "value": "#ffffff"
+            },
+            "inset": true
+          },
+          {
+            "offsetX": 0,
+            "offsetY": -4,
+            "blur": 8,
+            "spread": 0,
+            "color": {
+              "value": "#000000"
+            },
+            "inset": true
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 8,
+            "blur": 16,
+            "spread": 0,
+            "color": {
+              "value": "#0000ff"
+            }
+          }
+        ],
+        "css": "inset 0 2px 0 #ffffff, inset 0 -4px 8px #000000, 0 8px 16px #0000ff"
+      },
+      {
+        "name": "outer first, inner second: the order of the list is kept",
+        "layers": [
+          {
+            "offsetX": 0,
+            "offsetY": 6,
+            "blur": 10,
+            "spread": 0,
+            "color": {
+              "value": "#0000ff"
+            }
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 1,
+            "blur": 0,
+            "spread": 0,
+            "color": {
+              "value": "#ffffff"
+            },
+            "inset": true
+          }
+        ],
+        "css": "0 6px 10px #0000ff, inset 0 1px 0 #ffffff"
+      },
+      {
+        "name": "four layers mixed (the bound)",
+        "layers": [
+          {
+            "offsetX": 1,
+            "offsetY": 1,
+            "blur": 1,
+            "spread": 1,
+            "color": {
+              "value": "#ff0000"
+            },
+            "inset": true
+          },
+          {
+            "offsetX": 2,
+            "offsetY": 2,
+            "blur": 2,
+            "spread": 0,
+            "color": {
+              "value": "#0000ff"
+            }
+          },
+          {
+            "offsetX": 0,
+            "offsetY": -1,
+            "blur": 3,
+            "spread": 0,
+            "color": {
+              "value": "#ffffff"
+            },
+            "inset": true
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 12,
+            "blur": 24,
+            "spread": -4,
+            "color": {
+              "value": "#000000"
+            }
+          }
+        ],
+        "css": "inset 1px 1px 1px 1px #ff0000, 2px 2px 2px #0000ff, inset 0 -1px 3px #ffffff, 0 12px 24px -4px #000000"
+      },
+      {
+        "name": "bounds: offset 64, blur 128, spread -64",
+        "layers": [
+          {
+            "offsetX": 64,
+            "offsetY": -64,
+            "blur": 128,
+            "spread": -64,
+            "color": {
+              "value": "#000000"
+            },
+            "inset": true
+          }
+        ],
+        "css": "inset 64px -64px 128px -64px #000000"
+      }
+    ],
+    "geometry": [
+      {
+        "name": "box 200x80 border 0 radius 16; offset (0, 2) spread 0",
+        "box": {
+          "width": 200,
+          "height": 80,
+          "borderWidth": 0,
+          "radius": 16
+        },
+        "layer": {
+          "offsetX": 0,
+          "offsetY": 2,
+          "spread": 0
+        },
+        "clip": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 80,
+          "radius": 16
+        },
+        "hole": {
+          "x": 0,
+          "y": 2,
+          "width": 200,
+          "height": 80,
+          "radius": 16
+        }
+      },
+      {
+        "name": "box 200x80 border 0 radius 16; offset (0, -4) spread 4",
+        "box": {
+          "width": 200,
+          "height": 80,
+          "borderWidth": 0,
+          "radius": 16
+        },
+        "layer": {
+          "offsetX": 0,
+          "offsetY": -4,
+          "spread": 4
+        },
+        "clip": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 80,
+          "radius": 16
+        },
+        "hole": {
+          "x": 4,
+          "y": 0,
+          "width": 192,
+          "height": 72,
+          "radius": 12
+        }
+      },
+      {
+        "name": "box 200x80 border 0 radius 16; offset (3, 3) spread -2",
+        "box": {
+          "width": 200,
+          "height": 80,
+          "borderWidth": 0,
+          "radius": 16
+        },
+        "layer": {
+          "offsetX": 3,
+          "offsetY": 3,
+          "spread": -2
+        },
+        "clip": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 80,
+          "radius": 16
+        },
+        "hole": {
+          "x": 1,
+          "y": 1,
+          "width": 204,
+          "height": 84,
+          "radius": 18
+        }
+      },
+      {
+        "name": "box 200x80 border 0 radius 16; offset (0, 0) spread 30",
+        "box": {
+          "width": 200,
+          "height": 80,
+          "borderWidth": 0,
+          "radius": 16
+        },
+        "layer": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "spread": 30
+        },
+        "clip": {
+          "x": 0,
+          "y": 0,
+          "width": 200,
+          "height": 80,
+          "radius": 16
+        },
+        "hole": {
+          "x": 30,
+          "y": 30,
+          "width": 140,
+          "height": 20,
+          "radius": 0
+        }
+      },
+      {
+        "name": "box 120x120 border 2 radius 24; offset (0, 2) spread 0",
+        "box": {
+          "width": 120,
+          "height": 120,
+          "borderWidth": 2,
+          "radius": 24
+        },
+        "layer": {
+          "offsetX": 0,
+          "offsetY": 2,
+          "spread": 0
+        },
+        "clip": {
+          "x": 2,
+          "y": 2,
+          "width": 116,
+          "height": 116,
+          "radius": 22
+        },
+        "hole": {
+          "x": 2,
+          "y": 4,
+          "width": 116,
+          "height": 116,
+          "radius": 22
+        }
+      },
+      {
+        "name": "box 120x120 border 2 radius 24; offset (0, -4) spread 4",
+        "box": {
+          "width": 120,
+          "height": 120,
+          "borderWidth": 2,
+          "radius": 24
+        },
+        "layer": {
+          "offsetX": 0,
+          "offsetY": -4,
+          "spread": 4
+        },
+        "clip": {
+          "x": 2,
+          "y": 2,
+          "width": 116,
+          "height": 116,
+          "radius": 22
+        },
+        "hole": {
+          "x": 6,
+          "y": 2,
+          "width": 108,
+          "height": 108,
+          "radius": 18
+        }
+      },
+      {
+        "name": "box 120x120 border 2 radius 24; offset (3, 3) spread -2",
+        "box": {
+          "width": 120,
+          "height": 120,
+          "borderWidth": 2,
+          "radius": 24
+        },
+        "layer": {
+          "offsetX": 3,
+          "offsetY": 3,
+          "spread": -2
+        },
+        "clip": {
+          "x": 2,
+          "y": 2,
+          "width": 116,
+          "height": 116,
+          "radius": 22
+        },
+        "hole": {
+          "x": 3,
+          "y": 3,
+          "width": 120,
+          "height": 120,
+          "radius": 24
+        }
+      },
+      {
+        "name": "box 120x120 border 2 radius 24; offset (0, 0) spread 30",
+        "box": {
+          "width": 120,
+          "height": 120,
+          "borderWidth": 2,
+          "radius": 24
+        },
+        "layer": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "spread": 30
+        },
+        "clip": {
+          "x": 2,
+          "y": 2,
+          "width": 116,
+          "height": 116,
+          "radius": 22
+        },
+        "hole": {
+          "x": 32,
+          "y": 32,
+          "width": 56,
+          "height": 56,
+          "radius": 0
+        }
+      },
+      {
+        "name": "box 320x48 border 1 radius 0; offset (0, 2) spread 0",
+        "box": {
+          "width": 320,
+          "height": 48,
+          "borderWidth": 1,
+          "radius": 0
+        },
+        "layer": {
+          "offsetX": 0,
+          "offsetY": 2,
+          "spread": 0
+        },
+        "clip": {
+          "x": 1,
+          "y": 1,
+          "width": 318,
+          "height": 46,
+          "radius": 0
+        },
+        "hole": {
+          "x": 1,
+          "y": 3,
+          "width": 318,
+          "height": 46,
+          "radius": 0
+        }
+      },
+      {
+        "name": "box 320x48 border 1 radius 0; offset (0, -4) spread 4",
+        "box": {
+          "width": 320,
+          "height": 48,
+          "borderWidth": 1,
+          "radius": 0
+        },
+        "layer": {
+          "offsetX": 0,
+          "offsetY": -4,
+          "spread": 4
+        },
+        "clip": {
+          "x": 1,
+          "y": 1,
+          "width": 318,
+          "height": 46,
+          "radius": 0
+        },
+        "hole": {
+          "x": 5,
+          "y": 1,
+          "width": 310,
+          "height": 38,
+          "radius": 0
+        }
+      },
+      {
+        "name": "box 320x48 border 1 radius 0; offset (3, 3) spread -2",
+        "box": {
+          "width": 320,
+          "height": 48,
+          "borderWidth": 1,
+          "radius": 0
+        },
+        "layer": {
+          "offsetX": 3,
+          "offsetY": 3,
+          "spread": -2
+        },
+        "clip": {
+          "x": 1,
+          "y": 1,
+          "width": 318,
+          "height": 46,
+          "radius": 0
+        },
+        "hole": {
+          "x": 2,
+          "y": 2,
+          "width": 322,
+          "height": 50,
+          "radius": 0
+        }
+      },
+      {
+        "name": "box 320x48 border 1 radius 0; offset (0, 0) spread 30",
+        "box": {
+          "width": 320,
+          "height": 48,
+          "borderWidth": 1,
+          "radius": 0
+        },
+        "layer": {
+          "offsetX": 0,
+          "offsetY": 0,
+          "spread": 30
+        },
+        "clip": {
+          "x": 1,
+          "y": 1,
+          "width": 318,
+          "height": 46,
+          "radius": 0
+        },
+        "hole": {
+          "x": 31,
+          "y": 31,
+          "width": 258,
+          "height": 0,
+          "radius": 0
+        }
+      }
+    ],
+    "document": [
+      {
+        "name": "outer layer, no field",
+        "shadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 4,
+            "blur": 8,
+            "spread": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.2
+            }
+          }
+        ],
+        "valid": true
+      },
+      {
+        "name": "inner layer",
+        "shadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 0,
+            "spread": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.2
+            },
+            "inset": true
+          }
+        ],
+        "valid": true
+      },
+      {
+        "name": "mixed inner and outer",
+        "shadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 0,
+            "spread": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.2
+            },
+            "inset": true
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 8,
+            "blur": 16,
+            "spread": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.2
+            }
+          }
+        ],
+        "valid": true
+      },
+      {
+        "name": "inset false is not accepted: outer is the absence of the field",
+        "shadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 0,
+            "spread": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.2
+            },
+            "inset": false
+          }
+        ],
+        "valid": false
+      },
+      {
+        "name": "inset as a string is not accepted",
+        "shadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 0,
+            "spread": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.2
+            },
+            "inset": "true"
+          }
+        ],
+        "valid": false
+      },
+      {
+        "name": "five layers: above the bound",
+        "shadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 1,
+            "spread": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.2
+            },
+            "inset": true
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 1,
+            "blur": 1,
+            "spread": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.2
+            },
+            "inset": true
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 1,
+            "spread": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.2
+            },
+            "inset": true
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 3,
+            "blur": 1,
+            "spread": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.2
+            },
+            "inset": true
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 4,
+            "blur": 1,
+            "spread": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.2
+            },
+            "inset": true
+          }
+        ],
+        "valid": false
+      },
+      {
+        "name": "inner layer beyond the offset bound",
+        "shadow": [
+          {
+            "offsetX": 65,
+            "offsetY": 0,
+            "blur": 0,
+            "spread": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.2
+            },
+            "inset": true
+          }
+        ],
+        "valid": false
+      }
+    ],
+    "themeElevation": [
+      {
+        "name": "a theme elevation layer as before",
+        "layer": {
+          "offsetX": 0,
+          "offsetY": 2,
+          "blur": 4,
+          "spread": 0,
+          "color": "#000000",
+          "opacity": 0.2
+        },
+        "valid": true
+      },
+      {
+        "name": "a theme elevation layer with inset: the theme has no inner shadow",
+        "layer": {
+          "offsetX": 0,
+          "offsetY": 2,
+          "blur": 4,
+          "spread": 0,
+          "color": "#000000",
+          "opacity": 0.2,
+          "inset": true
+        },
+        "valid": false
+      }
+    ]
+  },
+  "textShadowCases": {
+    "css": [
+      {
+        "name": "one soft drop",
+        "layers": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 4,
+            "color": {
+              "value": "#000000"
+            }
+          }
+        ],
+        "css": "0 2px 4px #000000",
+        "bottomFirst": [
+          0
+        ]
+      },
+      {
+        "name": "pressed: light below, dark above",
+        "layers": [
+          {
+            "offsetX": 0,
+            "offsetY": 1,
+            "blur": 0,
+            "color": {
+              "value": "#ffffff"
+            }
+          },
+          {
+            "offsetX": 0,
+            "offsetY": -1,
+            "blur": 1,
+            "color": {
+              "value": "#000000"
+            }
+          }
+        ],
+        "css": "0 1px 0 #ffffff, 0 -1px 1px #000000",
+        "bottomFirst": [
+          1,
+          0
+        ]
+      },
+      {
+        "name": "glow: tight and wide, no offset",
+        "layers": [
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 8,
+            "color": {
+              "value": "#ff0000"
+            }
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 0,
+            "blur": 28,
+            "color": {
+              "value": "#ff0000"
+            }
+          }
+        ],
+        "css": "0 0 8px #ff0000, 0 0 28px #ff0000",
+        "bottomFirst": [
+          1,
+          0
+        ]
+      },
+      {
+        "name": "negative offsets",
+        "layers": [
+          {
+            "offsetX": -2,
+            "offsetY": -3,
+            "blur": 0,
+            "color": {
+              "value": "#0000ff"
+            }
+          }
+        ],
+        "css": "-2px -3px 0 #0000ff",
+        "bottomFirst": [
+          0
+        ]
+      },
+      {
+        "name": "bounds: offset 64, blur 128",
+        "layers": [
+          {
+            "offsetX": 64,
+            "offsetY": -64,
+            "blur": 128,
+            "color": {
+              "value": "#000000"
+            }
+          }
+        ],
+        "css": "64px -64px 128px #000000",
+        "bottomFirst": [
+          0
+        ]
+      }
+    ],
+    "document": [
+      {
+        "name": "one layer on Text",
+        "type": "Text",
+        "textShadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 4,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.3
+            }
+          }
+        ],
+        "structure": true,
+        "published": true
+      },
+      {
+        "name": "two layers on Text",
+        "type": "Text",
+        "textShadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 4,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.3
+            }
+          },
+          {
+            "offsetX": 0,
+            "offsetY": -1,
+            "blur": 0,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.3
+            }
+          }
+        ],
+        "structure": true,
+        "published": true
+      },
+      {
+        "name": "with a gradient on the glyphs",
+        "type": "Text",
+        "textShadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 4,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.3
+            }
+          }
+        ],
+        "structure": true,
+        "published": true,
+        "textGradient": "brandBackdrop"
+      },
+      {
+        "name": "empty list",
+        "type": "Text",
+        "textShadow": [],
+        "structure": false,
+        "published": false
+      },
+      {
+        "name": "three layers: above the bound",
+        "type": "Text",
+        "textShadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 4,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.3
+            }
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 4,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.3
+            }
+          },
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 4,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.3
+            }
+          }
+        ],
+        "structure": false,
+        "published": false
+      },
+      {
+        "name": "spread is not a field of a text shadow",
+        "type": "Text",
+        "textShadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 4,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.3
+            },
+            "spread": 2
+          }
+        ],
+        "structure": false,
+        "published": false
+      },
+      {
+        "name": "inset is not a field of a text shadow",
+        "type": "Text",
+        "textShadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 4,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.3
+            },
+            "inset": true
+          }
+        ],
+        "structure": false,
+        "published": false
+      },
+      {
+        "name": "blur beyond the bound",
+        "type": "Text",
+        "textShadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 129,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.3
+            }
+          }
+        ],
+        "structure": false,
+        "published": false
+      },
+      {
+        "name": "on a Container: structurally valid, not published (text_shadow_not_read)",
+        "type": "Container",
+        "textShadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 4,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.3
+            }
+          }
+        ],
+        "structure": true,
+        "published": false,
+        "code": "text_shadow_not_read"
+      },
+      {
+        "name": "on a Button: not published (text_shadow_not_read)",
+        "type": "Button",
+        "textShadow": [
+          {
+            "offsetX": 0,
+            "offsetY": 2,
+            "blur": 4,
+            "color": {
+              "token": "onSurface",
+              "opacity": 0.3
+            }
+          }
+        ],
+        "structure": true,
+        "published": false,
+        "code": "text_shadow_not_read"
+      }
+    ]
+  }
+}

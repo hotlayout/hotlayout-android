@@ -169,5 +169,16 @@
     { "name": "no change yet: the value shown is the value measured", "from": 40, "changes": [{"at": 100, "to": 60}], "t": 50, "digits": 0, "expected": {"layout": 40, "shown": 40, "held": false} },
     { "name": "the same value: nothing runs", "from": 40, "changes": [{"at": 0, "to": 40}], "t": 175, "digits": 0, "expected": {"layout": 40, "shown": 40, "held": false} },
     { "name": "a scale (no step): its fill runs, the place is that of the final value", "from": 2, "changes": [{"at": 0, "to": 7}], "t": 350, "expected": {"layout": 7, "shown": 6.375, "held": true} }
+  ],
+  "figureNote": "Rules: x-valueLayout.paint.digits. «figureCases» — a node «type» with «props»: «expected.tabular» is whether ALL its text (a Text; the label of a ProgressBar) is written in figures of equal width (tabular figures) — at rest, on the frames of a motion and in the transparent final text that holds the place. Only the literal true of animateIn or animateChanges asks for it.",
+  "figureCases": [
+    { "name": "a text that appears (animateIn): figures of equal width, at rest too", "type": "Text", "props": {"animateIn": true}, "expected": {"tabular": true} },
+    { "name": "a text that counts its changes (animateChanges): figures of equal width, at rest too", "type": "Text", "props": {"animateChanges": true}, "expected": {"tabular": true} },
+    { "name": "a text with both fields: figures of equal width", "type": "Text", "props": {"animateIn": true, "animateChanges": true}, "expected": {"tabular": true} },
+    { "name": "a text with neither field: the figures of its font", "type": "Text", "props": {}, "expected": {"tabular": false} },
+    { "name": "a text with both fields false: the figures of its font", "type": "Text", "props": {"animateIn": false, "animateChanges": false}, "expected": {"tabular": false} },
+    { "name": "a field that is not the literal true does not ask for them", "type": "Text", "props": {"animateIn": "true"}, "expected": {"tabular": false} },
+    { "name": "the label of a bar that counts its changes: figures of equal width", "type": "ProgressBar", "props": {"animateChanges": true}, "expected": {"tabular": true} },
+    { "name": "the label of a bar with neither field: the figures of its font", "type": "ProgressBar", "props": {}, "expected": {"tabular": false} }
   ]
 }

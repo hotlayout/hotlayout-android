@@ -10,6 +10,22 @@ While the version is `0.x`, a minor release may contain breaking changes; they a
 The library version is independent of the contract versions. Which documents and themes a release reads
 is stated in every entry.
 
+## [0.6.0] - 2026-11-11
+
+Reads document contract **9.42.0** and theme contract **4.1.0**. Performed from this range: 9.35.0 (display typography), 9.36.0 with theme 4.1.0 (radial gradient), 9.39.0 (inner shadow and text shadow) and the figures of equal width of a text that runs its numbers. Not performed yet, so a document that uses them reads and draws as it did before: 9.37.0 (the `Chart` widget is an unknown widget that draws its children, which it has none of), 9.38.0 (default transitions between screens), 9.40.0 (spin and sway of a node, its appearance), 9.41.0 (the host actions `copy` and `share`, more than four grid columns) and 9.42.0 (a carousel that advances by time).
+
+### Added
+
+- **Display typography (9.35.0).** A font size in an override of a node (`style.typography`, the style of a part of a text, the label of a ring) goes up to 400 (the sizes of the theme tokens keep their bound of 96). `letterSpacingEm`, the tracking as a share of the font size, replaces the tracking of the token and wins over `letterSpacing` when a document names both. The reader draws with the sizes of the document as they are and does not multiply them by a system font scale, which is the scale 1 of the rule `s <= 1 ? f * s : max(f, min(f, 96) * s)`; that rule, the tracking and the line block are covered by the shared table.
+- **Radial gradient (9.36.0, theme 4.1.0).** An own gradient of a node (`style.background`, `style.textGradient`) and a gradient token of the theme may be a circle: `{ shape: 'radial', center, radius, stops }`, the radius a share of the distance from the centre to the farthest corner, the stops shares of the radius, the first colour inside and the last one outside. The centre is physical and is not mirrored in right-to-left text. A form that does not resolve (an unknown shape, an angle on a circle, a centre on a line) is no gradient; a number outside its bounds is brought to them. A radial token of a theme is read; on a scale it lends its stops along the fill.
+- **Inner shadow (9.39.0).** A layer of an own shadow with `inset: true` is painted inside the padding box, over the background and under the content and the border, blurred like the outer layers and cut to the box inside the border; the offset is physical, a positive spread makes the shadow thicker. One list mixes outer and inner layers; the first inner layer lies on top. It works on a box, a button, a badge, a swipe-to-confirm track and the root of a screen. A theme elevation has no inner layer.
+- **Text shadow (9.39.0).** `style.textShadow`, one or two layers of `offsetX`, `offsetY`, `blur` and `color` on a `Text`: a copy of the whole text (parts, line and list marker included) in the colour of each layer under it, the first layer on top. It takes no room and is not part of what assistive technology reads. Under a gradient on the glyphs it lies under the gradient, so an opaque gradient hides it as a solid colour would.
+
+### Changed
+
+- **Figures of equal width.** A `Text` with `animateIn` or `animateChanges` (the literal `true`) and the label of a `ProgressBar` with them are written in figures of equal width always: at rest, between values and in the invisible text that holds the place, so a number with the same count of digits is never wider than the final one and does not wrap. The label of a bar with neither field keeps the figures of its font (it used to be set in equal figures always); the label of a ring stays in equal figures.
+- The screen fixtures and the shared case tables of the performed minors are brought up to 9.42.0. The tables of the minors that are not performed yet are named as not run (`Chart`, screen transitions, node turns), and the action, carousel and adaptive tables stay as they were (the host actions `copy` and `share`, the carousel that advances by time, six grid columns).
+
 ## [0.5.0] - 2026-11-06
 
 Reads document contract **9.34.0**.

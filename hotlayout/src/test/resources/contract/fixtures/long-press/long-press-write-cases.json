@@ -86,7 +86,7 @@
           "direction": "column",
           "gap": "none",
           "action": {
-            "type": "share"
+            "type": "invite"
           },
           "longPress": {
             "type": "toggleValue",
@@ -171,7 +171,7 @@
             }
           },
           "longPress": {
-            "type": "share"
+            "type": "invite"
           },
           "longPressLabel": {
             "kind": "literal",
@@ -404,7 +404,7 @@
               }
             },
             "longPress": {
-              "type": "share"
+              "type": "invite"
             },
             "longPressLabel": {
               "kind": "literal",
@@ -679,7 +679,7 @@
             "direction": "column",
             "gap": "none",
             "action": {
-              "type": "share"
+              "type": "invite"
             },
             "longPress": {
               "type": "toggleValue",
@@ -755,7 +755,7 @@
             "direction": "column",
             "gap": "none",
             "action": {
-              "type": "share"
+              "type": "invite"
             },
             "longPress": {
               "type": "toggleValue",
@@ -805,7 +805,7 @@
       ],
       "log": [],
       "handed": [
-        "share"
+        "invite"
       ],
       "session": {},
       "shown": [],
@@ -823,7 +823,7 @@
             "direction": "column",
             "gap": "none",
             "action": {
-              "type": "share"
+              "type": "invite"
             },
             "longPress": {
               "type": "toggleValue",

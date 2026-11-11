@@ -209,7 +209,7 @@
       "steps": [
         { "do": "navigate", "to": "details", "instances": [{ "item": "item", "fields": { "id": "bottle" } }], "expect": { "stack": ["list", "details"], "record": { "item.id": "bottle" } } },
         { "do": "navigate", "to": "done", "instances": [], "expect": { "stack": ["list", "details", "done"], "record": { "item.id": "bottle" } } },
-        { "do": "host", "type": "share", "instances": [], "expect": { "stack": ["list", "details", "done"], "record": { "item.id": "bottle" }, "hostRecord": { "item.id": "bottle" } } },
+        { "do": "host", "type": "invite", "instances": [], "expect": { "stack": ["list", "details", "done"], "record": { "item.id": "bottle" }, "hostRecord": { "item.id": "bottle" } } },
         { "do": "back", "instances": [], "expect": { "stack": ["list", "details"], "record": { "item.id": "bottle" } } }
       ]
     },

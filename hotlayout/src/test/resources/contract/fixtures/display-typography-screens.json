@@ -1,0 +1,140 @@
+{
+  "schemaVersion": "9.42.0",
+  "documentId": "display-typography",
+  "name": "Display typography",
+  "initialScreenId": "sale",
+  "screens": [
+    {
+      "screenId": "sale",
+      "name": "Sale",
+      "root": {
+        "id": "display-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "sale-eyebrow",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "WEEKEND ONLY"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": {
+                "token": "bodyS",
+                "fontWeight": 700,
+                "letterSpacingEm": 0.2
+              },
+              "color": "muted"
+            }
+          },
+          {
+            "id": "sale-banner",
+            "type": "Container",
+            "props": {
+              "direction": "column",
+              "gap": "none"
+            },
+            "style": {
+              "padding": "md",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "primary"
+              }
+            },
+            "children": [
+              {
+                "id": "sale-figure",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "50"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": {
+                    "token": "displayL",
+                    "fontSize": 240,
+                    "fontWeight": 800,
+                    "lineHeight": 1,
+                    "letterSpacingEm": -0.06
+                  },
+                  "color": "onPrimary"
+                }
+              },
+              {
+                "id": "sale-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Sale"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": {
+                    "token": "displayL",
+                    "fontSize": 128,
+                    "fontWeight": 700,
+                    "lineHeight": 1,
+                    "letterSpacingEm": -0.02
+                  },
+                  "color": "onPrimary"
+                }
+              }
+            ]
+          },
+          {
+            "id": "sale-note",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Percent off every plan until Sunday midnight."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "sale/sale-eyebrow/content": "ЛИШЕ У ВИХІДНІ",
+        "sale/sale-figure/content": "50",
+        "sale/sale-title/content": "Акція",
+        "sale/sale-note/content": "Відсотків на кожен тариф до півночі неділі."
+      }
+    }
+  }
+}

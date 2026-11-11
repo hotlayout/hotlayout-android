@@ -65,13 +65,13 @@
     },
     {
       "name": "a pressable card in a pressable card",
-      "children": [{ "id": "outer", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Outer" } } }, { "id": "inner", "type": "Container", "props": { "action": { "type": "share" } }, "children": [{ "id": "t2", "type": "Text", "props": { "content": { "kind": "literal", "value": "Inner" } } }] }] }],
+      "children": [{ "id": "outer", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Outer" } } }, { "id": "inner", "type": "Container", "props": { "action": { "type": "invite" } }, "children": [{ "id": "t2", "type": "Text", "props": { "content": { "kind": "literal", "value": "Inner" } } }] }] }],
       "schema": true,
       "codes": ["pressable_inside_pressable"]
     },
     {
       "name": "a pressable row deep inside a pressable column",
-      "children": [{ "id": "outer", "type": "Column", "props": { "action": { "type": "submit" } }, "children": [{ "id": "mid", "type": "Container", "props": {}, "children": [{ "id": "inner", "type": "Row", "props": { "action": { "type": "share" } }, "children": [{ "id": "t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Inner" } } }] }] }, { "id": "t0", "type": "Text", "props": { "content": { "kind": "literal", "value": "Outer" } } }] }],
+      "children": [{ "id": "outer", "type": "Column", "props": { "action": { "type": "submit" } }, "children": [{ "id": "mid", "type": "Container", "props": {}, "children": [{ "id": "inner", "type": "Row", "props": { "action": { "type": "invite" } }, "children": [{ "id": "t", "type": "Text", "props": { "content": { "kind": "literal", "value": "Inner" } } }] }] }, { "id": "t0", "type": "Text", "props": { "content": { "kind": "literal", "value": "Outer" } } }] }],
       "schema": true,
       "codes": ["pressable_inside_pressable"]
     },
@@ -89,7 +89,7 @@
     },
     {
       "name": "a pressable card with only a button inside: the button is a control of its own, the card has no name",
-      "children": [{ "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "buy", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "share" } } }] }],
+      "children": [{ "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "buy", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "invite" } } }] }],
       "schema": true,
       "codes": ["accessible_name_required"]
     },
@@ -180,7 +180,7 @@
     },
     {
       "name": "a button inside the card: the button, the card gets nothing",
-      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }, { "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "share" } } }] },
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }, { "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "invite" } } }] },
       "press": "start", "receiver": "start", "runs": "start"
     },
     {
@@ -190,17 +190,17 @@
     },
     {
       "name": "a disabled button inside the card: nothing happens, the card gets nothing",
-      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }, { "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "share" }, "disabledIf": { "path": "user.isPremium", "op": "isFalse" } } }] },
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }, { "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "invite" }, "disabledIf": { "path": "user.isPremium", "op": "isFalse" } } }] },
       "press": "start", "receiver": "start", "runs": null, "disabled": ["start"]
     },
     {
       "name": "an icon button inside the card: the icon button",
-      "tree": { "id": "card", "type": "Row", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }, { "id": "more", "type": "IconButton", "props": { "icon": "info", "label": { "kind": "literal", "value": "More" }, "action": { "type": "share" } } }] },
+      "tree": { "id": "card", "type": "Row", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }, { "id": "more", "type": "IconButton", "props": { "icon": "info", "label": { "kind": "literal", "value": "More" }, "action": { "type": "invite" } } }] },
       "press": "more", "receiver": "more", "runs": "more"
     },
     {
       "name": "a list row with an action inside the card: the row",
-      "tree": { "id": "card", "type": "Column", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Settings" } } }, { "id": "tile", "type": "ListTile", "props": { "title": { "kind": "literal", "value": "Profile" }, "action": { "type": "share" } } }] },
+      "tree": { "id": "card", "type": "Column", "props": { "action": { "type": "submit" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Settings" } } }, { "id": "tile", "type": "ListTile", "props": { "title": { "kind": "literal", "value": "Profile" }, "action": { "type": "invite" } } }] },
       "press": "tile", "receiver": "tile", "runs": "tile"
     },
     {
@@ -250,7 +250,7 @@
     },
     {
       "name": "a pressable card inside a pressable card (not published): the innermost",
-      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "inner", "type": "Container", "props": { "action": { "type": "share" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }] }] },
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "inner", "type": "Container", "props": { "action": { "type": "invite" } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "literal", "value": "Quest" } } }] }] },
       "press": "title", "receiver": "inner", "runs": "inner"
     },
     {
@@ -261,7 +261,7 @@
     },
     {
       "name": "a button in the template card: the button carries the record of ITS row, the card gets nothing",
-      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "navigate", "params": { "screenId": "details" } } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "binding", "path": "item.name", "fallback": "Item" } } }, { "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "share" } } }] },
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "navigate", "params": { "screenId": "details" } } }, "children": [{ "id": "title", "type": "Text", "props": { "content": { "kind": "binding", "path": "item.name", "fallback": "Item" } } }, { "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "invite" } } }] },
       "instances": 3, "instance": 2,
       "press": "start", "receiver": "start", "runs": "start"
     }
@@ -324,7 +324,7 @@
     },
     {
       "name": "only a button inside: the text of a control of its own does not name the card",
-      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "share" } } }] },
+      "tree": { "id": "card", "type": "Container", "props": { "action": { "type": "submit" } }, "children": [{ "id": "start", "type": "Button", "props": { "label": { "kind": "literal", "value": "Start" }, "action": { "type": "invite" } } }] },
       "hasName": false, "startsWith": null, "heard": []
     },
     {

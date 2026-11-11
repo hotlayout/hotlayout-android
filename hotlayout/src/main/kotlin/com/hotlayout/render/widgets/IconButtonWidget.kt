@@ -44,7 +44,8 @@ internal fun IconButtonWidget(call: WidgetCall) {
     val size = ButtonGeometry.size(node.props["size"]?.string, theme)
     val typography = surface.typography ?: theme.typography[size.typography] ?: context.inherited.typography
     val padding = surface.padding ?: Sides(size.paddingBlock, size.paddingBlock, size.paddingBlock, size.paddingBlock)
-    val shape = (surface.corners ?: Corners.all(theme.radius["pill"] ?: 72.0)).shape()
+    val corners = surface.corners ?: Corners.all(theme.radius["pill"] ?: 72.0)
+    val shape = corners.shape()
     val own = GlyphGeometry.own(node.props["glyphSize"]?.number)
     val glyph = own ?: typography.fontSize
     val content = own ?: typography.lineBox
@@ -73,7 +74,7 @@ internal fun IconButtonWidget(call: WidgetCall) {
         }
         .pressInput(true, false, { if (!disabled) context.press(action, node) }, {}) { pressed = it }
         .pressPose(PressFeedbackRules.kind(node, disabled), pressed)
-        .roleBox(surface, shape, padding, context.rightToLeft)
+        .roleBox(surface, corners, padding, context.rightToLeft)
     Box(modifier, contentAlignment = Alignment.Center) {
         IconGlyph(icon.name, drawn, boxWidth, boxHeight, surface.foreground.color, context.rightToLeft)
     }

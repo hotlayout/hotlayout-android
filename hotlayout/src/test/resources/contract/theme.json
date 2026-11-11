@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://hotlayout.com/schema/theme.json",
   "title": "ThemeContract",
-  "x-themeContractVersion": "4.0.1",
+  "x-themeContractVersion": "4.1.0",
   "x-generatedFrom": "src/entities/theme — generated, do not edit by hand",
   "x-compatibility": {
     "policy": {
@@ -81,6 +81,36 @@
     "formula": "for a box w×h and direction signs (sx, sy): end = (0.5 + sx·h²/(w²+h²), 0.5 + sy·w²/(w²+h²)), start is symmetric about the center; in Flutter: Alignment(2x−1, 2y−1)",
     "direction": "physical: not mirrored in right-to-left scripts",
     "equalStops": "ordered"
+  },
+  "x-radialGradient": {
+    "on": [
+      "CustomGradient",
+      "ThemeGradient"
+    ],
+    "shape": {
+      "field": "shape",
+      "value": "radial",
+      "absent": "linear: { angle, stops } exactly as before 9.36.0"
+    },
+    "coordinates": "center.x and center.y in the normalized box: (0,0) top-left, (1,1) bottom-right, y grows downwards; 0…1 inclusive",
+    "circle": "always a circle, never an ellipse, in a box of any proportions",
+    "radius": {
+      "min": 0.05,
+      "max": 2,
+      "unit": "share of the distance from the center to the FARTHEST corner of the box; radius 1 with the center in the middle exactly covers the box",
+      "pixels": "R = radius · max over the four corners of the distance from the center to that corner"
+    },
+    "stops": "position is a share of the radius R: 0 — the center, 1 — the circle of radius R",
+    "beyondStops": "clamp: before the first stop — the colour of the first, beyond the last — the colour of the last (CSS does it itself, Flutter TileMode.clamp)",
+    "equalStops": "ordered",
+    "stopOrder": "non-descending, as for a linear gradient; unordered stops — not drawn (unorderedGradient)",
+    "direction": "physical: not mirrored in right-to-left scripts",
+    "css": "radial-gradient(circle farthest-corner at X% Y%, c1 (p1·radius·100)%, …), X = center.x·100, Y = center.y·100",
+    "flutter": "RadialGradient(center: Alignment(2x−1, 2y−1), radius: R / shortestSide, tileMode: TileMode.clamp)",
+    "native": "iOS drawRadialGradient and Android RadialGradient: a circle at (x·w, y·h) of radius R in pixels, extended beyond both ends",
+    "where": "every place of a gradient token or an own gradient: style.background, style.textGradient, a gradient token of the theme. Progress.gradient takes an own LINEAR gradient only (its fill runs along the scale); a radial theme token there is an open question of the contract",
+    "olderReader": "A reader older than 9.36.0 does not draw a radial own gradient: the background is omitted and the rest of the style is drawn, text in style.textGradient takes its solid colour. A radial token of a theme 4.1.0 is an entry of the wrong shape for a 4.0 reader: it is dropped (theme report), a core token takes the built-in value of the same brightness, an own token is unknown, so a reference to it is not drawn",
+    "cases": "contract/fixtures/radial-gradient/radial-gradient-cases.json"
   },
   "x-schema": {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
@@ -269,26 +299,7 @@
         ],
         "additionalProperties": false
       },
-      "ThemeGradientStop": {
-        "type": "object",
-        "properties": {
-          "color": {
-            "type": "string",
-            "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
-          },
-          "position": {
-            "type": "number",
-            "minimum": 0,
-            "maximum": 1
-          }
-        },
-        "required": [
-          "color",
-          "position"
-        ],
-        "additionalProperties": false
-      },
-      "ThemeGradient": {
+      "ThemeLinearGradient": {
         "type": "object",
         "properties": {
           "angle": {
@@ -318,6 +329,87 @@
           "stops"
         ],
         "additionalProperties": false
+      },
+      "ThemeGradientStop": {
+        "type": "object",
+        "properties": {
+          "color": {
+            "type": "string",
+            "pattern": "^#[0-9a-f]{6}(?:[0-9a-f]{2})?$"
+          },
+          "position": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "color",
+          "position"
+        ],
+        "additionalProperties": false
+      },
+      "ThemeRadialGradient": {
+        "type": "object",
+        "properties": {
+          "shape": {
+            "type": "string",
+            "const": "radial"
+          },
+          "center": {
+            "$ref": "#/$defs/RadialGradientCenter"
+          },
+          "radius": {
+            "type": "number",
+            "minimum": 0.05,
+            "maximum": 2
+          },
+          "stops": {
+            "minItems": 2,
+            "maxItems": 8,
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/ThemeGradientStop"
+            }
+          }
+        },
+        "required": [
+          "shape",
+          "center",
+          "radius",
+          "stops"
+        ],
+        "additionalProperties": false
+      },
+      "RadialGradientCenter": {
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "y": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+          }
+        },
+        "required": [
+          "x",
+          "y"
+        ],
+        "additionalProperties": false
+      },
+      "ThemeGradient": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/ThemeLinearGradient"
+          },
+          {
+            "$ref": "#/$defs/ThemeRadialGradient"
+          }
+        ]
       },
       "Theme": {
         "type": "object",
@@ -713,7 +805,7 @@
     }
   },
   "contract": {
-    "themeContractVersion": "4.0.1",
+    "themeContractVersion": "4.1.0",
     "defaultThemeId": "light",
     "themes": {
       "light": {

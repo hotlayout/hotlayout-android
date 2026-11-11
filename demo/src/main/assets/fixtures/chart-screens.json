@@ -1,0 +1,312 @@
+{
+  "schemaVersion": "9.42.0",
+  "documentId": "chart",
+  "name": "Chart",
+  "initialScreenId": "charts",
+  "screens": [
+    {
+      "screenId": "charts",
+      "name": "Charts",
+      "root": {
+        "id": "chart-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "md",
+          "background": {
+            "kind": "color",
+            "color": {
+              "token": "muted",
+              "opacity": 0.08
+            }
+          }
+        },
+        "children": [
+          {
+            "id": "week-card",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "week-card-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Active minutes"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "week-bars",
+                "type": "Chart",
+                "props": {
+                  "variant": "bars",
+                  "data": {
+                    "kind": "literal",
+                    "points": [
+                      {
+                        "value": 30,
+                        "label": "Mon"
+                      },
+                      {
+                        "value": 45,
+                        "label": "Tue"
+                      },
+                      {
+                        "value": 20,
+                        "label": "Wed"
+                      },
+                      {
+                        "value": 60,
+                        "label": "Thu"
+                      },
+                      {
+                        "value": 35,
+                        "label": "Fri"
+                      },
+                      {
+                        "value": 50,
+                        "label": "Sat"
+                      },
+                      {
+                        "value": 40,
+                        "label": "Sun"
+                      }
+                    ]
+                  },
+                  "color": "primary",
+                  "alt": "Active minutes this week",
+                  "labels": true,
+                  "highlight": "last"
+                },
+                "style": {
+                  "height": 140
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            }
+          },
+          {
+            "id": "spend-card",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "spend-card-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Spending"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "spend-line",
+                "type": "Chart",
+                "props": {
+                  "variant": "line",
+                  "data": {
+                    "kind": "collection",
+                    "source": "spending",
+                    "item": "spend",
+                    "valueField": "spend.amount",
+                    "labelField": "spend.day"
+                  },
+                  "color": "accent",
+                  "alt": "Spending by day",
+                  "curve": "smooth",
+                  "area": true,
+                  "labels": true,
+                  "highlight": "max",
+                  "highlightColor": "primary",
+                  "lineWidth": 3
+                },
+                "style": {
+                  "height": 140
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            }
+          },
+          {
+            "id": "flat-card",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "flat-card-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Steps"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "flat-line",
+                "type": "Chart",
+                "props": {
+                  "variant": "line",
+                  "data": {
+                    "kind": "literal",
+                    "points": [
+                      {
+                        "value": 4
+                      },
+                      {
+                        "value": 4
+                      },
+                      {
+                        "value": 0
+                      },
+                      {
+                        "value": 7
+                      },
+                      {
+                        "value": 2
+                      }
+                    ]
+                  },
+                  "color": "primary",
+                  "alt": "Steps"
+                },
+                "style": {
+                  "height": 80
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            }
+          },
+          {
+            "id": "spend-bars-card",
+            "type": "Column",
+            "props": {
+              "gap": "sm",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "spend-bars-card-title",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "Spending by day"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                },
+                "style": {
+                  "typography": "titleS"
+                }
+              },
+              {
+                "id": "spend-bars",
+                "type": "Chart",
+                "props": {
+                  "variant": "bars",
+                  "data": {
+                    "kind": "collection",
+                    "source": "spending",
+                    "item": "spend",
+                    "valueField": "spend.amount"
+                  },
+                  "color": {
+                    "token": "primary",
+                    "opacity": 0.4
+                  },
+                  "alt": "Spending by day",
+                  "highlight": "max",
+                  "highlightColor": "success",
+                  "barRadius": "pill",
+                  "barGap": "sm",
+                  "animateIn": true
+                },
+                "style": {
+                  "height": 96
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "lg",
+              "background": {
+                "kind": "color",
+                "color": "surface"
+              }
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "charts/week-card-title/content": "Активні хвилини",
+        "charts/week-bars/alt": "Активні хвилини цього тижня",
+        "charts/spend-card-title/content": "Витрати",
+        "charts/spend-line/alt": "Витрати за днями",
+        "charts/flat-card-title/content": "Кроки",
+        "charts/flat-line/alt": "Кроки",
+        "charts/spend-bars-card-title/content": "Витрати за днями",
+        "charts/spend-bars/alt": "Витрати за днями"
+      }
+    }
+  }
+}

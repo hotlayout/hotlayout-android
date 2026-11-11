@@ -1456,7 +1456,10 @@
                   },
                   "variant": "ghost",
                   "action": {
-                    "type": "share"
+                    "type": "share",
+                    "params": {
+                      "text": "Join me in the app"
+                    }
                   },
                   "fullWidth": false
                 },

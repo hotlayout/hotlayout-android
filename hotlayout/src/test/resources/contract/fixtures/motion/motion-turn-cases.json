@@ -1,0 +1,943 @@
+{
+  "about": "Motion 2: spin, sway and the appearance of a node (schema 9.40.0). Numbers are computed independently of the reference implementation. Angles are degrees, clockwise positive; the appearance shift is logical pixels down.",
+  "turnNote": "spin: rotate = s * 360 * ((t - delay) mod duration) / duration, s = +1 clockwise; sway: rotate = angle * sin(theta), mirrored in right-to-left; pivot — the point of the box the turn is about; rest — rotate 0.",
+  "turnCases": [
+    {
+      "name": "spin clockwise at the start",
+      "motion": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000
+      },
+      "t": 0,
+      "expected": {
+        "rotate": 0,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "spin clockwise, an eighth of the cycle",
+      "motion": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000
+      },
+      "t": 1000,
+      "expected": {
+        "rotate": 45,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "spin clockwise, a quarter",
+      "motion": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000
+      },
+      "t": 2000,
+      "expected": {
+        "rotate": 90,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "spin clockwise, a half",
+      "motion": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000
+      },
+      "t": 4000,
+      "expected": {
+        "rotate": 180,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "spin clockwise, three quarters",
+      "motion": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000
+      },
+      "t": 6000,
+      "expected": {
+        "rotate": 270,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "spin clockwise, a full cycle is the start again",
+      "motion": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000
+      },
+      "t": 8000,
+      "expected": {
+        "rotate": 0,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "spin clockwise, the second cycle",
+      "motion": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000
+      },
+      "t": 9000,
+      "expected": {
+        "rotate": 45,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "spin counterclockwise, a quarter",
+      "motion": {
+        "kind": "spin",
+        "direction": "counterclockwise",
+        "duration": 8000
+      },
+      "t": 2000,
+      "expected": {
+        "rotate": -90,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "spin counterclockwise, three quarters",
+      "motion": {
+        "kind": "spin",
+        "direction": "counterclockwise",
+        "duration": 8000
+      },
+      "t": 6000,
+      "expected": {
+        "rotate": -270,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "spin is not mirrored in right-to-left",
+      "motion": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000
+      },
+      "t": 2000,
+      "direction": "rtl",
+      "expected": {
+        "rotate": 90,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "spin during the delay stands at rest",
+      "motion": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000,
+        "delay": 500
+      },
+      "t": 300,
+      "expected": {
+        "rotate": 0,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "spin after the delay",
+      "motion": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000,
+        "delay": 500
+      },
+      "t": 2500,
+      "expected": {
+        "rotate": 90,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "spin under reduce motion",
+      "motion": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000
+      },
+      "t": 2000,
+      "reducedMotion": true,
+      "expected": {
+        "rotate": 0,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "sway from the top at the start",
+      "motion": {
+        "kind": "sway",
+        "angle": 12,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "t": 0,
+      "expected": {
+        "rotate": 0,
+        "pivot": "top"
+      }
+    },
+    {
+      "name": "sway from the top, an eighth",
+      "motion": {
+        "kind": "sway",
+        "angle": 12,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "t": 250,
+      "expected": {
+        "rotate": 8.485281374,
+        "pivot": "top"
+      }
+    },
+    {
+      "name": "sway from the top, a quarter — the full angle clockwise",
+      "motion": {
+        "kind": "sway",
+        "angle": 12,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "t": 500,
+      "expected": {
+        "rotate": 12,
+        "pivot": "top"
+      }
+    },
+    {
+      "name": "sway from the top, a half — back at rest",
+      "motion": {
+        "kind": "sway",
+        "angle": 12,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "t": 1000,
+      "expected": {
+        "rotate": 0,
+        "pivot": "top"
+      }
+    },
+    {
+      "name": "sway from the top, three quarters — the full angle counterclockwise",
+      "motion": {
+        "kind": "sway",
+        "angle": 12,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "t": 1500,
+      "expected": {
+        "rotate": -12,
+        "pivot": "top"
+      }
+    },
+    {
+      "name": "sway is mirrored in right-to-left",
+      "motion": {
+        "kind": "sway",
+        "angle": 12,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "t": 500,
+      "direction": "rtl",
+      "expected": {
+        "rotate": -12,
+        "pivot": "top"
+      }
+    },
+    {
+      "name": "sway about the centre, a quarter",
+      "motion": {
+        "kind": "sway",
+        "angle": 30,
+        "pivot": "center",
+        "duration": 4000
+      },
+      "t": 1000,
+      "expected": {
+        "rotate": 30,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "sway about the centre, a sixth",
+      "motion": {
+        "kind": "sway",
+        "angle": 30,
+        "pivot": "center",
+        "duration": 4000
+      },
+      "t": 666.6666666666666,
+      "expected": {
+        "rotate": 25.980762114,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "sway from the bottom during the delay",
+      "motion": {
+        "kind": "sway",
+        "angle": 8,
+        "pivot": "bottom",
+        "duration": 1600,
+        "delay": 400
+      },
+      "t": 200,
+      "expected": {
+        "rotate": 0,
+        "pivot": "center"
+      }
+    },
+    {
+      "name": "sway from the bottom after the delay, a quarter",
+      "motion": {
+        "kind": "sway",
+        "angle": 8,
+        "pivot": "bottom",
+        "duration": 1600,
+        "delay": 400
+      },
+      "t": 800,
+      "expected": {
+        "rotate": 8,
+        "pivot": "bottom"
+      }
+    },
+    {
+      "name": "sway under reduce motion",
+      "motion": {
+        "kind": "sway",
+        "angle": 12,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "t": 500,
+      "reducedMotion": true,
+      "expected": {
+        "rotate": 0,
+        "pivot": "center"
+      }
+    }
+  ],
+  "appearNote": "p = clamp((t - delay) / duration, 0, 1); e = cubic-bezier(0, 0, 0.2, 1) at p; opacity = e; rise: y = distance * (1 - e).",
+  "appearCases": [
+    {
+      "name": "fade at the show",
+      "appear": {
+        "kind": "fade",
+        "duration": 400
+      },
+      "t": 0,
+      "expected": {
+        "y": 0,
+        "opacity": 0
+      }
+    },
+    {
+      "name": "fade, a quarter of the time",
+      "appear": {
+        "kind": "fade",
+        "duration": 400
+      },
+      "t": 100,
+      "expected": {
+        "y": 0,
+        "opacity": 0.577572928
+      }
+    },
+    {
+      "name": "fade, half the time",
+      "appear": {
+        "kind": "fade",
+        "duration": 400
+      },
+      "t": 200,
+      "expected": {
+        "y": 0,
+        "opacity": 0.839245058
+      }
+    },
+    {
+      "name": "fade, three quarters",
+      "appear": {
+        "kind": "fade",
+        "duration": 400
+      },
+      "t": 300,
+      "expected": {
+        "y": 0,
+        "opacity": 0.964216366
+      }
+    },
+    {
+      "name": "fade at the end",
+      "appear": {
+        "kind": "fade",
+        "duration": 400
+      },
+      "t": 400,
+      "expected": {
+        "y": 0,
+        "opacity": 1
+      }
+    },
+    {
+      "name": "fade long after the end",
+      "appear": {
+        "kind": "fade",
+        "duration": 400
+      },
+      "t": 5000,
+      "expected": {
+        "y": 0,
+        "opacity": 1
+      }
+    },
+    {
+      "name": "rise during the delay — the start pose",
+      "appear": {
+        "kind": "rise",
+        "distance": 16,
+        "duration": 400,
+        "delay": 300
+      },
+      "t": 100,
+      "expected": {
+        "y": 16,
+        "opacity": 0
+      }
+    },
+    {
+      "name": "rise at the end of the delay",
+      "appear": {
+        "kind": "rise",
+        "distance": 16,
+        "duration": 400,
+        "delay": 300
+      },
+      "t": 300,
+      "expected": {
+        "y": 16,
+        "opacity": 0
+      }
+    },
+    {
+      "name": "rise, half the time after the delay",
+      "appear": {
+        "kind": "rise",
+        "distance": 16,
+        "duration": 400,
+        "delay": 300
+      },
+      "t": 500,
+      "expected": {
+        "y": 2.572079077,
+        "opacity": 0.839245058
+      }
+    },
+    {
+      "name": "rise at the end",
+      "appear": {
+        "kind": "rise",
+        "distance": 16,
+        "duration": 400,
+        "delay": 300
+      },
+      "t": 700,
+      "expected": {
+        "y": 0,
+        "opacity": 1
+      }
+    },
+    {
+      "name": "rise from 48 px, a tenth",
+      "appear": {
+        "kind": "rise",
+        "distance": 48,
+        "duration": 2000
+      },
+      "t": 200,
+      "expected": {
+        "y": 33.41531629,
+        "opacity": 0.303847577
+      }
+    },
+    {
+      "name": "rise from 48 px, nine tenths",
+      "appear": {
+        "kind": "rise",
+        "distance": 48,
+        "duration": 2000
+      },
+      "t": 1800,
+      "expected": {
+        "y": 0.259131926,
+        "opacity": 0.994601418
+      }
+    },
+    {
+      "name": "rise under reduce motion — at rest at once",
+      "appear": {
+        "kind": "rise",
+        "distance": 16,
+        "duration": 400,
+        "delay": 300
+      },
+      "t": 100,
+      "reducedMotion": true,
+      "expected": {
+        "y": 0,
+        "opacity": 1
+      }
+    }
+  ],
+  "momentNote": "The appearance plays at the show of the screen (x-valueAppear.shown) and not on a screen already shown.",
+  "momentCases": [
+    {
+      "name": "the first screen of the flow",
+      "moment": "firstShow",
+      "plays": true
+    },
+    {
+      "name": "a screen pushed on top",
+      "moment": "forward",
+      "plays": true
+    },
+    {
+      "name": "a screen shown again by back",
+      "moment": "back",
+      "plays": true
+    },
+    {
+      "name": "a screen shown again by a section switch",
+      "moment": "switch",
+      "plays": true
+    },
+    {
+      "name": "a layer above is closed — not a show",
+      "moment": "modalClosed",
+      "plays": false
+    },
+    {
+      "name": "the condition of the node starts to hold on a shown screen",
+      "moment": "conditionMet",
+      "plays": false
+    },
+    {
+      "name": "the width class changes on a shown screen",
+      "moment": "widthClassChanged",
+      "plays": false
+    },
+    {
+      "name": "a new record of a list on a shown screen",
+      "moment": "newRecord",
+      "plays": false
+    }
+  ],
+  "documentNote": "Zod and the JSON Schema of the artifact say the same. onRoot — the field on the root «Screen», which has neither field.",
+  "documentCases": [
+    {
+      "name": "spin",
+      "field": "motion",
+      "value": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000
+      },
+      "valid": true
+    },
+    {
+      "name": "spin counterclockwise with a delay",
+      "field": "motion",
+      "value": {
+        "kind": "spin",
+        "direction": "counterclockwise",
+        "duration": 8000,
+        "delay": 1200
+      },
+      "valid": true
+    },
+    {
+      "name": "spin without a direction",
+      "field": "motion",
+      "value": {
+        "kind": "spin",
+        "duration": 8000
+      },
+      "valid": false
+    },
+    {
+      "name": "spin with an unknown direction",
+      "field": "motion",
+      "value": {
+        "kind": "spin",
+        "direction": "left",
+        "duration": 8000
+      },
+      "valid": false
+    },
+    {
+      "name": "spin with an angle (a key of sway)",
+      "field": "motion",
+      "value": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000,
+        "angle": 10
+      },
+      "valid": false
+    },
+    {
+      "name": "spin shorter than the shortest cycle",
+      "field": "motion",
+      "value": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 399
+      },
+      "valid": false
+    },
+    {
+      "name": "spin with a zero delay",
+      "field": "motion",
+      "value": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000,
+        "delay": 0
+      },
+      "valid": false
+    },
+    {
+      "name": "sway",
+      "field": "motion",
+      "value": {
+        "kind": "sway",
+        "angle": 12,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "valid": true
+    },
+    {
+      "name": "sway at the largest angle",
+      "field": "motion",
+      "value": {
+        "kind": "sway",
+        "angle": 45,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "valid": true
+    },
+    {
+      "name": "sway at the smallest angle",
+      "field": "motion",
+      "value": {
+        "kind": "sway",
+        "angle": 1,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "valid": true
+    },
+    {
+      "name": "sway with angle 0",
+      "field": "motion",
+      "value": {
+        "kind": "sway",
+        "angle": 0,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "valid": false
+    },
+    {
+      "name": "sway with angle 46",
+      "field": "motion",
+      "value": {
+        "kind": "sway",
+        "angle": 46,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "valid": false
+    },
+    {
+      "name": "sway with a fractional angle",
+      "field": "motion",
+      "value": {
+        "kind": "sway",
+        "angle": 12.5,
+        "pivot": "top",
+        "duration": 2000
+      },
+      "valid": false
+    },
+    {
+      "name": "sway without a pivot",
+      "field": "motion",
+      "value": {
+        "kind": "sway",
+        "angle": 12,
+        "duration": 2000
+      },
+      "valid": false
+    },
+    {
+      "name": "sway without an angle",
+      "field": "motion",
+      "value": {
+        "kind": "sway",
+        "pivot": "top",
+        "duration": 2000
+      },
+      "valid": false
+    },
+    {
+      "name": "sway with an unknown pivot",
+      "field": "motion",
+      "value": {
+        "kind": "sway",
+        "angle": 12,
+        "pivot": "left",
+        "duration": 2000
+      },
+      "valid": false
+    },
+    {
+      "name": "sway with a direction (a key of spin)",
+      "field": "motion",
+      "value": {
+        "kind": "sway",
+        "angle": 12,
+        "pivot": "top",
+        "duration": 2000,
+        "direction": "clockwise"
+      },
+      "valid": false
+    },
+    {
+      "name": "a fifth kind",
+      "field": "motion",
+      "value": {
+        "kind": "bounce",
+        "duration": 1000
+      },
+      "valid": false
+    },
+    {
+      "name": "fade",
+      "field": "appear",
+      "value": {
+        "kind": "fade",
+        "duration": 400
+      },
+      "valid": true
+    },
+    {
+      "name": "rise",
+      "field": "appear",
+      "value": {
+        "kind": "rise",
+        "distance": 16,
+        "duration": 400,
+        "delay": 300
+      },
+      "valid": true
+    },
+    {
+      "name": "fade at the shortest",
+      "field": "appear",
+      "value": {
+        "kind": "fade",
+        "duration": 100
+      },
+      "valid": true
+    },
+    {
+      "name": "rise at the longest and farthest",
+      "field": "appear",
+      "value": {
+        "kind": "rise",
+        "distance": 48,
+        "duration": 2000,
+        "delay": 60000
+      },
+      "valid": true
+    },
+    {
+      "name": "fade with a distance",
+      "field": "appear",
+      "value": {
+        "kind": "fade",
+        "duration": 400,
+        "distance": 16
+      },
+      "valid": false
+    },
+    {
+      "name": "rise without a distance",
+      "field": "appear",
+      "value": {
+        "kind": "rise",
+        "duration": 400
+      },
+      "valid": false
+    },
+    {
+      "name": "rise from 0 px",
+      "field": "appear",
+      "value": {
+        "kind": "rise",
+        "distance": 0,
+        "duration": 400,
+        "delay": 300
+      },
+      "valid": false
+    },
+    {
+      "name": "rise from 49 px",
+      "field": "appear",
+      "value": {
+        "kind": "rise",
+        "distance": 49,
+        "duration": 400,
+        "delay": 300
+      },
+      "valid": false
+    },
+    {
+      "name": "rise from a fractional distance",
+      "field": "appear",
+      "value": {
+        "kind": "rise",
+        "distance": 8.5,
+        "duration": 400,
+        "delay": 300
+      },
+      "valid": false
+    },
+    {
+      "name": "fade shorter than 100 ms",
+      "field": "appear",
+      "value": {
+        "kind": "fade",
+        "duration": 99
+      },
+      "valid": false
+    },
+    {
+      "name": "fade longer than 2000 ms",
+      "field": "appear",
+      "value": {
+        "kind": "fade",
+        "duration": 2001
+      },
+      "valid": false
+    },
+    {
+      "name": "fade with a zero delay",
+      "field": "appear",
+      "value": {
+        "kind": "fade",
+        "duration": 400,
+        "delay": 0
+      },
+      "valid": false
+    },
+    {
+      "name": "an unknown kind",
+      "field": "appear",
+      "value": {
+        "kind": "slide",
+        "duration": 400
+      },
+      "valid": false
+    },
+    {
+      "name": "a word instead of an object",
+      "field": "appear",
+      "value": "fade",
+      "valid": false
+    },
+    {
+      "name": "motion spin on the screen root",
+      "field": "motion",
+      "value": {
+        "kind": "spin",
+        "direction": "clockwise",
+        "duration": 8000
+      },
+      "valid": false,
+      "onRoot": true
+    },
+    {
+      "name": "appear on the screen root",
+      "field": "appear",
+      "value": {
+        "kind": "fade",
+        "duration": 400
+      },
+      "valid": false,
+      "onRoot": true
+    }
+  ],
+  "zoneNote": "The appearance «fade» (400 ms) on a node in this place: published or not (appear_not_read).",
+  "zoneCases": [
+    {
+      "name": "a text",
+      "place": "text",
+      "published": true
+    },
+    {
+      "name": "a text with a condition and visibilityTransition too",
+      "place": "textWithFade",
+      "published": true
+    },
+    {
+      "name": "a pinned button",
+      "place": "pinned",
+      "published": false,
+      "code": "appear_not_read"
+    },
+    {
+      "name": "an app bar that is the zone of the screen",
+      "place": "appBarZone",
+      "published": false,
+      "code": "appear_not_read"
+    },
+    {
+      "name": "a text inside a pinned block — only the zone itself is not read",
+      "place": "insidePinned",
+      "published": true
+    },
+    {
+      "name": "a navigation bar",
+      "place": "navBar",
+      "published": false,
+      "code": "appear_not_read"
+    },
+    {
+      "name": "a navigation item",
+      "place": "navItem",
+      "published": false,
+      "code": "appear_not_read"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 {
-  "themeContractVersion": "4.0.1",
+  "themeContractVersion": "4.1.0",
   "defaultThemeId": "light",
   "themes": {
     "light": {

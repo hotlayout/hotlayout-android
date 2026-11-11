@@ -1,5 +1,5 @@
 {
-  "schemaVersion": "9.34.0",
+  "schemaVersion": "9.42.0",
   "documentId": "value-countdown",
   "name": "Value, countdown and app bar",
   "initialScreenId": "balance",
@@ -406,7 +406,10 @@
                   "variant": "ghost",
                   "size": "md",
                   "action": {
-                    "type": "share"
+                    "type": "share",
+                    "params": {
+                      "text": "Mission of the week"
+                    }
                   }
                 },
                 "style": {

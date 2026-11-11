@@ -51,7 +51,7 @@ class TableCoverageTest {
             "list-marker/layoutCases", "list-marker/naturalCases",
             "value-transition/curveCases", "value-transition/stepCases", "value-transition/digitsCases", "value-transition/decisionCases",
             "value-transition/targetCases", "value-transition/appearStepCases", "value-transition/appearDecisionCases",
-            "value-transition/appearTargetCases", "value-transition/appearFlowCases", "value-transition/layoutCases",
+            "value-transition/appearTargetCases", "value-transition/appearFlowCases", "value-transition/layoutCases", "value-transition/figureCases",
             "align/readCases", "align/heightSourceCases", "align/shiftCases", "align/boxCases", "align/screenCases", "align/ruleCases",
             "offset/pullCases", "offset/pullReadCases",
             // Screen anatomy: zones, app bar, navigation bar, top zone, insets.
@@ -75,6 +75,9 @@ class TableCoverageTest {
             // Schema 9.34.0: the motion of a swipe-to-confirm button and its fill over the screen.
             "swipe-motion/labelCases", "swipe-motion/trailCases", "swipe-motion/thumbRadiusCases", "swipe-motion/collapseCases", "swipe-motion/rippleScaleCases",
             "swipe-motion/rippleCases", "swipe-motion/revealCases", "swipe-motion/sequenceCases", "swipe-motion/busyReturnCases", "swipe-motion/fieldCases", "swipe-motion/ruleCases",
+            // Schema 9.35.0: display typography. Schema 9.36.0: the radial gradient.
+            "display-typography/scaleCases", "display-typography/trackingCases", "display-typography/lineCases",
+            "radial-gradient/stops", "radial-gradient/geometryCases",
             // Pictures: the proportion, the box, the file in the box, the radius, the circle.
             "media-chrome/ratioCases", "media-chrome/imageBoxCases", "media-chrome/paintCases", "media-chrome/radiusCases", "media-chrome/circleCases",
             "carousel/hostCases", "carousel/readCases", "carousel/cardCases", "carousel/stopCases", "carousel/activeCases",
@@ -116,7 +119,13 @@ class TableCoverageTest {
          * Named, not run: the layer below a top inset the host passes. Compose lays a modal layer in the safe area of the
          * system, and the reader takes no `safeTop` value to test against.
          */
-        val notRun = setOf("media-chrome/safeTopModalCases")
+        val notRun = setOf(
+            "media-chrome/safeTopModalCases",
+            // Schema 9.37.0, 9.38.0 and 9.40.0: not performed yet, so their tables are not run.
+            "chart/pointCases", "chart/highlightCases", "chart/barCases", "chart/lineCases", "chart/smoothCases", "chart/labelCases", "chart/plotHeightCases",
+            "screen-transition/curveCases", "screen-transition/planCases", "screen-transition/frameCases", "screen-transition/fieldCases",
+            "motion/turnCases", "motion/appearCases", "motion/momentCases", "motion/zoneCases",
+        )
 
         fun status(table: String, group: String): String? = when {
             "$table/$group" in run -> "run"

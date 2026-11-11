@@ -1,0 +1,476 @@
+{
+  "schemaVersion": "9.42.0",
+  "documentId": "shadow-effects",
+  "name": "Inner shadow and text shadow",
+  "initialScreenId": "shadows",
+  "screens": [
+    {
+      "screenId": "shadows",
+      "name": "Shadows",
+      "root": {
+        "id": "shadow-effects-root",
+        "type": "Screen",
+        "props": {
+          "gap": "lg"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "pressed-heading",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Tactile 3D"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL",
+              "color": {
+                "token": "onSurface",
+                "opacity": 0.55
+              },
+              "textShadow": [
+                {
+                  "offsetX": 0,
+                  "offsetY": 1,
+                  "blur": 0,
+                  "color": {
+                    "value": "#ffffff",
+                    "opacity": 0.9
+                  }
+                },
+                {
+                  "offsetX": 0,
+                  "offsetY": -1,
+                  "blur": 1,
+                  "color": {
+                    "token": "onSurface",
+                    "opacity": 0.3
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "tactile-row",
+            "type": "Row",
+            "props": {
+              "gap": "md",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": false
+            },
+            "children": [
+              {
+                "id": "tactile-tile",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs"
+                },
+                "style": {
+                  "padding": "lg",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": "primary"
+                  },
+                  "shadow": [
+                    {
+                      "offsetX": 0,
+                      "offsetY": 2,
+                      "blur": 0,
+                      "spread": 0,
+                      "color": {
+                        "value": "#ffffff",
+                        "opacity": 0.55
+                      },
+                      "inset": true
+                    },
+                    {
+                      "offsetX": 0,
+                      "offsetY": -4,
+                      "blur": 8,
+                      "spread": 0,
+                      "color": {
+                        "token": "onSurface",
+                        "opacity": 0.28
+                      },
+                      "inset": true
+                    },
+                    {
+                      "offsetX": 0,
+                      "offsetY": 8,
+                      "blur": 16,
+                      "spread": 0,
+                      "color": {
+                        "token": "primary",
+                        "opacity": 0.35
+                      }
+                    }
+                  ],
+                  "color": "onPrimary"
+                },
+                "children": [
+                  {
+                    "id": "tile-value",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "320"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleM"
+                    }
+                  },
+                  {
+                    "id": "tile-label",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "points"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "caption"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "tactile-button",
+                "type": "Button",
+                "props": {
+                  "label": {
+                    "kind": "literal",
+                    "value": "Press me"
+                  },
+                  "variant": "primary",
+                  "action": {
+                    "type": "navigate.back"
+                  },
+                  "fullWidth": true
+                },
+                "style": {
+                  "radius": "pill",
+                  "shadow": [
+                    {
+                      "offsetX": 0,
+                      "offsetY": 2,
+                      "blur": 0,
+                      "spread": 0,
+                      "color": {
+                        "value": "#ffffff",
+                        "opacity": 0.55
+                      },
+                      "inset": true
+                    },
+                    {
+                      "offsetX": 0,
+                      "offsetY": -4,
+                      "blur": 8,
+                      "spread": 0,
+                      "color": {
+                        "token": "onSurface",
+                        "opacity": 0.28
+                      },
+                      "inset": true
+                    },
+                    {
+                      "offsetX": 0,
+                      "offsetY": 8,
+                      "blur": 16,
+                      "spread": 0,
+                      "color": {
+                        "token": "primary",
+                        "opacity": 0.35
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "id": "glass-stage",
+            "type": "Column",
+            "props": {
+              "gap": "none",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "glass-card",
+                "type": "Column",
+                "props": {
+                  "gap": "xs",
+                  "align": "start"
+                },
+                "children": [
+                  {
+                    "id": "glass-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Glass card"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleS"
+                    }
+                  },
+                  {
+                    "id": "glass-note",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "A highlight along the inner top edge."
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "bodyS"
+                    }
+                  }
+                ],
+                "style": {
+                  "padding": "lg",
+                  "radius": "lg",
+                  "background": {
+                    "kind": "color",
+                    "color": {
+                      "value": "#ffffff",
+                      "opacity": 0.16
+                    }
+                  },
+                  "border": {
+                    "width": 1,
+                    "color": {
+                      "value": "#ffffff",
+                      "opacity": 0.35
+                    }
+                  },
+                  "backdropBlur": 12,
+                  "color": "surface",
+                  "shadow": [
+                    {
+                      "offsetX": 0,
+                      "offsetY": 1,
+                      "blur": 0,
+                      "spread": 0,
+                      "color": {
+                        "value": "#ffffff",
+                        "opacity": 0.7
+                      },
+                      "inset": true
+                    },
+                    {
+                      "offsetX": 0,
+                      "offsetY": 12,
+                      "blur": 24,
+                      "spread": 0,
+                      "color": {
+                        "token": "onSurface",
+                        "opacity": 0.25
+                      }
+                    }
+                  ]
+                }
+              }
+            ],
+            "style": {
+              "padding": "lg",
+              "radius": "lg",
+              "background": {
+                "kind": "gradient",
+                "gradient": {
+                  "shape": "radial",
+                  "center": {
+                    "x": 0.2,
+                    "y": 0.2
+                  },
+                  "radius": 1,
+                  "stops": [
+                    {
+                      "color": "accent",
+                      "position": 0
+                    },
+                    {
+                      "color": "primary",
+                      "position": 1
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          {
+            "id": "inset-well",
+            "type": "Column",
+            "props": {
+              "gap": "none",
+              "align": "start"
+            },
+            "children": [
+              {
+                "id": "well-label",
+                "type": "Text",
+                "props": {
+                  "content": {
+                    "kind": "literal",
+                    "value": "A well without a background"
+                  },
+                  "align": "start",
+                  "overflow": "ellipsis"
+                }
+              }
+            ],
+            "style": {
+              "padding": "md",
+              "radius": "md",
+              "border": {
+                "width": 1,
+                "color": "border"
+              },
+              "shadow": [
+                {
+                  "offsetX": 0,
+                  "offsetY": 3,
+                  "blur": 6,
+                  "spread": 1,
+                  "color": {
+                    "token": "onSurface",
+                    "opacity": 0.22
+                  },
+                  "inset": true
+                }
+              ]
+            }
+          },
+          {
+            "id": "glow-number",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "98"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": {
+                "token": "numericL",
+                "fontSize": 96,
+                "fontWeight": 800
+              },
+              "color": "accent",
+              "textShadow": [
+                {
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "blur": 8,
+                  "color": {
+                    "token": "accent",
+                    "opacity": 0.9
+                  }
+                },
+                {
+                  "offsetX": 0,
+                  "offsetY": 0,
+                  "blur": 28,
+                  "color": {
+                    "token": "accent",
+                    "opacity": 0.6
+                  }
+                }
+              ]
+            }
+          },
+          {
+            "id": "gradient-heading",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Gradient and shadow"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "displayL",
+              "color": "primary",
+              "textGradient": {
+                "angle": 90,
+                "stops": [
+                  {
+                    "color": "primary",
+                    "position": 0
+                  },
+                  {
+                    "color": "accent",
+                    "position": 1
+                  }
+                ]
+              },
+              "textShadow": [
+                {
+                  "offsetX": 0,
+                  "offsetY": 6,
+                  "blur": 6,
+                  "color": {
+                    "value": "#000000",
+                    "opacity": 0.45
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "shadows/pressed-heading/content": "Тактильний 3D",
+        "shadows/tile-value/content": "320",
+        "shadows/tile-label/content": "балів",
+        "shadows/tactile-button/label": "Натисни",
+        "shadows/glass-title/content": "Скляна картка",
+        "shadows/glass-note/content": "Відблиск по внутрішньому верхньому краю.",
+        "shadows/well-label/content": "Заглиблення без тла",
+        "shadows/glow-number/content": "98",
+        "shadows/gradient-heading/content": "Градієнт і тінь"
+      }
+    }
+  }
+}

@@ -1,0 +1,465 @@
+{
+  "schemaVersion": "9.42.0",
+  "documentId": "carousel-auto-advance",
+  "name": "A carousel that moves by itself",
+  "initialScreenId": "stories",
+  "screens": [
+    {
+      "screenId": "stories",
+      "name": "Stories",
+      "root": {
+        "id": "stories-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "stories-progress",
+            "type": "ProgressBar",
+            "props": {
+              "value": {
+                "kind": "binding",
+                "path": "account.cardIndex",
+                "fallback": 0
+              },
+              "max": {
+                "kind": "literal",
+                "value": 3
+              },
+              "color": "primary",
+              "labelFormat": "none",
+              "thickness": "sm",
+              "segments": 3,
+              "currentColor": "accent",
+              "cap": "round"
+            }
+          },
+          {
+            "id": "stories-pages",
+            "type": "Row",
+            "props": {
+              "gap": "none",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": true,
+              "carousel": {
+                "perView": 1,
+                "peek": "none",
+                "indicator": "none",
+                "stopPath": "account.cardIndex",
+                "autoAdvance": {
+                  "intervalMs": 5000
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "story-save",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs",
+                  "justify": "end"
+                },
+                "style": {
+                  "padding": "lg",
+                  "radius": "lg",
+                  "minHeight": 320,
+                  "background": {
+                    "kind": "color",
+                    "color": "primary"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "story-save-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Save on every purchase"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "displayL",
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "story-limit",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs",
+                  "justify": "end"
+                },
+                "style": {
+                  "padding": "lg",
+                  "radius": "lg",
+                  "minHeight": 320,
+                  "background": {
+                    "kind": "color",
+                    "color": "accent"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "story-limit-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Set a monthly limit"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "displayL",
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "story-freeze",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs",
+                  "justify": "end"
+                },
+                "style": {
+                  "padding": "lg",
+                  "radius": "lg",
+                  "minHeight": 320,
+                  "background": {
+                    "kind": "color",
+                    "color": "success"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "story-freeze-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Freeze a card in one tap"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "displayL",
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "story-save-body",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Round-ups go to your piggy bank by themselves."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            },
+            "visibleIf": {
+              "path": "account.cardIndex",
+              "op": "eq",
+              "value": 0
+            },
+            "visibilityTransition": "fade"
+          },
+          {
+            "id": "story-limit-body",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "We warn you before you go over it."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            },
+            "visibleIf": {
+              "path": "account.cardIndex",
+              "op": "eq",
+              "value": 1
+            },
+            "visibilityTransition": "fade"
+          },
+          {
+            "id": "story-freeze-body",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "And unfreeze it when you find it."
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "bodyM"
+            },
+            "visibleIf": {
+              "path": "account.cardIndex",
+              "op": "eq",
+              "value": 2
+            },
+            "visibilityTransition": "fade"
+          }
+        ]
+      }
+    },
+    {
+      "screenId": "promo",
+      "name": "Offers",
+      "root": {
+        "id": "promo-root",
+        "type": "Screen",
+        "props": {
+          "gap": "md"
+        },
+        "style": {
+          "padding": "lg",
+          "background": {
+            "kind": "color",
+            "color": "surface"
+          }
+        },
+        "children": [
+          {
+            "id": "promo-title",
+            "type": "Text",
+            "props": {
+              "content": {
+                "kind": "literal",
+                "value": "Offers for you"
+              },
+              "align": "start",
+              "overflow": "ellipsis"
+            },
+            "style": {
+              "typography": "titleM"
+            }
+          },
+          {
+            "id": "promo-banners",
+            "type": "Row",
+            "props": {
+              "gap": "sm",
+              "align": "center",
+              "justify": "start",
+              "wrap": false,
+              "scrollable": true,
+              "carousel": {
+                "perView": 1,
+                "peek": "lg",
+                "indicator": "dots",
+                "autoAdvance": {
+                  "intervalMs": 4000,
+                  "loop": true
+                }
+              }
+            },
+            "children": [
+              {
+                "id": "banner-cashback",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs",
+                  "justify": "center"
+                },
+                "style": {
+                  "padding": "lg",
+                  "radius": "lg",
+                  "minHeight": 120,
+                  "background": {
+                    "kind": "color",
+                    "color": "primary"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "banner-cashback-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "5% cashback on groceries"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleM",
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "banner-travel",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs",
+                  "justify": "center"
+                },
+                "style": {
+                  "padding": "lg",
+                  "radius": "lg",
+                  "minHeight": 120,
+                  "background": {
+                    "kind": "color",
+                    "color": "accent"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "banner-travel-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "No fees abroad"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleM",
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "banner-deposit",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs",
+                  "justify": "center"
+                },
+                "style": {
+                  "padding": "lg",
+                  "radius": "lg",
+                  "minHeight": 120,
+                  "background": {
+                    "kind": "color",
+                    "color": "success"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "banner-deposit-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Deposit at 14%"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleM",
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "banner-friend",
+                "type": "Container",
+                "props": {
+                  "direction": "column",
+                  "gap": "xs",
+                  "justify": "center"
+                },
+                "style": {
+                  "padding": "lg",
+                  "radius": "lg",
+                  "minHeight": 120,
+                  "background": {
+                    "kind": "color",
+                    "color": "warning"
+                  }
+                },
+                "children": [
+                  {
+                    "id": "banner-friend-title",
+                    "type": "Text",
+                    "props": {
+                      "content": {
+                        "kind": "literal",
+                        "value": "Invite a friend — get ₴200"
+                      },
+                      "align": "start",
+                      "overflow": "ellipsis"
+                    },
+                    "style": {
+                      "typography": "titleM",
+                      "color": "onPrimary"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "localization": {
+    "defaultLocale": "en",
+    "locales": [
+      "en",
+      "uk"
+    ],
+    "strings": {
+      "uk": {
+        "stories/story-save-title/content": "Заощаджуйте з кожної покупки",
+        "stories/story-limit-title/content": "Задайте ліміт на місяць",
+        "stories/story-freeze-title/content": "Заблокуйте картку одним дотиком",
+        "stories/story-save-body/content": "Округлення самі йдуть у скарбничку.",
+        "stories/story-limit-body/content": "Попередимо, перш ніж ви його перевищите.",
+        "stories/story-freeze-body/content": "І розблокуйте, коли знайдете.",
+        "promo/promo-title/content": "Пропозиції для вас",
+        "promo/banner-cashback-title/content": "5% кешбеку на продукти",
+        "promo/banner-travel-title/content": "Без комісій за кордоном",
+        "promo/banner-deposit-title/content": "Депозит під 14%",
+        "promo/banner-friend-title/content": "Запросіть друга — отримайте ₴200"
+      }
+    }
+  }
+}

@@ -25,7 +25,7 @@ class ValueTransitionCasesTest {
 
     @Test fun everyGroupIsRun() {
         assertEquals(
-            setOf("curveCases", "stepCases", "digitsCases", "decisionCases", "targetCases", "appearStepCases", "appearDecisionCases", "appearTargetCases", "appearFlowCases", "layoutCases"),
+            setOf("curveCases", "stepCases", "digitsCases", "decisionCases", "targetCases", "appearStepCases", "appearDecisionCases", "appearTargetCases", "appearFlowCases", "layoutCases", "figureCases"),
             Contract.groups(table),
         )
         assertEquals(ValueTransition.DURATION_MS, table["durationMs"]?.number ?: -1.0, 0.0)

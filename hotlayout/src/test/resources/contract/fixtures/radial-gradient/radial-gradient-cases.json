@@ -1,0 +1,1451 @@
+{
+  "about": "Radial gradient geometry: a circle whose radius is a share of the distance from the center to the farthest corner of the box. For every box, center and radius: the CSS expression, the radius in pixels and the Flutter radius as a share of the shorter side. Document cases: which gradient values the schema accepts.",
+  "stops": [
+    {
+      "color": "#ff0000",
+      "position": 0
+    },
+    {
+      "color": "#00ff0080",
+      "position": 0.4
+    },
+    {
+      "color": "#0000ff",
+      "position": 1
+    }
+  ],
+  "geometryCases": [
+    {
+      "name": "square 200x200, center middle (0.5, 0.5), radius 0.05",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "radius": 0.05,
+      "farthestCornerPx": 141.421356,
+      "radiusPx": 7.071068,
+      "flutterRadius": 0.035355,
+      "flutterCenter": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 50% 50%, #ff0000 0%, #00ff0080 2%, #0000ff 5%)"
+    },
+    {
+      "name": "square 200x200, center middle (0.5, 0.5), radius 0.5",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "radius": 0.5,
+      "farthestCornerPx": 141.421356,
+      "radiusPx": 70.710678,
+      "flutterRadius": 0.353553,
+      "flutterCenter": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 50% 50%, #ff0000 0%, #00ff0080 20%, #0000ff 50%)"
+    },
+    {
+      "name": "square 200x200, center middle (0.5, 0.5), radius 1",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "radius": 1,
+      "farthestCornerPx": 141.421356,
+      "radiusPx": 141.421356,
+      "flutterRadius": 0.707107,
+      "flutterCenter": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 50% 50%, #ff0000 0%, #00ff0080 40%, #0000ff 100%)"
+    },
+    {
+      "name": "square 200x200, center middle (0.5, 0.5), radius 2",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "radius": 2,
+      "farthestCornerPx": 141.421356,
+      "radiusPx": 282.842712,
+      "flutterRadius": 1.414214,
+      "flutterCenter": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 50% 50%, #ff0000 0%, #00ff0080 80%, #0000ff 200%)"
+    },
+    {
+      "name": "square 200x200, center corner (0, 0), radius 0.05",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 0.05,
+      "farthestCornerPx": 282.842712,
+      "radiusPx": 14.142136,
+      "flutterRadius": 0.070711,
+      "flutterCenter": {
+        "x": -1,
+        "y": -1
+      },
+      "css": "radial-gradient(circle farthest-corner at 0% 0%, #ff0000 0%, #00ff0080 2%, #0000ff 5%)"
+    },
+    {
+      "name": "square 200x200, center corner (0, 0), radius 0.5",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 0.5,
+      "farthestCornerPx": 282.842712,
+      "radiusPx": 141.421356,
+      "flutterRadius": 0.707107,
+      "flutterCenter": {
+        "x": -1,
+        "y": -1
+      },
+      "css": "radial-gradient(circle farthest-corner at 0% 0%, #ff0000 0%, #00ff0080 20%, #0000ff 50%)"
+    },
+    {
+      "name": "square 200x200, center corner (0, 0), radius 1",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 1,
+      "farthestCornerPx": 282.842712,
+      "radiusPx": 282.842712,
+      "flutterRadius": 1.414214,
+      "flutterCenter": {
+        "x": -1,
+        "y": -1
+      },
+      "css": "radial-gradient(circle farthest-corner at 0% 0%, #ff0000 0%, #00ff0080 40%, #0000ff 100%)"
+    },
+    {
+      "name": "square 200x200, center corner (0, 0), radius 2",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 2,
+      "farthestCornerPx": 282.842712,
+      "radiusPx": 565.685425,
+      "flutterRadius": 2.828427,
+      "flutterCenter": {
+        "x": -1,
+        "y": -1
+      },
+      "css": "radial-gradient(circle farthest-corner at 0% 0%, #ff0000 0%, #00ff0080 80%, #0000ff 200%)"
+    },
+    {
+      "name": "square 200x200, center edge (1, 0.5), radius 0.05",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 1,
+        "y": 0.5
+      },
+      "radius": 0.05,
+      "farthestCornerPx": 223.606798,
+      "radiusPx": 11.18034,
+      "flutterRadius": 0.055902,
+      "flutterCenter": {
+        "x": 1,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 100% 50%, #ff0000 0%, #00ff0080 2%, #0000ff 5%)"
+    },
+    {
+      "name": "square 200x200, center edge (1, 0.5), radius 0.5",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 1,
+        "y": 0.5
+      },
+      "radius": 0.5,
+      "farthestCornerPx": 223.606798,
+      "radiusPx": 111.803399,
+      "flutterRadius": 0.559017,
+      "flutterCenter": {
+        "x": 1,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 100% 50%, #ff0000 0%, #00ff0080 20%, #0000ff 50%)"
+    },
+    {
+      "name": "square 200x200, center edge (1, 0.5), radius 1",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 1,
+        "y": 0.5
+      },
+      "radius": 1,
+      "farthestCornerPx": 223.606798,
+      "radiusPx": 223.606798,
+      "flutterRadius": 1.118034,
+      "flutterCenter": {
+        "x": 1,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 100% 50%, #ff0000 0%, #00ff0080 40%, #0000ff 100%)"
+    },
+    {
+      "name": "square 200x200, center edge (1, 0.5), radius 2",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 1,
+        "y": 0.5
+      },
+      "radius": 2,
+      "farthestCornerPx": 223.606798,
+      "radiusPx": 447.213595,
+      "flutterRadius": 2.236068,
+      "flutterCenter": {
+        "x": 1,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 100% 50%, #ff0000 0%, #00ff0080 80%, #0000ff 200%)"
+    },
+    {
+      "name": "square 200x200, center arbitrary (0.2, 0.1), radius 0.05",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 0.2,
+        "y": 0.1
+      },
+      "radius": 0.05,
+      "farthestCornerPx": 240.831892,
+      "radiusPx": 12.041595,
+      "flutterRadius": 0.060208,
+      "flutterCenter": {
+        "x": -0.6,
+        "y": -0.8
+      },
+      "css": "radial-gradient(circle farthest-corner at 20% 10%, #ff0000 0%, #00ff0080 2%, #0000ff 5%)"
+    },
+    {
+      "name": "square 200x200, center arbitrary (0.2, 0.1), radius 0.5",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 0.2,
+        "y": 0.1
+      },
+      "radius": 0.5,
+      "farthestCornerPx": 240.831892,
+      "radiusPx": 120.415946,
+      "flutterRadius": 0.60208,
+      "flutterCenter": {
+        "x": -0.6,
+        "y": -0.8
+      },
+      "css": "radial-gradient(circle farthest-corner at 20% 10%, #ff0000 0%, #00ff0080 20%, #0000ff 50%)"
+    },
+    {
+      "name": "square 200x200, center arbitrary (0.2, 0.1), radius 1",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 0.2,
+        "y": 0.1
+      },
+      "radius": 1,
+      "farthestCornerPx": 240.831892,
+      "radiusPx": 240.831892,
+      "flutterRadius": 1.204159,
+      "flutterCenter": {
+        "x": -0.6,
+        "y": -0.8
+      },
+      "css": "radial-gradient(circle farthest-corner at 20% 10%, #ff0000 0%, #00ff0080 40%, #0000ff 100%)"
+    },
+    {
+      "name": "square 200x200, center arbitrary (0.2, 0.1), radius 2",
+      "box": {
+        "width": 200,
+        "height": 200
+      },
+      "center": {
+        "x": 0.2,
+        "y": 0.1
+      },
+      "radius": 2,
+      "farthestCornerPx": 240.831892,
+      "radiusPx": 481.663783,
+      "flutterRadius": 2.408319,
+      "flutterCenter": {
+        "x": -0.6,
+        "y": -0.8
+      },
+      "css": "radial-gradient(circle farthest-corner at 20% 10%, #ff0000 0%, #00ff0080 80%, #0000ff 200%)"
+    },
+    {
+      "name": "wide 300x100, center middle (0.5, 0.5), radius 0.05",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "radius": 0.05,
+      "farthestCornerPx": 158.113883,
+      "radiusPx": 7.905694,
+      "flutterRadius": 0.079057,
+      "flutterCenter": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 50% 50%, #ff0000 0%, #00ff0080 2%, #0000ff 5%)"
+    },
+    {
+      "name": "wide 300x100, center middle (0.5, 0.5), radius 0.5",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "radius": 0.5,
+      "farthestCornerPx": 158.113883,
+      "radiusPx": 79.056942,
+      "flutterRadius": 0.790569,
+      "flutterCenter": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 50% 50%, #ff0000 0%, #00ff0080 20%, #0000ff 50%)"
+    },
+    {
+      "name": "wide 300x100, center middle (0.5, 0.5), radius 1",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "radius": 1,
+      "farthestCornerPx": 158.113883,
+      "radiusPx": 158.113883,
+      "flutterRadius": 1.581139,
+      "flutterCenter": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 50% 50%, #ff0000 0%, #00ff0080 40%, #0000ff 100%)"
+    },
+    {
+      "name": "wide 300x100, center middle (0.5, 0.5), radius 2",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "radius": 2,
+      "farthestCornerPx": 158.113883,
+      "radiusPx": 316.227766,
+      "flutterRadius": 3.162278,
+      "flutterCenter": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 50% 50%, #ff0000 0%, #00ff0080 80%, #0000ff 200%)"
+    },
+    {
+      "name": "wide 300x100, center corner (0, 0), radius 0.05",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 0.05,
+      "farthestCornerPx": 316.227766,
+      "radiusPx": 15.811388,
+      "flutterRadius": 0.158114,
+      "flutterCenter": {
+        "x": -1,
+        "y": -1
+      },
+      "css": "radial-gradient(circle farthest-corner at 0% 0%, #ff0000 0%, #00ff0080 2%, #0000ff 5%)"
+    },
+    {
+      "name": "wide 300x100, center corner (0, 0), radius 0.5",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 0.5,
+      "farthestCornerPx": 316.227766,
+      "radiusPx": 158.113883,
+      "flutterRadius": 1.581139,
+      "flutterCenter": {
+        "x": -1,
+        "y": -1
+      },
+      "css": "radial-gradient(circle farthest-corner at 0% 0%, #ff0000 0%, #00ff0080 20%, #0000ff 50%)"
+    },
+    {
+      "name": "wide 300x100, center corner (0, 0), radius 1",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 1,
+      "farthestCornerPx": 316.227766,
+      "radiusPx": 316.227766,
+      "flutterRadius": 3.162278,
+      "flutterCenter": {
+        "x": -1,
+        "y": -1
+      },
+      "css": "radial-gradient(circle farthest-corner at 0% 0%, #ff0000 0%, #00ff0080 40%, #0000ff 100%)"
+    },
+    {
+      "name": "wide 300x100, center corner (0, 0), radius 2",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 2,
+      "farthestCornerPx": 316.227766,
+      "radiusPx": 632.455532,
+      "flutterRadius": 6.324555,
+      "flutterCenter": {
+        "x": -1,
+        "y": -1
+      },
+      "css": "radial-gradient(circle farthest-corner at 0% 0%, #ff0000 0%, #00ff0080 80%, #0000ff 200%)"
+    },
+    {
+      "name": "wide 300x100, center edge (1, 0.5), radius 0.05",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 1,
+        "y": 0.5
+      },
+      "radius": 0.05,
+      "farthestCornerPx": 304.138127,
+      "radiusPx": 15.206906,
+      "flutterRadius": 0.152069,
+      "flutterCenter": {
+        "x": 1,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 100% 50%, #ff0000 0%, #00ff0080 2%, #0000ff 5%)"
+    },
+    {
+      "name": "wide 300x100, center edge (1, 0.5), radius 0.5",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 1,
+        "y": 0.5
+      },
+      "radius": 0.5,
+      "farthestCornerPx": 304.138127,
+      "radiusPx": 152.069063,
+      "flutterRadius": 1.520691,
+      "flutterCenter": {
+        "x": 1,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 100% 50%, #ff0000 0%, #00ff0080 20%, #0000ff 50%)"
+    },
+    {
+      "name": "wide 300x100, center edge (1, 0.5), radius 1",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 1,
+        "y": 0.5
+      },
+      "radius": 1,
+      "farthestCornerPx": 304.138127,
+      "radiusPx": 304.138127,
+      "flutterRadius": 3.041381,
+      "flutterCenter": {
+        "x": 1,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 100% 50%, #ff0000 0%, #00ff0080 40%, #0000ff 100%)"
+    },
+    {
+      "name": "wide 300x100, center edge (1, 0.5), radius 2",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 1,
+        "y": 0.5
+      },
+      "radius": 2,
+      "farthestCornerPx": 304.138127,
+      "radiusPx": 608.276253,
+      "flutterRadius": 6.082763,
+      "flutterCenter": {
+        "x": 1,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 100% 50%, #ff0000 0%, #00ff0080 80%, #0000ff 200%)"
+    },
+    {
+      "name": "wide 300x100, center arbitrary (0.2, 0.1), radius 0.05",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 0.2,
+        "y": 0.1
+      },
+      "radius": 0.05,
+      "farthestCornerPx": 256.320112,
+      "radiusPx": 12.816006,
+      "flutterRadius": 0.12816,
+      "flutterCenter": {
+        "x": -0.6,
+        "y": -0.8
+      },
+      "css": "radial-gradient(circle farthest-corner at 20% 10%, #ff0000 0%, #00ff0080 2%, #0000ff 5%)"
+    },
+    {
+      "name": "wide 300x100, center arbitrary (0.2, 0.1), radius 0.5",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 0.2,
+        "y": 0.1
+      },
+      "radius": 0.5,
+      "farthestCornerPx": 256.320112,
+      "radiusPx": 128.160056,
+      "flutterRadius": 1.281601,
+      "flutterCenter": {
+        "x": -0.6,
+        "y": -0.8
+      },
+      "css": "radial-gradient(circle farthest-corner at 20% 10%, #ff0000 0%, #00ff0080 20%, #0000ff 50%)"
+    },
+    {
+      "name": "wide 300x100, center arbitrary (0.2, 0.1), radius 1",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 0.2,
+        "y": 0.1
+      },
+      "radius": 1,
+      "farthestCornerPx": 256.320112,
+      "radiusPx": 256.320112,
+      "flutterRadius": 2.563201,
+      "flutterCenter": {
+        "x": -0.6,
+        "y": -0.8
+      },
+      "css": "radial-gradient(circle farthest-corner at 20% 10%, #ff0000 0%, #00ff0080 40%, #0000ff 100%)"
+    },
+    {
+      "name": "wide 300x100, center arbitrary (0.2, 0.1), radius 2",
+      "box": {
+        "width": 300,
+        "height": 100
+      },
+      "center": {
+        "x": 0.2,
+        "y": 0.1
+      },
+      "radius": 2,
+      "farthestCornerPx": 256.320112,
+      "radiusPx": 512.640225,
+      "flutterRadius": 5.126402,
+      "flutterCenter": {
+        "x": -0.6,
+        "y": -0.8
+      },
+      "css": "radial-gradient(circle farthest-corner at 20% 10%, #ff0000 0%, #00ff0080 80%, #0000ff 200%)"
+    },
+    {
+      "name": "tall 100x300, center middle (0.5, 0.5), radius 0.05",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "radius": 0.05,
+      "farthestCornerPx": 158.113883,
+      "radiusPx": 7.905694,
+      "flutterRadius": 0.079057,
+      "flutterCenter": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 50% 50%, #ff0000 0%, #00ff0080 2%, #0000ff 5%)"
+    },
+    {
+      "name": "tall 100x300, center middle (0.5, 0.5), radius 0.5",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "radius": 0.5,
+      "farthestCornerPx": 158.113883,
+      "radiusPx": 79.056942,
+      "flutterRadius": 0.790569,
+      "flutterCenter": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 50% 50%, #ff0000 0%, #00ff0080 20%, #0000ff 50%)"
+    },
+    {
+      "name": "tall 100x300, center middle (0.5, 0.5), radius 1",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "radius": 1,
+      "farthestCornerPx": 158.113883,
+      "radiusPx": 158.113883,
+      "flutterRadius": 1.581139,
+      "flutterCenter": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 50% 50%, #ff0000 0%, #00ff0080 40%, #0000ff 100%)"
+    },
+    {
+      "name": "tall 100x300, center middle (0.5, 0.5), radius 2",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 0.5,
+        "y": 0.5
+      },
+      "radius": 2,
+      "farthestCornerPx": 158.113883,
+      "radiusPx": 316.227766,
+      "flutterRadius": 3.162278,
+      "flutterCenter": {
+        "x": 0.0,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 50% 50%, #ff0000 0%, #00ff0080 80%, #0000ff 200%)"
+    },
+    {
+      "name": "tall 100x300, center corner (0, 0), radius 0.05",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 0.05,
+      "farthestCornerPx": 316.227766,
+      "radiusPx": 15.811388,
+      "flutterRadius": 0.158114,
+      "flutterCenter": {
+        "x": -1,
+        "y": -1
+      },
+      "css": "radial-gradient(circle farthest-corner at 0% 0%, #ff0000 0%, #00ff0080 2%, #0000ff 5%)"
+    },
+    {
+      "name": "tall 100x300, center corner (0, 0), radius 0.5",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 0.5,
+      "farthestCornerPx": 316.227766,
+      "radiusPx": 158.113883,
+      "flutterRadius": 1.581139,
+      "flutterCenter": {
+        "x": -1,
+        "y": -1
+      },
+      "css": "radial-gradient(circle farthest-corner at 0% 0%, #ff0000 0%, #00ff0080 20%, #0000ff 50%)"
+    },
+    {
+      "name": "tall 100x300, center corner (0, 0), radius 1",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 1,
+      "farthestCornerPx": 316.227766,
+      "radiusPx": 316.227766,
+      "flutterRadius": 3.162278,
+      "flutterCenter": {
+        "x": -1,
+        "y": -1
+      },
+      "css": "radial-gradient(circle farthest-corner at 0% 0%, #ff0000 0%, #00ff0080 40%, #0000ff 100%)"
+    },
+    {
+      "name": "tall 100x300, center corner (0, 0), radius 2",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 0,
+        "y": 0
+      },
+      "radius": 2,
+      "farthestCornerPx": 316.227766,
+      "radiusPx": 632.455532,
+      "flutterRadius": 6.324555,
+      "flutterCenter": {
+        "x": -1,
+        "y": -1
+      },
+      "css": "radial-gradient(circle farthest-corner at 0% 0%, #ff0000 0%, #00ff0080 80%, #0000ff 200%)"
+    },
+    {
+      "name": "tall 100x300, center edge (1, 0.5), radius 0.05",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 1,
+        "y": 0.5
+      },
+      "radius": 0.05,
+      "farthestCornerPx": 180.277564,
+      "radiusPx": 9.013878,
+      "flutterRadius": 0.090139,
+      "flutterCenter": {
+        "x": 1,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 100% 50%, #ff0000 0%, #00ff0080 2%, #0000ff 5%)"
+    },
+    {
+      "name": "tall 100x300, center edge (1, 0.5), radius 0.5",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 1,
+        "y": 0.5
+      },
+      "radius": 0.5,
+      "farthestCornerPx": 180.277564,
+      "radiusPx": 90.138782,
+      "flutterRadius": 0.901388,
+      "flutterCenter": {
+        "x": 1,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 100% 50%, #ff0000 0%, #00ff0080 20%, #0000ff 50%)"
+    },
+    {
+      "name": "tall 100x300, center edge (1, 0.5), radius 1",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 1,
+        "y": 0.5
+      },
+      "radius": 1,
+      "farthestCornerPx": 180.277564,
+      "radiusPx": 180.277564,
+      "flutterRadius": 1.802776,
+      "flutterCenter": {
+        "x": 1,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 100% 50%, #ff0000 0%, #00ff0080 40%, #0000ff 100%)"
+    },
+    {
+      "name": "tall 100x300, center edge (1, 0.5), radius 2",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 1,
+        "y": 0.5
+      },
+      "radius": 2,
+      "farthestCornerPx": 180.277564,
+      "radiusPx": 360.555128,
+      "flutterRadius": 3.605551,
+      "flutterCenter": {
+        "x": 1,
+        "y": 0.0
+      },
+      "css": "radial-gradient(circle farthest-corner at 100% 50%, #ff0000 0%, #00ff0080 80%, #0000ff 200%)"
+    },
+    {
+      "name": "tall 100x300, center arbitrary (0.2, 0.1), radius 0.05",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 0.2,
+        "y": 0.1
+      },
+      "radius": 0.05,
+      "farthestCornerPx": 281.602557,
+      "radiusPx": 14.080128,
+      "flutterRadius": 0.140801,
+      "flutterCenter": {
+        "x": -0.6,
+        "y": -0.8
+      },
+      "css": "radial-gradient(circle farthest-corner at 20% 10%, #ff0000 0%, #00ff0080 2%, #0000ff 5%)"
+    },
+    {
+      "name": "tall 100x300, center arbitrary (0.2, 0.1), radius 0.5",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 0.2,
+        "y": 0.1
+      },
+      "radius": 0.5,
+      "farthestCornerPx": 281.602557,
+      "radiusPx": 140.801278,
+      "flutterRadius": 1.408013,
+      "flutterCenter": {
+        "x": -0.6,
+        "y": -0.8
+      },
+      "css": "radial-gradient(circle farthest-corner at 20% 10%, #ff0000 0%, #00ff0080 20%, #0000ff 50%)"
+    },
+    {
+      "name": "tall 100x300, center arbitrary (0.2, 0.1), radius 1",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 0.2,
+        "y": 0.1
+      },
+      "radius": 1,
+      "farthestCornerPx": 281.602557,
+      "radiusPx": 281.602557,
+      "flutterRadius": 2.816026,
+      "flutterCenter": {
+        "x": -0.6,
+        "y": -0.8
+      },
+      "css": "radial-gradient(circle farthest-corner at 20% 10%, #ff0000 0%, #00ff0080 40%, #0000ff 100%)"
+    },
+    {
+      "name": "tall 100x300, center arbitrary (0.2, 0.1), radius 2",
+      "box": {
+        "width": 100,
+        "height": 300
+      },
+      "center": {
+        "x": 0.2,
+        "y": 0.1
+      },
+      "radius": 2,
+      "farthestCornerPx": 281.602557,
+      "radiusPx": 563.205114,
+      "flutterRadius": 5.632051,
+      "flutterCenter": {
+        "x": -0.6,
+        "y": -0.8
+      },
+      "css": "radial-gradient(circle farthest-corner at 20% 10%, #ff0000 0%, #00ff0080 80%, #0000ff 200%)"
+    }
+  ],
+  "documentCases": [
+    {
+      "name": "linear gradient stays as before",
+      "gradient": {
+        "angle": 180,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": "primary",
+            "position": 1
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "radial gradient in the middle covering the box",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "radius": 1,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "radial: smallest radius",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "radius": 0.05,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "radial: largest radius",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "radius": 2,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "radial: center in the top-left corner",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 0,
+          "y": 0
+        },
+        "radius": 1,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "radial: center in the bottom-right corner",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 1,
+          "y": 1
+        },
+        "radius": 1,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": true
+    },
+    {
+      "name": "radial: radius below the minimum",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "radius": 0.04,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "radial: radius above the maximum",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "radius": 2.01,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "radial: radius zero",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "radius": 0,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "radial: center x below 0",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": -0.01,
+          "y": 0.5
+        },
+        "radius": 1,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "radial: center y above 1",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 0.5,
+          "y": 1.01
+        },
+        "radius": 1,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "radial: center with an extra field",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 0.5,
+          "y": 0.5,
+          "z": 0
+        },
+        "radius": 1,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "radial with an angle",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "radius": 1,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ],
+        "angle": 180
+      },
+      "valid": false
+    },
+    {
+      "name": "linear with a shape field",
+      "gradient": {
+        "angle": 180,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": "primary",
+            "position": 1
+          }
+        ],
+        "shape": "radial"
+      },
+      "valid": false
+    },
+    {
+      "name": "shape without center",
+      "gradient": {
+        "shape": "radial",
+        "radius": 1,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "shape without radius",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "radial without shape",
+      "gradient": {
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "radius": 1,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "unknown shape",
+      "gradient": {
+        "shape": "conic",
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "radius": 1,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": {
+              "token": "accent",
+              "opacity": 0
+            },
+            "position": 1
+          }
+        ]
+      },
+      "valid": false
+    },
+    {
+      "name": "linear with a center",
+      "gradient": {
+        "angle": 180,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          },
+          {
+            "color": "primary",
+            "position": 1
+          }
+        ],
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        }
+      },
+      "valid": false
+    },
+    {
+      "name": "radial with one stop",
+      "gradient": {
+        "shape": "radial",
+        "center": {
+          "x": 0.5,
+          "y": 0.5
+        },
+        "radius": 1,
+        "stops": [
+          {
+            "color": "accent",
+            "position": 0
+          }
+        ]
+      },
+      "valid": false
+    }
+  ]
+}

@@ -51,14 +51,41 @@ internal data class TextStyleValue(
     val lineBox: Double get() = fontSize * lineHeight
 }
 
-internal data class ShadowLayer(val offsetX: Double, val offsetY: Double, val blur: Double, val spread: Double, val color: Rgba)
+/** One layer of a shadow; [inset] makes it an inner one (drawn inside the box, over its background). */
+internal data class ShadowLayer(
+    val offsetX: Double,
+    val offsetY: Double,
+    val blur: Double,
+    val spread: Double,
+    val color: Rgba,
+    val inset: Boolean = false,
+)
 
+/** One layer of the shadow of a text (`style.textShadow`): no spread, no inner form. */
+internal data class TextShadowLayer(val offsetX: Double, val offsetY: Double, val blur: Double, val color: Rgba)
+
+/** A gradient of the theme or of a node: linear (an [angle]), or a circle ([radial]). */
 internal data class GradientValue(
-    /** Degrees as CSS reads them: 0 is «to top», 90 «to right». */
+    /** Degrees as CSS reads them: 0 is «to top», 90 «to right». Zero for a radial gradient. */
     val angle: Double,
     val stops: List<Stop>,
+    /** The circle of a radial gradient; `null` for a linear one. */
+    val radial: Radial? = null,
 ) {
     internal data class Stop(val color: Rgba, val position: Double)
+
+    /**
+     * The circle: its centre in the box (0…1 across and down, (0, 0) the top left, never mirrored in right-to-left text) and its
+     * radius as a share of the distance from the centre to the farthest corner. The stop positions are shares of that radius.
+     */
+    internal data class Radial(val centerX: Double, val centerY: Double, val radius: Double) {
+        /** The radius in pixels for a box: `radius` times the distance from the centre to the farthest corner. */
+        internal fun radiusIn(width: Double, height: Double): Double {
+            val dx = maxOf(centerX * width, width - centerX * width)
+            val dy = maxOf(centerY * height, height - centerY * height)
+            return radius * Math.sqrt(dx * dx + dy * dy)
+        }
+    }
 }
 
 /** The colours of one role (`roles.buttonVariant.primary`): names of theme colours. */
@@ -203,17 +230,40 @@ internal object ThemeReader {
             elevation[name] = read
         }
         for ((name, value) in theme["gradient"]?.obj ?: JsonObject()) {
-            val angle = value["angle"]?.themeNumber ?: continue
-            if (angle !in ThemeBounds.ANGLES) {
-                ignored("gradient.$name", "an angle that is not one of the schema's")
-                continue
+            var angle = 0.0
+            var radial: GradientValue.Radial? = null
+            if (value["shape"] != null) {
+                // A circle: the shape word, a centre and a radius; any other shape is an entry of the wrong form.
+                val center = value["center"]?.obj
+                val x = center?.get("x")?.themeNumber
+                val y = center?.get("y")?.themeNumber
+                val radius = value["radius"]?.themeNumber
+                if (value["shape"]?.string != "radial" || value["angle"] != null || x == null || y == null || radius == null) {
+                    ignored("gradient.$name", "a gradient of the wrong form")
+                    continue
+                }
+                radial = GradientValue.Radial(
+                    bounded(x, ThemeBounds.UNIT, null, "gradient.$name.center.x"),
+                    bounded(y, ThemeBounds.UNIT, null, "gradient.$name.center.y"),
+                    bounded(radius, ThemeBounds.RADIAL_RADIUS, null, "gradient.$name.radius"),
+                )
+            } else {
+                angle = value["angle"]?.themeNumber ?: continue
+                if (value["center"] != null || value["radius"] != null) {
+                    ignored("gradient.$name", "a line with the fields of a circle")
+                    continue
+                }
+                if (angle !in ThemeBounds.ANGLES) {
+                    ignored("gradient.$name", "an angle that is not one of the schema's")
+                    continue
+                }
             }
             val stops = value["stops"]?.array.orEmpty().mapIndexedNotNull { index, stop ->
                 val shade = stop["color"]?.string?.let(Rgba::hex) ?: return@mapIndexedNotNull null
                 val position = stop["position"]?.themeNumber ?: return@mapIndexedNotNull null
                 GradientValue.Stop(shade, bounded(position, ThemeBounds.UNIT, null, "gradient.$name.stops[$index].position"))
             }
-            if (stops.size >= 2) gradient[name] = GradientValue(angle, stops)
+            if (stops.size >= 2) gradient[name] = GradientValue(angle, stops, radial)
         }
         for ((name, value) in theme["fontFamilies"]?.obj ?: JsonObject()) value["primary"]?.string?.let { families[name] = it }
         for ((group, value) in theme["roles"]?.obj ?: JsonObject()) {
@@ -238,5 +288,8 @@ internal object ThemeBounds {
     val SHADOW_OFFSET = -64.0..64.0
     val SHADOW_BLUR = 0.0..128.0
     val UNIT = 0.0..1.0
+
+    /** The radius of a radial gradient, a share of the distance to the farthest corner. */
+    val RADIAL_RADIUS = 0.05..2.0
     val ANGLES = setOf(0.0, 90.0, 180.0, 270.0, 45.0, 135.0, 225.0, 315.0)
 }

@@ -150,7 +150,10 @@
                   "variant": "secondary",
                   "size": "md",
                   "action": {
-                    "type": "share"
+                    "type": "share",
+                    "params": {
+                      "text": "Look at this offer"
+                    }
                   }
                 }
               },
@@ -320,7 +323,10 @@
                   },
                   "variant": "secondary",
                   "action": {
-                    "type": "share"
+                    "type": "share",
+                    "params": {
+                      "text": "Join me in the app"
+                    }
                   },
                   "fullWidth": false,
                   "icon": "plus",
