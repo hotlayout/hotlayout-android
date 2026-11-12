@@ -2,6 +2,8 @@ package com.hotlayout
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -40,6 +42,57 @@ public object StandardActions {
             else -> null
         }
     }
+
+    /**
+     * The text a `copy` action asks to put on the clipboard, or `null` for any other action and for a
+     * `copy` that failed its form.
+     */
+    public fun copiedText(action: HotlayoutAction): String? {
+        if (action.invalid != null) return null
+        val standard = action.standard as? StandardAction.Copy ?: return null
+        return standard.text.takeIf { action.type == "copy" && ActionCatalog.formProblem("text", it) == null }
+    }
+
+    /**
+     * The text and the address a `share` action asks to offer to the share sheet, only those that have
+     * a value, or `null` for any other action and for a `share` that failed its form. The address is
+     * checked again by the contract's form.
+     */
+    public fun shareContent(action: HotlayoutAction): ShareContent? {
+        if (action.invalid != null || action.type != "share") return null
+        val standard = action.standard as? StandardAction.Share ?: return null
+        val text = standard.text?.takeIf { it.isNotEmpty() && ActionCatalog.formProblem("text", it) == null }
+        val url = standard.url?.takeIf { ActionCatalog.formProblem("httpsUrl", it) == null }
+        if (text == null && url == null) return null
+        return ShareContent(text, url)
+    }
+}
+
+/** What a `share` action offers to the share sheet: a text, an address, or both. */
+public data class ShareContent(val text: String?, val url: String?) {
+    /** The two joined for a plain-text share: the text, then the address on its own line. */
+    public val plainText: String get() = listOfNotNull(text, url).joinToString("\n")
+}
+
+/**
+ * Puts the text of a checked `copy` action on the clipboard. Returns whether it did; the host
+ * decides whether to confirm it (Android 13 and later shows a confirmation of its own).
+ */
+public fun copyToClipboard(context: Context, action: HotlayoutAction): Boolean {
+    val text = StandardActions.copiedText(action) ?: return false
+    val manager = context.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager ?: return false
+    manager.setPrimaryClip(ClipData.newPlainText(null, text))
+    return true
+}
+
+/**
+ * The chooser intent of a checked `share` action, or `null`. The host starts it; the reader never
+ * opens a share sheet.
+ */
+public fun shareIntent(action: HotlayoutAction): Intent? {
+    val content = StandardActions.shareContent(action) ?: return null
+    val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, content.plainText)
+    return Intent.createChooser(send, null)
 }
 
 /**

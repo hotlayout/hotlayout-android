@@ -26,6 +26,18 @@ object TableJson {
             is StandardAction.OpenUrl -> pairs.add("standard" to obj("type" to JsonValue.Str("openUrl"), "url" to JsonValue.Str(standard.url)))
             is StandardAction.Deeplink -> pairs.add("standard" to obj("type" to JsonValue.Str("deeplink"), "url" to JsonValue.Str(standard.url), "scheme" to JsonValue.Str(standard.scheme)))
             StandardAction.Close -> pairs.add("standard" to obj("type" to JsonValue.Str("close")))
+            is StandardAction.Copy -> pairs.add("standard" to obj("type" to JsonValue.Str("copy"), "text" to JsonValue.Str(standard.text)))
+            is StandardAction.Share -> pairs.add(
+                "standard" to JsonValue.Obj(
+                    JsonObject(
+                        listOfNotNull(
+                            "type" to JsonValue.Str("share"),
+                            standard.text?.let { "text" to JsonValue.Str(it) },
+                            standard.url?.let { "url" to JsonValue.Str(it) },
+                        ),
+                    ),
+                ),
+            )
             null -> Unit
         }
         action.invalid?.let { pairs.add("invalid" to obj("param" to JsonValue.Str(it.param), "problem" to JsonValue.Str(it.problem.word))) }

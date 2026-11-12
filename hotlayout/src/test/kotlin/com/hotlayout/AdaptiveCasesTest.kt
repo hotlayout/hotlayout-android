@@ -53,7 +53,7 @@ class AdaptiveCasesTest {
     @Test fun tableShape() {
         val counts = mapOf(
             "classCases" to 20, "layerCases" to 3, "styleCases" to 22, "propsCases" to 27, "showCases" to 22, "drawnCases" to 7, "numberCases" to 5, "tabCases" to 4,
-            "weightCases" to 5, "zoneCases" to 5, "formCases" to 6, "validityCases" to 39, "contentCases" to 22, "gridCases" to 12, "boxCases" to 12, "ruleCases" to 20,
+            "weightCases" to 5, "zoneCases" to 5, "formCases" to 6, "validityCases" to 42, "contentCases" to 22, "gridCases" to 12, "boxCases" to 12, "ruleCases" to 20,
             "chromeCases" to 35, "wideNavItemCases" to 7, "wideNavHeightCases" to 3, "wideAppBarCases" to 23, "wideNavBarCases" to 7, "wideZoneCases" to 27,
             "wideModalCases" to 14, "wideModalRadiusCases" to 9, "wideSectionCases" to 10, "wideModalContentCases" to 10, "olderReaderShowOnCases" to 10,
             "wideRuleCases" to 21, "unsetStyleCases" to 14, "unsetStateCases" to 3, "unsetPropsCases" to 7, "unsetDocumentCases" to 12, "unsetScreenCases" to 5,
@@ -62,7 +62,7 @@ class AdaptiveCasesTest {
             assertEquals(group, count, rows(group).size)
             assertEquals("$group: names repeat", count, rows(group).map { it.name() }.toSet().size)
         }
-        assertEquals(448, counts.values.sum())
+        assertEquals(451, counts.values.sum())
     }
 
     /** Every group of the table is run by a reader test or named here with the reason. */
@@ -137,13 +137,14 @@ class AdaptiveCasesTest {
         }
     }
 
-    /** The columns of the base keep their bounds 2…4, a number of a layer is read as 1…6. */
+    /** The columns of the base keep their bounds 2…6, a number of a layer is read as 1…6. */
     @Test fun columnsBounds() {
         fun columns(json: String, width: WidthClass): Int? {
             val node = node(JsonValue.parse(json), "Grid").inWidthClass(width)
             return gridColumns(node.props["columns"], node.columnsFromOverride)
         }
-        assertEquals(4, columns("""{"type":"Grid","props":{"columns":9}}""", WidthClass.Expanded))
+        assertEquals(6, columns("""{"type":"Grid","props":{"columns":9}}""", WidthClass.Expanded))
+        assertEquals(5, columns("""{"type":"Grid","props":{"columns":5}}""", WidthClass.Compact))
         assertEquals(2, columns("""{"type":"Grid","props":{"columns":1}}""", WidthClass.Compact))
         val layered = """{"type":"Grid","props":{"columns":2},"propsOn":{"medium":{"columns":1},"expanded":{"columns":99}}}"""
         assertEquals(2, columns(layered, WidthClass.Compact))

@@ -8,6 +8,9 @@ import com.hotlayout.support.Contract
 import com.hotlayout.support.TableJson
 import com.hotlayout.support.name
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
 /** The shared action table (`fixtures/actions/action-cases.json`): forms, what the host receives, the flow. */
@@ -50,6 +53,52 @@ class ActionCasesTest {
             val asked = if (row["disabled"]?.bool == true) null else ActionCatalog.haptic(action)
             assertEquals(row.name(), row["expect"]?.string, asked)
         }
+    }
+
+    @Test fun copyShareFormCases() {
+        val rows = Contract.rows(table, "copyShareFormCases")
+        assertEquals(8, rows.size)
+        for (row in rows) {
+            val value = row["repeat"]?.obj?.let(TableJson::built) ?: row["value"]?.string
+            assertEquals(row.name(), row["problem"]?.string, ActionCatalog.formProblem(row["form"]?.string ?: "", value)?.word)
+        }
+    }
+
+    @Test fun copyShareHandedCases() {
+        val rows = Contract.rows(table, "copyShareHandedCases")
+        assertEquals(16, rows.size)
+        for (row in rows) {
+            val action = TableJson.expand(row["action"] ?: JsonValue.Null).obj ?: JsonObject()
+            val handed = ActionCatalog.handed(action, Contract.scope(row["data"]))
+            assertEquals(row.name(), TableJson.expand(row["handed"] ?: JsonValue.Null), TableJson.handed(handed))
+            // A standard action carries something to do: `share` never an empty field, and its address passes the form.
+            when (val standard = handed.standard) {
+                is StandardAction.Share -> {
+                    assertTrue(row.name(), standard.text != null || standard.url != null)
+                    assertNotEquals(row.name(), "", standard.text)
+                    standard.url?.let { assertNull(row.name(), ActionCatalog.formProblem("httpsUrl", it)) }
+                }
+                is StandardAction.Copy -> assertTrue(row.name(), standard.text.isNotEmpty())
+                else -> Unit
+            }
+        }
+    }
+
+    @Test fun helpersForTheHost() {
+        fun handed(json: String) = ActionCatalog.handed(JsonValue.parse(json).obj!!, emptyMap())
+        val copy = handed("""{"type":"copy","params":{"text":"ORB-7Q2K"}}""")
+        assertEquals("ORB-7Q2K", StandardActions.copiedText(copy))
+        assertNull(StandardActions.shareContent(copy))
+        val share = handed("""{"type":"share","params":{"text":"Join me","url":"https://example.com/p"}}""")
+        assertEquals(ShareContent("Join me", "https://example.com/p"), StandardActions.shareContent(share))
+        assertEquals("Join me\nhttps://example.com/p", StandardActions.shareContent(share)?.plainText)
+        assertNull(StandardActions.copiedText(share))
+        // A parameter that failed its form hands nothing to do, and a hand-built action is checked again.
+        assertNull(StandardActions.shareContent(handed("""{"type":"share","params":{"text":"Join me","url":"http://example.com"}}""")))
+        assertNull(StandardActions.copiedText(handed("""{"type":"copy"}""")))
+        assertNull(StandardActions.copiedText(HotlayoutAction("copy", null, StandardAction.Copy(""))))
+        assertNull(StandardActions.shareContent(HotlayoutAction("share", null, StandardAction.Share(null, "http://example.com"))))
+        assertNull(StandardActions.shareContent(HotlayoutAction("copy", null, StandardAction.Share("x", null))))
     }
 
     @Test fun flowCases() {

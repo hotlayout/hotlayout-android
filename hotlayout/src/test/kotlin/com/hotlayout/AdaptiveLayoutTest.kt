@@ -242,7 +242,7 @@ class AdaptiveLayoutTest {
                 drawn += 1
             }
         }
-        assertEquals(39 * 3, drawn)
+        assertEquals(42 * 3, drawn)
     }
 
     /** A field of the wrong shape does not stop the screen: drawn at every width. */

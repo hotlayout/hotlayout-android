@@ -76,6 +76,9 @@ class TableCoverageTest {
             "swipe-motion/labelCases", "swipe-motion/trailCases", "swipe-motion/thumbRadiusCases", "swipe-motion/collapseCases", "swipe-motion/rippleScaleCases",
             "swipe-motion/rippleCases", "swipe-motion/revealCases", "swipe-motion/sequenceCases", "swipe-motion/busyReturnCases", "swipe-motion/fieldCases", "swipe-motion/ruleCases",
             // Schema 9.35.0: display typography. Schema 9.36.0: the radial gradient.
+            // Schema 9.37.0: the chart. Schema 9.41.0: the host actions copy and share (their documents are the validator's).
+            "chart/pointCases", "chart/highlightCases", "chart/barCases", "chart/lineCases", "chart/smoothCases", "chart/labelCases", "chart/plotHeightCases",
+            "actions/copyShareFormCases", "actions/copyShareHandedCases",
             "display-typography/scaleCases", "display-typography/trackingCases", "display-typography/lineCases",
             "radial-gradient/stops", "radial-gradient/geometryCases",
             // Pictures: the proportion, the box, the file in the box, the radius, the circle.
@@ -121,8 +124,7 @@ class TableCoverageTest {
          */
         val notRun = setOf(
             "media-chrome/safeTopModalCases",
-            // Schema 9.37.0, 9.38.0 and 9.40.0: not performed yet, so their tables are not run.
-            "chart/pointCases", "chart/highlightCases", "chart/barCases", "chart/lineCases", "chart/smoothCases", "chart/labelCases", "chart/plotHeightCases",
+            // Schema 9.38.0 and 9.40.0: not performed yet, so their tables are not run.
             "screen-transition/curveCases", "screen-transition/planCases", "screen-transition/frameCases", "screen-transition/fieldCases",
             "motion/turnCases", "motion/appearCases", "motion/momentCases", "motion/zoneCases",
         )

@@ -14,6 +14,7 @@ import com.hotlayout.render.screen.NavItemWidget
 import com.hotlayout.render.widgets.AccordionWidget
 import com.hotlayout.render.widgets.BadgeWidget
 import com.hotlayout.render.widgets.ButtonWidget
+import com.hotlayout.render.widgets.ChartWidget
 import com.hotlayout.render.widgets.CheckboxWidget
 import com.hotlayout.render.widgets.ChoiceGroupWidget
 import com.hotlayout.render.widgets.CircularProgressWidget
@@ -63,6 +64,7 @@ internal fun Widget(call: WidgetCall) {
         WidgetType.Spacer -> SpacerWidget(call)
         WidgetType.Divider -> DividerWidget(call)
         WidgetType.ProgressBar -> ProgressBarWidget(call)
+        WidgetType.Chart -> ChartWidget(call)
         WidgetType.CircularProgress -> CircularProgressWidget(call)
         WidgetType.Repeater -> RepeaterWidget(call)
         WidgetType.Grid -> GridWidget(call)

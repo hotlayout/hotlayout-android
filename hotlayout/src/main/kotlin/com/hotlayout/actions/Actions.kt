@@ -14,7 +14,7 @@ import com.hotlayout.model.ReportSink
 internal object ActionCatalog {
     internal class Param(val name: String, val required: Boolean, val form: String, val bindable: Boolean)
 
-    internal class Entry(val type: String, val hostExecutes: Boolean, val params: List<Param>)
+    internal class Entry(val type: String, val hostExecutes: Boolean, val params: List<Param>, val oneOf: List<String> = emptyList())
 
     internal val entries: List<Entry> = listOf(
         Entry("none", false, emptyList()),
@@ -24,6 +24,9 @@ internal object ActionCatalog {
         Entry("openUrl", true, listOf(Param("url", true, "httpsUrl", true))),
         Entry("deeplink", true, listOf(Param("url", true, "appLink", true))),
         Entry("close", true, emptyList()),
+        // The second list of the catalog: both are performed by the host.
+        Entry("copy", true, listOf(Param("text", true, "text", true))),
+        Entry("share", true, listOf(Param("text", false, "text", true), Param("url", false, "httpsUrl", true)), oneOf = listOf("text", "url")),
         Entry(
             "setValue", false,
             listOf(Param("path", true, "dataPath", false), Param("value", false, "literal", false), Param("valueType", false, "valueType", false)),
@@ -62,6 +65,8 @@ internal object ActionCatalog {
      */
     internal fun formProblem(form: String, value: String?): ActionParamProblem? {
         if (value.isNullOrEmpty()) return ActionParamProblem.Missing
+        // The form `text` is a non-empty string of at most 2048 characters and nothing else.
+        if (form == "text") return if (value.length > URL_MAX_LENGTH) ActionParamProblem.TooLong else null
         if (form != "httpsUrl" && form != "appLink") return null
         if (value.length > URL_MAX_LENGTH) return ActionParamProblem.TooLong
         if (form == "httpsUrl") {
@@ -118,7 +123,14 @@ internal object ActionCatalog {
                 return HotlayoutAction(type, base, invalid = InvalidParam(param.name, problem))
             }
         }
+        // Then the group: no parameter of it has a value, so the first one is missing.
+        val group = entry.oneOf
+        if (group.isNotEmpty() && group.none { !params[it].isNullOrEmpty() }) {
+            return HotlayoutAction(type, base, invalid = InvalidParam(group.first(), ActionParamProblem.Missing))
+        }
         return when (type) {
+            "copy" -> HotlayoutAction(type, base, StandardAction.Copy(params["text"] ?: ""))
+            "share" -> HotlayoutAction(type, base, StandardAction.Share(params["text"]?.takeIf { it.isNotEmpty() }, params["url"]?.takeIf { it.isNotEmpty() }))
             "openUrl" -> HotlayoutAction(type, base, StandardAction.OpenUrl(params["url"] ?: ""))
             "deeplink" -> {
                 val url = params["url"] ?: ""

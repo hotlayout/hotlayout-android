@@ -10,7 +10,7 @@ internal enum class WidgetType(val word: String?) {
     Repeater("Repeater"), Spacer("Spacer"), Divider("Divider"), Text("Text"), Image("Image"), Icon("Icon"),
     Button("Button"), IconButton("IconButton"), ListTile("ListTile"), ProgressBar("ProgressBar"),
     CircularProgress("CircularProgress"), Badge("Badge"), NavBar("NavBar"), NavItem("NavItem"),
-    TextField("TextField"), Switch("Switch"), Checkbox("Checkbox"),
+    TextField("TextField"), Switch("Switch"), Checkbox("Checkbox"), Chart("Chart"),
     Unknown(null);
 
     companion object {

@@ -603,6 +603,21 @@ public final class com/hotlayout/ScreenShownEvent {
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/hotlayout/ShareContent {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lcom/hotlayout/ShareContent;
+	public static synthetic fun copy$default (Lcom/hotlayout/ShareContent;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/hotlayout/ShareContent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPlainText ()Ljava/lang/String;
+	public final fun getText ()Ljava/lang/String;
+	public final fun getUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public abstract class com/hotlayout/StandardAction {
 	public static final field $stable I
 }
@@ -611,6 +626,18 @@ public final class com/hotlayout/StandardAction$Close : com/hotlayout/StandardAc
 	public static final field $stable I
 	public static final field INSTANCE Lcom/hotlayout/StandardAction$Close;
 	public fun equals (Ljava/lang/Object;)Z
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class com/hotlayout/StandardAction$Copy : com/hotlayout/StandardAction {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;)Lcom/hotlayout/StandardAction$Copy;
+	public static synthetic fun copy$default (Lcom/hotlayout/StandardAction$Copy;Ljava/lang/String;ILjava/lang/Object;)Lcom/hotlayout/StandardAction$Copy;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getText ()Ljava/lang/String;
 	public fun hashCode ()I
 	public fun toString ()Ljava/lang/String;
 }
@@ -641,16 +668,34 @@ public final class com/hotlayout/StandardAction$OpenUrl : com/hotlayout/Standard
 	public fun toString ()Ljava/lang/String;
 }
 
+public final class com/hotlayout/StandardAction$Share : com/hotlayout/StandardAction {
+	public static final field $stable I
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun copy (Ljava/lang/String;Ljava/lang/String;)Lcom/hotlayout/StandardAction$Share;
+	public static synthetic fun copy$default (Lcom/hotlayout/StandardAction$Share;Ljava/lang/String;Ljava/lang/String;ILjava/lang/Object;)Lcom/hotlayout/StandardAction$Share;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getText ()Ljava/lang/String;
+	public final fun getUrl ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
 public final class com/hotlayout/StandardActions {
 	public static final field $stable I
 	public static final field INSTANCE Lcom/hotlayout/StandardActions;
+	public final fun copiedText (Lcom/hotlayout/HotlayoutAction;)Ljava/lang/String;
+	public final fun shareContent (Lcom/hotlayout/HotlayoutAction;)Lcom/hotlayout/ShareContent;
 	public final fun url (Lcom/hotlayout/HotlayoutAction;Ljava/util/Set;)Ljava/lang/String;
 	public static synthetic fun url$default (Lcom/hotlayout/StandardActions;Lcom/hotlayout/HotlayoutAction;Ljava/util/Set;ILjava/lang/Object;)Ljava/lang/String;
 }
 
 public final class com/hotlayout/StandardActionsKt {
+	public static final fun copyToClipboard (Landroid/content/Context;Lcom/hotlayout/HotlayoutAction;)Z
 	public static final fun runStandardAction (Landroid/content/Context;Lcom/hotlayout/HotlayoutAction;Ljava/util/Set;)Z
 	public static synthetic fun runStandardAction$default (Landroid/content/Context;Lcom/hotlayout/HotlayoutAction;Ljava/util/Set;ILjava/lang/Object;)Z
+	public static final fun shareIntent (Lcom/hotlayout/HotlayoutAction;)Landroid/content/Intent;
 }
 
 public final class com/hotlayout/StoredText {

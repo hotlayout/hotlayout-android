@@ -18,6 +18,10 @@ public sealed class StandardAction {
     public data class Deeplink(val url: String, val scheme: String) : StandardAction()
     /** Close the host's own container. */
     public data object Close : StandardAction()
+    /** Put [text] on the clipboard (`copy`). */
+    public data class Copy(val text: String) : StandardAction()
+    /** Open the share sheet with the fields that have a value; at least one does (`share`). */
+    public data class Share(val text: String?, val url: String?) : StandardAction()
 }
 
 /** A parameter that did not pass its form. */

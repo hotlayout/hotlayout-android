@@ -61,7 +61,6 @@ class MirrorsTest {
 
     @Test fun widgetListMirrorsTheArtifact() {
         val widgets = Contract.json("screen-schema.json")["x-compatibility"]?.get("widgets")?.obj
-        // `Chart` (schema 9.37.0) is not read by this reader yet.
-        assertEquals(widgets?.keys?.minus("Chart")?.toSet(), WidgetType.entries.mapNotNull { it.word }.toSet())
+        assertEquals(widgets?.keys?.toSet(), WidgetType.entries.mapNotNull { it.word }.toSet())
     }
 }

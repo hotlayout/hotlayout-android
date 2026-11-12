@@ -66,7 +66,11 @@ class ActionsHardeningTest {
     // ---------------------------------------------------------------- the catalog and the forms
 
     @Test fun theCatalogIsTheArtifactsCatalogEntryForEntry() {
-        val expected = artifact["catalog"]!!.array!!.map { entry ->
+        // The second list of the catalog (`x-copyShare.catalog`) goes right after `close`, as the picker lists it.
+        val second = Contract.json("screen-schema.json")["x-copyShare"]!!["catalog"]!!.array!!
+        val first = artifact["catalog"]!!.array!!
+        val closeAt = first.indexOfFirst { it["type"]!!.string == "close" } + 1
+        val expected = (first.take(closeAt) + second + first.drop(closeAt)).map { entry ->
             val params = entry["params"]!!.array!!.joinToString(";") {
                 "${it["name"]!!.string}/${it["required"]!!.bool}/${it["form"]!!.string}/${it["bindable"]!!.bool}"
             }

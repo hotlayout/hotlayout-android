@@ -125,13 +125,13 @@ internal class RepeaterPlan(node: DocumentNode, scope: DataScope, allowed: Int =
 }
 
 /**
- * The number of cells in a row of a grid: a whole count from 1 to 6 (the schema allows 2…4 in the
+ * The number of cells in a row of a grid: a whole count from 1 to 6 (the schema allows 2…6 in the
  * document and 1…6 as a per-width override); a value that is not a number is 2.
  */
 internal fun gridColumns(raw: JsonValue?, overridden: Boolean = true): Int? {
     if (raw == null || raw.isNull) return null
     val number = raw.number ?: return 2
-    return floor(number).coerceIn(if (overridden) 1.0 else 2.0, if (overridden) 6.0 else 4.0).toInt()
+    return floor(number).coerceIn(if (overridden) 1.0 else 2.0, 6.0).toInt()
 }
 
 /** The grid arithmetic shared by `Grid` and a `Repeater` with `columns`. */
