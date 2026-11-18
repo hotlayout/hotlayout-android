@@ -11,9 +11,9 @@ document, a theme and your data become a native Jetpack Compose screen.
 [![Docs](https://img.shields.io/badge/docs-hotlayout.com-0a6cc9)](https://hotlayout.com/docs)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/hotlayout/.github/main/profile/assets/app-obsidian.png" alt="A rewards screen built in HotLayout, dark theme" width="240">
+  <img src="https://raw.githubusercontent.com/hotlayout/.github/main/profile/assets/app-obsidian.png" alt="A storefront home screen built in HotLayout, light theme" width="240">
   &nbsp;&nbsp;
-  <img src="https://raw.githubusercontent.com/hotlayout/.github/main/profile/assets/app-sunny.png" alt="The same kind of screen with another theme, light and playful" width="240">
+  <img src="https://raw.githubusercontent.com/hotlayout/.github/main/profile/assets/app-sunny.png" alt="An onboarding screen built in the same editor, dark theme" width="240">
 </p>
 <p align="center"><sub>Two screens built in HotLayout. Try the editor in your browser, no sign-up: <a href="https://hotlayout.com/try">https://hotlayout.com/try</a></sub></p>
 
@@ -95,7 +95,7 @@ fun PromoScreen(documentJson: String, themeJson: String, inter: FontFamily) {
         HotlayoutScreen(
             document = loaded,
             theme = theme,
-            data = dataScopeOf("user.name" to "Maya", "user.points" to 1850),
+            data = dataScopeOf("user.name" to "Maya", "cart.count" to 2),
             entry = "promo",                                    // a named entry point, optional
             fonts = HotlayoutFonts { name -> if (name == "Inter") inter else null },
             onAction = { action, _ ->

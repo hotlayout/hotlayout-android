@@ -42,7 +42,7 @@ fun PromoScreen(documentJson: String, themeJson: String, inter: FontFamily) {
         HotlayoutScreen(
             document = loaded,
             theme = theme,
-            data = dataScopeOf("user.name" to "Maya", "user.points" to 1850),
+            data = dataScopeOf("user.name" to "Maya", "cart.count" to 2),
             entry = "promo",                                    // a named entry point, optional
             fonts = HotlayoutFonts { name -> if (name == "Inter") inter else null },
             onAction = { action, _ ->
