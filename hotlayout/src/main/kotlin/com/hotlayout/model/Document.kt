@@ -5,6 +5,8 @@ import com.hotlayout.HotlayoutLoadException
 import com.hotlayout.HotlayoutReport
 import com.hotlayout.JsonObject
 import com.hotlayout.JsonValue
+import com.hotlayout.render.modal.ScreenTransition
+import com.hotlayout.render.modal.ScreenTransitionWord
 import com.hotlayout.ScreenPresentation
 import com.hotlayout.checkDocumentVersion
 import com.hotlayout.json.JsonParser
@@ -45,6 +47,8 @@ internal data class ScreenEntry(
     val statusBarIcons: String?,
     /** Blur radius under a modal layer, 1…40; `null` without a valid field or on a page. */
     val backdropBlur: Int?,
+    /** How the screen comes and goes (`transition`): only the words `fade` and `none` are read, anything else is no field. */
+    val transition: ScreenTransitionWord? = null,
     /** `false` only for a modal layer that waits for an action inside it. */
     val dismissible: Boolean,
     val root: DocumentNode,
@@ -107,6 +111,7 @@ internal object DocumentReader {
                     modalPlacement = placement?.takeIf { it == "bottom" || it == "center" },
                     statusBarIcons = entry["statusBarIcons"]?.string?.takeIf { it == "light" || it == "dark" },
                     backdropBlur = if (isModal) BlurRules.radius(entry["backdropBlur"]) else null,
+                    transition = ScreenTransitionWord.of(entry[ScreenTransition.FIELD]),
                     dismissible = !(isModal && entry["dismissible"]?.bool == false),
                     root = root,
                 ),

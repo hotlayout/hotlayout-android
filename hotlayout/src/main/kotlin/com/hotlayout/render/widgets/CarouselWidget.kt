@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
@@ -31,6 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.IntrinsicMeasurable
 import androidx.compose.ui.layout.IntrinsicMeasureScope
@@ -136,6 +138,21 @@ internal fun CarouselRow(
         if (stop in 1 until stopsPx.size) tracker.byReader { scroll.scrollTo(stopsPx[stop].roundToInt()) }
     }
     CarouselStopEffects(tracker, scroll, CarouselStopInput(stopPath, told.value, stopsPx, density.toDouble(), restored != 0, reduced, context.write))
+    // The timer (`carousel.autoAdvance`): a clock that takes the row to the next stop, frozen while anything holds it.
+    val autoAdvance = CarouselAutoAdvance.of(node)
+    var focusInside by remember { mutableStateOf(false) }
+    val driver = remember { CarouselAutoAdvanceDriver() }
+    if (autoAdvance != null) {
+        val ready = restored != 0 && stopsPx.size > 1
+        CarouselAutoAdvanceEffects(
+            driver, tracker, scroll,
+            CarouselAutoAdvanceInput(
+                autoAdvance,
+                view = { latest.value?.takeIf { ready }?.let { CarouselStopView(CarouselRules.activeStop(it.stops, scroll.value / density.toDouble()), it.stops.size) } },
+                keyboardFocus = { focusInside }, path = stopPath, value = { told.value }, write = context.write,
+            ),
+        )
+    }
     LaunchedEffect(memoryKey) {
         snapshotFlow { scroll.value }.collect { value ->
             val now = latest.value ?: return@collect
@@ -157,7 +174,8 @@ internal fun CarouselRow(
         com.hotlayout.render.paint.ProvideGlassClip(vertical = false) { clip ->
         AlignedRow(
             gap, JustifyWord.Start, align, null, false,
-            Modifier.fillMaxWidth().then(clip).then(if (stopPath != null) tracker.listen() else Modifier).horizontalScroll(scroll, flingBehavior = fling).focusable()
+            Modifier.fillMaxWidth().then(clip).then(if (stopPath != null || autoAdvance != null) tracker.listen() else Modifier).horizontalScroll(scroll, flingBehavior = fling)
+                .onFocusChanged { focusInside = it.hasFocus }.focusable()
                 .padding(start = padding.start.dp, top = padding.top.dp, end = padding.end.dp, bottom = padding.bottom.dp),
         ) {
             for (index in 0 until count) {

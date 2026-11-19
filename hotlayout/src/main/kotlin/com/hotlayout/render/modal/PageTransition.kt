@@ -1,11 +1,12 @@
 package com.hotlayout.render.modal
 
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -21,102 +22,70 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.zIndex
-import com.hotlayout.ScreenShownCause
-import com.hotlayout.render.motion.rememberReducedMotion
-import com.hotlayout.render.widgets.LocalFillCovers
+import com.hotlayout.render.motion.AppearWindow
+import com.hotlayout.render.motion.LocalAppearWindow
+
+/** The window handed to the copy of the page that goes: nothing in it appears again. */
+private val closedWindow = AppearWindow().also { it.close() }
+
+private class PageHolder<T> {
+    var key: Any? = null
+    var value: T? = null
+}
 
 /**
- * How a page replaces another one: the motion of a native app, not a field of the document.
- * A page opened forward slides in from the end of the line over the previous one while it fades in
- * (the previous one drifts back and fades out); a step back plays it in reverse; a section switch
- * of the navigation bar cross-fades. The entry, a new document and the first screen appear without
- * motion, and so does everything when the system asks for no motion.
+ * Draws the page of [key] from [value]; when [key] changes with a [plan] that moves a page, the page it replaces stays drawn, live, until the
+ * motion is over. The plan is the contract's (`ScreenTransition`): a clock of its length runs linearly and the frame function
+ * of the plan says where both pages stand, so the numbers are the contract's and not an approximation by the platform's own
+ * transitions. A new step finishes the one before it at once (the page that was coming is the one that goes).
  *
- * The motion only follows the stack: the events, the stack and the focus rules were already
- * decided when the key changed. The page that leaves takes no touch and no focus.
+ * The page that goes takes no touch, no focus and is not heard from the first frame; the one that comes is a control from it.
  */
-internal object PageMotionRules {
-    const val DURATION_MS = 300
-    const val SHIFT = 0.25
-
-    enum class Kind { Forward, Back, Switch }
-
-    fun kindOf(cause: ScreenShownCause?): Kind? = when (cause) {
-        ScreenShownCause.Forward -> Kind.Forward
-        ScreenShownCause.Back -> Kind.Back
-        ScreenShownCause.Switch -> Kind.Switch
-        else -> null
-    }
-
-    /** Opacity and shift (a fraction of the width toward the end of the line) of one page, [run] 0…1 being how far the motion has gone. */
-    data class Look(val opacity: Float, val shift: Float)
-
-    private fun interval(run: Float, end: Float) = (run / end).coerceIn(0f, 1f)
-
-    fun incoming(kind: Kind, run: Float): Look = when (kind) {
-        Kind.Forward -> Look(interval(run, 0.75f), (SHIFT * (1 - run)).toFloat())
-        Kind.Switch -> Look(interval(run, 0.6f), 0f)
-        // The page revealed by a step back: it is the page beneath.
-        Kind.Back -> Look(interval(run, 0.75f), (-SHIFT * (1 - run)).toFloat())
-    }
-
-    fun outgoing(kind: Kind, run: Float): Look = when (kind) {
-        Kind.Forward -> Look(1 - interval(run, 0.25f), (-SHIFT * run).toFloat())
-        Kind.Switch -> Look(1 - interval((run - 0.6f) / 0.4f, 1f), 0f)
-        Kind.Back -> Look(1 - interval(run, 0.25f), (SHIFT * run).toFloat())
-    }
-}
-
-private class PageHolder {
-    var key: Any? = null
-    var content: (@Composable () -> Unit)? = null
-}
-
-/** Draws the page of [key]; when [key] changes with a [cause] that moves, the page it replaces stays drawn until the motion is over. */
 @Composable
-internal fun PageTransition(key: Any, cause: ScreenShownCause?, content: @Composable () -> Unit) {
-    // A fill that covers the screen is the motion: the screen changes under it with none of its own.
-    val reduced = rememberReducedMotion() || LocalFillCovers.current
-    val holder = remember { PageHolder() }
-    val kind = PageMotionRules.kindOf(cause)
-    val outgoing = remember(key) { if (holder.key != null && kind != null && !reduced) holder.content else null }
+internal fun <T : Any> PageTransition(key: Any, plan: ScreenTransitionPlan, value: T, content: @Composable (T) -> Unit) {
+    // The page that goes is kept as the VALUE it was drawn from, not as a lambda: a composable lambda of a call site is
+    // updated in place when the site recomposes, and the old reference would then draw the new page.
+    val holder = remember { PageHolder<T>() }
+    val outgoing = remember(key) { if (holder.key != null && plan.motion.isPage) holder.value else null }
     val run = remember(key) { Animatable(if (outgoing != null) 0f else 1f) }
     var finished by remember(key) { mutableStateOf(outgoing == null) }
     SideEffect {
         holder.key = key
-        holder.content = content
+        holder.value = value
     }
     LaunchedEffect(key) {
         if (outgoing == null) return@LaunchedEffect
-        run.animateTo(1f, tween(PageMotionRules.DURATION_MS, easing = CubicBezierEasing(0.2f, 0f, 0f, 1f)))
+        // A linear clock: the curves are the plan's.
+        run.animateTo(1f, tween(plan.durationMs.toInt(), easing = LinearEasing))
         finished = true
     }
     val rtl = LocalLayoutDirection.current == LayoutDirection.Rtl
+    val playing = outgoing != null && !finished
     Box(Modifier.fillMaxSize()) {
-        if (outgoing != null && !finished && kind != null) {
-            // A step back shows the page it returns to beneath the one that leaves.
+        if (playing) {
+            // The page that comes lies over the one under it on a push; the one that goes lies over it on a step back and a dissolve.
             Box(
-                Modifier.fillMaxSize().zIndex(if (kind == PageMotionRules.Kind.Back) 1f else 0f)
+                Modifier.fillMaxSize().zIndex(if (plan.motion == TransitionMotion.Push) 0f else 1f)
                     .focusProperties { canFocus = false }
                     .clearAndSetSemantics { }
                     .pointerInput(Unit) { awaitPointerEventScope { while (true) awaitPointerEvent(PointerEventPass.Initial).changes.forEach { it.consume() } } }
                     .graphicsLayer {
-                        val look = PageMotionRules.outgoing(kind, run.value)
-                        alpha = look.opacity
-                        translationX = (if (rtl) -look.shift else look.shift) * size.width
+                        val layer = ScreenTransition.frame(plan, run.value * plan.durationMs).outgoing
+                        alpha = layer.opacity.toFloat()
+                        translationX = (if (rtl) -layer.x else layer.x).toFloat() * size.width
                     },
-            ) { outgoing() }
+            ) { CompositionLocalProvider(LocalScreenInFront provides false, LocalAppearWindow provides closedWindow) { outgoing?.let { content(it) } } }
         }
         androidx.compose.runtime.key(key) {
             Box(
-                Modifier.fillMaxSize().zIndex(if (kind == PageMotionRules.Kind.Back) 0f else 1f)
+                Modifier.fillMaxSize().zIndex(if (plan.motion == TransitionMotion.Push) 1f else 0f)
                     .graphicsLayer {
-                        if (finished || kind == null) return@graphicsLayer
-                        val look = PageMotionRules.incoming(kind, run.value)
-                        alpha = look.opacity
-                        translationX = (if (rtl) -look.shift else look.shift) * size.width
+                        if (finished || outgoing == null) return@graphicsLayer
+                        val layer = ScreenTransition.frame(plan, run.value * plan.durationMs).incoming
+                        alpha = layer.opacity.toFloat()
+                        translationX = (if (rtl) -layer.x else layer.x).toFloat() * size.width
                     },
-            ) { content() }
+            ) { content(value) }
         }
     }
 }

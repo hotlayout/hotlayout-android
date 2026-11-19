@@ -18,6 +18,7 @@ import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.changedToDown
@@ -32,6 +33,12 @@ import kotlin.math.sin
 
 /** A fixed time (ms since the node appeared) for every moving node below, instead of the clock of the screen; tests read a real node at a chosen moment. */
 internal val LocalNodeMotionClockMs = compositionLocalOf<Double?> { null }
+
+/** A fixed time (ms after the show) for every appearing node below, instead of the clock of the screen; tests read a real node at a chosen moment. */
+internal val LocalNodeAppearClockMs = compositionLocalOf<Double?> { null }
+
+/** The window of the screen the node is drawn in; a node drawn with no screen around it plays its appearance. */
+internal val LocalAppearWindow = compositionLocalOf<AppearWindow?> { null }
 
 /**
  * The turn (degrees, clockwise) of the layer a `Stack` places the node in. The node's motion is
@@ -55,18 +62,24 @@ internal object NodeMotionFrames {
  * window; «reduce motion» (the system animator scale 0) is rest and asks for none.
  */
 @Composable
-internal fun NodeMotionBox(motion: NodeMotion, rightToLeft: Boolean, turnDegrees: Float, modifier: Modifier, content: @Composable () -> Unit) {
+internal fun NodeMotionBox(motion: NodeMotion?, appear: NodeAppear?, rightToLeft: Boolean, turnDegrees: Float, modifier: Modifier, content: @Composable () -> Unit) {
     val reduced = rememberReducedMotion()
     val fixed = LocalNodeMotionClockMs.current
+    val fixedAppear = LocalNodeAppearClockMs.current
+    // A node plays its appearance only if the screen's window was open when it was built; one that came later stands at once.
+    val window = LocalAppearWindow.current
+    val plays = remember { window?.isOpen ?: true }
+    val appearing = if (plays) appear else null
     val density = LocalDensity.current.density
-    val window = LocalWindowInfo.current.containerSize
+    val containerSize = LocalWindowInfo.current.containerSize
     var onScreen by remember { mutableStateOf(false) }
     val begin = remember { mutableLongStateOf(-1L) }
     val elapsed = remember { mutableDoubleStateOf(0.0) }
     // A glass node inside moves with this layer, which the page of the glass does not see: each frame redraws that page.
     val glassInside = remember { com.hotlayout.render.paint.GlassInside() }
     val glassSource = com.hotlayout.render.paint.LocalGlassSource.current
-    if (fixed == null && !reduced) {
+    val needsClock = (motion != null && fixed == null) || (appearing != null && fixedAppear == null)
+    if (needsClock && !reduced) {
         LaunchedEffect(onScreen) {
             if (!onScreen) return@LaunchedEffect
             while (true) {
@@ -76,28 +89,37 @@ internal fun NodeMotionBox(motion: NodeMotion, rightToLeft: Boolean, turnDegrees
                     elapsed.doubleValue = (now - begin.longValue).toDouble()
                     if (glassInside.inside) glassSource?.invalidate()
                 }
+                // Nothing moves any more: the appearance is over and the motion has no clock of this loop (none, or a fixed one).
+                if ((motion == null || fixed != null) && elapsed.doubleValue >= (appearing?.endsAt ?: 0.0)) break
             }
         }
     }
-    // «Reduce motion»: the node is plain, with no layer, no clock and no frames.
-    if (reduced) {
+    // «Reduce motion», or a node that has nothing to play (its window was closed): plain, with no layer, no clock and no frames.
+    if (reduced || (motion == null && appearing == null)) {
         Box(modifier, propagateMinConstraints = true) { content() }
         return
     }
     val poseNow = {
-        val pose = motion.pose(fixed ?: elapsed.doubleValue, reduced, rightToLeft)
+        val pose = motion?.pose(fixed ?: elapsed.doubleValue, reduced, rightToLeft) ?: NodeMotion.Pose.REST
+        // The appearance lies over the pose of the motion: its shift adds, its opacity multiplies.
+        val shown = appearing?.pose(fixedAppear ?: elapsed.doubleValue, reduced) ?: NodeAppear.Pose.REST
         val x = pose.x * density
-        val y = pose.y * density
+        val y = (pose.y + shown.y) * density
         val angle = Math.toRadians(turnDegrees.toDouble())
         Layer(
             (x * cos(angle) + y * sin(angle)).toFloat(), (-x * sin(angle) + y * cos(angle)).toFloat(),
-            pose.scale.toFloat(), pose.opacity.toFloat(),
+            pose.scale.toFloat(), (pose.opacity * shown.opacity).toFloat(), pose.rotate.toFloat(),
+            when (pose.pivot) {
+                NodeMotion.Pivot.Top -> 0f
+                NodeMotion.Pivot.Center -> 0.5f
+                NodeMotion.Pivot.Bottom -> 1f
+            },
         )
     }
     Box(
         modifier.onGloballyPositioned { coordinates ->
             val bounds = coordinates.boundsInWindow()
-            onScreen = coordinates.isAttached && !bounds.isEmpty && bounds.right > 0f && bounds.bottom > 0f && bounds.left < window.width && bounds.top < window.height
+            onScreen = coordinates.isAttached && !bounds.isEmpty && bounds.right > 0f && bounds.bottom > 0f && bounds.left < containerSize.width && bounds.top < containerSize.height
         },
         propagateMinConstraints = true,
     ) {
@@ -109,6 +131,9 @@ internal fun NodeMotionBox(motion: NodeMotion, rightToLeft: Boolean, turnDegrees
                     translationY = layer.y
                     scaleX = layer.scale
                     scaleY = layer.scale
+                    // A turn about a point of the box (the middle of the top or the bottom edge, or the centre).
+                    rotationZ = layer.rotate
+                    transformOrigin = TransformOrigin(0.5f, layer.pivotY)
                 }
                 // The opacity of a pulse is the opacity of the whole box with the shadow it paints outside it: a layer of the node's
                 // own size would cut the shadow, so the content goes through an offscreen layer much larger than the box.
@@ -135,7 +160,7 @@ internal fun NodeMotionBox(motion: NodeMotion, rightToLeft: Boolean, turnDegrees
 private const val SHADOW_REACH_DP = 400f
 
 /** What the layer of a moving node is set to: a shift in pixels, a scale and an opacity. */
-private class Layer(val x: Float, val y: Float, val scale: Float, val opacity: Float)
+private class Layer(val x: Float, val y: Float, val scale: Float, val opacity: Float, val rotate: Float, val pivotY: Float)
 
 /**
  * A touch that starts outside the box the node has at rest does not press it, whatever the drawn
@@ -151,8 +176,13 @@ private fun Modifier.restOnly(layer: () -> Layer): Modifier = pointerInput(Unit)
             val now = layer()
             for (change in event.changes) {
                 if (!change.changedToDown()) continue
-                val x = w / 2 + now.scale * (change.position.x - w / 2) + now.x
-                val y = h / 2 + now.scale * (change.position.y - h / 2) + now.y
+                // About the pivot of the layer: scaled, turned, then shifted.
+                val originY = h * now.pivotY
+                val turn = Math.toRadians(now.rotate.toDouble())
+                val dx = now.scale * (change.position.x - w / 2)
+                val dy = now.scale * (change.position.y - originY)
+                val x = w / 2 + (dx * cos(turn) - dy * sin(turn)).toFloat() + now.x
+                val y = originY + (dx * sin(turn) + dy * cos(turn)).toFloat() + now.y
                 if (!Rect(0f, 0f, w, h).contains(Offset(x, y))) change.consume()
             }
         }

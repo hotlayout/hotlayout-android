@@ -26,7 +26,9 @@ class CarouselCasesTest {
         val run = setOf("hostCases", "readCases", "cardCases", "stopCases", "activeCases", "dotCases", "areaCases", "stateCases")
         // The groups of the carousel that tells its stop are run by `CarouselStopCasesTest` and `CarouselStopWiringTest`.
         val told = setOf("stopPathCases", "stopShownCases", "stopFollowCases", "stopWriteCases", "stopDocumentCases", "stopRunScreen", "stopRunCases", "stopRuleCases")
-        assertEquals(run + told, Contract.groups(table))
+        // And those of the carousel that advances by time by `CarouselAutoAdvanceCasesTest` and `CarouselAutoAdvanceWiringTest`.
+        val timed = setOf("autoAdvanceReadCases", "autoAdvanceNextCases", "autoAdvanceTickCases", "autoAdvanceWriteCases", "autoAdvanceDocumentCases", "autoAdvanceRunScreen", "autoAdvanceRunCases", "autoAdvanceRuleCases")
+        assertEquals(run + told + timed, Contract.groups(table))
     }
 
     @Test fun defaultsAreTheTables() {

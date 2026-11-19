@@ -72,9 +72,10 @@ class AppearShowWiringTest {
         clock.advanceTimeBy(1000)
         assertTrue("and grows", filledAt(300))
         compose.onNodeWithText("Back").performClick()
+        // The page that goes slides over the one that comes for 300 ms: look when it is gone.
         clock.advanceTimeBy(16)
-        clock.advanceTimeBy(100)
-        assertTrue("coming back is a new show: empty again", !filledAt(300))
+        clock.advanceTimeBy(320)
+        assertTrue("coming back is a new show: not yet full", !filledAt(340))
         clock.advanceTimeBy(1000)
         assertTrue("and grown", filledAt(300))
     }

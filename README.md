@@ -33,8 +33,8 @@ the Compose compiler plugin, as any Compose app does.
 - **Three separate inputs.** The document (screens), the theme (token values) and your data (`dataScopeOf(...)`) are
   loaded and replaced independently.
 - **Contract 9.42.0, read.** Every widget is drawn: text, buttons, lists, stacks, progress, form controls and
-  validation, screen anatomy, modal layers, carousels, node motion, glass, images and the adaptive width classes. The
-  minors that are not performed yet are listed in [CHANGELOG.md](CHANGELOG.md).
+  validation, screen anatomy, modal layers, transitions between screens, carousels, node motion, glass, images and the
+  adaptive width classes. What each release performs is stated in [CHANGELOG.md](CHANGELOG.md).
   The rules of the contract pass the case tables shared by all HotLayout readers.
 - **Languages and right-to-left.** A document carries its translations; the reader picks the language, the formats
   and the direction from the locale.

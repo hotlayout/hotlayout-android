@@ -60,6 +60,10 @@ class TableCoverageTest {
             "top-zone/childrenCases", "top-zone/geometryCases", "top-zone/pinCases", "top-zone/ruleCases",
             "progress/ratioCases", "progress/ringCases", "progress/arcCases", "progress/barCases", "progress/paintCases", "progress/segmentCases", "progress/segmentPlaceCases", "progress/segmentPaintCases", "progress/segmentGradientCases", "progress/ringLabelCases", "progress/ringLabelNoneCases", "progress/capCases", "progress/segmentFillCases", "progress/segmentFillInlineCases", "progress/transitionShareCases", "progress/glowStepCases", "progress/glowRuleCases",
             "motion/poseCases",
+            // Schema 9.40.0: spin, sway and the appearance of a node (the zones are the validator's).
+            "motion/turnCases", "motion/appearCases", "motion/momentCases",
+            // Schema 9.38.0: the default transitions between screens.
+            "screen-transition/curveCases", "screen-transition/planCases", "screen-transition/frameCases", "screen-transition/fieldCases",
             // Schema 9.28.0: the address of a picture, the list budget, the numbers of a theme, the paint of a text.
             "image-source/defaultCases", "image-source/neverAnImageCases", "repeater-filter/budgetCases",
             "theme-numbers/numberCases", "accessible-name/silentCases", "accessible-name/paintCases",
@@ -85,6 +89,8 @@ class TableCoverageTest {
             "media-chrome/ratioCases", "media-chrome/imageBoxCases", "media-chrome/paintCases", "media-chrome/radiusCases", "media-chrome/circleCases",
             "carousel/hostCases", "carousel/readCases", "carousel/cardCases", "carousel/stopCases", "carousel/activeCases",
             "carousel/stopPathCases", "carousel/stopShownCases", "carousel/stopFollowCases", "carousel/stopWriteCases", "carousel/stopRunScreen", "carousel/stopRunCases", "carousel/stopRuleCases",
+            "carousel/autoAdvanceReadCases", "carousel/autoAdvanceNextCases", "carousel/autoAdvanceTickCases", "carousel/autoAdvanceWriteCases",
+            "carousel/autoAdvanceRunScreen", "carousel/autoAdvanceRunCases", "carousel/autoAdvanceRuleCases",
             "carousel/dotCases", "carousel/areaCases", "carousel/stateCases", "repeater-filter/carouselCases",
             // Adaptive: width classes, visibility and style by class, the wide places, `unset`.
             // Placements: the map, the source of the map, what a place draws.
@@ -124,9 +130,8 @@ class TableCoverageTest {
          */
         val notRun = setOf(
             "media-chrome/safeTopModalCases",
-            // Schema 9.38.0 and 9.40.0: not performed yet, so their tables are not run.
-            "screen-transition/curveCases", "screen-transition/planCases", "screen-transition/frameCases", "screen-transition/fieldCases",
-            "motion/turnCases", "motion/appearCases", "motion/momentCases", "motion/zoneCases",
+            // Schema 9.40.0: where an appearance may stand is what the builder may publish.
+            "motion/zoneCases",
         )
 
         fun status(table: String, group: String): String? = when {

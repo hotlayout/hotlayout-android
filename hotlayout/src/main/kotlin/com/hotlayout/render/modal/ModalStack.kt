@@ -9,7 +9,9 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableFloatState
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -26,7 +28,9 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.BlurEffect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.TileMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
@@ -68,8 +72,16 @@ internal class ModalLayerSpec(
     /** The blur under the layer, 1…40, or `null`. */
     val blur: Int?,
     val dismissible: Boolean,
+    /** How the layer comes when this step opened it (`null`: it was there, or nothing moves). */
+    val enter: ScreenTransitionPlan? = null,
     val content: @Composable () -> Unit,
 )
+
+/** The layer a step closed and how: it stays drawn while the plan [plan] moves it out; [plan] is asked with whether a drag already took it down. */
+internal class LayerLeave(val index: Int, val plan: (dragged: Boolean) -> ScreenTransitionPlan)
+
+/** Whether the screen the composition is in is the one in front: a page under a layer, a layer under another, a page that is going away are not. */
+internal val LocalScreenInFront = androidx.compose.runtime.compositionLocalOf { true }
 
 /** The blur radius (logical pixels) the page under the layers is drawn with; read by tests from the semantics. */
 internal val ModalPageBlurKey = SemanticsPropertyKey<Float>("HotlayoutModalPageBlur")
@@ -85,6 +97,14 @@ internal var SemanticsPropertyReceiver.modalLayerBlur by ModalLayerBlurKey
  */
 internal fun Modifier.pictureBlur(radius: Double): Modifier =
     if (radius <= 0.0 || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) this else blur(radius.dp, BlurredEdgeTreatment.Rectangle)
+
+/** The same blur with the share of it drawn now (0…1), read while drawing: the blur under a layer comes and goes with the layer's motion without recomposing. */
+internal fun Modifier.pictureBlur(radius: Double, share: MutableFloatState): Modifier =
+    if (radius <= 0.0 || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) this else graphicsLayer {
+        val px = (radius * share.floatValue * density).toFloat()
+        renderEffect = if (px > 0.01f) BlurEffect(px, px, TileMode.Clamp) else null
+        clip = true
+    }
 
 /**
  * The page and the modal layers over it. Every layer is its own stacking context (a `zIndex` of its
@@ -104,6 +124,7 @@ internal fun ModalStack(
     focusSerial: Int,
     dismiss: () -> Unit,
     modifier: Modifier = Modifier,
+    leave: LayerLeave? = null,
 ) {
     val pageFocus = remember { FocusRequester() }
     val topKey = layers.lastOrNull()?.index
@@ -112,13 +133,21 @@ internal fun ModalStack(
         if (focusSerial != 0 && topKey == null) runCatching { pageFocus.requestFocus() }
     }
     val pageBlur = ModalRules.combinedBlur(layers.mapNotNull { it.blur })
-    val reduced = rememberReducedMotion()
+    // How much of the blur under the layers is drawn now: it comes and goes with the layer that moves (1 at rest).
+    val blurShare = remember { mutableFloatStateOf(1f) }
     // The layers of the last composition: one that left the stack is drawn from here while it sinks back.
     var seen by remember { mutableStateOf(emptyMap<Int, ModalLayerSpec>()) }
     var finished by remember { mutableStateOf(emptySet<Int>()) }
     // A place of the stack taken again by a new layer is no longer a finished exit.
     val takenAgain = layers.map { it.index }.filter { it in finished }
     if (takenAgain.isNotEmpty()) SideEffect { finished = finished - takenAgain.toSet() }
+    // A layer that left the stack stays drawn while it sinks back: the stack (and the event) has already moved on.
+    val currentIndexes = layers.map { it.index }.toSet()
+    // Only the layer the step closed sinks back, and only when its plan moves it; any other change takes layers away at once.
+    val leaves = leave != null && leave.plan(false).motion.isLayer
+    val leaving = if (!leaves) emptyList() else seen.values.filter { it.index !in currentIndexes && it.index !in finished && it.index == leave!!.index }
+    // The blur is drawn for the layers that are drawn, those that sink back included.
+    val drawnBlur = ModalRules.combinedBlur((layers + leaving).mapNotNull { it.blur })
     Box(modifier.fillMaxSize()) {
         Box(
             Modifier.fillMaxSize()
@@ -130,11 +159,8 @@ internal fun ModalStack(
                         base.focusProperties { canFocus = false }.clearAndSetSemantics { modalPageBlur = pageBlur.toFloat() }
                     }
                 }
-                .pictureBlur(pageBlur),
-        ) { page() }
-        // A layer that left the stack stays drawn while it sinks back: the stack (and the event) has already moved on.
-        val currentIndexes = layers.map { it.index }.toSet()
-        val leaving = if (reduced) emptyList() else seen.values.filter { it.index !in currentIndexes && it.index !in finished }
+                .pictureBlur(drawnBlur, blurShare),
+        ) { CompositionLocalProvider(LocalScreenInFront provides layers.isEmpty()) { page() } }
         SideEffect {
             val next = seen.filterKeys { it in currentIndexes || it !in finished } + layers.associateBy { it.index }
             if (next != seen) seen = next
@@ -147,7 +173,7 @@ internal fun ModalStack(
                 val above = if (isLeaving) 0.0 else ModalRules.combinedBlur(layers.filter { it.index > layer.index }.mapNotNull { it.blur })
                 ModalLayerView(
                     layer, isTop, above, marginDp, focusSerial, dismiss, Modifier.zIndex((position + 1).toFloat()),
-                    leaving = isLeaving, onGone = { finished = finished + layer.index },
+                    leaving = isLeaving, leavePlan = leave?.plan, blurShare = blurShare, onGone = { finished = finished + layer.index },
                 )
             }
         }
@@ -164,6 +190,8 @@ private fun ModalLayerView(
     dismiss: () -> Unit,
     modifier: Modifier,
     leaving: Boolean = false,
+    leavePlan: ((Boolean) -> ScreenTransitionPlan)? = null,
+    blurShare: MutableFloatState? = null,
     onGone: () -> Unit = {},
 ) {
     val reduced = rememberReducedMotion()
@@ -171,7 +199,13 @@ private fun ModalLayerView(
     val scope = rememberCoroutineScope()
     val dismissNow = rememberUpdatedState(dismiss)
     val offset = remember { Animatable(0f) }
-    val appear = remember { Animatable(if (reduced) 1f else 0f) }
+    // How the layer came (the plan of the step that opened it): it starts out of view only when that plan moves it.
+    val enterPlan = remember { layer.enter?.takeIf { it.moves && it.motion.isLayerIn } }
+    val appear = remember { Animatable(if (enterPlan == null) 1f else 0f) }
+    // What the layer is doing now, and whether the dim moves with it (a layer over a layer leaves the dim still).
+    var moving by remember { mutableStateOf(enterPlan?.motion ?: if (layer.window) TransitionMotion.WindowOut else TransitionMotion.SheetIn) }
+    var scaleFrom by remember { mutableStateOf(enterPlan?.scaleFrom ?: 1.0) }
+    var dimMoves by remember { mutableStateOf(enterPlan?.scrim != ScrimMotion.Still) }
     var sheetHeight by remember { mutableFloatStateOf(0f) }
     var exiting by remember { mutableStateOf(false) }
     val scrollSink = remember { ModalBodyScroll() }
@@ -185,13 +219,22 @@ private fun ModalLayerView(
     val gone = rememberUpdatedState(onGone)
     LaunchedEffect(leaving) {
         if (!leaving) return@LaunchedEffect
-        // The same sink as a drag that was let go past the threshold (a drag already took the sheet there).
+        // A layer a drag already took down has gone: the plan says «dragged» and nothing plays.
+        val plan = leavePlan?.invoke(exiting) ?: ScreenTransitionPlan.still(StillReason.Dragged)
         exiting = true
-        if (layer.window) appear.animateTo(0f, motion(ModalRules.exitMotion, reduced))
-        else offset.animateTo(maxOf(sheetHeight, offset.value), motion(ModalRules.exitMotion, reduced))
+        if (plan.moves) {
+            moving = plan.motion
+            dimMoves = plan.scrim != ScrimMotion.Still
+            appear.animateTo(0f, planTween(plan)) { blurShare?.floatValue = if (dimMoves) value else 1f }
+        }
+        blurShare?.floatValue = 1f
         gone.value()
     }
-    LaunchedEffect(Unit) { if (appear.value < 1f) appear.animateTo(1f, tween(APPEAR_MS, easing = ENTER_EASING)) }
+    LaunchedEffect(Unit) {
+        val plan = enterPlan ?: return@LaunchedEffect
+        appear.animateTo(1f, planTween(plan)) { blurShare?.floatValue = if (dimMoves) value else 1f }
+        blurShare?.floatValue = 1f
+    }
 
     val live = isTop && !exiting
 
@@ -233,7 +276,7 @@ private fun ModalLayerView(
                     // Read while drawing: the dim follows the drag and the appearance frame by frame without recomposing.
                     val dragged = offset.value
                     val visibleShare = if (dragged <= 0f || sheetHeight <= 0f) 1f else (1f - dragged / sheetHeight).coerceIn(0f, 1f)
-                    drawRect(Color.Black.copy(alpha = (ModalRules.SCRIM_OPACITY * visibleShare * appear.value).toFloat()))
+                    drawRect(Color.Black.copy(alpha = (ModalRules.SCRIM_OPACITY * visibleShare * (if (dimMoves) appear.value else 1f)).toFloat()))
                 }
                 .testTag("modal-scrim:${layer.screenId}")
                 .clearAndSetSemantics { }
@@ -264,23 +307,30 @@ private fun ModalLayerView(
                     .onSizeChanged { sheetHeight = it.height.toFloat() }
                     .graphicsLayer {
                         val share = appear.value
-                        if (layer.window) {
-                            val scale = (ModalRules.WINDOW_START_SCALE + (1 - ModalRules.WINDOW_START_SCALE) * share).toFloat()
-                            scaleX = scale
-                            scaleY = scale
-                            alpha = share
-                        } else {
-                            translationY = offset.value + (1f - share) * size.height
+                        when (moving) {
+                            // `y` of the plan is a share of the layer's own height.
+                            TransitionMotion.SheetIn, TransitionMotion.SheetOut -> translationY = offset.value + (1f - share) * size.height
+                            TransitionMotion.WindowIn -> {
+                                val scale = (scaleFrom + (1 - scaleFrom) * share).toFloat()
+                                scaleX = scale
+                                scaleY = scale
+                                alpha = share
+                            }
+                            else -> {
+                                alpha = share
+                                translationY = offset.value
+                            }
                         }
                     }
                     .pictureBlur(blurredBy),
-            ) { layer.content() }
+            ) { CompositionLocalProvider(LocalScreenInFront provides (isTop && !leaving)) { layer.content() } }
         }
     }
 }
 
-private const val APPEAR_MS = 220
-private val ENTER_EASING = CubicBezierEasing(0.2f, 0f, 0f, 1f)
+/** The motion of a plan on a share that runs 0 → 1 (or back): its length and its curve. */
+private fun planTween(plan: ScreenTransitionPlan) =
+    tween<Float>(plan.durationMs.toInt(), easing = CubicBezierEasing(plan.curve[0].toFloat(), plan.curve[1].toFloat(), plan.curve[2].toFloat(), plan.curve[3].toFloat()))
 
 private fun motion(motion: ModalRules.Motion, reduced: Boolean) =
     tween<Float>(if (reduced) 0 else motion.durationMs, easing = motion.curve.let { CubicBezierEasing(it[0].toFloat(), it[1].toFloat(), it[2].toFloat(), it[3].toFloat()) })

@@ -1043,7 +1043,7 @@
         "valuePath": {
           "type": "string",
           "minLength": 1,
-          "description": "The operand is the value under this OTHER data path (9.23.0), read in the same scope as «path»: «reward.category eq ui.rewardsCategory». No value under it (or the empty string) — see «x-listFilter.operandMissing»."
+          "description": "The operand is the value under this OTHER data path (9.23.0), read in the same scope as «path»: «product.category eq ui.selectedCategory». No value under it (or the empty string) — see «x-listFilter.operandMissing»."
         }
       },
       "required": [

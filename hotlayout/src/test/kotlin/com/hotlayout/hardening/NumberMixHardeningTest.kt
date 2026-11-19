@@ -17,6 +17,7 @@ import com.hotlayout.JsonObject
 import com.hotlayout.JsonValue
 import com.hotlayout.loadDocument
 import com.hotlayout.render.motion.LocalCountdownTickedSeconds
+import com.hotlayout.render.motion.LocalNodeAppearClockMs
 import com.hotlayout.render.motion.LocalNodeMotionClockMs
 import com.hotlayout.render.motion.LocalValueTransitionElapsedMs
 import com.hotlayout.support.Contract
@@ -115,6 +116,7 @@ class NumberMixHardeningTest(private val seed: Int, private val medium: Boolean)
                 // The clocks are held so endless motion, countdowns and transitions stand at a moment of their run.
                 CompositionLocalProvider(
                     LocalNodeMotionClockMs provides (if (motion) 700.0 else null),
+                    LocalNodeAppearClockMs provides 350.0,
                     LocalValueTransitionElapsedMs provides 350.0,
                     LocalCountdownTickedSeconds provides 3.0,
                 ) {

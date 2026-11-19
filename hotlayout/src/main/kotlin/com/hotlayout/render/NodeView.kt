@@ -14,6 +14,7 @@ import com.hotlayout.model.WidgetType
 import com.hotlayout.render.interaction.ProvideSiblings
 import com.hotlayout.render.interaction.pressableCard
 import com.hotlayout.render.motion.LocalLayerTurn
+import com.hotlayout.render.motion.NodeAppear
 import com.hotlayout.render.motion.NodeMotion
 import com.hotlayout.render.motion.NodeMotionBox
 import com.hotlayout.render.paint.LocalGlassLevel
@@ -79,6 +80,8 @@ internal fun NodeView(
     val optionGroup = node.children.isNotEmpty() && WriteActions.holdsOptionGroup(node.children) { context.isShown(it) }
     val glassSource = if (node.widget == WidgetType.Screen) rememberGlassSource(node) else null
     val motion = if (node.widget == WidgetType.Screen) null else NodeMotion.read(node.fields["motion"])
+    // The appearance when the screen is shown: not on the root and not on a zone of the screen.
+    val appear = if (NodeAppear.reads(node, context.screenRoot)) NodeAppear.read(node.fields[NodeAppear.FIELD]) else null
     // The root never moves; a node placed by a stack has its motion turned back by the layer of the stack.
     val turn = if (parentType == "Stack") LocalLayerTurn.current else 0f
     val backgroundImage = rememberBackgroundImage(box.background, (box.radius ?: Corners()).shape(), context)
@@ -95,7 +98,7 @@ internal fun NodeView(
     }
     ProvideGlass(glassSource) {
         val framed = if (glassSource != null) outerBase.glassSource(glassSource) else outerBase
-        if (motion == null) body(framed) else NodeMotionBox(motion, context.rightToLeft, turn, framed) { body(Modifier) }
+        if (motion == null && appear == null) body(framed) else NodeMotionBox(motion, appear, context.rightToLeft, turn, framed) { body(Modifier) }
     }
 }
 

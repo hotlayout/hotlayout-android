@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.hotlayout.HotlayoutDocument
 import com.hotlayout.HotlayoutScreen
 import com.hotlayout.dataScopeOf
+import com.hotlayout.render.motion.LocalNodeAppearClockMs
 import com.hotlayout.render.motion.LocalNodeMotionClockMs
 import com.hotlayout.render.motion.NodeMotionFrames
 import com.hotlayout.support.Contract
@@ -85,7 +86,7 @@ class BoundsHardeningTest {
                 Box(Modifier.fillMaxSize().background(Color.Red).testTag("host").clickable { hostTaps.add("host") })
                 Box(Modifier.offset(y = 200.dp).size(360.dp, 200.dp)) {
                     // The clock of node motion is held, so the pulse stands at a moment of its run and the test can get idle.
-                    CompositionLocalProvider(LocalNodeMotionClockMs provides 500.0) {
+                    CompositionLocalProvider(LocalNodeMotionClockMs provides 500.0, LocalNodeAppearClockMs provides 500.0) {
                         HotlayoutScreen(document, onAction = { a, _ -> actions.add(a.type) })
                     }
                 }

@@ -50,6 +50,9 @@ internal class CarouselStopTracker {
     var heading: Int? = null
         private set
 
+    /** The timer is taking the row to [stop]: until that move has settled, "where the carousel is" for following is this stop. */
+    fun markHeading(stop: Int) { heading = stop }
+
     /** Listens for a person on the row without taking any event from the scroll. */
     fun listen(): Modifier = Modifier
         .pointerInput(this) {

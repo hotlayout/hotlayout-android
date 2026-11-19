@@ -21,11 +21,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import com.hotlayout.actions.ActionCatalog
 import com.hotlayout.actions.Flow
+import com.hotlayout.actions.stepOf
+import com.hotlayout.actions.StackStepInfo
 import com.hotlayout.actions.FlowDocument
 import com.hotlayout.actions.FlowFrame
 import com.hotlayout.actions.InputOrder
@@ -43,12 +46,20 @@ import com.hotlayout.model.inWidthClass
 import com.hotlayout.render.RenderContext
 import com.hotlayout.render.adaptive.ConfigChangeState
 import com.hotlayout.render.adaptive.WideChrome
+import com.hotlayout.render.modal.LayerLeave
 import com.hotlayout.render.modal.ModalLayerSpec
 import com.hotlayout.render.modal.ModalRules
 import com.hotlayout.render.modal.ModalStack
 import com.hotlayout.render.modal.PageTransition
+import com.hotlayout.render.modal.ScreenTransition
+import com.hotlayout.render.modal.ScreenTransitionPlan
+import com.hotlayout.render.modal.StackStep
+import com.hotlayout.render.modal.StillReason
 import com.hotlayout.render.modal.SystemBackStep
+import com.hotlayout.render.motion.AppearWindow
+import com.hotlayout.render.motion.LocalAppearWindow
 import com.hotlayout.render.motion.ProvideReducedMotion
+import com.hotlayout.render.motion.rememberReducedMotion
 import com.hotlayout.render.screen.AnatomyScreen
 import com.hotlayout.render.screen.LocalSafeAreaOverride
 import com.hotlayout.render.screen.SafeAreaOverride
@@ -232,8 +243,8 @@ private class FlowHost(
     /** Counts the moves the person made in the stack: only they move the focus (never the first screen or the host's entry). */
     var movedSerial: Int by mutableIntStateOf(0)
 
-    /** Why the stack last changed: it only picks the motion between two pages, nothing else reads it. */
-    var lastShownCause: ScreenShownCause? by mutableStateOf(null)
+    /** The step of the stack the person made last, for the motion that plays it; `null` after any change the host made (entry, document). */
+    var lastStep: StackStepInfo? by mutableStateOf(null)
 
     val callbacks: Callbacks get() = callbacksState.value
 
@@ -296,7 +307,7 @@ private class FlowHost(
         outcome.shown?.let {
             shownSerial += 1
             movedSerial += 1
-            lastShownCause = it.cause
+            lastStep = stepOf(before, updated, it.cause)
             handlers.onScreenChange?.invoke(it)
         }
         return PressRun(SwipeConfirmRules.runner(action, host), task)
@@ -339,7 +350,7 @@ private fun FlowEffects(host: FlowHost, document: HotlayoutDocument, entry: Stri
         val (updated, shown) = host.flow.update(FlowDocument.of(document))
         if (updated != host.flow) host.flow = updated
         shown?.let {
-            host.lastShownCause = it.cause
+            host.lastStep = null
             host.callbacks.onScreenChange?.invoke(it)
         }
     }
@@ -354,7 +365,7 @@ private fun FlowEffects(host: FlowHost, document: HotlayoutDocument, entry: Stri
         host.flow = updated
         shown?.let {
             host.shownSerial += 1
-            host.lastShownCause = it.cause
+            host.lastStep = null
             host.callbacks.onScreenChange?.invoke(it)
         }
     }
@@ -376,6 +387,17 @@ private fun ScreenStack(host: FlowHost, setup: ScreenSetup, areaWidth: Double, h
     val topIsLayer = frames.size > 1 && topScreen?.presentation == ScreenPresentation.Modal
     SystemBackStep(enabled = handleSystemBack && frames.size > 1 && (!topIsLayer || topScreen?.dismissible != false), onBack = goBack)
 
+    // The motion of the step that made this stack: one plan, made when the step arrives, for the page and for the layer it opens or closes.
+    val reduced = rememberReducedMotion()
+    val covered = LocalFillCovers.current
+    val step = host.lastStep
+    val plan = remember(step) {
+        step?.let { ScreenTransition.plan(it.step, it.from, it.to, areaWidth, reduced, covered) } ?: ScreenTransitionPlan.still(StillReason.Start)
+    }
+    val opened = step != null && step.step != StackStep.Pop && step.depthAfter == frames.size
+    val leave = step?.takeIf { it.step == StackStep.Pop && it.depthBefore - 1 > pageIndex }?.let { info ->
+        LayerLeave(info.depthBefore - 1) { dragged -> ScreenTransition.plan(info.step, info.from, info.to, areaWidth, reduced, covered, dragged) }
+    }
     val layers = frames.mapIndexedNotNull { index, frame ->
         if (index <= pageIndex) return@mapIndexedNotNull null
         val screen = document.screen(frame.screenId) ?: return@mapIndexedNotNull null
@@ -383,7 +405,10 @@ private fun ScreenStack(host: FlowHost, setup: ScreenSetup, areaWidth: Double, h
         // One spec while nothing it draws changed: the stack compares the layers it keeps for their exit by identity.
         key(index, screen.screenId) {
             remember(screen, frame, setup, shape) {
-                ModalLayerSpec(index, screen.screenId, screen.name, shape != WideChrome.ModalShape.Sheet, shape == WideChrome.ModalShape.SheetWindow, screen.backdropBlur, screen.dismissible) {
+                ModalLayerSpec(
+                    index, screen.screenId, screen.name, shape != WideChrome.ModalShape.Sheet, shape == WideChrome.ModalShape.SheetWindow, screen.backdropBlur, screen.dismissible,
+                    enter = plan.takeIf { opened && index == frames.lastIndex },
+                ) {
                     ScreenRoot(screen, frame, setup, asLayer = true, sheetWindow = shape == WideChrome.ModalShape.SheetWindow, sheet = shape == WideChrome.ModalShape.Sheet)
                 }
             }
@@ -395,7 +420,7 @@ private fun ScreenStack(host: FlowHost, setup: ScreenSetup, areaWidth: Double, h
             val pageScreen = page?.let { document.screen(it.screenId) }
             // A page shown again is a new show for its nodes (`animateIn`): one identity per place in the stack and screen.
             if (page != null && pageScreen != null) {
-                PageTransition(pageIndex to pageScreen.screenId, host.lastShownCause) { ScreenRoot(pageScreen, page, setup, asLayer = false) }
+                PageTransition(pageIndex to pageScreen.screenId, plan, pageScreen to page) { (shownScreen, shownFrame) -> ScreenRoot(shownScreen, shownFrame, setup, asLayer = false) }
             }
         },
         layers = layers,
@@ -403,6 +428,7 @@ private fun ScreenStack(host: FlowHost, setup: ScreenSetup, areaWidth: Double, h
         focusSerial = host.movedSerial,
         dismiss = goBack,
         modifier = Modifier,
+        leave = leave,
     )
 }
 
@@ -503,9 +529,16 @@ private fun ScreenRoot(screen: ScreenEntry, frame: FlowFrame, setup: ScreenSetup
     val root = remember(screen.root, widthClass) { screen.root.inWidthClass(widthClass) }
     val context = remember(setup, screen, frame, root, widthClass) { setup.context(screen, frame, root, widthClass) }
     SideEffect { setup.reportBudget(screen, context.listBudget) }
-    VisibilityFadeDriver(root, context)
-    AnatomyScreen(
-        root, context, Modifier.testTag("screen:${screen.screenId}"),
-        shrinks = asLayer, insets = if (asLayer) ScreenInsets() else null, sheetWindow = sheetWindow, sheet = sheet,
-    )
+    // The window of the show: open while the screen is built for the first time, closed when its first layout is done (the
+    // zones are composed during that layout). A copy of a page that is going away takes a window that is closed already, so
+    // it does not appear a second time.
+    val inherited = LocalAppearWindow.current
+    val window = remember { inherited?.takeIf { !it.isOpen } ?: AppearWindow() }
+    CompositionLocalProvider(LocalAppearWindow provides window) {
+        VisibilityFadeDriver(root, context)
+        AnatomyScreen(
+            root, context, Modifier.testTag("screen:${screen.screenId}").onGloballyPositioned { window.close() },
+            shrinks = asLayer, insets = if (asLayer) ScreenInsets() else null, sheetWindow = sheetWindow, sheet = sheet,
+        )
+    }
 }

@@ -16,6 +16,12 @@ import com.hotlayout.data.LiveRecord
 import com.hotlayout.data.RecordLink
 import com.hotlayout.data.RecordScope
 import com.hotlayout.model.ReportSink
+import com.hotlayout.render.modal.ScreenTransitionWord
+import com.hotlayout.render.modal.StackStep
+import com.hotlayout.render.modal.TransitionScreen
+
+/** What a step of the stack was, by the screens at its two ends and the length of the stack after it; the motion of the step is planned from it. */
+internal class StackStepInfo(val step: StackStep, val from: TransitionScreen, val to: TransitionScreen, val depthBefore: Int, val depthAfter: Int)
 
 /** One frame of the screen stack: a screen and the record it was opened with, as a chain of links. */
 internal data class FlowFrame(val screenId: String, val chain: List<RecordLink> = emptyList()) {
@@ -37,6 +43,7 @@ internal data class FlowDocument(
         val presentation: ScreenPresentation,
         val modalPlacement: String? = null,
         val statusBarIcons: String? = null,
+        val transition: ScreenTransitionWord? = null,
     )
 
     internal fun screen(screenId: String): Screen? = screens.firstOrNull { it.screenId == screenId }
@@ -51,7 +58,7 @@ internal data class FlowDocument(
     internal companion object {
         internal fun of(document: HotlayoutDocument): FlowDocument = FlowDocument(
             documentId = document.documentId,
-            screens = document.screens.map { Screen(it.screenId, it.presentation, it.modalPlacement, it.statusBarIcons) },
+            screens = document.screens.map { Screen(it.screenId, it.presentation, it.modalPlacement, it.statusBarIcons, it.transition) },
             initialScreenId = document.initialScreenId,
             entryPoints = document.entryPoints,
             entitySources = LiveRecord.entitySources(document.screens.map { it.root }),
@@ -112,6 +119,12 @@ internal class Flow private constructor(
     internal val shownEntry: String? get() = entry?.takeIf { document.entryPoints.containsKey(it) }
 
     internal val top: FlowFrame? get() = stack.lastOrNull()
+
+    /** The top screen as a transition sees it; `null` for an empty stack. The first screen is a page whatever its entry says. */
+    internal fun transitionTop(): TransitionScreen? {
+        val screen = stack.lastOrNull()?.let { document.screen(it.screenId) } ?: return null
+        return TransitionScreen(stack.size > 1 && screen.presentation == ScreenPresentation.Modal, screen.modalPlacement?.let(JsonValue::Str), screen.transition)
+    }
 
     /** The event of the current top screen. */
     internal fun shownEvent(cause: ScreenShownCause): ScreenShownEvent? {
@@ -221,4 +234,17 @@ internal class Flow private constructor(
         fun firstStack(document: FlowDocument, entry: String?): List<FlowFrame> =
             document.start(entry)?.let { listOf(FlowFrame(it)) } ?: emptyList()
     }
+}
+
+/** The step a press made, for the motion that plays it; `null` when the press showed nothing a motion could follow. */
+internal fun stepOf(before: Flow, after: Flow, cause: ScreenShownCause): StackStepInfo? {
+    val step = when (cause) {
+        ScreenShownCause.Forward -> StackStep.Push
+        ScreenShownCause.Back -> StackStep.Pop
+        ScreenShownCause.Switch -> StackStep.Switch
+        else -> return null
+    }
+    val from = before.transitionTop() ?: return null
+    val to = after.transitionTop() ?: return null
+    return StackStepInfo(step, from, to, before.stack.size, after.stack.size)
 }
